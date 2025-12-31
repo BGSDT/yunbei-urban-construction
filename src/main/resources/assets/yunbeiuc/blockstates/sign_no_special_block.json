@@ -1,0 +1,33 @@
+{
+  "variants": {
+    "facing=north,no_special_type=sign_stop": { "model": "yunbeiuc:block/sign/sign_stop" },
+    "facing=east,no_special_type=sign_stop": { "model": "yunbeiuc:block/sign/sign_stop", "y": 90 },
+    "facing=south,no_special_type=sign_stop": { "model": "yunbeiuc:block/sign/sign_stop", "y": 180 },
+    "facing=west,no_special_type=sign_stop": { "model": "yunbeiuc:block/sign/sign_stop", "y": 270 },
+
+    "facing=north,no_special_type=sign_yield": { "model": "yunbeiuc:block/sign/sign_yield" },
+    "facing=east,no_special_type=sign_yield": { "model": "yunbeiuc:block/sign/sign_yield", "y": 90 },
+    "facing=south,no_special_type=sign_yield": { "model": "yunbeiuc:block/sign/sign_yield", "y": 180 },
+    "facing=west,no_special_type=sign_yield": { "model": "yunbeiuc:block/sign/sign_yield", "y": 270 },
+
+    "facing=north,no_special_type=sign_yield_to_oncoming_traffic": { "model": "yunbeiuc:block/sign/sign_yield_to_oncoming_traffic" },
+    "facing=east,no_special_type=sign_yield_to_oncoming_traffic": { "model": "yunbeiuc:block/sign/sign_yield_to_oncoming_traffic", "y": 90 },
+    "facing=south,no_special_type=sign_yield_to_oncoming_traffic": { "model": "yunbeiuc:block/sign/sign_yield_to_oncoming_traffic", "y": 180 },
+    "facing=west,no_special_type=sign_yield_to_oncoming_traffic": { "model": "yunbeiuc:block/sign/sign_yield_to_oncoming_traffic", "y": 270 },
+
+    "facing=north,no_special_type=sign_no_honk_horn": { "model": "yunbeiuc:block/sign/sign_no_honk_horn" },
+    "facing=east,no_special_type=sign_no_honk_horn": { "model": "yunbeiuc:block/sign/sign_no_honk_horn", "y": 90 },
+    "facing=south,no_special_type=sign_no_honk_horn": { "model": "yunbeiuc:block/sign/sign_no_honk_horn", "y": 180 },
+    "facing=west,no_special_type=sign_no_honk_horn": { "model": "yunbeiuc:block/sign/sign_no_honk_horn", "y": 270 },
+
+    "facing=north,no_special_type=sign_check": { "model": "yunbeiuc:block/sign/sign_check" },
+    "facing=east,no_special_type=sign_check": { "model": "yunbeiuc:block/sign/sign_check", "y": 90 },
+    "facing=south,no_special_type=sign_check": { "model": "yunbeiuc:block/sign/sign_check", "y": 180 },
+    "facing=west,no_special_type=sign_check": { "model": "yunbeiuc:block/sign/sign_check", "y": 270 },
+
+    "facing=north,no_special_type=sign_port_check": { "model": "yunbeiuc:block/sign/sign_port_check" },
+    "facing=east,no_special_type=sign_port_check": { "model": "yunbeiuc:block/sign/sign_port_check", "y": 90 },
+    "facing=south,no_special_type=sign_port_check": { "model": "yunbeiuc:block/sign/sign_port_check", "y": 180 },
+    "facing=west,no_special_type=sign_port_check": { "model": "yunbeiuc:block/sign/sign_port_check", "y": 270 }
+  }
+}

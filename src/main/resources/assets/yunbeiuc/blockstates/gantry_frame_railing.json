@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_railing",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_railing"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_railing",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_railing",
+      "y": 270
+    }
+  }
+}

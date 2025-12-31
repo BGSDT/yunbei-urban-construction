@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "yunbeiuc",
+	"version": "${version}",
+	"name": "YunbeiUrbanConstruction",
+    "description": "This is an UrbanConstruction!",
+	"authors": [
+		"Me!"
+	],
+   "contact": {
+      "homepage": "https://bgsdt.github.io/",
+      "sources": "https://github.com/bgsdt/yunbeiurbanconstruction-template-1.20.1"
+   },
+	"license": "MIT",
+	"icon": "assets/yunbeiuc/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.beigu.yunbeiuc.YunbeiUrbanConstruction"
+		],
+        "client": [
+            "com.beigu.yunbeiuc.YunbeiUrbanConstructionClient"
+        ],
+		"fabric-datagen": [
+			"com.beigu.yunbeiuc.YunbeiUrbanConstructionDataGenerator"
+		]
+	},
+	"mixins": [
+		"yunbeiuc.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+        "geckolib": ">=4.0.1"
+    },
+	"suggests": {
+		"another-mod": "*"
+	}
+}

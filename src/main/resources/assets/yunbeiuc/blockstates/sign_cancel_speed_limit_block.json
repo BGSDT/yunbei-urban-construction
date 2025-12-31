@@ -1,0 +1,68 @@
+{
+  "variants": {
+    "facing=north,cancel_speed_limit=cancel_speed_limit_005": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_005" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_005": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_005", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_005": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_005", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_005": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_005", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_010": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_010" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_010": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_010", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_010": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_010", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_010": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_010", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_020": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_020" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_020": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_020", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_020": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_020", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_020": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_020", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_030": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_030" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_030": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_030", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_030": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_030", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_030": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_030", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_040": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_040" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_040": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_040", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_040": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_040", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_040": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_040", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_050": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_050" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_050": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_050", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_050": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_050", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_050": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_050", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_060": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_060" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_060": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_060", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_060": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_060", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_060": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_060", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_070": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_070" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_070": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_070", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_070": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_070", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_070": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_070", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_080": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_080" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_080": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_080", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_080": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_080", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_080": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_080", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_090": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_090" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_090": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_090", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_090": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_090", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_090": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_090", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_100": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_100" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_100": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_100", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_100": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_100", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_100": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_100", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_110": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_110" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_110": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_110", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_110": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_110", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_110": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_110", "y": 270 },
+
+    "facing=north,cancel_speed_limit=cancel_speed_limit_120": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_120" },
+    "facing=east,cancel_speed_limit=cancel_speed_limit_120": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_120", "y": 90 },
+    "facing=south,cancel_speed_limit=cancel_speed_limit_120": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_120", "y": 180 },
+    "facing=west,cancel_speed_limit=cancel_speed_limit_120": { "model": "yunbeiuc:block/sign/sign_cancel_speed_limit_120", "y": 270 }
+  }
+}

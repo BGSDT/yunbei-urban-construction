@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/road_with_white_rightangle_line_offset_outf",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/road_with_white_rightangle_line_offset_outf"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/road_with_white_rightangle_line_offset_outf",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/road_with_white_rightangle_line_offset_outf",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "main_type=gantry_frame_main_1": {
+      "model": "yunbeiuc:block/gantry_frame_main_1"
+    },
+    "main_type=gantry_frame_main_2": {
+      "model": "yunbeiuc:block/gantry_frame_main_2"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "connection_type=gantry_frame_connection_1": {
+      "model": "yunbeiuc:block/gantry_frame_connection_1"
+    },
+    "connection_type=gantry_frame_connection_2": {
+      "model": "yunbeiuc:block/gantry_frame_connection_2"
+    },
+    "connection_type=gantry_frame_connection_3": {
+      "model": "yunbeiuc:block/gantry_frame_connection_3"
+    },
+    "connection_type=gantry_frame_connection_4": {
+      "model": "yunbeiuc:block/gantry_frame_connection_4"
+    }
+  }
+}
