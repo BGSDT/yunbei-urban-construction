@@ -1,10 +1,11 @@
-# 云北城建1.0.0-beta1-dev2-分支版本
+# 云北城建 25w42a-branch
 
 [![Downloads](https://img.shields.io/badge/downloads-云北城建-bright?style=flat)](https://modrinth.com/mod/yunbeiuc)
 [![QQ群](https://img.shields.io/badge/QQ-云北城建-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://modrinth.com/mod/yunbeiuc)
 
 > [!NOTE]
 >
+> - 此为分支版本，不公开发布，请勿装载于地图中，切勿与非分支版本一起使用，否则会出现很严重问题，仅供尝鲜！
 > - 路牌系统：新增多类型路牌（限速、限重、限宽、限高、禁止类等），支持客户端 GUI 编辑并通过网络包同步到服务端。
 > - 道旗（Flag）：新增可交互道旗方块，支持样式选择与状态保存。
 > - Geckolib 静态方块：对少数复杂模型（如混凝土护栏）采用 Geckolib 的静态模型和渲染器，便于模型维护与统一渲染逻辑。
@@ -13,7 +14,7 @@
 
 ## 简介
 
-本次版本基于 `beta1_dev1`，以完善路牌体系、道旗及部分使用 Geckolib 的静态方块渲染为主，同时补全了方块/物品列表与开发者说明。项目采用 Fabric 官方模板驱动生成并使用 Yarn 映射。
+本次版本基于 `25w39a`，以完善路牌体系、道旗及部分使用 Geckolib 的静态方块渲染为主，同时补全了方块/物品列表与开发者说明。项目采用 Fabric 官方模板驱动生成并使用 Yarn 映射。
 
 ## 创造模式选项卡
 
@@ -112,7 +113,7 @@
 
 ## 变更要点摘要
 
-- 在 `beta1_dev1` 的基础上并重构路牌编辑界面、网络同步及道旗交互逻辑。
+- 在 `25w39a` 的基础上并重构路牌编辑界面、网络同步及道旗交互逻辑。
 - 引入 Geckolib 静态模型用于混凝土护栏和复杂物品的统一渲染。
 
 ---

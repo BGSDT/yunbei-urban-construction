@@ -1,4 +1,4 @@
-# 云北城建1.0.0-beta1-dev1-基础版本
+# 云北城建 25w39a
 
 [![Downloads](https://img.shields.io/badge/downloads-云北城建-bright?style=flat)](https://modrinth.com/mod/yunbeiuc)
 [![QQ群](https://img.shields.io/badge/QQ-云北城建-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://modrinth.com/mod/yunbeiuc)
