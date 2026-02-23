@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
-import com.beigu.yunbeiuc.block.custom.data.SignIndicationDirection;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignIndicationDirection;
 import com.beigu.yunbeiuc.entity.SignIndicationDirectionBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;

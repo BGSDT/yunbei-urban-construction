@@ -3,7 +3,6 @@ package com.beigu.yunbeiuc.entity.custom;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.entity.CrashBarrierConcreteEntity;
 import com.beigu.yunbeiuc.block.custom.CrashBarrierConcrete;
-import com.beigu.yunbeiuc.block.custom.data.CrashBarrierConcreteType;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib.model.GeoModel;
@@ -18,7 +17,7 @@ public class CrashBarrierConcreteModel extends GeoModel<CrashBarrierConcreteEnti
 
         BlockState state = crashBarrierConcreteEntity.getWorld().getBlockState(crashBarrierConcreteEntity.getPos());
         if (state.getBlock() instanceof CrashBarrierConcrete) {
-            CrashBarrierConcreteType type = state.get(CrashBarrierConcrete.CRASH_BARRIER_CONCRETE);
+            CrashBarrierConcrete.CrashBarrierConcreteType type = state.get(CrashBarrierConcrete.CRASH_BARRIER_CONCRETE);
             String geoName = type == null ? "crash_barrier_concrete_right" : type.asString();
             return new Identifier(YunbeiUrbanConstruction.MOD_ID, "geo/" + geoName + ".geo.json");
         }

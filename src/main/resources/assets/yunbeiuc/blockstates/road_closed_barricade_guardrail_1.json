@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "part=foot": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_1_foot"
+    },
+    "part=head": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_1_head"
+    }
+  }
+}

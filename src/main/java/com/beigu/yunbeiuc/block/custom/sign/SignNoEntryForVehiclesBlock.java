@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
-import com.beigu.yunbeiuc.block.custom.data.SignNoEntryForVehicles;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignNoEntryForVehicles;
 import com.beigu.yunbeiuc.entity.SignNoEntryForVehiclesBlockEntity;
 import com.beigu.yunbeiuc.screen.SignNoEntryForVehiclesScreen;
 import net.minecraft.block.Block;

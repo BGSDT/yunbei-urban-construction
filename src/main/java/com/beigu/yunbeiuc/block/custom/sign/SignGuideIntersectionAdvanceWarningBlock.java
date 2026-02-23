@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
-import com.beigu.yunbeiuc.block.custom.data.SignGuideIntersectionAdvanceWarning;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignGuideIntersectionAdvanceWarning;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarningBlockEntity;
 import com.beigu.yunbeiuc.screen.SignGuideIntersectionAdvanceWarningScreen;
 import net.minecraft.block.Block;

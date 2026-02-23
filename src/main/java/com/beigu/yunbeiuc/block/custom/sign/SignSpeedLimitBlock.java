@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
-import com.beigu.yunbeiuc.block.custom.data.SignSpeedLimit;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignSpeedLimit;
 import com.beigu.yunbeiuc.entity.SignSpeedLimitBlockEntity;
 import com.beigu.yunbeiuc.screen.SignSpeedLimitScreen;
 import net.minecraft.block.Block;

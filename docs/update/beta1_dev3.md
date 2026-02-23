@@ -1,4 +1,4 @@
-# 云北城建 25w47a-branch
+# 云北城建 25w49a-branch
 
 [![Downloads](https://img.shields.io/badge/downloads-云北城建-bright?style=flat)](https://modrinth.com/mod/yunbeiuc)
 [![QQ群](https://img.shields.io/badge/QQ-云北城建-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://modrinth.com/mod/yunbeiuc)
@@ -13,7 +13,7 @@
 
 ## 简介
 
-`25w47a-branch` 在 `25w42a-branch` 的功能基础上做了体验与稳定性优先的改进。
+`25w49a-branch` 在 `25w42a-branch` 的功能基础上做了体验与稳定性优先的改进。
 
 ## 创造模式选项卡
 

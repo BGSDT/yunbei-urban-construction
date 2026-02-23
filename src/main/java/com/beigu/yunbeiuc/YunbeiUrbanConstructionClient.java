@@ -34,7 +34,6 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
 
         BlockEntityRendererFactories.register(ModBlockEntities.CRASH_BARRIER_CONCRETE_ENTITY, CrashBarrierConcreteRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_RAILINGS_IRON_ENTITY, RoadRailingsIronRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_CONSTRUCTION_BARRIER_BLUE_ENTITY, RoadConstructionBarrierBlueRenderer::new);
 
         BlockEntityRendererFactories.register(ModBlockEntities.TRANSFORMABLE_BLOCK_ENTITY, TransformableBlockEntityRenderer::new

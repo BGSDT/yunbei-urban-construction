@@ -36,6 +36,16 @@
         "geckolib": ">=4.0.1"
     },
 	"suggests": {
-		"another-mod": "*"
+		"another-mod": "*",
+		"modmenu": ">=7.1.0"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/jEGF5fb",
+				"modmenu.modrinth": "https://modrinth.com/mod/yunbeiuc"
+			},
+			"update_checker": true
+		}
 	}
 }

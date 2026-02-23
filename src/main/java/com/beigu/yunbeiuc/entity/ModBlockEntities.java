@@ -46,7 +46,6 @@ public class ModBlockEntities {
     public static BlockEntityType<RoadPolesTextDisplayEntity> ROAD_POLES_TEXT_DISPLAY_ENTITY;
     public static BlockEntityType<FlagBlockEntity> FLAG_BLOCK_ENTITY;
     public static BlockEntityType<CrashBarrierConcreteEntity> CRASH_BARRIER_CONCRETE_ENTITY;
-    public static BlockEntityType<RoadRailingsIronEntity> ROAD_RAILINGS_IRON_ENTITY;
     public static BlockEntityType<RoadConstructionBarrierBlueEntity> ROAD_CONSTRUCTION_BARRIER_BLUE_ENTITY;
     public static BlockEntityType<TransformableBlockEntity> TRANSFORMABLE_BLOCK_ENTITY;
     public static void registerBlockEntities() {
@@ -116,12 +115,6 @@ public class ModBlockEntities {
                 Registries.BLOCK_ENTITY_TYPE,
                 new Identifier("yunbeiuc", "crash_barrier_concrete_entity"),
                 FabricBlockEntityTypeBuilder.create(CrashBarrierConcreteEntity::new, ModBlocks.CRASH_BARRIER_CONCRETE).build()
-        );
-
-        ROAD_RAILINGS_IRON_ENTITY = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                new Identifier("yunbeiuc", "road_railings_iron_entity"),
-                FabricBlockEntityTypeBuilder.create(RoadRailingsIronEntity::new, ModBlocks.ROAD_RAILINGS_IRON).build()
         );
 
         ROAD_CONSTRUCTION_BARRIER_BLUE_ENTITY = Registry.register(

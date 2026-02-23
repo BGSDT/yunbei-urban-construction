@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
-import com.beigu.yunbeiuc.block.custom.data.SignNoSpecial;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignNoSpecial;
 import com.beigu.yunbeiuc.entity.SignNoSpecialBlockEntity;
 import com.beigu.yunbeiuc.screen.SignNoSpecialScreen;
 import net.minecraft.block.Block;

@@ -2,6 +2,23 @@ package com.beigu.yunbeiuc.block;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.*;
+import com.beigu.yunbeiuc.block.custom.anti.AntiGlareNet;
+import com.beigu.yunbeiuc.block.custom.anti.AntiGlareNetPoleBlock;
+import com.beigu.yunbeiuc.block.custom.anti.AntiGlareVersion;
+import com.beigu.yunbeiuc.block.custom.barrier.*;
+import com.beigu.yunbeiuc.block.custom.gantry.*;
+import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail2;
+import com.beigu.yunbeiuc.block.custom.instrument.InstrumentCamera;
+import com.beigu.yunbeiuc.block.custom.instrument.InstrumentPoleFoundations;
+import com.beigu.yunbeiuc.block.custom.instrument.InstrumentPolelLongitudinal;
+import com.beigu.yunbeiuc.block.custom.island.SafetyIslandBlock;
+import com.beigu.yunbeiuc.block.custom.island.SafetyIslandEdgeBlock;
+import com.beigu.yunbeiuc.block.custom.island.SafetyIslandObliqueBlock;
+import com.beigu.yunbeiuc.block.custom.poles.*;
+import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail1;
+import com.beigu.yunbeiuc.block.custom.railings.RoadRailings;
+import com.beigu.yunbeiuc.block.custom.railings.RoadRailingsOblique;
+import com.beigu.yunbeiuc.block.custom.railings.RoadRailingsPole;
 import com.beigu.yunbeiuc.block.custom.sign.*;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -24,20 +41,89 @@ public class ModBlocks {
     public static final Block SIGN_INDICATION_DIRECTION_BLOCK = register("sign_indication_direction_block", new SignIndicationDirectionBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
     public static final Block SIGN_INDICATION_LANE_DIRECTION_BLOCK = register("sign_indication_lane_direction_block", new SignIndicationLaneDirectionBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
     public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK = register("sign_guide_intersection_advance_warning_block", new SignGuideIntersectionAdvanceWarningBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block GANTRY_FRAME_SIDE = register("gantry_frame_side", new GantryFrameSideBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block GANTRY_FRAME_CONNECTION = register("gantry_frame_connection", new GantryFrameConnectionBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block GANTRY_FRAME_MAIN = register("gantry_frame_main", new GantryFrameMainBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block GANTRY_FRAME_RAILING = register("gantry_frame_railing", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block ANTI_GLARE_NET = register("anti_glare_net", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block GANTRY_FRAME_SIDE = register("gantry_frame_side", new GantryFrameSide(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block GANTRY_FRAME_CONNECTION = register("gantry_frame_connection", new GantryFrameConnection(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block GANTRY_FRAME_MAIN = register("gantry_frame_main", new GantryFrameMain(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block GANTRY_FRAME_RAILING = register("gantry_frame_railing", new GantryFrameRailing(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block GANTRY_FRAME_RAILING_LADDER = register("gantry_frame_railing_ladder", new GantryFrameLadder(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block GANTRY_FRAME_LED_SIDE = register("gantry_frame_led_side", new GantryFrameLedSide(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block GANTRY_FRAME_LED_MAIN = register("gantry_frame_led_main", new GantryFrameLedMain(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block ANTI_GLARE_NET = register("anti_glare_net", new AntiGlareNet(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
     public static final Block ANTI_GLARE_NET_POLE = register("anti_glare_net_pole", new AntiGlareNetPoleBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block XXXXX = register("xxxxx", new HorizontalDoubleBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block ROAD_CONSTRUCTION_BARRIER_YELLOW_1 = register("road_construction_barrier_yellow_1", new HorizontalDoubleBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ANTI_GLARE_VERSION = register("anti_glare_version", new AntiGlareVersion(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block TRAFFIC_BARRIER = register("traffic_barrier", new TrafficBarrierBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_YELLOW_DOUBLE = register("traffic_barrier_yellow_double", new TrafficBarrierBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_YELLOW = register("traffic_barrier_yellow", new TrafficBarrierDoubleBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_RED = register("traffic_barrier_red", new TrafficBarrierBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_RED_DOUBLE = register("traffic_barrier_red_double", new TrafficBarrierDoubleBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_OBLIQUE = register("traffic_barrier_oblique", new TrafficBarrierObliqueBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY = register("traffic_barrier_gray", new TrafficBarrierGrayBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_OBLIQUE = register("traffic_barrier_gray_oblique", new TrafficBarrierGrayObliqueBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_SLANT = register("traffic_barrier_gray_slant", new TrafficBarrierGraySlantBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_SLANT_YELLOW = register("traffic_barrier_gray_slant_yellow", new TrafficBarrierGraySlantBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_SLANT_RED = register("traffic_barrier_gray_slant_red", new TrafficBarrierGraySlantBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE = register("traffic_barrier_gray_slant_oblique", new TrafficBarrierGraySlantBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block ROAD_WARNING_POLE_RED = register("road_warning_pole_red", new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_WARNING_POLE_YELLOW = register("road_warning_pole_yellow", new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_WARNING_POLE_GREEN = register("road_warning_pole_green", new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block IRON_HORSE_YELLOW = register("iron_horse_yellow", new IronHorse(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block IRON_HORSE_RED = register("iron_horse_red", new IronHorse(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block IRON_HORSE_WHITE = register("iron_horse_white", new IronHorse(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block IRON_HORSE_GRAY = register("iron_horse_gray", new IronHorse(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block REFLECTIVE_SIGN_YELLOW_ALL_1 = register("reflective_sign_yellow_all_1", new ReflectiveSign(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block REFLECTIVE_SIGN_YELLOW_ALL_2 = register("reflective_sign_yellow_all_2", new ReflectiveSign(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block REFLECTIVE_SIGN_RED_ALL_1 = register("reflective_sign_red_all_1", new ReflectiveSign(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block REFLECTIVE_SIGN_RED_ALL_2 = register("reflective_sign_red_all_2", new ReflectiveSign(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block INSTRUMENT_POLE_FOUNDATIONS = register("instrument_pole_foundations", new InstrumentPoleFoundations(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block INSTRUMENT_POLE_LONGITUDINAL = register("instrument_pole_longitudinal", new InstrumentPolelLongitudinal(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block INSTRUMENT_CAMERA = register("instrument_camera", new InstrumentCamera(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block SAFETY_ISLAND_YELLOW_1 = register("safety_island_yellow_1", new SafetyIslandBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_2 = register("safety_island_yellow_2", new SafetyIslandBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_3 = register("safety_island_yellow_3", new SafetyIslandBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_4 = register("safety_island_yellow_4", new SafetyIslandBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_GRAY = register("safety_island_gray", new SafetyIslandBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_OBLIQUE_1 = register("safety_island_yellow_oblique_1", new SafetyIslandObliqueBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_OBLIQUE_2 = register("safety_island_yellow_oblique_2", new SafetyIslandObliqueBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_1 = register("safety_island_yellow_slab_edge_1", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_2 = register("safety_island_yellow_slab_edge_2", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_3 = register("safety_island_yellow_slab_edge_3", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_4 = register("safety_island_yellow_slab_edge_4", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_GRAY_SLAB_EDGE = register("safety_island_gray_slab_edge", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1 = register("safety_island_yellow_slab_edge_oblique_1", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2 = register("safety_island_yellow_slab_edge_oblique_2", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block SAFETY_ISLAND_GRAY_SLAB = register("safety_island_gray_slab", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block ROAD_RAILINGS_IRON = register("road_railings_iron", new RoadRailings(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_IRON_ENDING_1 = register("road_railings_iron_ending_1", new RoadRailings(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_IRON_ENDING_2 = register("road_railings_iron_ending_2", new RoadRailings(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_IRON_POLE = register("road_railings_iron_pole", new RoadRailingsPole(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_IRON_OBLIQUE = register("road_railings_iron_oblique", new RoadRailingsOblique(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_GREEN = register("road_railings_green", new RoadRailings(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_GREEN_ENDING_1 = register("road_railings_green_ending_1", new RoadRailings(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_GREEN_ENDING_2 = register("road_railings_green_ending_2", new RoadRailings(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_GREEN_POLE = register("road_railings_green_pole", new RoadRailingsPole(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_RAILINGS_GREEN_OBLIQUE = register("road_railings_green_oblique", new RoadRailingsOblique(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block ROAD_CLOSED_BARRICADE_GUARDRAIL_1 = register("road_closed_barricade_guardrail_1", new RoadClosedBarricadeGuardrail1(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_CLOSED_BARRICADE_GUARDRAIL_2 = register("road_closed_barricade_guardrail_2", new RoadClosedBarricadeGuardrail2(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
+    public static final Block ROAD_POLES_FOUNDATIONS = register("road_poles_foundations", new RoadPolesFoundations(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_POLES_LONGITUDINAL = register("road_poles_longitudinal", new RoadRailingsPole(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_POLES_HORIZONTAL = register("road_poles_horizontal",new RoadPolesHorizontal(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_POLES_TSHAPE = register("road_poles_tshape",new RoadPolesTshape(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+    public static final Block ROAD_LIGHT = register("road_light",new RoadLight(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
+
 
     public static final Block CRASH_BARRIER_CONCRETE = registerWithoutItem("crash_barrier_concrete", new CrashBarrierConcrete(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-    public static final Block ROAD_RAILINGS_IRON = registerWithoutItem("road_railings_iron", new RoadRailingsIron(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
     public static final Block ROAD_CONSTRUCTION_BARRIER_BLUE = registerWithoutItem("road_construction_barrier_blue", new RoadConstructionBarrierBlue(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
-
-    public static final Block TRAIN_STATION_ENTRY_GATE = register("train_station_entry_gate", new EntryGateBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
 
     public static final Block ROAD_BLOCK = register("road_block", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.STONE)));
     public static final Block ROAD_WITH_WHITE_LINE = register("road_with_white_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.STONE)));

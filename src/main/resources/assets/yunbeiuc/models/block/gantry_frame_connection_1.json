@@ -2,8 +2,8 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "yunbeiuc:block/gantry_frame",
-		"particle": "yunbeiuc:block/gantry_frame"
+		"0": "yunbeiuc:block/color/e7e7e7",
+		"particle": "yunbeiuc:block/color/e7e7e7"
 	},
 	"elements": [
 		{

@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.network;
 
-import com.beigu.yunbeiuc.block.custom.data.SignCancelSpeedLimit;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignCancelSpeedLimit;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.server.network.ServerPlayerEntity;

@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
 import com.beigu.yunbeiuc.block.custom.sign.SignNoDirectionBlock;
-import com.beigu.yunbeiuc.block.custom.data.SignNoDirection;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignNoDirection;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.entity;
 
-import com.beigu.yunbeiuc.block.custom.data.SignCancelSpeedLimit;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignCancelSpeedLimit;
 import com.beigu.yunbeiuc.block.custom.sign.SignCancelSpeedLimitBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

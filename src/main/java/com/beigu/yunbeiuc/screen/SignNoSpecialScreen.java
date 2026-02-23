@@ -15,7 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import com.beigu.yunbeiuc.block.custom.data.SignNoSpecial;
+import com.beigu.yunbeiuc.block.custom.sign.data.SignNoSpecial;
 
 import java.util.ArrayList;
 import java.util.List;

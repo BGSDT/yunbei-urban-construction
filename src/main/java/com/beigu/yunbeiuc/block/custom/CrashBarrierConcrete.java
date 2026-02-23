@@ -1,13 +1,8 @@
 package com.beigu.yunbeiuc.block.custom;
 
-import com.beigu.yunbeiuc.block.custom.data.CrashBarrierConcreteType;
-import com.beigu.yunbeiuc.block.custom.data.SignCancelSpeedLimit;
 import com.beigu.yunbeiuc.entity.CrashBarrierConcreteEntity;
-import com.beigu.yunbeiuc.entity.SignCancelSpeedLimitBlockEntity;
-import com.beigu.yunbeiuc.screen.SignCancelSpeedLimitScreen;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -16,11 +11,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -86,5 +77,30 @@ public class CrashBarrierConcrete extends BlockWithEntity {
             return ActionResult.SUCCESS;
         }
         return ActionResult.SUCCESS;
+    }
+
+    public enum CrashBarrierConcreteType implements StringIdentifiable {
+        CRASH_BARRIER_CONCRETE("crash_barrier_concrete"),
+        CRASH_BARRIER_CONCRETE_LEFT("crash_barrier_concrete_left"),
+        CRASH_BARRIER_CONCRETE_RIGHT("crash_barrier_concrete_right");
+
+        private final String name;
+
+        CrashBarrierConcreteType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
+        public CrashBarrierConcreteType next() {
+            return switch (this) {
+                case CRASH_BARRIER_CONCRETE -> CRASH_BARRIER_CONCRETE_LEFT;
+                case CRASH_BARRIER_CONCRETE_LEFT -> CRASH_BARRIER_CONCRETE_RIGHT;
+                case CRASH_BARRIER_CONCRETE_RIGHT -> CRASH_BARRIER_CONCRETE;
+            };
+        }
     }
 }

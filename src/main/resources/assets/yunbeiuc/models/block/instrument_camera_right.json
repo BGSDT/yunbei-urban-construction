@@ -3,7 +3,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"2": "yunbeiuc:block/road_detection_camera",
-		"particle": "yunbeiuc:block/color/e7e7e7"
+		"particle": "yunbeiuc:block/road_detection_camera"
 	},
 	"elements": [
 		{
@@ -46,9 +46,9 @@
 			}
 		},
 		{
-			"from": [6.4, 5.55, 2.0125],
-			"to": [9.6, 5.65, 12.0125],
-			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 0, 8]},
+			"from": [6.38087, 5.55, 1.96631],
+			"to": [9.58087, 5.65, 11.96631],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [7.98087, 0, 7.95381]},
 			"faces": {
 				"north": {"uv": [3.25, 1.25, 3.75, 1.75], "texture": "#2"},
 				"east": {"uv": [4.25, 1.25, 4.75, 1.75], "texture": "#2"},
@@ -176,9 +176,9 @@
 			}
 		},
 		{
-			"from": [9.8, 4.8, 2.0125],
-			"to": [9.9, 5.05, 12.0125],
-			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 0, 8]},
+			"from": [9.78087, 4.8, 1.96631],
+			"to": [9.88087, 5.05, 11.96631],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [7.98087, 0, 7.95381]},
 			"faces": {
 				"north": {"uv": [11.25, 5.25, 11.75, 5.75], "texture": "#2"},
 				"east": {"uv": [12.25, 5.25, 12.75, 5.75], "texture": "#2"},
@@ -189,9 +189,9 @@
 			}
 		},
 		{
-			"from": [9.7, 5.05, 2.0125],
-			"to": [9.8, 5.3, 12.0125],
-			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 0, 8]},
+			"from": [9.68087, 5.05, 1.96631],
+			"to": [9.78087, 5.3, 11.96631],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [7.98087, 0, 7.95381]},
 			"faces": {
 				"north": {"uv": [1.25, 6.25, 1.75, 6.75], "texture": "#2"},
 				"east": {"uv": [2.25, 6.25, 2.75, 6.75], "texture": "#2"},
@@ -202,9 +202,9 @@
 			}
 		},
 		{
-			"from": [9.6, 5.3, 2.0125],
-			"to": [9.7, 5.55, 12.0125],
-			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 0, 8]},
+			"from": [9.58087, 5.3, 1.96631],
+			"to": [9.68087, 5.55, 11.96631],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [7.98087, 0, 7.95381]},
 			"faces": {
 				"north": {"uv": [7.25, 6.25, 7.75, 6.75], "texture": "#2"},
 				"east": {"uv": [8.25, 6.25, 8.75, 6.75], "texture": "#2"},

@@ -2,7 +2,7 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "block/iron_horse_yellow"
+		"1": "yunbeiuc:block/iron_horse_yellow"
 	},
 	"elements": [
 		{
