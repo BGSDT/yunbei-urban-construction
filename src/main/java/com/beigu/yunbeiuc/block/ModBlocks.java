@@ -30,6 +30,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModBlocks {
+
+
     public static final Block SIGN_SPEED_LIMIT_BLOCK = register("sign_speed_limit_block", new SignSpeedLimitBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
     public static final Block SIGN_CANCEL_SPEED_LIMIT_BLOCK = register("sign_cancel_speed_limit_block", new SignCancelSpeedLimitBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
     public static final Block SIGN_NO_ENTRY_FOR_VEHICLES_BLOCK = register("sign_no_entry_for_vehicles_block", new SignNoEntryForVehiclesBlock(AbstractBlock.Settings.copy(Blocks.STONE).nonOpaque()));
