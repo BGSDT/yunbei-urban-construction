@@ -28,11 +28,8 @@ public class FlagBlock extends BlockWithEntity implements BlockEntityProvider {
     // 简单的碰撞箱
     private static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 
-    public FlagBlock() {
-        super(FabricBlockSettings.copyOf(Blocks.OAK_PLANKS)
-            .hardness(1.0f)
-            .nonOpaque());
-        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+    public FlagBlock(Settings settings) {
+        super(settings);
     }
 
     @Override

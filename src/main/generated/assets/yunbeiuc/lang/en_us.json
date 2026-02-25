@@ -1,0 +1,17 @@
+{
+  "item.yunbeiuc.rotated_wand": "Rotated Wand",
+  "item.yunbeiuc.rotated_wand.tooltip": "Right-click on the block to rotate it 90 degrees clockwise",
+  "item.yunbeiuc.tree_wand": "Tree Wand",
+  "item.yunbeiuc.tree_wand.failed": "Cannot generate an oak tree here!",
+  "item.yunbeiuc.tree_wand.invalid_block": "Cannot plant a tree on this block!",
+  "item.yunbeiuc.tree_wand.no_space": "Not enough space to plant a tree!",
+  "item.yunbeiuc.tree_wand.planted_sapling": "Planted an oak sapling!",
+  "item.yunbeiuc.tree_wand.success": "Planted an oak sapling!",
+  "item.yunbeiuc.tree_wand.tooltip": "Right-click on grass or dirt to plant an oak tree",
+  "item.yunbeiuc.wand": "Wand",
+  "item.yunbeiuc.water_wand": "Water Wand",
+  "item.yunbeiuc.water_wand.success": "Successfully replaced with water source!",
+  "item.yunbeiuc.water_wand.tooltip": "Right-click within the range of 3 * 3 * 3 to replace with water source",
+  "itemGroup.yunbeiuc_item_group": "Yunbei UrbanConstruction | Item",
+  "itemGroup.yunbeiuc_rb_group": "Yunbei UrbanConstruction | Road Block"
+}

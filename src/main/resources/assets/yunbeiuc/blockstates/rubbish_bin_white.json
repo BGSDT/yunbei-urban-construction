@@ -1,0 +1,155 @@
+{
+  "variants": {
+    "facing=east,number_state=zero": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_0",
+      "y": 90
+    },
+    "facing=north,number_state=zero": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_0"
+    },
+    "facing=south,number_state=zero": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_0",
+      "y": 180
+    },
+    "facing=west,number_state=zero": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_0",
+      "y": 270
+    },
+    "facing=east,number_state=one": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_1",
+      "y": 90
+    },
+    "facing=north,number_state=one": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_1"
+    },
+    "facing=south,number_state=one": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_1",
+      "y": 180
+    },
+    "facing=west,number_state=one": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_1",
+      "y": 270
+    },
+    "facing=east,number_state=two": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_2",
+      "y": 90
+    },
+    "facing=north,number_state=two": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_2"
+    },
+    "facing=south,number_state=two": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_2",
+      "y": 180
+    },
+    "facing=west,number_state=two": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_2",
+      "y": 270
+    },
+    "facing=east,number_state=three": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_3",
+      "y": 90
+    },
+    "facing=north,number_state=three": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_3"
+    },
+    "facing=south,number_state=three": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_3",
+      "y": 180
+    },
+    "facing=west,number_state=three": {
+        "model": "yunbeiuc:block/rubbish/rubbish_bin_white_3",
+        "y": 270
+    },
+    "facing=east,number_state=four": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_4",
+      "y": 90
+    },
+    "facing=north,number_state=four": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_4"
+    },
+    "facing=south,number_state=four": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_4",
+      "y": 180
+    },
+    "facing=west,number_state=four": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_4",
+      "y": 270
+    },
+    "facing=east,number_state=five": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_5",
+      "y": 90
+    },
+    "facing=north,number_state=five": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_5"
+    },
+    "facing=south,number_state=five": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_5",
+      "y": 180
+    },
+    "facing=west,number_state=five": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_5",
+      "y": 270
+    },
+    "facing=east,number_state=six": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_6",
+      "y": 90
+    },
+    "facing=north,number_state=six": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_6"
+    },
+    "facing=south,number_state=six": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_6",
+      "y": 180
+    },
+    "facing=west,number_state=six": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_6",
+      "y": 270
+    },
+    "facing=east,number_state=seven": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_7",
+      "y": 90
+    },
+    "facing=north,number_state=seven": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_7"
+    },
+    "facing=south,number_state=seven": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_7",
+      "y": 180
+    },
+    "facing=west,number_state=seven": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_7",
+      "y": 270
+    },
+    "facing=east,number_state=eight": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_8",
+      "y": 90
+    },
+    "facing=north,number_state=eight": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_8"
+    },
+    "facing=south,number_state=eight": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_8",
+      "y": 180
+    },
+    "facing=west,number_state=eight": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_8",
+      "y": 270
+    },
+    "facing=east,number_state=nine": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_9",
+      "y": 90
+    },
+    "facing=north,number_state=nine": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_9"
+    },
+    "facing=south,number_state=nine": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_9",
+      "y": 180
+    },
+    "facing=west,number_state=nine": {
+      "model": "yunbeiuc:block/rubbish/rubbish_bin_white_9",
+      "y": 270
+    }
+  }
+}
+    

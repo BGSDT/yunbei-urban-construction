@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "tf_type=false": [
+      { "facing": "north", "model": "yunbeiuc:block/road_light_false", "y": 0 },
+      { "facing": "east", "model": "yunbeiuc:block/road_light_false", "y": 90 },
+      { "facing": "south", "model": "yunbeiuc:block/road_light_false", "y": 180 },
+      { "facing": "west", "model": "yunbeiuc:block/road_light_false", "y": 270 }
+    ],
+    "tf_type=true": [
+      { "facing": "north", "model": "yunbeiuc:block/road_light_true", "y": 0 },
+      { "facing": "east", "model": "yunbeiuc:block/road_light_true", "y": 90 },
+      { "facing": "south", "model": "yunbeiuc:block/road_light_true", "y": 180 },
+      { "facing": "west", "model": "yunbeiuc:block/road_light_true", "y": 270 }
+    ]
+  }
+}

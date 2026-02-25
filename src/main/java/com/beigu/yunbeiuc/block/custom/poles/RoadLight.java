@@ -3,14 +3,17 @@ package com.beigu.yunbeiuc.block.custom.poles;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -20,6 +23,9 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class RoadLight extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
@@ -29,6 +35,12 @@ public class RoadLight extends Block {
     private static final VoxelShape SHAPE_S = VoxelShapes.combineAndSimplify(Block.createCuboidShape(6.5, 6.5, 0, 9.5, 9.5, 2.8), Block.createCuboidShape(4.9, 6.5, 2.8, 11.1, 9.8, 16), BooleanBiFunction.OR);
     private static final VoxelShape SHAPE_E = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 6.5, 6.5, 2.8, 9.5, 9.5), Block.createCuboidShape(2.8, 6.5, 4.9, 16, 9.8, 11.1), BooleanBiFunction.OR);
     private static final VoxelShape SHAPE_W = VoxelShapes.combineAndSimplify(Block.createCuboidShape(13.2, 6.5, 6.5, 16, 9.5, 9.5), Block.createCuboidShape(0, 6.5, 4.9, 13.2, 9.8, 11.1), BooleanBiFunction.OR);
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        tooltip.add(Text.translatable("block.yunbeiuc.road_light.tooltip"));
+        super.appendTooltip(stack, world, tooltip, options);
+    }
 
     public RoadLight(Settings settings) {
         super(settings);

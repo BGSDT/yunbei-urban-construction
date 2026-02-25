@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/road_railings_green_ending_2",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/road_railings_green_ending_2"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/road_railings_green_ending_2",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/road_railings_green_ending_2",
+      "y": 270
+    }
+  }
+}

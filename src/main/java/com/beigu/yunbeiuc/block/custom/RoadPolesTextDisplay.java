@@ -32,11 +32,8 @@ public class RoadPolesTextDisplay extends BlockWithEntity implements BlockEntity
     private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(-8, 12.75, 5, 24, 22.75, 11);
     private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(5, 12.75, -8, 11, 22.75, 24);
 
-    public RoadPolesTextDisplay() {
-        super(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)
-            .hardness(2.0f)
-            .nonOpaque());
-        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+    public RoadPolesTextDisplay(Settings settings) {
+        super(settings);
     }
 
     @Override
