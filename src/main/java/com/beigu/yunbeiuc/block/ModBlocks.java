@@ -62,9 +62,9 @@ public class ModBlocks {
     public static final Block ROAD_FLOWER_BOX_2 = register("road_flower_box_2",new DirectionBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
     public static final Block ROAD_FLOWER_BOX_2_FENCE = register("road_flower_box_2_fence",new RoadFlowerBox2Fence(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
-    public static final Block ROAD_DETECTION_CAMERA = register("road_detection_camera",new RoadRadarSpeedDetector(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block ROADWAY_LIGHTING_LAMP = register("roadway_lighting_lamp",new RoadwayLightingLamp(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block RADAR_SPEED_DETECTOR = register("radar_speed_detector",new RoadRadarSpeedDetector(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_DETECTION_CAMERA = register("road_detection_camera",new RoadDetectionCamera(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_LIGHTING_LAMP = register("road_lighting_lamp",new RoadLightingLamp(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_RADAR_SPEED_DETECTOR = register("road_radar_speed_detector",new RoadRadarSpeedDetector(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
     public static final Block TRAFFIC_CONE = register("traffic_cone",new TrafficCone(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
     public static final Block ROAD_COLLISION_BARREL = register("road_collision_barrel",new RoadCollisionBarrel(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
@@ -95,7 +95,7 @@ public class ModBlocks {
     public static final Block GANTRY_FRAME_CONNECTION = register("gantry_frame_connection", new GantryFrameConnection(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block GANTRY_FRAME_MAIN = register("gantry_frame_main", new GantryFrameMain(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block GANTRY_FRAME_RAILING = register("gantry_frame_railing", new GantryFrameRailing(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block GANTRY_FRAME_RAILING_LADDER = register("gantry_frame_railing_ladder", new GantryFrameLadder(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block GANTRY_FRAME_LADDER = register("gantry_frame_ladder", new GantryFrameLadder(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block GANTRY_FRAME_LED_SIDE = register("gantry_frame_led_side", new GantryFrameLedSide(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block GANTRY_FRAME_LED_MAIN = register("gantry_frame_led_main", new GantryFrameLedMain(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 

@@ -45,7 +45,7 @@ public class RoadLight extends Block {
     public RoadLight(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH)
-                .with(TF_TYPE, TFType.FALSE));
+                .with(TF_TYPE, TFType.OFF));
     }
 
     @Override
@@ -93,8 +93,8 @@ public class RoadLight extends Block {
     }
 
     public enum TFType implements StringIdentifiable {
-        TRUE("true"),
-        FALSE("false");
+        ON("on"),
+        OFF("off");
 
         private final String name;
 
@@ -109,8 +109,8 @@ public class RoadLight extends Block {
 
         public TFType next() {
             return switch (this) {
-                case TRUE -> FALSE;
-                case FALSE -> TRUE;
+                case ON -> OFF;
+                case OFF -> ON;
             };
         }
     }

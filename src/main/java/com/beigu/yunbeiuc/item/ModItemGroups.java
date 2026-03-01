@@ -51,8 +51,8 @@ public class ModItemGroups {
 
 // 检测/照明类方块
                         entries.add(ModBlocks.ROAD_DETECTION_CAMERA);
-                        entries.add(ModBlocks.ROADWAY_LIGHTING_LAMP);
-                        entries.add(ModBlocks.RADAR_SPEED_DETECTOR);
+                        entries.add(ModBlocks.ROAD_LIGHTING_LAMP);
+                        entries.add(ModBlocks.ROAD_RADAR_SPEED_DETECTOR);
 
 // 路障/防撞类方块
                         entries.add(ModBlocks.TRAFFIC_CONE);
@@ -90,7 +90,7 @@ public class ModItemGroups {
                         entries.add(ModBlocks.GANTRY_FRAME_CONNECTION);
                         entries.add(ModBlocks.GANTRY_FRAME_MAIN);
                         entries.add(ModBlocks.GANTRY_FRAME_RAILING);
-                        entries.add(ModBlocks.GANTRY_FRAME_RAILING_LADDER);
+                        entries.add(ModBlocks.GANTRY_FRAME_LADDER);
                         entries.add(ModBlocks.GANTRY_FRAME_LED_SIDE);
                         entries.add(ModBlocks.GANTRY_FRAME_LED_MAIN);
 

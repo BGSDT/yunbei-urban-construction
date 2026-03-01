@@ -50,7 +50,7 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.VIBRATION_MARKING_LINE);
 
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_RAILING);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_RAILING_LADDER);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_LADDER);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_LED_MAIN);
 
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ANTI_GLARE_NET);
@@ -186,102 +186,6 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLES_TEXT_DISPLAY);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLES_FLAG);
-        Identifier left1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/speed_bump_left");
-        Identifier right1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/speed_bump_right");
-        Identifier middle1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/speed_bump_middle");
-        Identifier single1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/speed_bump");
-        blockStateModelGenerator.blockStateCollector
-                .accept(createSpeedBumpState(ModBlocks.SPEED_BUMP, left1, right1, middle1, single1));
-        Identifier left2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/parking_space_barrier_left");
-        Identifier right2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/parking_space_barrier_right");
-        Identifier middle2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/parking_space_barrier_middle");
-        Identifier single2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "block/parking_space_barrier");
-        blockStateModelGenerator.blockStateCollector
-                .accept(createParkingSpaceBarrierState(ModBlocks.PARKING_SPACE_BARRIER, left2, right2, middle2, single2));
-    }
-
-    public static BlockStateSupplier createSpeedBumpState(Block block, Identifier left, Identifier right, Identifier middle, Identifier single) {
-        return VariantsBlockStateSupplier.create(block)
-                .coordinate(
-                        BlockStateVariantMap.create(SpeedBump.TYPE, Properties.HORIZONTAL_FACING)
-                                .register(SpeedBump.Type.LEFT, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(SpeedBump.Type.LEFT, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(SpeedBump.Type.LEFT, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(SpeedBump.Type.LEFT, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left))
-
-                                .register(SpeedBump.Type.RIGHT, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(SpeedBump.Type.RIGHT, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(SpeedBump.Type.RIGHT, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(SpeedBump.Type.RIGHT, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right))
-
-                                .register(SpeedBump.Type.MIDDLE, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(SpeedBump.Type.MIDDLE, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(SpeedBump.Type.MIDDLE, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(SpeedBump.Type.MIDDLE, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle))
-
-                                .register(SpeedBump.Type.SINGLE, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(SpeedBump.Type.SINGLE, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(SpeedBump.Type.SINGLE, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(SpeedBump.Type.SINGLE, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single))
-                );
-    }
-
-    public static BlockStateSupplier createParkingSpaceBarrierState(Block block, Identifier left, Identifier right, Identifier middle, Identifier single) {
-        return VariantsBlockStateSupplier.create(block)
-                .coordinate(
-                        BlockStateVariantMap.create(ParkingSpaceBarrier.TYPE, Properties.HORIZONTAL_FACING)
-                                .register(ParkingSpaceBarrier.Type.LEFT, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(ParkingSpaceBarrier.Type.LEFT, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(ParkingSpaceBarrier.Type.LEFT, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(ParkingSpaceBarrier.Type.LEFT, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, left))
-
-                                .register(ParkingSpaceBarrier.Type.RIGHT, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(ParkingSpaceBarrier.Type.RIGHT, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(ParkingSpaceBarrier.Type.RIGHT, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(ParkingSpaceBarrier.Type.RIGHT, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, right))
-
-                                .register(ParkingSpaceBarrier.Type.MIDDLE, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(ParkingSpaceBarrier.Type.MIDDLE, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(ParkingSpaceBarrier.Type.MIDDLE, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(ParkingSpaceBarrier.Type.MIDDLE, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, middle))
-
-                                .register(ParkingSpaceBarrier.Type.SINGLE, Direction.EAST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                                .register(ParkingSpaceBarrier.Type.SINGLE, Direction.SOUTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                                .register(ParkingSpaceBarrier.Type.SINGLE, Direction.WEST,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                                .register(ParkingSpaceBarrier.Type.SINGLE, Direction.NORTH,
-                                        BlockStateVariant.create().put(VariantSettings.MODEL, single))
-                );
     }
 
     @Override

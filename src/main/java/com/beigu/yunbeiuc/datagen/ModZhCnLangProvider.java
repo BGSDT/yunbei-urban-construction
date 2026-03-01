@@ -56,9 +56,9 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 
 // 道路监控设备类
         translationBuilder.add(ModBlocks.ROAD_DETECTION_CAMERA, "道路检测/测速监控摄像头");
-        translationBuilder.add(ModBlocks.ROADWAY_LIGHTING_LAMP, "道路补光灯");
+        translationBuilder.add(ModBlocks.ROAD_LIGHTING_LAMP, "道路补光灯");
         translationBuilder.add("block.yunbeiuc.roadway_lighting_lamp.tooltip","手持魔杖右键点击以切换灯光状态");
-        translationBuilder.add(ModBlocks.RADAR_SPEED_DETECTOR, "雷达测速器");
+        translationBuilder.add(ModBlocks.ROAD_RADAR_SPEED_DETECTOR, "雷达测速器");
         translationBuilder.add("block.yunbeiuc.radar_speed_detector.tooltip","手持魔杖右键点击以切换灯光状态");
 
 // 道路安全设施类
@@ -94,7 +94,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.GANTRY_FRAME_CONNECTION, "龙门架连接件");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_MAIN, "龙门架主架");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_RAILING, "龙门架栏杆");
-        translationBuilder.add(ModBlocks.GANTRY_FRAME_RAILING_LADDER, "龙门架栏杆爬梯");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LADDER, "龙门架爬梯");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_SIDE, "龙门架侧装LED屏");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_MAIN, "龙门架主装LED屏");
 

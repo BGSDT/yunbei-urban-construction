@@ -14,7 +14,6 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.bernie.geckolib.GeckoLib;
 
 public class YunbeiUrbanConstruction implements ModInitializer {
 	public static final String MOD_ID = "yunbeiuc";
@@ -32,7 +31,6 @@ public class YunbeiUrbanConstruction implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 
-        GeckoLib.initialize();
 
         ModBlocks.registerModBlocks();
         ModBlockEntities.registerBlockEntities();

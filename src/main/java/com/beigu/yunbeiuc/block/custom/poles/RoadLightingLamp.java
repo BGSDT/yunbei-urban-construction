@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class RoadwayLightingLamp extends Block {
+public class RoadLightingLamp extends Block {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         tooltip.add(Text.translatable("block.yunbeiuc.roadway_lighting_lamp.tooltip"));
@@ -62,7 +62,7 @@ public class RoadwayLightingLamp extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightTFState> LIGHT_TF_STATE = EnumProperty.of("light_tf_state", LightTFState.class);
 
-    public RoadwayLightingLamp(Settings settings) {
+    public RoadLightingLamp(Settings settings) {
         super(settings.luminance(state -> state.get(LIT) ? 15 : 0));
         this.setDefaultState(
                 getStateManager().getDefaultState()
