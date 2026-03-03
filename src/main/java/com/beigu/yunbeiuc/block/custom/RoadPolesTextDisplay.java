@@ -1,14 +1,12 @@
 package com.beigu.yunbeiuc.block.custom;
 
 import com.beigu.yunbeiuc.entity.RoadPolesTextDisplayEntity;
-import com.beigu.yunbeiuc.screen.RoadPolesTextDisplayScreen;
+import com.beigu.yunbeiuc.screen.RoadPoleTextDisplayScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.data.client.VariantSettings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -19,7 +17,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -52,7 +49,7 @@ public class RoadPolesTextDisplay extends BlockWithEntity implements BlockEntity
 
     @Environment(EnvType.CLIENT)
     private void openTextDisplayScreen(BlockPos pos) {
-        MinecraftClient.getInstance().setScreen(new RoadPolesTextDisplayScreen(pos));
+        MinecraftClient.getInstance().setScreen(new RoadPoleTextDisplayScreen(pos));
     }
 
     @Override

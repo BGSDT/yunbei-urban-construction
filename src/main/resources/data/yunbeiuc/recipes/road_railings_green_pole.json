@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:green_concrete",
+  "result": {
+    "count": 3,
+    "id": "yunbeiuc:road_railings_green_pole"
+  }
+}

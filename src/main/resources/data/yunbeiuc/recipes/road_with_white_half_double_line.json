@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "result": {
+        "count": 1,
+        "id": "yunbeiuc:road_with_white_half_double_line"
+    },
+    "ingredient": "yunbeiuc:road_full_of_white"
+}

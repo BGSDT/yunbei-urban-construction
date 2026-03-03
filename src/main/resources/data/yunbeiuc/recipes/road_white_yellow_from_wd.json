@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "yunbeiuc:road_full_of_yellow",
+    "minecraft:white_dye"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yunbeiuc:road_white_yellow"
+  }
+}

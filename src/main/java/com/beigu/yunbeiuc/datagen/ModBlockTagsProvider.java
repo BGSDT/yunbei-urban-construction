@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.datagen;
 
 import com.beigu.yunbeiuc.block.ModBlocks;
+import com.terraformersmc.modmenu.util.mod.Mod;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.registry.RegistryWrapper;
@@ -122,12 +123,15 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .add(ModBlocks.ROAD_RAILINGS_GREEN_OBLIQUE)
                 .add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1)
                 .add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2)
-                .add(ModBlocks.ROAD_POLES_FOUNDATIONS)
-                .add(ModBlocks.ROAD_POLES_LONGITUDINAL)
-                .add(ModBlocks.ROAD_POLES_HORIZONTAL)
-                .add(ModBlocks.ROAD_POLES_TSHAPE)
+                .add(ModBlocks.ROAD_POLE_FOUNDATIONS)
+                .add(ModBlocks.ROAD_POLE_LONGITUDINAL)
+                .add(ModBlocks.ROAD_POLE_HORIZONTAL)
+                .add(ModBlocks.ROAD_POLE_TSHAPE)
                 .add(ModBlocks.ROAD_LIGHT)
                 .add(ModBlocks.ROAD_BLOCK)
+                .add(ModBlocks.ROAD_FULL_OF_WHITE)
+                .add(ModBlocks.ROAD_FULL_OF_YELLOW)
+                .add(ModBlocks.ROAD_WHITE_YELLOW)
                 .add(ModBlocks.ROAD_WITH_WHITE_LINE)
                 .add(ModBlocks.ROAD_WITH_WHITE_DOUBLE_LINE)
                 .add(ModBlocks.ROAD_WITH_WHITE_THICK_LINE)
@@ -198,8 +202,8 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .add(ModBlocks.ROAD_WITH_YELLOW_CROSS_LINE)
                 .add(ModBlocks.ROAD_WITH_AUTO_BEVEL_LINE)
                 .add(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE)
-                .add(ModBlocks.ROAD_POLES_TEXT_DISPLAY)
-                .add(ModBlocks.ROAD_POLES_FLAG);
+                .add(ModBlocks.ROAD_POLE_TEXT_DISPLAY)
+                .add(ModBlocks.ROAD_POLE_FLAG);
 
 
         getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)
@@ -309,13 +313,13 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .add(ModBlocks.ROAD_RAILINGS_GREEN_OBLIQUE)
                 .add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1)
                 .add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2)
-                .add(ModBlocks.ROAD_POLES_FOUNDATIONS)
-                .add(ModBlocks.ROAD_POLES_LONGITUDINAL)
-                .add(ModBlocks.ROAD_POLES_HORIZONTAL)
-                .add(ModBlocks.ROAD_POLES_TSHAPE)
+                .add(ModBlocks.ROAD_POLE_FOUNDATIONS)
+                .add(ModBlocks.ROAD_POLE_LONGITUDINAL)
+                .add(ModBlocks.ROAD_POLE_HORIZONTAL)
+                .add(ModBlocks.ROAD_POLE_TSHAPE)
                 .add(ModBlocks.ROAD_LIGHT)
-                .add(ModBlocks.ROAD_POLES_TEXT_DISPLAY)
-                .add(ModBlocks.ROAD_POLES_FLAG);
+                .add(ModBlocks.ROAD_POLE_TEXT_DISPLAY)
+                .add(ModBlocks.ROAD_POLE_FLAG);
 
     }
 }

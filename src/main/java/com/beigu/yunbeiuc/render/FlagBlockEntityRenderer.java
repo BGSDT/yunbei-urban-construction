@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.render;
 
-import com.beigu.yunbeiuc.block.custom.poles.FlagBlock;
+import com.beigu.yunbeiuc.block.custom.pole.FlagBlock;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "yunbeiuc:road_white_yellow",
+  "result": {
+    "count": 1,
+    "id": "yunbeiuc:road_with_auto_bevel_line"
+  }
+}

@@ -169,14 +169,17 @@ public class ModItemGroups {
                         entries.add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2);
 
 // 道路杆件类方块
-                        entries.add(ModBlocks.ROAD_POLES_FOUNDATIONS);
-                        entries.add(ModBlocks.ROAD_POLES_LONGITUDINAL);
-                        entries.add(ModBlocks.ROAD_POLES_HORIZONTAL);
-                        entries.add(ModBlocks.ROAD_POLES_TSHAPE);
+                        entries.add(ModBlocks.ROAD_POLE_FOUNDATIONS);
+                        entries.add(ModBlocks.ROAD_POLE_LONGITUDINAL);
+                        entries.add(ModBlocks.ROAD_POLE_HORIZONTAL);
+                        entries.add(ModBlocks.ROAD_POLE_TSHAPE);
                         entries.add(ModBlocks.ROAD_LIGHT);
 
 // 道路标线类方块
                         entries.add(ModBlocks.ROAD_BLOCK);
+                        entries.add(ModBlocks.ROAD_FULL_OF_WHITE);
+                        entries.add(ModBlocks.ROAD_FULL_OF_YELLOW);
+                        entries.add(ModBlocks.ROAD_WHITE_YELLOW);
                         entries.add(ModBlocks.ROAD_WITH_WHITE_LINE);
                         entries.add(ModBlocks.ROAD_WITH_WHITE_DOUBLE_LINE);
                         entries.add(ModBlocks.ROAD_WITH_WHITE_THICK_LINE);
@@ -249,8 +252,8 @@ public class ModItemGroups {
                         entries.add(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE);
 
 // 道路杆件展示类方块
-                        entries.add(ModBlocks.ROAD_POLES_TEXT_DISPLAY);
-                        entries.add(ModBlocks.ROAD_POLES_FLAG);
+                        entries.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY);
+                        entries.add(ModBlocks.ROAD_POLE_FLAG);
                     }).build());
 
     public static void registerGroups() {

@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "result": {
+        "count": 1,
+        "id": "yunbeiuc:road_with_white_rightangle_line_offset_in"
+    },
+    "ingredient": "yunbeiuc:road_full_of_white"
+}

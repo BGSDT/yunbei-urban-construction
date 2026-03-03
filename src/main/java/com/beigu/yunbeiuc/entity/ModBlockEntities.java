@@ -44,7 +44,6 @@ public class ModBlockEntities {
 
     public static BlockEntityType<RoadPolesTextDisplayEntity> ROAD_POLES_TEXT_DISPLAY_ENTITY;
     public static BlockEntityType<FlagBlockEntity> FLAG_BLOCK_ENTITY;
-    public static BlockEntityType<TransformableBlockEntity> TRANSFORMABLE_BLOCK_ENTITY;
     public static void registerBlockEntities() {
         Registry.register(Registries.BLOCK_ENTITY_TYPE,
                 new Identifier(YunbeiUrbanConstruction.MOD_ID, "sign_speed_limit_block_entity"),
@@ -93,19 +92,13 @@ public class ModBlockEntities {
         ROAD_POLES_TEXT_DISPLAY_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
                 new Identifier("yunbeiuc", "road_poles_text_display_entity"),
-                FabricBlockEntityTypeBuilder.create(RoadPolesTextDisplayEntity::new, ModBlocks.ROAD_POLES_TEXT_DISPLAY).build()
+                FabricBlockEntityTypeBuilder.create(RoadPolesTextDisplayEntity::new, ModBlocks.ROAD_POLE_TEXT_DISPLAY).build()
         );
 
         FLAG_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
                 new Identifier("yunbeiuc", "flag_block_entity"),
-                FabricBlockEntityTypeBuilder.create(FlagBlockEntity::new, ModBlocks.ROAD_POLES_FLAG).build()
-        );
-
-        TRANSFORMABLE_BLOCK_ENTITY = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                new Identifier(YunbeiUrbanConstruction.MOD_ID, "transformable_block_entity"),
-                FabricBlockEntityTypeBuilder.create(TransformableBlockEntity::new).build()
+                FabricBlockEntityTypeBuilder.create(FlagBlockEntity::new, ModBlocks.ROAD_POLE_FLAG).build()
         );
     }
 }

@@ -173,17 +173,20 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2, "道路封闭护栏2型");
 
 // 道路杆件类
-        translationBuilder.add(ModBlocks.ROAD_POLES_FOUNDATIONS, "道路杆件基础");
-        translationBuilder.add(ModBlocks.ROAD_POLES_LONGITUDINAL, "纵向道路杆件");
-        translationBuilder.add(ModBlocks.ROAD_POLES_HORIZONTAL, "横向道路杆件");
-        translationBuilder.add(ModBlocks.ROAD_POLES_TSHAPE, "T型道路杆件");
+        translationBuilder.add(ModBlocks.ROAD_POLE_FOUNDATIONS, "道路杆件基础");
+        translationBuilder.add(ModBlocks.ROAD_POLE_LONGITUDINAL, "纵向道路杆件");
+        translationBuilder.add(ModBlocks.ROAD_POLE_HORIZONTAL, "横向道路杆件");
+        translationBuilder.add(ModBlocks.ROAD_POLE_TSHAPE, "T型道路杆件");
         translationBuilder.add(ModBlocks.ROAD_LIGHT, "道路照明灯");
         translationBuilder.add("block.yunbeiuc.road_light.tooltip","手持魔杖右键点击以切换灯光状态");
 
 // 道路及标线类
         translationBuilder.add(ModBlocks.ROAD_BLOCK, "道路块");
+        translationBuilder.add(ModBlocks.ROAD_FULL_OF_WHITE,"全白道路");
+        translationBuilder.add(ModBlocks.ROAD_FULL_OF_YELLOW,"全黄道路");
+        translationBuilder.add(ModBlocks.ROAD_WHITE_YELLOW,"白黄道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_LINE, "白色标线道路");
-        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_DOUBLE_LINE, "白色双黄线道路（注：原文为white_double，按道路规范修正）");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_DOUBLE_LINE, "白色双实线道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_THICK_LINE, "白色粗标线道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_LINE, "黄色标线道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE, "黄色双实线道路");
@@ -254,8 +257,8 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE, "自动直角标线道路");
 
 // 道路杆件附属类
-        translationBuilder.add(ModBlocks.ROAD_POLES_TEXT_DISPLAY, "道路杆件文字显示屏");
-        translationBuilder.add(ModBlocks.ROAD_POLES_FLAG, "道路杆件旗帜");
+        translationBuilder.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY, "道路杆件文字显示屏");
+        translationBuilder.add(ModBlocks.ROAD_POLE_FLAG, "道路杆件旗帜");
 
         translationBuilder.add("itemGroup.yunbeiuc_item_group","云北城建 | 物品/工具");
         translationBuilder.add("itemGroup.yunbeiuc_rb_group","云北城建 | 道路方块");

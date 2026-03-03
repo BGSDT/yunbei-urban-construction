@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:white_concrete",
+    "B": "minecraft:stick",
+    "C": "minecraft:black_concrete"
+  },
+  "pattern": [
+    "ACA",
+    "CBC",
+    "A A"
+  ],
+  "result": {
+    "item": "yunbeiuc:iron_horse_black"
+  }
+}

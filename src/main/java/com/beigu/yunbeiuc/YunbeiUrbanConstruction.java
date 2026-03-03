@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc;
 
 import com.beigu.yunbeiuc.block.ModBlocks;
-import com.beigu.yunbeiuc.block.custom.poles.flag.FlagLoader;
+import com.beigu.yunbeiuc.block.custom.pole.flag.FlagLoader;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;

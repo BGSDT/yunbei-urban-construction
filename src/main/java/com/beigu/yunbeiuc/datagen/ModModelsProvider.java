@@ -108,12 +108,15 @@ public class ModModelsProvider extends FabricModelProvider {
 
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2);
 
-        blockStateModelGenerator.registerSimpleState(ModBlocks.ROAD_POLES_FOUNDATIONS);
-        blockStateModelGenerator.registerSimpleState(ModBlocks.ROAD_POLES_LONGITUDINAL);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLES_HORIZONTAL);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLES_TSHAPE);
+        blockStateModelGenerator.registerSimpleState(ModBlocks.ROAD_POLE_FOUNDATIONS);
+        blockStateModelGenerator.registerSimpleState(ModBlocks.ROAD_POLE_LONGITUDINAL);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLE_HORIZONTAL);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLE_TSHAPE);
 
         blockStateModelGenerator.registerCubeAllModelTexturePool(ModBlocks.ROAD_BLOCK);
+        blockStateModelGenerator.registerSimpleState(ModBlocks.ROAD_FULL_OF_WHITE);
+        blockStateModelGenerator.registerSimpleState(ModBlocks.ROAD_FULL_OF_YELLOW);
+        blockStateModelGenerator.registerSimpleState(ModBlocks.ROAD_WHITE_YELLOW);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_DOUBLE_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_THICK_LINE);
@@ -184,8 +187,8 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_YELLOW_CROSS_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_AUTO_BEVEL_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLES_TEXT_DISPLAY);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLES_FLAG);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLE_TEXT_DISPLAY);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLE_FLAG);
     }
 
     @Override

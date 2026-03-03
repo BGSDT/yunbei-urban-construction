@@ -87,16 +87,6 @@ public class ModMessages {
             UpdateFlagPacket packet = new UpdateFlagPacket(buf);
             server.execute(() -> packet.apply(player));
         });
-
-        ServerPlayNetworking.registerGlobalReceiver(ENTITY_CONVERSION, (server, player, handler, buf, responseSender) -> {
-            EntityConversionPacket packet = new EntityConversionPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(TRANSFORM_UPDATE, (server, player, handler, buf, responseSender) -> {
-            TransformUpdatePacket packet = new TransformUpdatePacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
     }
 
     public static void registerS2CPackets() {

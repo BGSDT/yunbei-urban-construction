@@ -5,12 +5,8 @@ import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 
 
 public class YunbeiUrbanConstructionClient implements ClientModInitializer {
@@ -29,10 +25,7 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET_POLE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK, RenderLayer.getCutout());
-        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLES_TEXT_DISPLAY_ENTITY, RoadPolesTextDisplayBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLES_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
-
-        BlockEntityRendererFactories.register(ModBlockEntities.TRANSFORMABLE_BLOCK_ENTITY, TransformableBlockEntityRenderer::new
-        );
     }
 }

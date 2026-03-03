@@ -16,7 +16,7 @@ import com.beigu.yunbeiuc.block.custom.instrument.InstrumentPolelLongitudinal;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandBlock;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandEdgeBlock;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandObliqueBlock;
-import com.beigu.yunbeiuc.block.custom.poles.*;
+import com.beigu.yunbeiuc.block.custom.pole.*;
 import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail1;
 import com.beigu.yunbeiuc.block.custom.railings.RoadRailings;
 import com.beigu.yunbeiuc.block.custom.railings.RoadRailingsOblique;
@@ -164,13 +164,16 @@ public class ModBlocks {
     public static final Block ROAD_CLOSED_BARRICADE_GUARDRAIL_1 = register("road_closed_barricade_guardrail_1", new RoadClosedBarricadeGuardrail1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_CLOSED_BARRICADE_GUARDRAIL_2 = register("road_closed_barricade_guardrail_2", new RoadClosedBarricadeGuardrail2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
-    public static final Block ROAD_POLES_FOUNDATIONS = register("road_poles_foundations", new RoadPolesFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block ROAD_POLES_LONGITUDINAL = register("road_poles_longitudinal", new RoadRailingsPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block ROAD_POLES_HORIZONTAL = register("road_poles_horizontal",new RoadPolesHorizontal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block ROAD_POLES_TSHAPE = register("road_poles_tshape",new RoadPolesTshape(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_FOUNDATIONS = register("road_pole_foundations", new RoadPoleFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_LONGITUDINAL = register("road_pole_longitudinal", new RoadPoleLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_HORIZONTAL = register("road_pole_horizontal",new RoadPoleHorizontal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_TSHAPE = register("road_pol_tshape",new RoadPoleTshape(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_LIGHT = register("road_light",new RoadLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
-    public static final Block ROAD_BLOCK = register("road_block", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_BLOCK = register("road_block", new Block(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_FULL_OF_WHITE = register("road_full_of_white", new Block(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_FULL_OF_YELLOW = register("road_full_of_yellow", new Block(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_WHITE_YELLOW = register("road_white_yellow", new Block(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
     public static final Block ROAD_WITH_WHITE_LINE = register("road_with_white_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
     public static final Block ROAD_WITH_WHITE_DOUBLE_LINE = register("road_with_white_double_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
     public static final Block ROAD_WITH_WHITE_THICK_LINE = register("road_with_white_thick_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
@@ -242,8 +245,8 @@ public class ModBlocks {
     public static final Block ROAD_WITH_AUTO_BEVEL_LINE = register("road_with_auto_bevel_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
     public static final Block ROAD_WITH_AUTO_RIGHTANGLE_LINE = register("road_with_auto_rightangle_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
 
-    public static final Block ROAD_POLES_TEXT_DISPLAY = register("road_poles_text_display", new RoadPolesTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
-    public static final Block ROAD_POLES_FLAG = register("road_poles_flag", new FlagBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_TEXT_DISPLAY = register("road_poles_text_display", new RoadPolesTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_FLAG = register("road_poles_flag", new FlagBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
 
     public static Block register(String id, Block block) {
         registerBlockItems(id, block);

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "yunbeiuc:instrument_camera",
+    "yunbeiuc:road_pole_horizontal"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yunbeiuc:road_detection_camera"
+  }
+}

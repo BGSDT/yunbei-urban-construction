@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "yunbeiuc:reflective_sign_yellow_all_2"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yunbeiuc:reflective_sign_yellow_all_1"
+  }
+}

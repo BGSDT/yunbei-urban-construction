@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:red_concrete",
+    "B": "minecraft:torch",
+    "C": "minecraft:white_concrete"
+  },
+  "pattern": [
+    "ACA",
+    "CBC",
+    "ACA"
+  ],
+  "result": {
+    "item": "yunbeiuc:reflective_sign_red_all_1"
+  }
+}

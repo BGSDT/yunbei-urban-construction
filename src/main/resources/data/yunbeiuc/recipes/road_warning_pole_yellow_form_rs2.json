@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "yunbeiuc:relective_sign_yellow_all_2",
+    "yunbeiuc:road_pole_longitudinal",
+    "yunbeiuc:road_pole_longitudinal"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yunbeiuc:road_warning_pole_yellow"
+  }
+}

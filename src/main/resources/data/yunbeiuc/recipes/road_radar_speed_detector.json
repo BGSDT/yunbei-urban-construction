@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "yunbeiuc:yellow_concrete",
+    "minecraft:torch",
+    "yunbeiuc:road_pole_horizontal"
+  ],
+  "result": {
+    "count": 1,
+    "id": "yunbeiuc:road_lighting_lamp"
+  }
+}
