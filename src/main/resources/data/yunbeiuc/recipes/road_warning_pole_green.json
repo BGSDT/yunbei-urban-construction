@@ -1,13 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "equipment",
-  "ingredients": [
-    "yunbeiuc:green_concrete",
-    "yunbeiuc:road_pole_longitudinal",
-    "yunbeiuc:road_pole_longitudinal"
-  ],
-  "result": {
-    "count": 1,
-    "id": "yunbeiuc:road_warning_pole_green"
-  }
+    "type": "minecraft:crafting_shapeless",
+    "category": "equipment",
+    "ingredients": [
+        {
+            "item": "yunbeiuc:green_concrete"
+        },
+        {
+            "item": "yunbeiuc:road_pole_longitudinal"
+        },
+        {
+            "item": "yunbeiuc:road_pole_longitudinal"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "id": "yunbeiuc:road_warning_pole_green"
+    }
 }

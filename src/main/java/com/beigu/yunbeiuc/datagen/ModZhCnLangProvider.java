@@ -112,6 +112,10 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_OBLIQUE, "斜向交通护栏");
         translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY, "灰色交通护栏");
         translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_OBLIQUE, "灰色斜向交通护栏");
+        translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_RED, "红灰色交通护栏");
+        translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_RED_OBLIQUE,"红灰色斜向交通护栏");
+        translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_YELLOW, "黄灰色交通护栏");
+        translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE, "黄灰色斜向交通护栏");
         translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT, "灰色倾斜交通护栏");
         translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW, "黄灰色倾斜交通护栏");
         translationBuilder.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED, "红灰色倾斜交通护栏");
@@ -147,6 +151,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_GRAY, "灰色安全岛");
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1, "黄色斜向安全岛1型");
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2, "黄色斜向安全岛2型");
+        translationBuilder.add(ModBlocks.SAFETY_ISLAND_GRAY_OBLIQUE, "灰色斜向安全岛");
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1, "黄色安全岛石板边缘1型");
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2, "黄色安全岛石板边缘2型");
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3, "黄色安全岛石板边缘3型");
@@ -155,6 +160,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1, "黄色斜向安全岛石板边缘1型");
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2, "黄色斜向安全岛石板边缘2型");
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_GRAY_SLAB, "灰色安全岛石板");
+        translationBuilder.add(ModBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "灰色斜向安全岛石板边缘");
 
 // 道路栏杆类
         translationBuilder.add(ModBlocks.ROAD_RAILINGS_IRON, "铁质道路栏杆");

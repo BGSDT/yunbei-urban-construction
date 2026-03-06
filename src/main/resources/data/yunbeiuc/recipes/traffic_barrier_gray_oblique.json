@@ -1,20 +1,8 @@
 {
-  "type": "minecraft:block",
-  "pools": [
-    {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "yunbeiuc:traffic_barrier_gray_oblique"
-        }
-      ],
-      "rolls": 1.0
-    }
-  ]
+  "type": "minecraft:stonecutting",
+  "result": "yunbeiuc:traffic_barrier_gray_oblique",
+  "ingredient": {
+    "item": "minecraft:gray_concrete"
+  },
+  "count": 1
 }

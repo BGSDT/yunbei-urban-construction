@@ -1,8 +1,8 @@
 {
-  "type": "minecraft:stonecutting",
-  "ingredient": "minecraft:iron_block",
-  "result": {
-    "count": 9,
-    "id": "yunbeiuc:road_pole_horizontal"
-  }
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:iron_block"
+    },
+    "result": "yunbeiuc:road_pole_horizontal",
+    "count": 9
 }

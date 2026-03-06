@@ -1,8 +1,8 @@
 {
-  "type": "minecraft:stonecutting",
-  "ingredient": "minecraft:iron_block",
-  "result": {
-    "count": 9,
-    "id": "yunbeiuc:instrument_pole_longitudinal"
-  }
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:iron_block"
+    },
+    "result": "yunbeiuc:instrument_pole_longitudinal",
+    "count": 9
 }

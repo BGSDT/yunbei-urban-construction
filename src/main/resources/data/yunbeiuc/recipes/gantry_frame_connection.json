@@ -1,15 +1,8 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "key": {
-    "A": "minecraft:white_concrete"
-  },
-  "pattern": [
-    " AA",
-    " A ",
-    " AA"
-  ],
-  "result": {
-    "item": "yunbeiuc:gantry_frame_connection"
-  }
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:iron_block"
+    },
+    "result": "yunbeiuc:gantry_frame_connection",
+    "count": 2
 }

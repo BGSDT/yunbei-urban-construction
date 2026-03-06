@@ -1,12 +1,16 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "equipment",
-  "ingredients": [
-    "yunbeiuc:gray_concrete",
-    "yunbeiuc:road_pole_horizontal"
-  ],
-  "result": {
-    "count": 1,
-    "id": "yunbeiuc:road_pole_text_display"
-  }
+    "type": "minecraft:crafting_shapeless",
+    "category": "equipment",
+    "ingredients": [
+        {
+            "item": "yunbeiuc:gray_concrete"
+        },
+        {
+            "item": "yunbeiuc:road_pole_horizontal"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "id": "yunbeiuc:road_pole_text_display"
+    }
 }

@@ -1,20 +1,8 @@
 {
-  "type": "minecraft:block",
-  "pools": [
-    {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "yunbeiuc:vibration_marking_line"
-        }
-      ],
-      "rolls": 1.0
-    }
-  ]
+  "type": "minecraft:stonecutting",
+  "result": "yunbeiuc:vibration_marking_line",
+  "ingredient": {
+    "item": "minecraft:yellow_concrete"
+  },
+  "count": 9
 }

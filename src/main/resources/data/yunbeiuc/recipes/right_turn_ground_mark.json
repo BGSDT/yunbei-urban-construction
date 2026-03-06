@@ -1,8 +1,8 @@
 {
-  "type": "minecraft:stonecutting",
-  "ingredient": "minecraft:white_concrete",
-  "result": {
-    "count": 1,
-    "id": "yunbeiuc:right_turn_ground_mark"
-  }
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:white_concrete"
+    },
+    "result": "yunbeiuc:right_turn_ground_mark",
+    "count": 1
 }

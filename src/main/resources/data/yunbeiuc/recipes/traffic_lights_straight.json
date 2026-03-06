@@ -1,20 +1,8 @@
 {
-  "type": "minecraft:block",
-  "pools": [
-    {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "yunbeiuc:traffic_lights_straight"
-        }
-      ],
-      "rolls": 1.0
-    }
-  ]
+  "type": "minecraft:stonecutting",
+  "result": "yunbeiuc:traffic_lights_left",
+  "ingredient": {
+    "item": "minecraft:black_concrete"
+  },
+  "count": 2
 }

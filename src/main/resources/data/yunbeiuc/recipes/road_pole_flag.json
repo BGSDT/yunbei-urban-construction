@@ -1,13 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "equipment",
-  "ingredients": [
-    "minecraft:white_wall_banner",
-    "yunbeiuc:road_pole_horizontal",
-    "yunbeiuc:road_pole_horizontal"
-  ],
-  "result": {
-    "count": 1,
-    "id": "yunbeiuc:road_pole_flag"
-  }
+    "type": "minecraft:crafting_shapeless",
+    "category": "equipment",
+    "ingredients": [
+        {
+            "item": "minecraft:white_wall_banner"
+        },
+        {
+            "item": "yunbeiuc:road_pole_horizontal"
+        },
+        {
+            "item": "yunbeiuc:road_pole_horizontal"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "id": "yunbeiuc:road_pole_flag"
+    }
 }

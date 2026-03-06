@@ -1,20 +1,13 @@
 {
-  "type": "minecraft:block",
-  "pools": [
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
     {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "yunbeiuc:safety_island_yellow_4"
-        }
-      ],
-      "rolls": 1.0
+      "item": "yunbeiuc:safety_island_yellow_3"
     }
-  ]
+  ],
+  "result": {
+    "count": 1,
+    "id": "yunbeiuc:safety_island_yellow_4"
+  }
 }

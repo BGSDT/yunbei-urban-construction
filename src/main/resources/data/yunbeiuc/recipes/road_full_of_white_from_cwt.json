@@ -1,12 +1,16 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "equipment",
-  "ingredients": [
-    "minecraft:white_terracotta",
-    "minecraft:cyan_terracotta"
-  ],
-  "result": {
-    "count": 2,
-    "id": "yunbeiuc:road_full_of_white"
-  }
+    "type": "minecraft:crafting_shapeless",
+    "category": "equipment",
+    "ingredients": [
+        {
+            "item": "minecraft:white_terracotta"
+        },
+        {
+            "item": "minecraft:cyan_terracotta"
+        }
+    ],
+    "result": {
+        "count": 2,
+        "id": "yunbeiuc:road_full_of_white"
+    }
 }

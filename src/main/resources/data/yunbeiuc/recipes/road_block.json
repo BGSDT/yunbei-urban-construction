@@ -1,11 +1,13 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "equipment",
-  "ingredients": [
-    "minecraft:cyan_terracotta"
-  ],
-  "result": {
-    "count": 1,
-    "id": "yunbeiuc:road_block"
-  }
+    "type": "minecraft:crafting_shapeless",
+    "category": "equipment",
+    "ingredients": [
+        {
+            "item": "minecraft:cyan_terracotta"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "id": "yunbeiuc:road_block"
+    }
 }

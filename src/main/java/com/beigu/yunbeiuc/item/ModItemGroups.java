@@ -108,6 +108,10 @@ public class ModItemGroups {
                         entries.add(ModBlocks.TRAFFIC_BARRIER_OBLIQUE);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_OBLIQUE);
+                        entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_RED);
+                        entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_RED_OBLIQUE);
+                        entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_YELLOW);
+                        entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED);
@@ -143,6 +147,7 @@ public class ModItemGroups {
                         entries.add(ModBlocks.SAFETY_ISLAND_GRAY);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2);
+                        entries.add(ModBlocks.SAFETY_ISLAND_GRAY_OBLIQUE);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3);
@@ -151,6 +156,7 @@ public class ModItemGroups {
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2);
                         entries.add(ModBlocks.SAFETY_ISLAND_GRAY_SLAB);
+                        entries.add(ModBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
 
 // 道路栏杆类方块
                         entries.add(ModBlocks.ROAD_RAILINGS_IRON);

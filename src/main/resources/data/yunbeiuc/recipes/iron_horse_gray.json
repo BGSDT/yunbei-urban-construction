@@ -1,16 +1,21 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "key": {
-    "A": "minecraft:gray_concrete",
-    "B": "minecraft:stick"
-  },
-  "pattern": [
-    "AAA",
-    "ABA",
-    "A A"
-  ],
-  "result": {
-    "item": "yunbeiuc:iron_horse_gray"
-  }
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:gray_concrete"
+        },
+        "B": {
+            "item": "minecraft:stick"
+        }
+    },
+    "pattern": [
+        "AAA",
+        "ABA",
+        "A A"
+    ],
+    "result": {
+        "item": "yunbeiuc:iron_horse_gray",
+        "count": 9
+    }
 }

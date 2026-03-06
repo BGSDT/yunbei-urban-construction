@@ -1,15 +1,8 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "key": {
-    "A": "minecraft:green_concrete"
-  },
-  "pattern": [
-    " A ",
-    " A ",
-    " A "
-  ],
-  "result": {
-    "item": "yunbeiuc:anti_glare_net_pole"
-  }
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:green_concrete"
+    },
+    "result": "yunbeiuc:anti_glare_version",
+    "count": 9
 }

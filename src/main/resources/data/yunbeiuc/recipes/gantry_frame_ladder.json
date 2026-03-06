@@ -1,16 +1,8 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "key": {
-    "A": "minecraft:white_concrete",
-    "B": "minecraft:stick"
-  },
-  "pattern": [
-    "A A",
-    "ABA",
-    "A A"
-  ],
-  "result": {
-    "item": "yunbeiuc:gantry_frame_ladder"
-  }
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:iron_block"
+    },
+    "result": "yunbeiuc:gantry_frame_ladder",
+    "count": 6
 }

@@ -86,6 +86,7 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_GRAY);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_GRAY_OBLIQUE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3);
@@ -94,6 +95,7 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_GRAY_SLAB);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
 
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_RAILINGS_IRON);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_RAILINGS_IRON_ENDING_1);

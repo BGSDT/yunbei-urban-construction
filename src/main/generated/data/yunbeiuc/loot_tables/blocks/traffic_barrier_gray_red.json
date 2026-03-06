@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "yunbeiuc:sign_speed_limit_block"
+          "name": "yunbeiuc:traffic_barrier_gray_red"
         }
       ],
       "rolls": 1.0

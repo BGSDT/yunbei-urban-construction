@@ -1,15 +1,20 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "key": {
-    "A": "minecraft:iron_block",
-    "B": "minecraft:white_concrete"
-  },
-  "pattern": [
-    "BBB",
-    "BAB"
-  ],
-  "result": {
-    "item": "yunbeiuc:road_flower_box_2_fence"
-  }
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:iron_block"
+        },
+        "B": {
+            "item": "minecraft:white_concrete"
+        }
+    },
+    "pattern": [
+        "BBB",
+        "BAB"
+    ],
+    "result": {
+        "item": "yunbeiuc:road_flower_box_2_fence",
+        "count": 2
+    }
 }

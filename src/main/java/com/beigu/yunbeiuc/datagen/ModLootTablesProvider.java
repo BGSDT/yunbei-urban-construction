@@ -72,6 +72,10 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(ModBlocks.TRAFFIC_BARRIER_OBLIQUE);
         addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY);
         addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_OBLIQUE);
+        addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_RED);
+        addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_RED_OBLIQUE);
+        addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_YELLOW);
+        addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE);
         addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT);
         addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW);
         addDrop(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED);
@@ -97,6 +101,7 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(ModBlocks.SAFETY_ISLAND_GRAY);
         addDrop(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1);
         addDrop(ModBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2);
+        addDrop(ModBlocks.SAFETY_ISLAND_GRAY_OBLIQUE);
         addDrop(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1);
         addDrop(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2);
         addDrop(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3);
@@ -105,6 +110,7 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1);
         addDrop(ModBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2);
         addDrop(ModBlocks.SAFETY_ISLAND_GRAY_SLAB);
+        addDrop(ModBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
         addDrop(ModBlocks.ROAD_RAILINGS_IRON);
         addDrop(ModBlocks.ROAD_RAILINGS_IRON_ENDING_1);
         addDrop(ModBlocks.ROAD_RAILINGS_IRON_ENDING_2);

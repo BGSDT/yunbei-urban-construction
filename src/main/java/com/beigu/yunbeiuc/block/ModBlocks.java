@@ -111,6 +111,10 @@ public class ModBlocks {
     public static final Block TRAFFIC_BARRIER_OBLIQUE = register("traffic_barrier_oblique", new TrafficBarrierObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_GRAY = register("traffic_barrier_gray", new TrafficBarrierGrayBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_GRAY_OBLIQUE = register("traffic_barrier_gray_oblique", new TrafficBarrierGrayObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_RED = register("traffic_barrier_gray_red", new TrafficBarrierGrayBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_RED_OBLIQUE = register("traffic_barrier_gray_red_oblique", new TrafficBarrierObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_YELLOW = register("traffic_barrier_gray_yellow", new TrafficBarrierGrayBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE = register("traffic_barrier_gray_yellow_oblique", new TrafficBarrierObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_GRAY_SLANT = register("traffic_barrier_gray_slant", new TrafficBarrierGraySlantBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_GRAY_SLANT_YELLOW = register("traffic_barrier_gray_slant_yellow", new TrafficBarrierGraySlantBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_GRAY_SLANT_RED = register("traffic_barrier_gray_slant_red", new TrafficBarrierGraySlantBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
@@ -141,6 +145,7 @@ public class ModBlocks {
     public static final Block SAFETY_ISLAND_GRAY = register("safety_island_gray", new SafetyIslandBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_YELLOW_OBLIQUE_1 = register("safety_island_yellow_oblique_1", new SafetyIslandObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_YELLOW_OBLIQUE_2 = register("safety_island_yellow_oblique_2", new SafetyIslandObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SAFETY_ISLAND_GRAY_OBLIQUE = register("safety_island_gray_oblique", new SafetyIslandObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_1 = register("safety_island_yellow_slab_edge_1", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_2 = register("safety_island_yellow_slab_edge_2", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_3 = register("safety_island_yellow_slab_edge_3", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
@@ -149,6 +154,7 @@ public class ModBlocks {
     public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1 = register("safety_island_yellow_slab_edge_oblique_1", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2 = register("safety_island_yellow_slab_edge_oblique_2", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_GRAY_SLAB = register("safety_island_gray_slab", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE = register("safety_island_gray_slab_edge_oblique", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static final Block ROAD_RAILINGS_IRON = register("road_railings_iron", new RoadRailings(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_RAILINGS_IRON_ENDING_1 = register("road_railings_iron_ending_1", new RoadRailings(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));

@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "yunbeiuc:sign_indication_direction_block"
+          "name": "yunbeiuc:traffic_barrier_gray_yellow_oblique"
         }
       ],
       "rolls": 1.0
