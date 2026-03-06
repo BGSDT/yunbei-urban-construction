@@ -1,6 +1,6 @@
 {
     "type": "minecraft:crafting_shapeless",
-    "category": "equipment",
+    "category": "building",
     "ingredients": [
         {
             "item": "yunbeiuc:road_full_of_yellow"
@@ -11,6 +11,6 @@
     ],
     "result": {
         "count": 1,
-        "id": "yunbeiuc:road_white_yellow"
+        "item": "yunbeiuc:road_white_yellow"
     }
 }

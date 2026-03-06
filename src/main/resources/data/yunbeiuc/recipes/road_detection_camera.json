@@ -1,6 +1,6 @@
 {
     "type": "minecraft:crafting_shapeless",
-    "category": "equipment",
+    "category": "building",
     "ingredients": [
         {
             "item": "yunbeiuc:instrument_camera"
@@ -11,6 +11,6 @@
     ],
     "result": {
         "count": 1,
-        "id": "yunbeiuc:road_detection_camera"
+        "item": "yunbeiuc:road_detection_camera"
     }
 }

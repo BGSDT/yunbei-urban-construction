@@ -1,9 +1,9 @@
 {
     "type": "minecraft:crafting_shapeless",
-    "category": "equipment",
+    "category": "building",
     "ingredients": [
         {
-            "item": "yunbeiuc:green_concrete"
+            "item": "minecraft:green_concrete"
         },
         {
             "item": "yunbeiuc:road_pole_longitudinal"
@@ -14,6 +14,6 @@
     ],
     "result": {
         "count": 1,
-        "id": "yunbeiuc:road_warning_pole_green"
+        "item": "yunbeiuc:road_warning_pole_green"
     }
 }

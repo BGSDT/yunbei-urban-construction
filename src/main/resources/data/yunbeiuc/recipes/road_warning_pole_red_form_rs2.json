@@ -1,6 +1,6 @@
 {
     "type": "minecraft:crafting_shapeless",
-    "category": "equipment",
+    "category": "building",
     "ingredients": [
         {
             "item": "yunbeiuc:relective_sign_red_all_2"
@@ -14,6 +14,6 @@
     ],
     "result": {
         "count": 1,
-        "id": "yunbeiuc:road_warning_pole_red"
+        "item": "yunbeiuc:road_warning_pole_red"
     }
 }

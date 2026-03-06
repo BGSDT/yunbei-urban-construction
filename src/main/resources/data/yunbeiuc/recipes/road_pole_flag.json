@@ -1,6 +1,6 @@
 {
     "type": "minecraft:crafting_shapeless",
-    "category": "equipment",
+    "category": "building",
     "ingredients": [
         {
             "item": "minecraft:white_wall_banner"
@@ -14,6 +14,6 @@
     ],
     "result": {
         "count": 1,
-        "id": "yunbeiuc:road_pole_flag"
+        "item": "yunbeiuc:road_pole_flag"
     }
 }

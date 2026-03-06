@@ -173,7 +173,7 @@ public class ModBlocks {
     public static final Block ROAD_POLE_FOUNDATIONS = register("road_pole_foundations", new RoadPoleFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_LONGITUDINAL = register("road_pole_longitudinal", new RoadPoleLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_HORIZONTAL = register("road_pole_horizontal",new RoadPoleHorizontal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block ROAD_POLE_TSHAPE = register("road_pol_tshape",new RoadPoleTshape(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_TSHAPE = register("road_pole_tshape",new RoadPoleTshape(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_LIGHT = register("road_light",new RoadLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static final Block ROAD_BLOCK = register("road_block", new Block(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
@@ -251,8 +251,8 @@ public class ModBlocks {
     public static final Block ROAD_WITH_AUTO_BEVEL_LINE = register("road_with_auto_bevel_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
     public static final Block ROAD_WITH_AUTO_RIGHTANGLE_LINE = register("road_with_auto_rightangle_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
 
-    public static final Block ROAD_POLE_TEXT_DISPLAY = register("road_poles_text_display", new RoadPolesTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
-    public static final Block ROAD_POLE_FLAG = register("road_poles_flag", new FlagBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_TEXT_DISPLAY = register("road_pole_text_display", new RoadPolesTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_FLAG = register("road_pole_flag", new FlagBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
 
     public static Block register(String id, Block block) {
         registerBlockItems(id, block);

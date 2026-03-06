@@ -1,6 +1,6 @@
 {
     "type": "minecraft:crafting_shapeless",
-    "category": "equipment",
+    "category": "building",
     "ingredients": [
         {
             "item": "yunbeiuc:yellow_concrete"
@@ -14,6 +14,6 @@
     ],
     "result": {
         "count": 1,
-        "id": "yunbeiuc:road_lighting_lamp"
+        "item": "yunbeiuc:road_radar_speed_detector"
     }
 }

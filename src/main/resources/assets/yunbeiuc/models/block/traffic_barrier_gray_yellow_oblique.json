@@ -3,8 +3,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "yunbeiuc:block/traffic_gray_gray_oblique_yellow",
-		"particle": "yunbeiuc:block/traffic_gray_gray_oblique_yellow"
+		"1": "yunbeiuc:block/traffic_barrier_gray_yellow_oblique",
+		"particle": "yunbeiuc:block/traffic_barrier_gray_yellow_oblique"
 	},
 	"elements": [
 		{
