@@ -11,7 +11,7 @@
     },
     "pattern": [
         " A ",
-        "C C"
+        "B B"
     ],
     "result": {
         "item": "yunbeiuc:road_closed_barricade_guardrail_2",

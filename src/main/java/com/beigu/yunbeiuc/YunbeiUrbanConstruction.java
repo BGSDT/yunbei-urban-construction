@@ -1,7 +1,8 @@
 package com.beigu.yunbeiuc;
 
 import com.beigu.yunbeiuc.block.ModBlocks;
-import com.beigu.yunbeiuc.block.custom.pole.flag.FlagLoader;
+import com.beigu.yunbeiuc.block.SignBlocks;
+import com.beigu.yunbeiuc.render.json.FlagLoader;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
@@ -33,6 +34,7 @@ public class YunbeiUrbanConstruction implements ModInitializer {
 
 
         ModBlocks.registerModBlocks();
+        SignBlocks.registerSignBlocks();
         ModBlockEntities.registerBlockEntities();
         ModMessages.registerC2SPackets();
         ModMessages.registerS2CPackets();

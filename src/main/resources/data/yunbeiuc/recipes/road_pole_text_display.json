@@ -3,7 +3,7 @@
     "category": "building",
     "ingredients": [
         {
-            "item": "yunbeiuc:gray_concrete"
+            "item": "minecraft:gray_concrete"
         },
         {
             "item": "yunbeiuc:road_pole_horizontal"

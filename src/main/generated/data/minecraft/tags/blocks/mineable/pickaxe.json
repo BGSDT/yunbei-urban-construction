@@ -116,7 +116,7 @@
     "yunbeiuc:road_pole_foundations",
     "yunbeiuc:road_pole_longitudinal",
     "yunbeiuc:road_pole_horizontal",
-    "yunbeiuc:road_pol_tshape",
+    "yunbeiuc:road_pole_tshape",
     "yunbeiuc:road_light",
     "yunbeiuc:road_block",
     "yunbeiuc:road_full_of_white",
@@ -192,7 +192,7 @@
     "yunbeiuc:road_with_yellow_cross_line",
     "yunbeiuc:road_with_auto_bevel_line",
     "yunbeiuc:road_with_auto_rightangle_line",
-    "yunbeiuc:road_poles_text_display",
-    "yunbeiuc:road_poles_flag"
+    "yunbeiuc:road_pole_text_display",
+    "yunbeiuc:road_pole_flag"
   ]
 }

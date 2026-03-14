@@ -7,7 +7,7 @@
 		"2": "yunbeiuc:block/sign/sign_single_blue_2",
 		"4": "yunbeiuc:block/sign/sign_lane",
 		"5": "yunbeiuc:block/sign/sign_indication_right_turn",
-        "particle": "yunbeiuc:block/sign/sign_indication_right_turn"
+		"particle": "yunbeiuc:block/sign/sign_indication_right_turn"
 	},
 	"elements": [
 		{
@@ -206,8 +206,8 @@
 			}
 		},
 		{
-			"from": [2, 0, 15],
-			"to": [14, 16, 15.2],
+			"from": [0, 0, 15],
+			"to": [16, 16, 15.2],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8.5, 13.5, 15.2]},
 			"faces": {
 				"north": {"uv": [0, 0, 7, 2.5], "texture": "#1"},

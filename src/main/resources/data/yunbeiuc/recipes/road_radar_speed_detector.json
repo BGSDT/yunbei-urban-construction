@@ -3,7 +3,7 @@
     "category": "building",
     "ingredients": [
         {
-            "item": "yunbeiuc:yellow_concrete"
+            "item": "minecraft:yellow_concrete"
         },
         {
             "item": "minecraft:torch"

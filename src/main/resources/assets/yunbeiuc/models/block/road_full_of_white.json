@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "yunbeiuc:block/color/#ffffff"
+    "all": "yunbeiuc:block/color/ffffff"
   }
 }

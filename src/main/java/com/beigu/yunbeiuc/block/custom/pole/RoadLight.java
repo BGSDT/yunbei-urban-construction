@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
+import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -81,7 +82,7 @@ public class RoadLight extends Block {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         Item item = player.getStackInHand(hand).getItem();
-        if (item == Items.STICK) {
+        if (item == ModItems.WAND) {
             if (!world.isClient) {
                 TFType current = state.get(TF_TYPE);
                 TFType next = current.next();

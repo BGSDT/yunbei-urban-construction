@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.network;
 
-import com.beigu.yunbeiuc.block.custom.sign.data.SignWeightLimit;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignWeightLimit;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.server.network.ServerPlayerEntity;

@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
-import com.beigu.yunbeiuc.block.custom.sign.SignHeightLimitBlock;
-import com.beigu.yunbeiuc.block.custom.sign.data.SignHeightLimit;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.SignHeightLimitBlock;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignHeightLimit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

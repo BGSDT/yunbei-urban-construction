@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.block.custom.pole.flag.CustomFlag;
-import com.beigu.yunbeiuc.block.custom.pole.flag.FlagLoader;
+import com.beigu.yunbeiuc.render.json.CustomFlag;
+import com.beigu.yunbeiuc.render.json.FlagLoader;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.UpdateFlagPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

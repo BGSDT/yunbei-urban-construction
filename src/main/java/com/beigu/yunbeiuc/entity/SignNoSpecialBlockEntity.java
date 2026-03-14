@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
-import com.beigu.yunbeiuc.block.custom.sign.SignNoSpecialBlock;
-import com.beigu.yunbeiuc.block.custom.sign.data.SignNoSpecial;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.SignNoSpecialBlock;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignNoSpecial;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

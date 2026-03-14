@@ -4,7 +4,7 @@ English ([Standard](README.md)) | **中文** ([简体](README_zh.md))
 
 ---
 
-[![Downloads](https://img.shields.io/badge/downloads-YunbeiUrbanConstruction-bright?style=flat)](https://modrinth.com/mod/yunbeiuc)[![QQ Group](https://img.shields.io/badge/QQ-YunbeiUrbanConstruction-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://modrinth.com/mod/yunbeiuc)
+[![Downloads](https://img.shields.io/badge/downloads-YunbeiUrbanConstruction-bright?style=flat)](https://modrinth.com/mod/yunbeiuc)[![QQ Group](https://img.shields.io/badge/QQ-YunbeiUrbanConstruction-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://qm.qq.com/q/uDgtwOJ2Ks)
 
 **English**
 
@@ -17,7 +17,7 @@ Yunbei Urban Construction is a Minecraft mod focused on city building, providing
 Visit the [Modrinth project page](https://modrinth.com/mod/yunbeiuc) to download the latest version.
 
 **Supported Minecraft Versions:** 1.20.1  
-**Dependencies:** Fabric API, Geckolib4
+**Dependencies:** Fabric API
 
 ## License
 

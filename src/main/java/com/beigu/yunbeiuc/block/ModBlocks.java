@@ -25,9 +25,9 @@ import com.beigu.yunbeiuc.block.custom.road.GroundMarkBlock;
 import com.beigu.yunbeiuc.block.custom.road.ManholeCover;
 import com.beigu.yunbeiuc.block.custom.rubbshi.RubbishBinGrayGreen;
 import com.beigu.yunbeiuc.block.custom.rubbshi.RubbishBinWhite;
-import com.beigu.yunbeiuc.block.custom.sign.*;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsBlock;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsPavement;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.*;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -251,8 +251,8 @@ public class ModBlocks {
     public static final Block ROAD_WITH_AUTO_BEVEL_LINE = register("road_with_auto_bevel_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
     public static final Block ROAD_WITH_AUTO_RIGHTANGLE_LINE = register("road_with_auto_rightangle_line", new DirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
 
-    public static final Block ROAD_POLE_TEXT_DISPLAY = register("road_pole_text_display", new RoadPolesTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
-    public static final Block ROAD_POLE_FLAG = register("road_pole_flag", new FlagBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_TEXT_DISPLAY = register("road_pole_text_display", new RoadPolesTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_FLAG = register("road_pole_flag", new FlagBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static Block register(String id, Block block) {
         registerBlockItems(id, block);

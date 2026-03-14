@@ -3,7 +3,7 @@
     "category": "building",
     "ingredients": [
         {
-            "item": "minecraft:white_wall_banner"
+            "item": "minecraft:white_banner"
         },
         {
             "item": "yunbeiuc:road_pole_horizontal"

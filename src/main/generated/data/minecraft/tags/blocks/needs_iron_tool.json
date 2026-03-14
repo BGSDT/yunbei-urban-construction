@@ -116,9 +116,9 @@
     "yunbeiuc:road_pole_foundations",
     "yunbeiuc:road_pole_longitudinal",
     "yunbeiuc:road_pole_horizontal",
-    "yunbeiuc:road_pol_tshape",
+    "yunbeiuc:road_pole_tshape",
     "yunbeiuc:road_light",
-    "yunbeiuc:road_poles_text_display",
-    "yunbeiuc:road_poles_flag"
+    "yunbeiuc:road_pole_text_display",
+    "yunbeiuc:road_pole_flag"
   ]
 }
