@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignNoSpecialBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignNoSpecialBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateNoSpecialTypePacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateNoSpecialTypePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;

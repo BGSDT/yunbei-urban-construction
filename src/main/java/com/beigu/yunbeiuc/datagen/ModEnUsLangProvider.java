@@ -27,7 +27,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 
 
 
-        translationBuilder.add("itemGroup.yunbeiuc_item_group","Yunbei UrbanConstruction | Item");
-        translationBuilder.add("itemGroup.yunbeiuc_rb_group","Yunbei UrbanConstruction | Road Block");
+        translationBuilder.add("itemGroup.yunbeiuc_rb_group","云北城建 | 道路方块");
+        translationBuilder.add("itemGroup.yunbeiuc_sings_group","云北城建 | 道路标识");
     }
 }

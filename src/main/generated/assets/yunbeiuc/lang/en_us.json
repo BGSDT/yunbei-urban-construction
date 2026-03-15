@@ -12,6 +12,6 @@
   "item.yunbeiuc.water_wand": "Water Wand",
   "item.yunbeiuc.water_wand.success": "Successfully replaced with water source!",
   "item.yunbeiuc.water_wand.tooltip": "Right-click within the range of 3 * 3 * 3 to replace with water source",
-  "itemGroup.yunbeiuc_item_group": "Yunbei UrbanConstruction | Item",
-  "itemGroup.yunbeiuc_rb_group": "Yunbei UrbanConstruction | Road Block"
+  "itemGroup.yunbeiuc_rb_group": "云北城建 | 道路方块",
+  "itemGroup.yunbeiuc_sings_group": "云北城建 | 道路标识"
 }

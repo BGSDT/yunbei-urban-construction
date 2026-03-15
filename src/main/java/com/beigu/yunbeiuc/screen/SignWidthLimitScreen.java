@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignWidthLimitBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignWidthLimitBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateWidthLimitPacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateWidthLimitPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;

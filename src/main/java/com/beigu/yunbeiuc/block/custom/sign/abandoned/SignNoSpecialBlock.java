@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign.abandoned;
 
 import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignNoSpecial;
-import com.beigu.yunbeiuc.entity.SignNoSpecialBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignNoSpecialBlockEntity;
 import com.beigu.yunbeiuc.screen.SignNoSpecialScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;

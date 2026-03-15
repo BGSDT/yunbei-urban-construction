@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.entity;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.entity.abandoned.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;

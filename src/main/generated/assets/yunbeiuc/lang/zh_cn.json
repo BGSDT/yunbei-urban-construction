@@ -210,7 +210,6 @@
   "item.yunbeiuc.water_wand": "水源魔杖",
   "item.yunbeiuc.water_wand.success": "成功替换成水源!",
   "item.yunbeiuc.water_wand.tooltip": "右键点击3*3*3范围内替换为水源",
-  "itemGroup.yunbeiuc_item_group": "云北城建 | 物品/工具",
   "itemGroup.yunbeiuc_rb_group": "云北城建 | 道路方块",
-  "itemGroup.yunbeiuc_uc_group": "云北城建 | 其他方块"
+  "itemGroup.yunbeiuc_sings_group": "云北城建 | 道路标识"
 }

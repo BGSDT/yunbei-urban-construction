@@ -106,7 +106,7 @@ public class SignBlocks {
     public static final Block SIGN_INDICATION_PARKING_CHARGING = register("sign_indication_parking_charging", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_INDICATION_PARKING_DISABLED = register("sign_indication_parking_disabled", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_INDICATION_PARKING_SCHOOL_BUS = register("sign_indication_parking_school_bus", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block SIGN_INDICATION_PARKING_SCHOOL_BUS_FLUORESCENCE = register("sign_indication_parking_school_bus_fluorescence", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SIGN_INDICATION_PARKING_SCHOOL_BUS_FLUORESCENCE = register("sign_indication_parking_school_bus_fluorescence", new SignBlue4Block(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_INDICATION_PARKING_TAXI = register("sign_indication_parking_taxi", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_INDICATION_PAVED_SHOULDER_1 = register("sign_indication_paved_shoulder_1", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_INDICATION_PAVED_SHOULDER_2 = register("sign_indication_paved_shoulder_2", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
@@ -127,7 +127,7 @@ public class SignBlocks {
     public static final Block SIGN_INDICATION_TURN_AROUND = register("sign_indication_turn_around", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_INDICATION_YIELD_TO_ONCOMING_TRAFFIC = register("sign_indication_yield_to_oncoming_traffic", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_INDICATION_ZEBRA_CROSSING = register("sign_indication_zebra_crossing", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block SIGN_INDICATION_ZEBRA_CROSSING_FLUORESCENCE = register("sign_indication_zebra_crossing_fluorescence", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SIGN_INDICATION_ZEBRA_CROSSING_FLUORESCENCE = register("sign_indication_zebra_crossing_fluorescence", new SignBlue4Block(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_MIN_SPEED_LIMIT_005 = register("sign_min_speed_limit_005", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_MIN_SPEED_LIMIT_010 = register("sign_min_speed_limit_010", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_MIN_SPEED_LIMIT_020 = register("sign_min_speed_limit_020", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));

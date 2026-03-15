@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
+import com.beigu.yunbeiuc.network.abandoned.*;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.util.Identifier;
 

@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign.abandoned;
 
 import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignIndicationLaneDirection;
-import com.beigu.yunbeiuc.entity.SignIndicationLaneDirectionBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignIndicationLaneDirectionBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;

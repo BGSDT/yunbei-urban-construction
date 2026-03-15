@@ -264,10 +264,6 @@ public class ModBlocks {
                 new BlockItem(block, new Item.Settings()));
     }
 
-    public static Block registerWithoutItem(String id, Block block) {
-        return Registry.register(Registries.BLOCK, new Identifier(YunbeiUrbanConstruction.MOD_ID, id), block);
-    }
-
     public static void registerModBlocks() {
 
     }

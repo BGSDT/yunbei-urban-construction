@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign.abandoned;
 
 import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignGuideIntersectionAdvanceWarning;
-import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarningBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignGuideIntersectionAdvanceWarningBlockEntity;
 import com.beigu.yunbeiuc.screen.SignGuideIntersectionAdvanceWarningScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;

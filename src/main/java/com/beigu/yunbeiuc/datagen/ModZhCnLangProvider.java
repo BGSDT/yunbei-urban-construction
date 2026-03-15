@@ -266,8 +266,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY, "道路杆件文字显示屏");
         translationBuilder.add(ModBlocks.ROAD_POLE_FLAG, "道路杆件旗帜");
 
-        translationBuilder.add("itemGroup.yunbeiuc_item_group","云北城建 | 物品/工具");
         translationBuilder.add("itemGroup.yunbeiuc_rb_group","云北城建 | 道路方块");
-        translationBuilder.add("itemGroup.yunbeiuc_uc_group","云北城建 | 其他方块");
+        translationBuilder.add("itemGroup.yunbeiuc_sings_group","云北城建 | 道路标识");
     }
 }

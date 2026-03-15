@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.item;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.SignBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -17,9 +18,9 @@ public class ModItemGroups {
 
     public static final ItemGroup YUNBEIUC_ROAD_GROUP = Registry.register(
             Registries.ITEM_GROUP,
-            new Identifier(YunbeiUrbanConstruction.MOD_ID, "road"),
+            new Identifier(YunbeiUrbanConstruction.MOD_ID, "rb"),
             ItemGroup.create(null, -1)
-                    .displayName(Text.translatable("itemGroup.yunbeicu.road_blocks"))
+                    .displayName(Text.translatable("itemGroup.yunbeiuc_rb_group"))
                     .icon(() -> new ItemStack(ModBlocks.ROAD_WITH_WHITE_DOUBLE_LINE))
                     .entries((displayContext, entries) -> {
                         // 地面标识类方块
@@ -260,6 +261,303 @@ public class ModItemGroups {
 // 道路杆件展示类方块
                         entries.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY);
                         entries.add(ModBlocks.ROAD_POLE_FLAG);
+                    }).build());
+
+    public static final ItemGroup YUNBEIUC_SIGN_GROUP = Registry.register(
+            Registries.ITEM_GROUP,
+            new Identifier(YunbeiUrbanConstruction.MOD_ID, "sings"),
+            ItemGroup.create(null, -1)
+                    .displayName(Text.translatable("itemGroup.yunbeiuc_sings_group"))
+                    .icon(() -> new ItemStack(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10))
+                    .entries((displayContext, entries) -> {
+                        // 1. 重量限制标识
+                        entries.add(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10);
+                        entries.add(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_20);
+                        entries.add(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_30);
+                        entries.add(SignBlocks.SIGN_WEIGHT_LIMIT_10);
+                        entries.add(SignBlocks.SIGN_WEIGHT_LIMIT_20);
+                        entries.add(SignBlocks.SIGN_WEIGHT_LIMIT_30);
+                        entries.add(SignBlocks.SIGN_WEIGHT_LIMIT_40);
+
+                        // 2. 速度限制标识
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_005);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_010);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_020);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_030);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_040);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_050);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_060);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_070);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_080);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_090);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_100);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_110);
+                        entries.add(SignBlocks.SIGN_SPEED_LIMIT_120);
+
+                        // 3. 最低速度限制标识
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_005);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_010);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_020);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_030);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_040);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_050);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_060);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_070);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_080);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_090);
+                        entries.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_100);
+
+                        // 4. 取消速度限制标识
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_005);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_010);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_020);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_030);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_040);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_050);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_060);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_070);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_080);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_090);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_100);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_110);
+                        entries.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_120);
+
+                        // 5. 高度/宽度限制标识
+                        entries.add(SignBlocks.SIGN_HEIGHT_LIMIT_20);
+                        entries.add(SignBlocks.SIGN_HEIGHT_LIMIT_25);
+                        entries.add(SignBlocks.SIGN_HEIGHT_LIMIT_30);
+                        entries.add(SignBlocks.SIGN_HEIGHT_LIMIT_35);
+                        entries.add(SignBlocks.SIGN_HEIGHT_LIMIT_40);
+                        entries.add(SignBlocks.SIGN_HEIGHT_LIMIT_45);
+                        entries.add(SignBlocks.SIGN_WIDTH_LIMIT_20);
+                        entries.add(SignBlocks.SIGN_WIDTH_LIMIT_25);
+                        entries.add(SignBlocks.SIGN_WIDTH_LIMIT_30);
+                        entries.add(SignBlocks.SIGN_WIDTH_LIMIT_35);
+                        entries.add(SignBlocks.SIGN_WIDTH_LIMIT_40);
+                        entries.add(SignBlocks.SIGN_WIDTH_LIMIT_45);
+
+                        // 6. 车道方向标识
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_HOV);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_BRT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_BRT_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_BRT_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_BRT_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_TEXT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_TEXT_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_TEXT_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_TEXT_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LEFT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LEFT_TURN_AROUND);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_NON_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_NON_MOTOR_VEHICLES_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_NON_MOTOR_VEHICLES_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_NON_MOTOR_VEHICLES_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SINGLE_LEFT_TURN_AROUND);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT_LEFT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_TRAM_STRAIGHT);
+
+                        // 7. 禁令标识
+                        entries.add(SignBlocks.SIGN_NO_ALL);
+                        entries.add(SignBlocks.SIGN_NO_ANIMAL_DRAWN_CART);
+                        entries.add(SignBlocks.SIGN_NO_ELECTRIC_VEHICLE);
+                        entries.add(SignBlocks.SIGN_NO_ENTRY);
+                        entries.add(SignBlocks.SIGN_NO_HAZARDOUS_MATERIALS_TRANSPORT_VEHICLE);
+                        entries.add(SignBlocks.SIGN_NO_HONK_HORN);
+                        entries.add(SignBlocks.SIGN_NO_HUMAN_POWERED_CARGO_TRICYCLE);
+                        entries.add(SignBlocks.SIGN_NO_HUMAN_POWERED_PASSENGER_TRICYCLE);
+                        entries.add(SignBlocks.SIGN_NO_LARGE_BUS);
+                        entries.add(SignBlocks.SIGN_NO_LEFT_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_NO_LEFT_TURN);
+                        entries.add(SignBlocks.SIGN_NO_MOTORCYCLE);
+                        entries.add(SignBlocks.SIGN_NO_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_NO_NON_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_NO_OVERTAKE);
+                        entries.add(SignBlocks.SIGN_NO_PARKING);
+                        entries.add(SignBlocks.SIGN_NO_PARKING_LONG_TIME);
+                        entries.add(SignBlocks.SIGN_NO_PEDESTRIAN);
+                        entries.add(SignBlocks.SIGN_NO_RICKSHAW);
+                        entries.add(SignBlocks.SIGN_NO_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_NO_SINGLE_LEFT_TURN_AROUND);
+                        entries.add(SignBlocks.SIGN_NO_SMALL_PASSENGER_CAR);
+                        entries.add(SignBlocks.SIGN_NO_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_NO_STRAIGHT_LEFT_TURN);
+                        entries.add(SignBlocks.SIGN_NO_STRAIGHT_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_NO_THREE_WHEELED_VEHICLE);
+                        entries.add(SignBlocks.SIGN_NO_TRACTOR);
+                        entries.add(SignBlocks.SIGN_NO_TRAILER);
+                        entries.add(SignBlocks.SIGN_NO_TRICYCLE);
+                        entries.add(SignBlocks.SIGN_NO_TRUCK);
+
+                        // 8. 警告标识
+                        entries.add(SignBlocks.SIGN_WARING_LESS_3_TO_2);
+                        entries.add(SignBlocks.SIGN_WARING_LESS_4_TO_3);
+                        entries.add(SignBlocks.SIGN_WARNING_ACCIDENT);
+                        entries.add(SignBlocks.SIGN_WARNING_ACCIDENT_PRONE_ROAD);
+                        entries.add(SignBlocks.SIGN_WARNING_CAMEL_BACK_BRIDGE);
+                        entries.add(SignBlocks.SIGN_WARNING_CHILDREN);
+                        entries.add(SignBlocks.SIGN_WARNING_CHILDREN_FLUORESCENCE);
+                        entries.add(SignBlocks.SIGN_WARNING_CONFLUENCE_LEFT);
+                        entries.add(SignBlocks.SIGN_WARNING_CONFLUENCE_RIGHT);
+                        entries.add(SignBlocks.SIGN_WARNING_CONSTRUCTION);
+                        entries.add(SignBlocks.SIGN_WARNING_CONTINUOUS_DOWNHILL);
+                        entries.add(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_1);
+                        entries.add(SignBlocks.SIGN_WARNING_CONTINUOU_WINDING_ROADS_2);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_1);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_2);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_3);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_4);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_5);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_6);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_7);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_8);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_9);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_10);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSING_11);
+                        entries.add(SignBlocks.SIGN_WARNING_CROSSWIND);
+                        entries.add(SignBlocks.SIGN_WARNING_DANGEROUS);
+                        entries.add(SignBlocks.SIGN_WARNING_DETOUR_DOUBLE);
+                        entries.add(SignBlocks.SIGN_WARNING_DETOUR_LEFT);
+                        entries.add(SignBlocks.SIGN_WARNING_DETOUR_RIGHT);
+                        entries.add(SignBlocks.SIGN_WARNING_DISABLED);
+                        entries.add(SignBlocks.SIGN_WARNING_DISABLED_FLUORESCENCE);
+                        entries.add(SignBlocks.SIGN_WARNING_DISTANCE_BETWEEN_VEHICLES);
+                        entries.add(SignBlocks.SIGN_WARNING_ELECTRIC_VEHICLE);
+                        entries.add(SignBlocks.SIGN_WARNING_EMBANKMENT_ROAD_LEFT);
+                        entries.add(SignBlocks.SIGN_WARNING_EMBANKMENT_ROAD_RIGHT);
+                        entries.add(SignBlocks.SIGN_WARNING_EMERGENCY_LANE_1);
+                        entries.add(SignBlocks.SIGN_WARNING_EMERGENCY_LANE_2);
+                        entries.add(SignBlocks.SIGN_WARNING_FALLING_ROCKS_LEFT);
+                        entries.add(SignBlocks.SIGN_WARNING_FALLING_ROCKS_RIGHT);
+                        entries.add(SignBlocks.SIGN_WARNING_LIVESTOCK);
+                        entries.add(SignBlocks.SIGN_WARNING_NARROW_BRIDGE);
+                        entries.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_DOUBLE);
+                        entries.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_LEFT);
+                        entries.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_RIGHT);
+                        entries.add(SignBlocks.SIGN_WARNING_NON_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_WARNING_PERILOUS_ROAD_ALONG_THE_MOUNTAIN_LEFT);
+                        entries.add(SignBlocks.SIGN_WARNING_PERILOUS_ROAD_ALONG_THE_MOUNTAIN_RIGHT);
+                        entries.add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_1);
+                        entries.add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_2);
+                        entries.add(SignBlocks.SIGN_WARNING_ROAD_ICY);
+                        entries.add(SignBlocks.SIGN_WARNING_ROAD_UNEVEN);
+                        entries.add(SignBlocks.SIGN_WARNING_ROAD_WET);
+                        entries.add(SignBlocks.SIGN_WARNING_SHARP_TURN_1);
+                        entries.add(SignBlocks.SIGN_WARNING_SHARP_TURN_2);
+                        entries.add(SignBlocks.SIGN_WARNING_SLIPPERY);
+                        entries.add(SignBlocks.SIGN_WARNING_SOMEONE_GUARDING_THE_RAILWAY_CROSSING);
+                        entries.add(SignBlocks.SIGN_WARNING_SPEED_BUMP);
+                        entries.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_DOWN);
+                        entries.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_UP);
+                        entries.add(SignBlocks.SIGN_WARNING_TIDAL_LANE);
+                        entries.add(SignBlocks.SIGN_WARNING_TRAFFIC_LIGHTS);
+                        entries.add(SignBlocks.SIGN_WARNING_TUNNEL);
+                        entries.add(SignBlocks.SIGN_WARNING_TWO_WAY_TRAFFIC);
+                        entries.add(SignBlocks.SIGN_WARNING_UNMANNED_GUARDING_THE_RAILWAY_CROSSING);
+                        entries.add(SignBlocks.SIGN_WARNING_VEHICLES_QUEUED_AHEAD);
+                        entries.add(SignBlocks.SIGN_WARNING_VILLAGE);
+                        entries.add(SignBlocks.SIGN_WARNING_WEATHER_FOGGY);
+                        entries.add(SignBlocks.SIGN_WARNING_WEATHER_RAINY_SNOWY);
+                        entries.add(SignBlocks.SIGN_WARNING_WEATHER_THUNDER);
+                        entries.add(SignBlocks.SIGN_WARNING_WILDLIFE);
+                        entries.add(SignBlocks.SIGN_WARNING_ZEBRA_CROSSING);
+                        entries.add(SignBlocks.SIGN_WARNING_ZEBRA_CROSSING_FLUORESCENCE);
+
+                        // 9. 指示标识
+                        entries.add(SignBlocks.SIGN_INDICATION_ELECTRIC_VEHICLE);
+                        entries.add(SignBlocks.SIGN_INDICATION_HEADLIGHTS);
+                        entries.add(SignBlocks.SIGN_INDICATION_HONK_HORN);
+                        entries.add(SignBlocks.SIGN_INDICATION_LEFT_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_LEFT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_LEFT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_INDICATION_NON_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_INDICATION_OK_TRUCK);
+                        entries.add(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_LEFT_RIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_1);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_2);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_3);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_4);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_BUS);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_CHARGING);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_DISABLED);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_SCHOOL_BUS);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_SCHOOL_BUS_FLUORESCENCE);
+                        entries.add(SignBlocks.SIGN_INDICATION_PARKING_TAXI);
+                        entries.add(SignBlocks.SIGN_INDICATION_PAVED_SHOULDER_1);
+                        entries.add(SignBlocks.SIGN_INDICATION_PAVED_SHOULDER_2);
+                        entries.add(SignBlocks.SIGN_INDICATION_PAVED_SHOULDER_3);
+                        entries.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN);
+                        entries.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_1);
+                        entries.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_2);
+                        entries.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_3);
+                        entries.add(SignBlocks.SIGN_INDICATION_PROMOTION_DRIVE_RIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_PROMOTION_NON_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.SIGN_INDICATION_RIGHT_SIDE_MEDIAN_STRIP);
+                        entries.add(SignBlocks.SIGN_INDICATION_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_ROUNDABOUT);
+                        entries.add(SignBlocks.SIGN_INDICATION_SCHOOL_BUS_WUXI);
+                        entries.add(SignBlocks.SIGN_INDICATION_STRAIGHT);
+                        entries.add(SignBlocks.SIGN_INDICATION_STRAIGHT_LEFT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_STRAIGHT_RIGHT_TURN);
+                        entries.add(SignBlocks.SIGN_INDICATION_TURN_AROUND);
+                        entries.add(SignBlocks.SIGN_INDICATION_YIELD_TO_ONCOMING_TRAFFIC);
+                        entries.add(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING);
+                        entries.add(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING_FLUORESCENCE);
+
+                        // 10. 其他标识
+                        entries.add(SignBlocks.SIGN_CANCEL_OVERTAKE);
+                        entries.add(SignBlocks.SIGN_CHECK);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_EAST);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_NORTH);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_SOUTH);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_WEST);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_EAST);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_NORTH);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_SOUTH);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_WEST);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8);
+                        entries.add(SignBlocks.SIGN_PORT_CHECK);
+                        entries.add(SignBlocks.SIGN_SLOW);
+                        entries.add(SignBlocks.SIGN_STOP);
+                        entries.add(SignBlocks.SIGN_WRONG_WAY);
+                        entries.add(SignBlocks.SIGN_YIELD);
+                        entries.add(SignBlocks.SIGN_YIELD_TO_ONCOMING_TRAFFIC);
+
+                        // 11. 区域标识
+                        entries.add(SignBlocks.ZONES_BOARD_BUS);
+                        entries.add(SignBlocks.ZONES_BOARD_CHARGING);
+                        entries.add(SignBlocks.ZONES_BOARD_COMPANY);
+                        entries.add(SignBlocks.ZONES_BOARD_DISABLED);
+                        entries.add(SignBlocks.ZONES_BOARD_NON_MOTOR_VEHICLES);
+                        entries.add(SignBlocks.ZONES_BOARD_SCHOOL);
+                        entries.add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_1);
+                        entries.add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2);
+                        entries.add(SignBlocks.ZONES_BOARD_TAXI);
                     }).build());
 
     public static void registerGroups() {

@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignIndicationDirectionBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignIndicationDirectionBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateIndicationDirectionPacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateIndicationDirectionPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;

@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign.abandoned;
 
 import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignWidthLimit;
-import com.beigu.yunbeiuc.entity.SignWidthLimitBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignWidthLimitBlockEntity;
 import com.beigu.yunbeiuc.screen.SignWidthLimitScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;

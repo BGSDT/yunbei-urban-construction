@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign.abandoned;
 
 import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignSpeedLimit;
-import com.beigu.yunbeiuc.entity.SignSpeedLimitBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignSpeedLimitBlockEntity;
 import com.beigu.yunbeiuc.screen.SignSpeedLimitScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;

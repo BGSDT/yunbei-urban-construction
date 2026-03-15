@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign.abandoned;
 
 import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignNoEntryForVehicles;
-import com.beigu.yunbeiuc.entity.SignNoEntryForVehiclesBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignNoEntryForVehiclesBlockEntity;
 import com.beigu.yunbeiuc.screen.SignNoEntryForVehiclesScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
