@@ -63,17 +63,24 @@ public class TrafficBarrierObliqueBlock extends Block {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        boolean hasBottom = world.getBlockState(pos.down()).isOf(this);
-        if (hasBottom) {
+        boolean top = world.getBlockState(pos.up()).isOf(this);
+        boolean bottom = world.getBlockState(pos.down()).isOf(this);
+        if (top && bottom) {
+            return state.with(TYPE, Type.MIDDLE);
+        } else if (top) {
+            return state.with(TYPE, Type.BOTTOM);
+        } else if (bottom) {
             return state.with(TYPE, Type.UP);
         } else {
-            return state.with(TYPE, Type.BOTTOM);
+            return state.with(TYPE, Type.SINGLE);
         }
     }
 
     public enum Type implements StringIdentifiable{
+        SINGLE("single"),
         UP("up"),
-        BOTTOM("bottom");
+        BOTTOM("bottom"),
+        MIDDLE("middle");
 
         private final String id;
 

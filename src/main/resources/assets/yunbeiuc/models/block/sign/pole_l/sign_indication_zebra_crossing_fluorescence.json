@@ -3,7 +3,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"1": "yunbeiuc:block/sign/sign_single_1",
-		"2": "yunbeiuc:block/sign/sign_single_blue_3",
+		"2": "yunbeiuc:block/sign/sign_single_blue_2",
 		"3": "yunbeiuc:block/sign/sign_indication_zebra_crossing",
 		"4": "yunbeiuc:block/sign/sign_fluorescence",
 		"particle": "yunbeiuc:block/sign/sign_indication_zebra_crossing"

@@ -5,11 +5,15 @@
 	"name": "YunbeiUrbanConstruction",
     "description": "This is an UrbanConstruction!",
 	"authors": [
-		"Me!"
+		"北咕",
+		"jstxjf_",
+		"潇湘-迷蝎",
+		"YunShi",
+		"SHRT-YX"
 	],
    "contact": {
       "homepage": "https://bgsdt.github.io/",
-      "sources": "https://github.com/bgsdt/yunbeiurbanconstruction-template-1.20.1"
+      "sources": "https://github.com/BGSDT/yunbei-urban-construction"
    },
 	"license": "MIT",
 	"icon": "assets/yunbeiuc/icon.png",
@@ -29,11 +33,11 @@
 		"yunbeiuc.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.17.3",
+		"fabricloader": ">=0.17.2",
 		"minecraft": "~1.20.1",
 		"java": ">=17",
 		"fabric-api": "*",
-        "geckolib": ">=4.0.1"
+		"filters": ">=1.0.0"
     },
 	"suggests": {
 		"another-mod": "*",
@@ -42,7 +46,6 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.discord": "https://discord.gg/jEGF5fb",
 				"modmenu.modrinth": "https://modrinth.com/mod/yunbeiuc"
 			},
 			"update_checker": true

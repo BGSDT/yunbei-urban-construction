@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignWidthLimitBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignWidthLimitBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateWidthLimitPacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateWidthLimitPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,7 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import com.beigu.yunbeiuc.block.custom.sign.data.SignWidthLimit;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignWidthLimit;
 
 import java.util.ArrayList;
 import java.util.List;

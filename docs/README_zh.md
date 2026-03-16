@@ -4,7 +4,7 @@ English ([Standard](README.md)) | **中文** ([简体](README_zh.md))
 
 ---
 
-[![Downloads](https://img.shields.io/badge/downloads-云北城建-bright?style=flat)](https://modrinth.com/mod/yunbeiuc)[![QQ群](https://img.shields.io/badge/QQ-云北城建-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://modrinth.com/mod/yunbeiuc)
+[![Downloads](https://img.shields.io/badge/downloads-云北城建-bright?style=flat)](https://modrinth.com/mod/yunbeiuc)[![QQ群](https://img.shields.io/badge/QQ-云北城建-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://qm.qq.com/q/uDgtwOJ2Ks)
 
 **中文** (**简体**)
 
@@ -17,7 +17,7 @@ English ([Standard](README.md)) | **中文** ([简体](README_zh.md))
 请前往 [Modrinth 项目页](https://modrinth.com/mod/yunbeiuc) 下载最新版本。
 
 **支持的游戏版本：** 1.20.1
-**前置模组：** Fabric API、Geckolib4
+**前置模组：** Fabric API
 
 ## 开源协议
 

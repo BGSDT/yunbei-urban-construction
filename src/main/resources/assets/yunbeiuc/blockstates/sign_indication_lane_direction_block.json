@@ -1,114 +1,114 @@
 {
   "variants": {
     "facing=north,lane_direction_type=sign_indication_lane_direction_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn"
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn"
     },
     "facing=south,lane_direction_type=sign_indication_lane_direction_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn",
       "y": 180
     },
     "facing=east,lane_direction_type=sign_indication_lane_direction_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn",
       "y": 90
     },
     "facing=west,lane_direction_type=sign_indication_lane_direction_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn",
       "y": 270
     },
 
     "facing=north,lane_direction_type=sign_indication_lane_direction_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_right_turn"
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_right_turn"
     },
     "facing=south,lane_direction_type=sign_indication_lane_direction_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_right_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_right_turn",
       "y": 180
     },
     "facing=east,lane_direction_type=sign_indication_lane_direction_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_right_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_right_turn",
       "y": 90
     },
     "facing=west,lane_direction_type=sign_indication_lane_direction_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_right_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_right_turn",
       "y": 270
     },
 
     "facing=north,lane_direction_type=sign_indication_lane_direction_straight": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight"
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight"
     },
     "facing=south,lane_direction_type=sign_indication_lane_direction_straight": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight",
       "y": 180
     },
     "facing=east,lane_direction_type=sign_indication_lane_direction_straight": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight",
       "y": 90
     },
     "facing=west,lane_direction_type=sign_indication_lane_direction_straight": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight",
       "y": 270
     },
 
     "facing=north,lane_direction_type=sign_indication_lane_direction_straight_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_left_turn"
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_left_turn"
     },
     "facing=south,lane_direction_type=sign_indication_lane_direction_straight_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_left_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_left_turn",
       "y": 180
     },
     "facing=east,lane_direction_type=sign_indication_lane_direction_straight_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_left_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_left_turn",
       "y": 90
     },
     "facing=west,lane_direction_type=sign_indication_lane_direction_straight_left_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_left_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_left_turn",
       "y": 270
     },
 
     "facing=north,lane_direction_type=sign_indication_lane_direction_straight_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_right_turn"
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_right_turn"
     },
     "facing=south,lane_direction_type=sign_indication_lane_direction_straight_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_right_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_right_turn",
       "y": 180
     },
     "facing=east,lane_direction_type=sign_indication_lane_direction_straight_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_right_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_right_turn",
       "y": 90
     },
     "facing=west,lane_direction_type=sign_indication_lane_direction_straight_right_turn": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_straight_right_turn",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_straight_right_turn",
       "y": 270
     },
 
     "facing=north,lane_direction_type=sign_indication_lane_direction_single_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_single_left_turn_around"
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_single_left_turn_around"
     },
     "facing=south,lane_direction_type=sign_indication_lane_direction_single_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_single_left_turn_around",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_single_left_turn_around",
       "y": 180
     },
     "facing=east,lane_direction_type=sign_indication_lane_direction_single_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_single_left_turn_around",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_single_left_turn_around",
       "y": 90
     },
     "facing=west,lane_direction_type=sign_indication_lane_direction_single_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_single_left_turn_around",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_single_left_turn_around",
       "y": 270
     },
 
     "facing=north,lane_direction_type=sign_indication_lane_direction_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn_around"
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn_around"
     },
     "facing=south,lane_direction_type=sign_indication_lane_direction_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn_around",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn_around",
       "y": 180
     },
     "facing=east,lane_direction_type=sign_indication_lane_direction_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn_around",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn_around",
       "y": 90
     },
     "facing=west,lane_direction_type=sign_indication_lane_direction_left_turn_around": {
-      "model": "yunbeiuc:block/sign_indication_lane_direction_left_turn_around",
+      "model": "yunbeiuc:block/sign/normal/sign_indication_lane_direction_left_turn_around",
       "y": 270
     }
   }

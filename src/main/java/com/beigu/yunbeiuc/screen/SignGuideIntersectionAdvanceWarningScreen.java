@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarningBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignGuideIntersectionAdvanceWarningBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateWarningTypePacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateWarningTypePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,7 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import com.beigu.yunbeiuc.block.custom.sign.data.SignGuideIntersectionAdvanceWarning;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignGuideIntersectionAdvanceWarning;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -430,8 +430,8 @@ public class SignGuideIntersectionAdvanceWarningScreen extends Screen {
         net.minecraft.client.MinecraftClient client = net.minecraft.client.MinecraftClient.getInstance();
         if (client.world != null) {
             var blockEntity = client.world.getBlockEntity(blockPos);
-            if (blockEntity instanceof com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarningBlockEntity) {
-                com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarningBlockEntity entity = (com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarningBlockEntity) blockEntity;
+            if (blockEntity instanceof SignGuideIntersectionAdvanceWarningBlockEntity) {
+                SignGuideIntersectionAdvanceWarningBlockEntity entity = (SignGuideIntersectionAdvanceWarningBlockEntity) blockEntity;
                 entity.setWarningType(selectedWarningType);
                 // 文本编辑功能已移除：不再修改文本/颜色/字号
              }

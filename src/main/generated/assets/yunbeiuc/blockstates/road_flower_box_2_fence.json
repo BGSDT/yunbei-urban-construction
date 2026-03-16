@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/road_flower_box_2_fence",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/road_flower_box_2_fence"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/road_flower_box_2_fence",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/road_flower_box_2_fence",
+      "y": 270
+    }
+  }
+}

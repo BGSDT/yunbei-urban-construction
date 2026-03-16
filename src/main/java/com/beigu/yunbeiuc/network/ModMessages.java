@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
+import com.beigu.yunbeiuc.network.abandoned.*;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.util.Identifier;
 
@@ -85,16 +86,6 @@ public class ModMessages {
 
         ServerPlayNetworking.registerGlobalReceiver(UPDATE_FLAG, (server, player, handler, buf, responseSender) -> {
             UpdateFlagPacket packet = new UpdateFlagPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(ENTITY_CONVERSION, (server, player, handler, buf, responseSender) -> {
-            EntityConversionPacket packet = new EntityConversionPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(TRANSFORM_UPDATE, (server, player, handler, buf, responseSender) -> {
-            TransformUpdatePacket packet = new TransformUpdatePacket(buf);
             server.execute(() -> packet.apply(player));
         });
     }

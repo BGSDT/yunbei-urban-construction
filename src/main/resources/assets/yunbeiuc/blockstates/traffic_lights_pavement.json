@@ -1,0 +1,35 @@
+{
+  "variants": {
+    "facing=east,light_pavement_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_red",
+      "y": 90
+    },
+    "facing=north,light_pavement_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_red"
+    },
+    "facing=south,light_pavement_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_red",
+      "y": 180
+    },
+    "facing=west,light_pavement_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_red",
+      "y": 270
+    },
+    "facing=east,light_pavement_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_green",
+      "y": 90
+    },
+    "facing=north,light_pavement_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_green"
+    },
+    "facing=south,light_pavement_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_green",
+      "y": 180
+    },
+    "facing=west,light_pavement_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_pavement_green",
+      "y": 270
+    }
+  }
+}
+    

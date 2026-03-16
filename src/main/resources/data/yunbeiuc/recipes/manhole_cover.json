@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:gray_concrete"
+        },
+        "B": {
+            "item": "minecraft:iron_block"
+        }
+    },
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "result": {
+        "item": "yunbeiuc:manhole_cover",
+        "count": 9
+    }
+}

@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.render;
 
-import com.beigu.yunbeiuc.block.custom.poles.FlagBlock;
+import com.beigu.yunbeiuc.block.custom.pole.FlagBlock;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -24,9 +24,6 @@ public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEnt
         try {
             matrices.push();
 
-            // 调整位置 - 在方块中心
-            matrices.translate(0.5, 0.75, 0.5);
-
             // 旗帜尺寸
             float flagWidth = 0.6f;
             float flagHeight = flagWidth * 2.67f;
@@ -34,9 +31,22 @@ public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEnt
             // 纹理路径
             Identifier texture = new Identifier("yunbeiuc", "textures/block/flags/" + flagId + ".png");
 
-            // 根据方块朝向渲染两个相对的面
             Direction facing = entity.getCachedState().get(FlagBlock.FACING);
-            renderTwoFaces(matrices, vertexConsumers, texture, flagWidth, flagHeight, facing, light, overlay);
+
+            if(facing == Direction.WEST || facing == Direction.EAST){
+                matrices.translate(0.5, 0.5, -0.3);
+                renderTwoFaces(matrices, vertexConsumers, texture, flagWidth, flagHeight, facing, light, overlay);
+
+                matrices.translate(0.0, 0.0, 1.6);
+                renderTwoFaces(matrices, vertexConsumers, texture, flagWidth, flagHeight, facing, light, overlay);
+            }else{
+                matrices.translate(-0.3, 0.5, 0.5);
+                renderTwoFaces(matrices, vertexConsumers, texture, flagWidth, flagHeight, facing, light, overlay);
+
+                matrices.translate(1.6, 0.0, 0.0);
+                renderTwoFaces(matrices, vertexConsumers, texture, flagWidth, flagHeight, facing, light, overlay);
+            }
+
 
             matrices.pop();
 
@@ -55,11 +65,11 @@ public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEnt
         float halfHeight = height / 2;
 
         // 渲染正面（方块朝向的面）
-        renderFace(entry, vertexConsumer, facing, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.505f, light, overlay);
+        renderFace(entry, vertexConsumer, facing, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.0f, light, overlay);
 
         // 渲染背面（与正面相对的面）
         Direction backFace = facing.getOpposite();
-        renderFace(entry, vertexConsumer, backFace, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.505f, light, overlay);
+        renderFace(entry, vertexConsumer, backFace, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.0f, light, overlay);
     }
 
     private void renderFace(MatrixStack.Entry entry, VertexConsumer consumer, Direction face,

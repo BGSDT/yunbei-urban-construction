@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/road_pole_flag",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/road_pole_flag"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/road_pole_flag",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/road_pole_flag",
+      "y": 270
+    }
+  }
+}

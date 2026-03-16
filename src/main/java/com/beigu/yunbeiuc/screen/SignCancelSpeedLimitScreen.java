@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignCancelSpeedLimitBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignCancelSpeedLimitBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateCancelSpeedLimitPacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateCancelSpeedLimitPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,7 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import com.beigu.yunbeiuc.block.custom.sign.data.SignCancelSpeedLimit;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignCancelSpeedLimit;
 
 import java.util.ArrayList;
 import java.util.List;

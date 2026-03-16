@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignHeightLimitBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignHeightLimitBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateHeightLimitPacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateHeightLimitPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,7 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import com.beigu.yunbeiuc.block.custom.sign.data.SignHeightLimit;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignHeightLimit;
 
 import java.util.ArrayList;
 import java.util.List;

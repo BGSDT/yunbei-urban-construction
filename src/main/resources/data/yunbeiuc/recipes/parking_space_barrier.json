@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:yellow_concrete"
+        },
+        "B": {
+            "item": "minecraft:black_concrete"
+        },
+        "C": {
+            "item": "yunbeiuc:road_pole_horizontal"
+        }
+    },
+    "pattern": [
+        "CBC",
+        "A A"
+    ],
+    "result": {
+        "item": "yunbeiuc:parking_space_barrier",
+        "count": 5
+    }
+}

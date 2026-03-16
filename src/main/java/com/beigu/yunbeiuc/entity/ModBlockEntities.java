@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.entity;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.entity.abandoned.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
@@ -42,12 +43,8 @@ public class ModBlockEntities {
     public static final BlockEntityType<SignGuideIntersectionAdvanceWarningBlockEntity> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK_ENTITY =
             BlockEntityType.Builder.create(SignGuideIntersectionAdvanceWarningBlockEntity::new, ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK).build(null);
 
-    public static BlockEntityType<SimpleSignEntity> SIMPLE_SIGN_ENTITY;
     public static BlockEntityType<RoadPolesTextDisplayEntity> ROAD_POLES_TEXT_DISPLAY_ENTITY;
     public static BlockEntityType<FlagBlockEntity> FLAG_BLOCK_ENTITY;
-    public static BlockEntityType<CrashBarrierConcreteEntity> CRASH_BARRIER_CONCRETE_ENTITY;
-    public static BlockEntityType<RoadConstructionBarrierBlueEntity> ROAD_CONSTRUCTION_BARRIER_BLUE_ENTITY;
-    public static BlockEntityType<TransformableBlockEntity> TRANSFORMABLE_BLOCK_ENTITY;
     public static void registerBlockEntities() {
         Registry.register(Registries.BLOCK_ENTITY_TYPE,
                 new Identifier(YunbeiUrbanConstruction.MOD_ID, "sign_speed_limit_block_entity"),
@@ -93,40 +90,16 @@ public class ModBlockEntities {
                 new Identifier(YunbeiUrbanConstruction.MOD_ID, "sign_guide_intersection_advance_warning_block_entity"),
                 SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK_ENTITY);
 
-        SIMPLE_SIGN_ENTITY = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                new Identifier("yunbeiuc", "simple_sign_entity"),
-                FabricBlockEntityTypeBuilder.create(SimpleSignEntity::new, ModBlocks.SIMPLE_SIGN_BLOCK).build()
-        );
-
         ROAD_POLES_TEXT_DISPLAY_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
                 new Identifier("yunbeiuc", "road_poles_text_display_entity"),
-                FabricBlockEntityTypeBuilder.create(RoadPolesTextDisplayEntity::new, ModBlocks.ROAD_POLES_TEXT_DISPLAY).build()
+                FabricBlockEntityTypeBuilder.create(RoadPolesTextDisplayEntity::new, ModBlocks.ROAD_POLE_TEXT_DISPLAY).build()
         );
 
         FLAG_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
                 new Identifier("yunbeiuc", "flag_block_entity"),
-                FabricBlockEntityTypeBuilder.create(FlagBlockEntity::new, ModBlocks.ROAD_POLES_FLAG).build()
-        );
-
-        CRASH_BARRIER_CONCRETE_ENTITY = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                new Identifier("yunbeiuc", "crash_barrier_concrete_entity"),
-                FabricBlockEntityTypeBuilder.create(CrashBarrierConcreteEntity::new, ModBlocks.CRASH_BARRIER_CONCRETE).build()
-        );
-
-        ROAD_CONSTRUCTION_BARRIER_BLUE_ENTITY = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                new Identifier("yunbeiuc", "road_construction_barrier_blue_entity"),
-                FabricBlockEntityTypeBuilder.create(RoadConstructionBarrierBlueEntity::new, ModBlocks.ROAD_CONSTRUCTION_BARRIER_BLUE).build()
-        );
-
-        TRANSFORMABLE_BLOCK_ENTITY = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                new Identifier(YunbeiUrbanConstruction.MOD_ID, "transformable_block_entity"),
-                FabricBlockEntityTypeBuilder.create(TransformableBlockEntity::new).build()
+                FabricBlockEntityTypeBuilder.create(FlagBlockEntity::new, ModBlocks.ROAD_POLE_FLAG).build()
         );
     }
 }

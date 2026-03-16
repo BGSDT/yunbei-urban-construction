@@ -1,0 +1,23 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "yunbeiuc:block/road/manhole_cover",
+		"particle": "yunbeiuc:block/road/manhole_cover"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 0.1, 16],
+			"faces": {
+				"north": {"uv": [8, 0, 16, 0.0625], "texture": "#missing"},
+				"east": {"uv": [8, 0.5, 16, 0.5625], "texture": "#missing"},
+				"south": {"uv": [8, 1, 16, 1.0625], "texture": "#missing"},
+				"west": {"uv": [8, 1.5, 16, 1.5625], "texture": "#missing"},
+				"up": {"uv": [16, 16, 0, 0], "texture": "#0"},
+				"down": {"uv": [8, 8, 0, 16], "texture": "#missing"}
+			}
+		}
+	]
+}

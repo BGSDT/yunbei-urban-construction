@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.SignNoSpecialBlockEntity;
+import com.beigu.yunbeiuc.entity.abandoned.SignNoSpecialBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateNoSpecialTypePacket;
+import com.beigu.yunbeiuc.network.abandoned.UpdateNoSpecialTypePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,7 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import com.beigu.yunbeiuc.block.custom.sign.data.SignNoSpecial;
+import com.beigu.yunbeiuc.block.custom.sign.abandoned.data.SignNoSpecial;
 
 import java.util.ArrayList;
 import java.util.List;
