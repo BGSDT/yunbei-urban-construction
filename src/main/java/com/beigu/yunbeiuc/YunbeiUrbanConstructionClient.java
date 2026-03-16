@@ -13,19 +13,12 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 public class YunbeiUrbanConstructionClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_SPEED_LIMIT_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_CANCEL_SPEED_LIMIT_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_NO_ENTRY_FOR_VEHICLES_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_NO_DIRECTION_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_HEIGHT_LIMIT_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_WIDTH_LIMIT_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_WEIGHT_LIMIT_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_NO_SPECIAL_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_INDICATION_DIRECTION_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_INDICATION_LANE_DIRECTION_BLOCK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET_POLE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_LEFT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getCutout());
 
         // 交通标志方块渲染层注册（SignBlocks）
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10, RenderLayer.getCutout());

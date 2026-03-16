@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.lights;
 
+import com.beigu.yunbeiuc.block.ModBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,10 +32,10 @@ public class TrafficLightsBlock extends Block {
         super.appendTooltip(stack, world, tooltip, options);
     }
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(4, -2, 4, 12, 18, 16);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4, -2, 0, 12, 18, 12);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(0, -2, 4, 12, 18, 12);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(4, -2, 4, 16, 18, 12);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(4.25, -1.5, 12.25, 11.75, 17.5, 22);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(-1.5, -1.5, 4.25, 8.5, 17.5, 11.75);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.25, -1.5, -1.5, 11.75, 17.5, 8.5);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(12.25, -1.5, 4.25, 22, 17.5, 11.75);
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.of("light_state", LightState.class);
 
@@ -77,16 +78,8 @@ public class TrafficLightsBlock extends Block {
         return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
-    @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack heldItem = player.getStackInHand(hand);
-        // 直接使用 ModItems.WAND 判断是否为魔杖
-        if (heldItem.isOf(ModItems.WAND)) {
-            LightState nextState = state.get(LIGHT_STATE).next();
-            world.setBlockState(pos, state.with(LIGHT_STATE, nextState));
-            return ActionResult.success(world.isClient());
-        }
-        return super.onUse(state, world, pos, player, hand, hit);
+    public boolean isLeftLight() {
+        return this == ModBlocks.TRAFFIC_LIGHTS_LEFT;
     }
 
     public enum LightState implements StringIdentifiable {

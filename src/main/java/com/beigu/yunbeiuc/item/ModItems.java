@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.item;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
+import com.beigu.yunbeiuc.item.custom.LinkWand;
 import com.beigu.yunbeiuc.item.custom.RotatedWand;
 import com.beigu.yunbeiuc.item.custom.TreeWand;
 import com.beigu.yunbeiuc.item.custom.WaterWand;
@@ -20,6 +21,10 @@ public class ModItems {
 
     public static final Item ROTATED_WAND = registerItems("rotated_wand", new RotatedWand(new Item.Settings()
             .maxCount(1).maxDamage(9)));//Count(物品栏数量) Damage(耐久值)
+
+    public static final Item LINK_WAND = registerItems("link_wand", new LinkWand(new Item.Settings()
+            .maxCount(1)));//Count(物品栏数量) Damage(耐久值)
+
 
     public static final Item WAND = registerItems("wand", new Item(new Item.Settings()
             .maxCount(1)));//Count(物品栏数量) Damage(耐久值)

@@ -2,12 +2,15 @@ package com.beigu.yunbeiuc;
 
 import com.beigu.yunbeiuc.block.ModBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
+import com.beigu.yunbeiuc.network.ChatCommandHandler;
+import com.beigu.yunbeiuc.network.ModEvents;
 import com.beigu.yunbeiuc.render.json.FlagLoader;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.network.ModMessages;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
@@ -40,6 +43,10 @@ public class YunbeiUrbanConstruction implements ModInitializer {
         ModMessages.registerS2CPackets();
         ModItemGroups.registerGroups();
         ModItems.registerItems();
+        ModEvents.register();
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            ChatCommandHandler.register(dispatcher);
+        });
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
                 new SimpleSynchronousResourceReloadListener() {
