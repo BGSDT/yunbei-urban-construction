@@ -16,9 +16,9 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET_POLE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_LEFT, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_LEFT, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getTranslucent());
 
         // 交通标志方块渲染层注册（SignBlocks）
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10, RenderLayer.getCutout());

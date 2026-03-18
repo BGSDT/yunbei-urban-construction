@@ -1,12 +1,9 @@
 package com.beigu.yunbeiuc.block.custom.lights;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
-import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
@@ -33,8 +30,8 @@ public class TrafficLightsBlock extends Block {
     }
 
     private static final VoxelShape SHAPE_N = Block.createCuboidShape(4.25, -1.5, 12.25, 11.75, 17.5, 22);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(-1.5, -1.5, 4.25, 8.5, 17.5, 11.75);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.25, -1.5, -1.5, 11.75, 17.5, 8.5);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.25, -1.5, -9.75, 11.75, 17.5, 0);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(-9.75, -1.5, 4.25, 0, 17.5, 11.75);
     private static final VoxelShape SHAPE_W = Block.createCuboidShape(12.25, -1.5, 4.25, 22, 17.5, 11.75);
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.of("light_state", LightState.class);
@@ -78,14 +75,11 @@ public class TrafficLightsBlock extends Block {
         return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
-    public boolean isLeftLight() {
-        return this == ModBlocks.TRAFFIC_LIGHTS_LEFT;
-    }
-
     public enum LightState implements StringIdentifiable {
         RED("red"),
         YELLOW("yellow"),
-        GREEN("green");
+        GREEN("green"),
+        GRAY("gray");  // 添加灰色状态用于闪烁
 
         private final String name;
 
@@ -96,15 +90,6 @@ public class TrafficLightsBlock extends Block {
         @Override
         public String asString() {
             return this.name;
-        }
-
-        // 状态循环：红→黄→绿→红
-        public LightState next() {
-            return switch (this) {
-                case RED -> YELLOW;
-                case YELLOW -> GREEN;
-                case GREEN -> RED;
-            };
         }
     }
 }

@@ -23,6 +23,8 @@ public class LinkWand extends Item {
     private static final Map<PlayerEntity, List<BlockPos>> playerSelections = new HashMap<>();
     // 存储等待玩家确认的临时组
     private static final Map<PlayerEntity, TrafficLightGroup> pendingGroups = new HashMap<>();
+    // 存储玩家是否已选择模式
+    private static final Set<PlayerEntity> modeSelected = new HashSet<>();
 
     public LinkWand(Settings settings) {
         super(settings);
@@ -36,12 +38,31 @@ public class LinkWand extends Item {
         PlayerEntity player = context.getPlayer();
         BlockPos pos = context.getBlockPos();
 
+        // 调试信息
+        System.out.println("玩家 " + player.getName().getString() + " 点击了位置 " + pos);
+        System.out.println("modeSelected状态: " + modeSelected.contains(player));
+        System.out.println("pendingGroups状态: " + pendingGroups.containsKey(player));
+
+        // 检查玩家是否已选择模式
+        if (!modeSelected.contains(player)) {
+            player.sendMessage(Text.literal("请先输入 /yunbeiuc lights 1 选择模式！").formatted(Formatting.RED), false);
+            return ActionResult.FAIL;
+        }
+
         // 检查点击的方块是否是红绿灯
         if (!(world.getBlockState(pos).getBlock() instanceof TrafficLightsBlock)) {
             player.sendMessage(Text.literal("请点击红绿灯方块！").formatted(Formatting.RED), false);
             return ActionResult.FAIL;
         }
 
+        // 处理红绿灯选择
+        return handleLightSelection(world, player, pos);
+    }
+
+    /**
+     * 处理红绿灯选择
+     */
+    private ActionResult handleLightSelection(World world, PlayerEntity player, BlockPos pos) {
         // 获取或创建玩家的选择列表
         List<BlockPos> selections = playerSelections.computeIfAbsent(player, k -> new ArrayList<>());
 
@@ -64,7 +85,7 @@ public class LinkWand extends Item {
     }
 
     /**
-     * 检查选择的8个方块是否符合标准，如果符合则提示玩家输入指令确认
+     * 检查选择的8个方块是否符合标准
      */
     private void checkAndPromptForGroup(World world, PlayerEntity player, List<BlockPos> selections) {
         // 检查是否符合标准
@@ -74,13 +95,17 @@ public class LinkWand extends Item {
             // 符合标准，保存临时组并提示玩家确认
             pendingGroups.put(player, tempGroup);
             player.sendMessage(Text.literal("✓ 检测到一组有效的红绿灯！").formatted(Formatting.GREEN), false);
-            player.sendMessage(Text.literal("请输入 §e/traffic yes §r来确认创建").formatted(Formatting.GOLD), false);
-            player.sendMessage(Text.literal("或输入 §e/traffic no §r重新选择，§e/traffic cancel §r取消操作").formatted(Formatting.GOLD), false);
+            player.sendMessage(Text.literal("请输入 §e/yunbeiuc answer confirm §r确认创建").formatted(Formatting.GOLD), false);
+            player.sendMessage(Text.literal("输入 §e/yunbeiuc answer reset §r重新选择，§e/yunbeiuc answer cancel §r取消").formatted(Formatting.GOLD), false);
+
+            // 调试信息
+            System.out.println("已保存pendingGroups，大小: " + pendingGroups.size());
+            System.out.println("当前玩家pendingGroups: " + pendingGroups.containsKey(player));
         } else {
             // 不符合标准，清空选择并提示
             playerSelections.remove(player);
             player.sendMessage(Text.literal("✗ 选择的8个方块不符合标准！需要每个方向各一个左转和一个直行").formatted(Formatting.RED), false);
-            player.sendMessage(Text.literal("请重新选择新的8个方块").formatted(Formatting.YELLOW), false);
+            player.sendMessage(Text.literal("请重新选择8个方块").formatted(Formatting.YELLOW), false);
         }
     }
 
@@ -149,6 +174,74 @@ public class LinkWand extends Item {
     }
 
     /**
+     * 设置玩家已选择模式
+     */
+    public static void setModeSelected(PlayerEntity player) {
+        modeSelected.add(player);
+        System.out.println("玩家 " + player.getName().getString() + " 已选择模式，modeSelected大小: " + modeSelected.size());
+    }
+
+    /**
+     * 处理玩家回答输入（confirm/reset/cancel）
+     */
+    public static boolean handleAnswerInput(ServerPlayerEntity player, String action) {
+        System.out.println("处理回答: " + action + " 玩家: " + player.getName().getString());
+        System.out.println("pendingGroups包含玩家: " + pendingGroups.containsKey(player));
+        System.out.println("pendingGroups大小: " + pendingGroups.size());
+
+        if (!pendingGroups.containsKey(player)) {
+            player.sendMessage(Text.literal("没有待确认的红绿灯组！请先点击8个红绿灯").formatted(Formatting.RED), false);
+            return false;
+        }
+
+        if (action.equalsIgnoreCase("confirm")) {
+            // 确认创建组
+            TrafficLightGroup group = pendingGroups.get(player);
+            ServerWorld serverWorld = player.getServerWorld();
+
+            // 设置世界引用
+            group.setWorld(serverWorld);
+
+            // 添加到管理器
+            TrafficLightManager.get(serverWorld).addGroup(group);
+
+            // 立即更新灯光
+            group.updateAllLightsImmediately(serverWorld);
+
+            player.sendMessage(Text.literal("✓ 红绿灯组创建成功！").formatted(Formatting.GREEN), false);
+            player.sendMessage(Text.literal("组ID: " + group.getGroupId().toString().substring(0, 8) +
+                    " | 包含 " + group.getLightCount() + " 个红绿灯").formatted(Formatting.AQUA), false);
+            player.sendMessage(Text.literal("现在可以继续选择下一组红绿灯了").formatted(Formatting.AQUA), false);
+
+            // 清理状态（保留模式选择，可以继续创建下一组）
+            pendingGroups.remove(player);
+            playerSelections.remove(player);
+
+            System.out.println("组创建成功，已清理pendingGroups");
+            return true;
+
+        } else if (action.equalsIgnoreCase("reset")) {
+            // 重新选择
+            pendingGroups.remove(player);
+            playerSelections.remove(player);
+            player.sendMessage(Text.literal("已取消当前选择，请重新点击8个红绿灯").formatted(Formatting.YELLOW), false);
+            System.out.println("已重置选择");
+            return true;
+
+        } else if (action.equalsIgnoreCase("cancel")) {
+            // 完全取消
+            pendingGroups.remove(player);
+            playerSelections.remove(player);
+            modeSelected.remove(player); // 清除模式选择，需要重新输入指令
+            player.sendMessage(Text.literal("已取消所有操作，如需继续请重新输入 /yunbeiuc lights 1").formatted(Formatting.GRAY), false);
+            System.out.println("已取消所有操作");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * 获取玩家当前选择的方块数量
      */
     public static int getSelectionCount(PlayerEntity player) {
@@ -157,67 +250,25 @@ public class LinkWand extends Item {
     }
 
     /**
-     * 清除玩家的选择（用于调试）
+     * 清除玩家的所有状态
      */
-    public static void clearSelection(PlayerEntity player) {
+    public static void clearAll(PlayerEntity player) {
         playerSelections.remove(player);
         pendingGroups.remove(player);
+        modeSelected.remove(player);
     }
 
     /**
-     * 处理玩家输入的指令
-     * @param player 玩家
-     * @param message 指令内容 (YES/NO/CANCEL)
-     * @return 是否成功处理
+     * 检查玩家是否有待确认的组
      */
-    public static boolean handlePlayerInput(ServerPlayerEntity player, String message) {
-        if (!pendingGroups.containsKey(player)) {
-            // 没有等待确认的组，返回false让消息正常广播
-            return false;
-        }
+    public static boolean hasPendingGroup(PlayerEntity player) {
+        return pendingGroups.containsKey(player);
+    }
 
-        if (message.equalsIgnoreCase("YES")) {
-            // 确认创建组
-            TrafficLightGroup group = pendingGroups.get(player);
-            ServerWorld serverWorld = player.getServerWorld();
-
-            // 设置世界引用，确保红绿灯能开始工作
-            group.setWorld(serverWorld);
-
-            // 添加到管理器
-            TrafficLightManager.get(serverWorld).addGroup(group);
-
-            // 立即更新一次所有红绿灯的状态，让它们根据当前阶段显示正确颜色
-            group.updateAllLightsImmediately(serverWorld);
-
-            player.sendMessage(Text.literal("✓ 红绿灯组创建成功！").formatted(Formatting.GREEN), false);
-            player.sendMessage(Text.literal("组ID: " + group.getGroupId().toString().substring(0, 8) +
-                    " | 包含 " + group.getLightCount() + " 个红绿灯").formatted(Formatting.AQUA), false);
-            player.sendMessage(Text.literal("现在可以继续选择下一组红绿灯了").formatted(Formatting.AQUA), false);
-
-            // 清理当前状态
-            pendingGroups.remove(player);
-            playerSelections.remove(player);
-
-            return true;
-
-        } else if (message.equalsIgnoreCase("NO")) {
-            // 拒绝创建，重新选择
-            pendingGroups.remove(player);
-            playerSelections.remove(player);
-            player.sendMessage(Text.literal("已取消当前选择，请重新选择新的8个方块").formatted(Formatting.YELLOW), false);
-
-            return true;
-
-        } else if (message.equalsIgnoreCase("CANCEL")) {
-            // 完全取消操作
-            pendingGroups.remove(player);
-            playerSelections.remove(player);
-            player.sendMessage(Text.literal("已取消所有操作").formatted(Formatting.GRAY), false);
-
-            return true;
-        }
-
-        return false;
+    /**
+     * 检查玩家是否已选择模式
+     */
+    public static boolean isModeSelected(PlayerEntity player) {
+        return modeSelected.contains(player);
     }
 }
