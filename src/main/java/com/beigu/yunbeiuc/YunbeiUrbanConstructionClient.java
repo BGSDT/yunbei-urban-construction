@@ -289,7 +289,7 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_TAXI, RenderLayer.getCutout());
 
-        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLES_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
     }
 }

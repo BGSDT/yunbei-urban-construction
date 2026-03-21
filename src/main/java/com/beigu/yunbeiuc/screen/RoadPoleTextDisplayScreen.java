@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.entity.RoadPolesTextDisplayEntity;
+import com.beigu.yunbeiuc.entity.RoadPoleTextDisplayEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.RoadPolesTextDisplayUpdatePacket;
+import com.beigu.yunbeiuc.network.RoadPoleTextDisplayUpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.screen.Screen;
@@ -45,7 +45,7 @@ public class RoadPoleTextDisplayScreen extends Screen {
         String existingColor = "000000";
 
         if (this.client != null && this.client.world != null) {
-            if (this.client.world.getBlockEntity(this.pos) instanceof RoadPolesTextDisplayEntity entity) {
+            if (this.client.world.getBlockEntity(this.pos) instanceof RoadPoleTextDisplayEntity entity) {
                 existingText = entity.getText();
                 existingColor = String.format("%06X", entity.getColor() & 0xFFFFFF);
             }
@@ -108,7 +108,7 @@ public class RoadPoleTextDisplayScreen extends Screen {
             }
 
             // 创建网络包并发送 - 使用 ModMessages 中的标识符
-            RoadPolesTextDisplayUpdatePacket packet = new RoadPolesTextDisplayUpdatePacket(pos, text, color);
+            RoadPoleTextDisplayUpdatePacket packet = new RoadPoleTextDisplayUpdatePacket(pos, text, color);
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
 

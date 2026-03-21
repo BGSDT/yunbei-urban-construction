@@ -25,10 +25,10 @@ public class SpeedBump extends Block {
 
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 0, 6, 16, 0.5, 10);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(6, 0, 0, 10, 0.5, 16);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(0, 0, 6, 16, 0.5, 10);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(6, 0, 0, 10, 0.5, 16);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 0, 6, 16, 1, 10);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(6, 0, 0, 10, 1, 16);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(0, 0, 6, 16, 1, 10);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(6, 0, 0, 10, 1, 16);
 
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 

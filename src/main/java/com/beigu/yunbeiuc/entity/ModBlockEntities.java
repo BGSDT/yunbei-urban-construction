@@ -43,7 +43,7 @@ public class ModBlockEntities {
     public static final BlockEntityType<SignGuideIntersectionAdvanceWarningBlockEntity> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK_ENTITY =
             BlockEntityType.Builder.create(SignGuideIntersectionAdvanceWarningBlockEntity::new, ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK).build(null);
 
-    public static BlockEntityType<RoadPolesTextDisplayEntity> ROAD_POLES_TEXT_DISPLAY_ENTITY;
+    public static BlockEntityType<RoadPoleTextDisplayEntity> ROAD_POLE_TEXT_DISPLAY_ENTITY;
     public static BlockEntityType<FlagBlockEntity> FLAG_BLOCK_ENTITY;
     public static void registerBlockEntities() {
         Registry.register(Registries.BLOCK_ENTITY_TYPE,
@@ -90,10 +90,10 @@ public class ModBlockEntities {
                 new Identifier(YunbeiUrbanConstruction.MOD_ID, "sign_guide_intersection_advance_warning_block_entity"),
                 SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK_ENTITY);
 
-        ROAD_POLES_TEXT_DISPLAY_ENTITY = Registry.register(
+        ROAD_POLE_TEXT_DISPLAY_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
-                new Identifier("yunbeiuc", "road_poles_text_display_entity"),
-                FabricBlockEntityTypeBuilder.create(RoadPolesTextDisplayEntity::new, ModBlocks.ROAD_POLE_TEXT_DISPLAY).build()
+                new Identifier("yunbeiuc", "road_pole_text_display_entity"),
+                FabricBlockEntityTypeBuilder.create(RoadPoleTextDisplayEntity::new, ModBlocks.ROAD_POLE_TEXT_DISPLAY).build()
         );
 
         FLAG_BLOCK_ENTITY = Registry.register(

@@ -1,6 +1,6 @@
-package com.beigu.yunbeiuc.block.custom;
+package com.beigu.yunbeiuc.block.custom.pole;
 
-import com.beigu.yunbeiuc.entity.RoadPolesTextDisplayEntity;
+import com.beigu.yunbeiuc.entity.RoadPoleTextDisplayEntity;
 import com.beigu.yunbeiuc.screen.RoadPoleTextDisplayScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,23 +13,23 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class RoadPolesTextDisplay extends BlockWithEntity implements BlockEntityProvider {
+public class RoadPoleTextDisplay extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     
-    // 根据朝向旋转碰撞箱
-    private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(-8, 12.75, 5, 24, 22.75, 11);
-    private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(5, 12.75, -8, 11, 22.75, 24);
-    private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(-8, 12.75, 5, 24, 22.75, 11);
-    private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(5, 12.75, -8, 11, 22.75, 24);
+    private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, -4, -12, 11, 6, 28), Block.createCuboidShape(6, 6, 0, 10, 10, 16), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_E = VoxelShapes.combineAndSimplify(Block.createCuboidShape(-12, -4, 5, 28, 6, 11), Block.createCuboidShape(0, 6, 6, 16, 10, 10), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_S = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, -4, -12, 11, 6, 28), Block.createCuboidShape(6, 6, 0, 10, 10, 16), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_W = VoxelShapes.combineAndSimplify(Block.createCuboidShape(-12, -4, 5, 28, 6, 11), Block.createCuboidShape(0, 6, 6, 16, 10, 10), BooleanBiFunction.OR);
 
-    public RoadPolesTextDisplay(Settings settings) {
+    public RoadPoleTextDisplay(Settings settings) {
         super(settings);
     }
 
@@ -54,28 +54,12 @@ public class RoadPolesTextDisplay extends BlockWithEntity implements BlockEntity
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return getVoxelShape(state);
-    }
-
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return getVoxelShape(state);
-    }
-
-    private VoxelShape getVoxelShape(BlockState state) {
-        Direction direction = state.get(FACING);
-        switch (direction) {
-            case NORTH:
-                return NORTH_SHAPE;
-            case SOUTH:
-                return SOUTH_SHAPE;
-            case EAST:
-                return EAST_SHAPE;
-            case WEST:
-                return WEST_SHAPE;
-            default:
-                return NORTH_SHAPE;
-        }
+        return switch (state.get(FACING)) {
+            case SOUTH -> SHAPE_S;
+            case EAST -> SHAPE_E;
+            case WEST -> SHAPE_W;
+            default -> SHAPE_N;
+        };
     }
 
     @Override
@@ -95,7 +79,7 @@ public class RoadPolesTextDisplay extends BlockWithEntity implements BlockEntity
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new RoadPolesTextDisplayEntity(pos, state);
+        return new RoadPoleTextDisplayEntity(pos, state);
     }
 
     @Override

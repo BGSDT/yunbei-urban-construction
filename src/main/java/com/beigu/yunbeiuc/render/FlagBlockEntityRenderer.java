@@ -92,7 +92,6 @@ public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEnt
 
     private void renderNorthFace(MatrixStack.Entry entry, VertexConsumer consumer,
                                  float minX, float minY, float maxX, float maxY, float z, int light, int overlay) {
-        // 北面 (Z-)
         consumer.vertex(entry.getPositionMatrix(), minX, minY, z)
                 .color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light)
                 .normal(entry.getNormalMatrix(), 0, 0, -1).next();
@@ -109,17 +108,16 @@ public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEnt
 
     private void renderSouthFace(MatrixStack.Entry entry, VertexConsumer consumer,
                                  float minX, float minY, float maxX, float maxY, float z, int light, int overlay) {
-        // 南面 (Z+)
-        consumer.vertex(entry.getPositionMatrix(), minX, minY, z)
+        consumer.vertex(entry.getPositionMatrix(), maxX, minY, z)  // 原minX → 修改为maxX
                 .color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light)
                 .normal(entry.getNormalMatrix(), 0, 0, 1).next();
-        consumer.vertex(entry.getPositionMatrix(), maxX, minY, z)
+        consumer.vertex(entry.getPositionMatrix(), minX, minY, z)  // 原maxX → 修改为minX
                 .color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light)
                 .normal(entry.getNormalMatrix(), 0, 0, 1).next();
-        consumer.vertex(entry.getPositionMatrix(), maxX, maxY, z)
+        consumer.vertex(entry.getPositionMatrix(), minX, maxY, z)  // 原maxX → 修改为minX
                 .color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light)
                 .normal(entry.getNormalMatrix(), 0, 0, 1).next();
-        consumer.vertex(entry.getPositionMatrix(), minX, maxY, z)
+        consumer.vertex(entry.getPositionMatrix(), maxX, maxY, z)  // 原minX → 修改为maxX
                 .color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light)
                 .normal(entry.getNormalMatrix(), 0, 0, 1).next();
     }

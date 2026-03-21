@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.entity;
 
-import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -11,13 +10,13 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
-public class RoadPolesTextDisplayEntity extends BlockEntity {
+public class RoadPoleTextDisplayEntity extends BlockEntity {
     private String text = "";
     private int color = 0x000000; // 默认黑色
     private int fontSize = 25; // 默认字体大小
 
-    public RoadPolesTextDisplayEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ROAD_POLES_TEXT_DISPLAY_ENTITY, pos, state);
+    public RoadPoleTextDisplayEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, pos, state);
     }
 
     @Override

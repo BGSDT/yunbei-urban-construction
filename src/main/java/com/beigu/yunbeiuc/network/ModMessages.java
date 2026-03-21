@@ -80,7 +80,7 @@ public class ModMessages {
         });
 
         ServerPlayNetworking.registerGlobalReceiver(UPDATE_ROAD_POLES_TEXT, (server, player, handler, buf, responseSender) -> {
-            RoadPolesTextDisplayUpdatePacket packet = new RoadPolesTextDisplayUpdatePacket(buf);
+            RoadPoleTextDisplayUpdatePacket packet = new RoadPoleTextDisplayUpdatePacket(buf);
             server.execute(() -> packet.apply(player));
         });
 
