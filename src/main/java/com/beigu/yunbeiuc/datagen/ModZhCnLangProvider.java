@@ -76,19 +76,6 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.VIBRATION_MARKING_LINE, "振动标线");
         translationBuilder.add(ModBlocks.PARKING_SPACE_BARRIER, "车位地锁");
 
-// 交通标志牌类
-        translationBuilder.add(ModBlocks.SIGN_SPEED_LIMIT_BLOCK, "限速标志牌");
-        translationBuilder.add(ModBlocks.SIGN_CANCEL_SPEED_LIMIT_BLOCK, "解除限速标志牌");
-        translationBuilder.add(ModBlocks.SIGN_NO_ENTRY_FOR_VEHICLES_BLOCK, "禁止车辆驶入标志牌");
-        translationBuilder.add(ModBlocks.SIGN_NO_DIRECTION_BLOCK, "禁止通行方向标志牌");
-        translationBuilder.add(ModBlocks.SIGN_HEIGHT_LIMIT_BLOCK, "限高标志牌");
-        translationBuilder.add(ModBlocks.SIGN_WIDTH_LIMIT_BLOCK, "限宽标志牌");
-        translationBuilder.add(ModBlocks.SIGN_WEIGHT_LIMIT_BLOCK, "限重标志牌");
-        translationBuilder.add(ModBlocks.SIGN_NO_SPECIAL_BLOCK, "禁止特种车辆通行标志牌");
-        translationBuilder.add(ModBlocks.SIGN_INDICATION_DIRECTION_BLOCK, "方向指示标志牌");
-        translationBuilder.add(ModBlocks.SIGN_INDICATION_LANE_DIRECTION_BLOCK, "车道方向指示标志牌");
-        translationBuilder.add(ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK, "路口预告引导标志牌");
-
 // 龙门架类
         translationBuilder.add(ModBlocks.GANTRY_FRAME_SIDE, "龙门架侧架");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_CONNECTION, "龙门架连接件");

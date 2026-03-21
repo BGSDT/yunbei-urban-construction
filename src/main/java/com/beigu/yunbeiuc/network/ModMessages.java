@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.network;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
-import com.beigu.yunbeiuc.network.abandoned.*;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.util.Identifier;
 
@@ -24,61 +23,6 @@ public class ModMessages {
 
     // register receiver for warning text updates
     public static void registerC2SPackets() {
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_SPEED_LIMIT, (server, player, handler, buf, responseSender) -> {
-            UpdateSpeedLimitPacket packet = new UpdateSpeedLimitPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_CANCEL_SPEED_LIMIT, (server, player, handler, buf, responseSender) -> {
-            UpdateCancelSpeedLimitPacket packet = new UpdateCancelSpeedLimitPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_VEHICLE_TYPE, (server, player, handler, buf, responseSender) -> {
-            UpdateVehicleTypePacket packet = new UpdateVehicleTypePacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_DIRECTION_TYPE, (server, player, handler, buf, responseSender) -> {
-            UpdateDirectionTypePacket packet = new UpdateDirectionTypePacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_HEIGHT_LIMIT, (server, player, handler, buf, responseSender) -> {
-            UpdateHeightLimitPacket packet = new UpdateHeightLimitPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_WIDTH_LIMIT, (server, player, handler, buf, responseSender) -> {
-            UpdateWidthLimitPacket packet = new UpdateWidthLimitPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_WEIGHT_LIMIT, (server, player, handler, buf, responseSender) -> {
-            UpdateWeightLimitPacket packet = new UpdateWeightLimitPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_NO_SPECIAL_TYPE, (server, player, handler, buf, responseSender) -> {
-            UpdateNoSpecialTypePacket packet = new UpdateNoSpecialTypePacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_INDICATION_DIRECTION, (server, player, handler, buf, responseSender) -> {
-            UpdateIndicationDirectionPacket packet = new UpdateIndicationDirectionPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_INDICATION_LANE_DIRECTION, (server, player, handler, buf, responseSender) -> {
-            UpdateIndicationLaneDirectionPacket packet = new UpdateIndicationLaneDirectionPacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(UPDATE_WARNING_TYPE, (server, player, handler, buf, responseSender) -> {
-            UpdateWarningTypePacket packet = new UpdateWarningTypePacket(buf);
-            server.execute(() -> packet.apply(player));
-        });
-
         ServerPlayNetworking.registerGlobalReceiver(UPDATE_ROAD_POLES_TEXT, (server, player, handler, buf, responseSender) -> {
             RoadPoleTextDisplayUpdatePacket packet = new RoadPoleTextDisplayUpdatePacket(buf);
             server.execute(() -> packet.apply(player));

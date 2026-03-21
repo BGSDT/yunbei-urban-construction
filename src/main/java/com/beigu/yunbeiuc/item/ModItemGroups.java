@@ -73,19 +73,6 @@ public class ModItemGroups {
 // 停车位挡块类方块
                         entries.add(ModBlocks.PARKING_SPACE_BARRIER);
 
-// 交通标识类方块
-                        entries.add(ModBlocks.SIGN_SPEED_LIMIT_BLOCK);
-                        entries.add(ModBlocks.SIGN_CANCEL_SPEED_LIMIT_BLOCK);
-                        entries.add(ModBlocks.SIGN_NO_ENTRY_FOR_VEHICLES_BLOCK);
-                        entries.add(ModBlocks.SIGN_NO_DIRECTION_BLOCK);
-                        entries.add(ModBlocks.SIGN_HEIGHT_LIMIT_BLOCK);
-                        entries.add(ModBlocks.SIGN_WIDTH_LIMIT_BLOCK);
-                        entries.add(ModBlocks.SIGN_WEIGHT_LIMIT_BLOCK);
-                        entries.add(ModBlocks.SIGN_NO_SPECIAL_BLOCK);
-                        entries.add(ModBlocks.SIGN_INDICATION_DIRECTION_BLOCK);
-                        entries.add(ModBlocks.SIGN_INDICATION_LANE_DIRECTION_BLOCK);
-                        entries.add(ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK);
-
 // 龙门架类方块
                         entries.add(ModBlocks.GANTRY_FRAME_SIDE);
                         entries.add(ModBlocks.GANTRY_FRAME_CONNECTION);

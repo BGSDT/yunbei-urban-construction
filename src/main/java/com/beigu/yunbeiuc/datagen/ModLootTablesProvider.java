@@ -43,17 +43,6 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(ModBlocks.SPEED_BUMP);
         addDrop(ModBlocks.VIBRATION_MARKING_LINE);
         addDrop(ModBlocks.PARKING_SPACE_BARRIER);
-        addDrop(ModBlocks.SIGN_SPEED_LIMIT_BLOCK);
-        addDrop(ModBlocks.SIGN_CANCEL_SPEED_LIMIT_BLOCK);
-        addDrop(ModBlocks.SIGN_NO_ENTRY_FOR_VEHICLES_BLOCK);
-        addDrop(ModBlocks.SIGN_NO_DIRECTION_BLOCK);
-        addDrop(ModBlocks.SIGN_HEIGHT_LIMIT_BLOCK);
-        addDrop(ModBlocks.SIGN_WIDTH_LIMIT_BLOCK);
-        addDrop(ModBlocks.SIGN_WEIGHT_LIMIT_BLOCK);
-        addDrop(ModBlocks.SIGN_NO_SPECIAL_BLOCK);
-        addDrop(ModBlocks.SIGN_INDICATION_DIRECTION_BLOCK);
-        addDrop(ModBlocks.SIGN_INDICATION_LANE_DIRECTION_BLOCK);
-        addDrop(ModBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK);
         addDrop(ModBlocks.GANTRY_FRAME_SIDE);
         addDrop(ModBlocks.GANTRY_FRAME_CONNECTION);
         addDrop(ModBlocks.GANTRY_FRAME_MAIN);

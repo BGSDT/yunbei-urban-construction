@@ -27,7 +27,6 @@ import com.beigu.yunbeiuc.block.custom.rubbshi.RubbishBinGrayGreen;
 import com.beigu.yunbeiuc.block.custom.rubbshi.RubbishBinWhite;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsBlock;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsPavement;
-import com.beigu.yunbeiuc.block.custom.sign.abandoned.*;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -78,18 +77,6 @@ public class ModBlocks {
     public static final Block VIBRATION_MARKING_LINE = register("vibration_marking_line",new VibrationMarkingLine(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
     public static final Block PARKING_SPACE_BARRIER = register("parking_space_barrier",new ParkingSpaceBarrier(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-
-    public static final Block SIGN_SPEED_LIMIT_BLOCK = register("sign_speed_limit_block", new SignSpeedLimitBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_CANCEL_SPEED_LIMIT_BLOCK = register("sign_cancel_speed_limit_block", new SignCancelSpeedLimitBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_NO_ENTRY_FOR_VEHICLES_BLOCK = register("sign_no_entry_for_vehicles_block", new SignNoEntryForVehiclesBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_NO_DIRECTION_BLOCK = register("sign_no_direction_block", new SignNoDirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_HEIGHT_LIMIT_BLOCK = register("sign_height_limit_block", new SignHeightLimitBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_WIDTH_LIMIT_BLOCK = register("sign_width_limit_block", new SignWidthLimitBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_WEIGHT_LIMIT_BLOCK = register("sign_weight_limit_block", new SignWeightLimitBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_NO_SPECIAL_BLOCK = register("sign_no_special_block", new SignNoSpecialBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_INDICATION_DIRECTION_BLOCK = register("sign_indication_direction_block", new SignIndicationDirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_INDICATION_LANE_DIRECTION_BLOCK = register("sign_indication_lane_direction_block", new SignIndicationLaneDirectionBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_BLOCK = register("sign_guide_intersection_advance_warning_block", new SignGuideIntersectionAdvanceWarningBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
     public static final Block GANTRY_FRAME_SIDE = register("gantry_frame_side", new GantryFrameSide(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block GANTRY_FRAME_CONNECTION = register("gantry_frame_connection", new GantryFrameConnection(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
