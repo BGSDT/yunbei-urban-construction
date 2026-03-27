@@ -1,23 +1,163 @@
 {
-	"parent": "block/cube",
-	"textures": {
-		"2": "yunbeiuc:block/road/road_with_white_offset_in_bevel_rightangle_line",
-		"3": "yunbeiuc:block/road/road_with_white_offset_line",
-		"particle": "yunbeiuc:block/road_block",
-		"road": "yunbeiuc:block/road_block"
-	},
-	"elements": [
-		{
-			"from": [0, 0, 0],
-			"to": [16, 16, 16],
-			"faces": {
-				"north": {"uv": [0, 0, 16, 16], "texture": "#3", "cullface": "north"},
-				"east": {"uv": [16, 0, 0, 16], "texture": "#3", "cullface": "east"},
-				"south": {"uv": [0, 0, 16, 16], "texture": "#road", "cullface": "south"},
-				"west": {"uv": [0, 0, 16, 16], "texture": "#road", "cullface": "west"},
-				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#2", "cullface": "up"},
-				"down": {"uv": [0, 16, 16, 0], "rotation": 180, "texture": "#2", "cullface": "down"}
-			}
-		}
-	]
+  "parent": "block/cube",
+  "textures": {
+    "2": "yunbeiuc:block/road/road_with_white_offset_in_bevel_rightangle_line",
+    "3": "yunbeiuc:block/road/road_with_white_offset_line",
+    "particle": "yunbeiuc:block/road_block",
+    "road": "yunbeiuc:block/road_block"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#3",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#3",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#road",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#road",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "rotation": 180,
+          "texture": "#2",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            0,
+            16,
+            16,
+            0
+          ],
+          "rotation": 180,
+          "texture": "#2",
+          "cullface": "down"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "ground": {
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "gui": {
+      "rotation": [
+        25,
+        135,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "head": {
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
 }

@@ -1,19 +1,122 @@
 {
-	"format_version": "1.9.0",
-	"credit": "Made with Blockbench",
-	"texture_size": [32, 32],
-	"textures": {
-		"2": "yunbeiuc:block/warning_network",
-		"particle": "yunbeiuc:block/color/656565"
-	},
-	"elements": [
-		{
-			"from": [0, 0.5, 7.75],
-			"to": [16, 15.5, 8.25],
-			"rotation": {"angle": 0, "axis": "y", "origin": [9, 0, 7.75]},
-			"faces": {
-				"north": {"uv": [0, 0, 16, 15], "texture": "#2"}
-			}
-		}
-	]
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "texture_size": [
+    32,
+    32
+  ],
+  "textures": {
+    "2": "yunbeiuc:block/warning_network",
+    "particle": "yunbeiuc:block/color/656565"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0.5,
+        7.75
+      ],
+      "to": [
+        16,
+        15.5,
+        8.25
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          9,
+          0,
+          7.75
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            15
+          ],
+          "texture": "#2"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "ground": {
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "gui": {
+      "rotation": [
+        25,
+        135,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "head": {
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
 }
