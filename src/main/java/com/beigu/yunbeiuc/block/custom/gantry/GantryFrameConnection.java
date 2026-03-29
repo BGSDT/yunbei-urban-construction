@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
+import com.beigu.yunbeiuc.block.ModBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -7,12 +8,15 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -23,17 +27,17 @@ import net.minecraft.world.WorldAccess;
 
 public class GantryFrameConnection extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-
     public static final EnumProperty<GantryFrameConnectionType> CONNECTION_TYPE =
             EnumProperty.of("connection_type", GantryFrameConnectionType.class);
 
     private boolean isManualUpdate = false;
-
     private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 16);
 
     public GantryFrameConnection(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(CONNECTION_TYPE, GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1));
+        this.setDefaultState(this.getDefaultState()
+                .with(FACING, Direction.NORTH)
+                .with(CONNECTION_TYPE, GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1));
     }
 
     @Override
@@ -43,7 +47,7 @@ public class GantryFrameConnection extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(CONNECTION_TYPE).add(FACING);
+        builder.add(FACING, CONNECTION_TYPE);
     }
 
     @Override
@@ -58,17 +62,19 @@ public class GantryFrameConnection extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing());
     }
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (isManualUpdate) {
-            return state;
-        }
+        if (isManualUpdate) return state;
 
-        if (direction == Direction.DOWN) {
-            return this.updateConnectionType(state, world, pos);
+        Direction facing = state.get(FACING);
+        Direction left = facing.rotateYCounterclockwise();
+        Direction right = facing.rotateYClockwise();
+
+        if (direction == left || direction == right || direction == Direction.DOWN) {
+            return updateConnectionType(state, world, pos);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -98,33 +104,41 @@ public class GantryFrameConnection extends Block {
                 };
 
                 world.setBlockState(pos, state.with(CONNECTION_TYPE, newType), Block.NOTIFY_ALL);
-
                 isManualUpdate = false;
             }
             return ActionResult.SUCCESS;
         }
-
         return ActionResult.PASS;
     }
 
     private BlockState updateConnectionType(BlockState state, WorldAccess world, BlockPos pos) {
-        BlockPos belowPos = pos.down();
-        BlockState belowState = world.getBlockState(belowPos);
+        Direction facing = state.get(FACING);
+        Direction left = facing.rotateYCounterclockwise();
+        Direction right = facing.rotateYClockwise();
 
-        if (!(belowState.getBlock() instanceof GantryFrameSide)) {
-            return state.with(CONNECTION_TYPE, GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1);
-        }
+        boolean hasMainRight = world.getBlockState(pos.offset(right)).isOf(ModBlocks.GANTRY_FRAME_MAIN);
+        boolean hasMainLeft = world.getBlockState(pos.offset(left)).isOf(ModBlocks.GANTRY_FRAME_MAIN);
+        boolean isSide1 = isBelowSideType1(world, pos);
 
-        GantryFrameConnectionType newType;
-        if (belowState.get(GantryFrameSide.FRAME_TYPE).asString().equals("gantry_frame_side_1")) {
-            newType = GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_2;
-        } else if (belowState.get(GantryFrameSide.FRAME_TYPE).asString().equals("gantry_frame_side_2")) {
-            newType = GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1;
+        GantryFrameConnectionType finalType;
+
+        if (hasMainRight) {
+            finalType = isSide1 ? GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_4 : GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_3;
+        } else if (hasMainLeft) {
+            finalType = isSide1 ? GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_2 : GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1;
         } else {
-            newType = GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1;
+            finalType = GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1;
         }
 
-        return state.with(CONNECTION_TYPE, newType);
+        return state.with(CONNECTION_TYPE, finalType);
+    }
+
+    private boolean isBelowSideType1(WorldAccess world, BlockPos pos) {
+        BlockState belowState = world.getBlockState(pos.down());
+        if (belowState.getBlock() instanceof GantryFrameSide) {
+            return belowState.get(GantryFrameSide.FRAME_TYPE).asString().equals("gantry_frame_side_1");
+        }
+        return false;
     }
 
     public enum GantryFrameConnectionType implements StringIdentifiable {
@@ -135,13 +149,7 @@ public class GantryFrameConnection extends Block {
 
         private final String name;
 
-        GantryFrameConnectionType(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
+        GantryFrameConnectionType(String name) { this.name = name; }
+        @Override public String asString() { return name; }
     }
 }

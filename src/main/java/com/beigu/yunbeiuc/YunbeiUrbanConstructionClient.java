@@ -38,20 +38,6 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_110, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_120, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_CHECK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_EAST, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_NORTH, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_SOUTH, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_WEST, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_EAST, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_NORTH, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_SOUTH, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4_WEST, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_HEIGHT_LIMIT_20, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_HEIGHT_LIMIT_25, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_HEIGHT_LIMIT_30, RenderLayer.getCutout());
@@ -178,7 +164,6 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_NO_TRICYCLE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_NO_TRUCK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_PORT_CHECK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_SLOW, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_SPEED_LIMIT_005, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_SPEED_LIMIT_010, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_SPEED_LIMIT_020, RenderLayer.getCutout());
@@ -275,7 +260,6 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WIDTH_LIMIT_35, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WIDTH_LIMIT_40, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WIDTH_LIMIT_45, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WRONG_WAY, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_YIELD, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_YIELD_TO_ONCOMING_TRAFFIC, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_BUS, RenderLayer.getCutout());

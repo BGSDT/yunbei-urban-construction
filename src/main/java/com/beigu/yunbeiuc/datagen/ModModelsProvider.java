@@ -199,5 +199,6 @@ public class ModModelsProvider extends FabricModelProvider {
         itemModelGenerator.register(ModItems.TREE_WAND, Models.GENERATED);
         itemModelGenerator.register(ModItems.WATER_WAND, Models.GENERATED);
         itemModelGenerator.register(ModItems.ROTATED_WAND, Models.GENERATED);
+        itemModelGenerator.register(ModItems.LINK_WAND, Models.GENERATED);
     }
 }

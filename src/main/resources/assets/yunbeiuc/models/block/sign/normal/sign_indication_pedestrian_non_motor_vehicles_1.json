@@ -4,7 +4,7 @@
     "textures": {
         "1": "yunbeiuc:block/sign/sign_single_1",
         "3": "yunbeiuc:block/sign/sign_single_blue_1",
-        "4": "block/sign_single_white_1",
+        "4": "yunbeiuc:block/color/ffffff",
         "5": "yunbeiuc:block/sign/sign_indication_pedestrian",
         "6": "yunbeiuc:block/sign/sign_indication_non_motor_vehicles",
         "particle": "yunbeiuc:block/sign/sign_indication_pedestrian"

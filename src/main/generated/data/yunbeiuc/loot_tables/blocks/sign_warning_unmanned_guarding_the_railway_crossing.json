@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "yunbeiuc:sign_warning_unmanned_guarding_the_railway_crossing"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

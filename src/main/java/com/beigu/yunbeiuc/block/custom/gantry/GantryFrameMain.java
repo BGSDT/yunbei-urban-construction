@@ -24,7 +24,9 @@ public class GantryFrameMain extends Block {
 
     public GantryFrameMain(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(MAIN_TYPE, GantryFrameMainType.GANTRY_FRAME_MAIN_1));
+        this.setDefaultState(this.getDefaultState()
+                .with(FACING, Direction.NORTH)
+                .with(MAIN_TYPE, GantryFrameMainType.GANTRY_FRAME_MAIN_1));
     }
 
     private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 16);
@@ -36,7 +38,7 @@ public class GantryFrameMain extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(MAIN_TYPE).add(FACING);
+        builder.add(FACING, MAIN_TYPE);
     }
 
     @Override
@@ -49,15 +51,24 @@ public class GantryFrameMain extends Block {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
+    // ===========================
+    // 🔥 修复 1：朝向正确（去掉 getOpposite！）
+    // ===========================
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        // 原来错误：ctx.getHorizontalPlayerFacing().getOpposite()
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing());
     }
+
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (direction == Direction.EAST || direction == Direction.WEST) {
-            return this.updateMainType(state, world, pos);
+        Direction facing = state.get(FACING);
+        Direction left = facing.rotateYCounterclockwise();
+        Direction right = facing.rotateYClockwise();
+
+        if (direction == left || direction == right) {
+            return updateMainType(state, world, pos);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -65,82 +76,93 @@ public class GantryFrameMain extends Block {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-        // 更新当前方块和左右相邻的相同方块
-        updateConnectedFrames(world, pos);
+        updateEntireConnection(world, pos);
     }
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         super.onStateReplaced(state, world, pos, newState, moved);
-        // 当方块被破坏时，更新相邻的相同方块
         if (!state.isOf(newState.getBlock())) {
-            updateConnectedFrames(world, pos);
+            updateEntireConnection(world, pos);
         }
     }
+
 
     private BlockState updateMainType(BlockState state, WorldAccess world, BlockPos pos) {
-        // 找到最左边的方块
-        BlockPos leftPos = findLeftFrame(world, pos);
+        Direction facing = state.get(FACING);
+        BlockPos leftEnd = findLeftEnd(world, pos, facing);
+        int index = getIndexFromLeft(world, leftEnd, pos, facing);
 
-        // 从左边开始向右计数，计算当前方块的位置
-        int positionFromLeft = getPositionFromLeft(world, leftPos, pos);
+        GantryFrameMainType type = (index % 2 == 1)
+                ? GantryFrameMainType.GANTRY_FRAME_MAIN_1
+                : GantryFrameMainType.GANTRY_FRAME_MAIN_2;
 
-        // 从左往右数：位置1、3、5...显示类型1，位置2、4、6...显示类型2
-        GantryFrameMainType newType = (positionFromLeft % 2 == 1) ?
-                GantryFrameMainType.GANTRY_FRAME_MAIN_1 : GantryFrameMainType.GANTRY_FRAME_MAIN_2;
-
-        return state.with(MAIN_TYPE, newType);
+        return state.with(MAIN_TYPE, type);
     }
 
-    private BlockPos findLeftFrame(WorldAccess world, BlockPos startPos) {
-        BlockPos currentPos = startPos;
 
-        // 向左查找，直到找不到相同的方块
-        BlockPos leftPos = currentPos.west();
-        while (world.getBlockState(leftPos).getBlock() instanceof GantryFrameMain) {
-            currentPos = leftPos;
-            leftPos = currentPos.west();
-        }
+    private BlockPos findLeftEnd(WorldAccess world, BlockPos start, Direction facing) {
+        Direction left = facing.rotateYCounterclockwise();
+        BlockPos current = start;
 
-        return currentPos;
-    }
-
-    private int getPositionFromLeft(WorldAccess world, BlockPos leftPos, BlockPos targetPos) {
-        int position = 1; // 从1开始计数（左边第一个方块）
-        BlockPos currentPos = leftPos;
-
-        // 从左边向右遍历，直到找到目标位置
-        while (!currentPos.equals(targetPos)) {
-            currentPos = currentPos.east();
-            if (!(world.getBlockState(currentPos).getBlock() instanceof GantryFrameMain)) {
-                return 1; // 如果链条断裂，返回默认值
+        for (int i = 0; i < 32; i++) {
+            BlockPos next = current.offset(left);
+            if (isSameFrame(world, next, facing)) {
+                current = next;
+            } else {
+                break;
             }
-            position++;
         }
-
-        return position;
+        return current;
     }
 
-    private void updateConnectedFrames(World world, BlockPos pos) {
-        // 更新当前方块
-        BlockState currentState = world.getBlockState(pos);
-        if (currentState.getBlock() instanceof GantryFrameMain) {
-            world.setBlockState(pos, updateMainType(currentState, world, pos), Block.NOTIFY_ALL);
+
+    private int getIndexFromLeft(WorldAccess world, BlockPos leftEnd, BlockPos target, Direction facing) {
+        Direction right = facing.rotateYClockwise();
+        BlockPos current = leftEnd;
+        int index = 1;
+
+        while (!current.equals(target)) {
+            current = current.offset(right);
+            if (!isSameFrame(world, current, facing)) {
+                return 1;
+            }
+            index++;
+        }
+        return index;
+    }
+
+
+    private void updateEntireConnection(World world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        if (!(state.getBlock() instanceof GantryFrameMain)) return;
+
+        Direction facing = state.get(FACING);
+        Direction left = facing.rotateYCounterclockwise();
+        Direction right = facing.rotateYClockwise();
+
+        // 刷新左侧
+        BlockPos curr = pos;
+        for (int i = 0; i < 32; i++) {
+            if (!isSameFrame(world, curr, facing)) break;
+            world.setBlockState(curr, updateMainType(world.getBlockState(curr), world, curr), 3);
+            curr = curr.offset(left);
         }
 
-        // 更新右边的相同方块
-        BlockPos eastPos = pos.east();
-        BlockState eastState = world.getBlockState(eastPos);
-        if (eastState.getBlock() instanceof GantryFrameMain) {
-            world.setBlockState(eastPos, updateMainType(eastState, world, eastPos), Block.NOTIFY_ALL);
+        // 刷新右侧
+        curr = pos.offset(right);
+        for (int i = 0; i < 32; i++) {
+            if (!isSameFrame(world, curr, facing)) break;
+            world.setBlockState(curr, updateMainType(world.getBlockState(curr), world, curr), 3);
+            curr = curr.offset(right);
         }
+    }
 
-        // 更新左边的相同方块
-        BlockPos westPos = pos.west();
-        BlockState westState = world.getBlockState(westPos);
-        if (westState.getBlock() instanceof GantryFrameMain) {
-            world.setBlockState(westPos, updateMainType(westState, world, westPos), Block.NOTIFY_ALL);
-        }
+
+    private boolean isSameFrame(WorldAccess world, BlockPos pos, Direction facing) {
+        BlockState state = world.getBlockState(pos);
+        return state.getBlock() instanceof GantryFrameMain
+                && state.get(FACING) == facing;
     }
 
     public enum GantryFrameMainType implements StringIdentifiable {
@@ -148,14 +170,7 @@ public class GantryFrameMain extends Block {
         GANTRY_FRAME_MAIN_2("gantry_frame_main_2");
 
         private final String name;
-
-        GantryFrameMainType(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
+        GantryFrameMainType(String name) { this.name = name; }
+        @Override public String asString() { return name; }
     }
 }
