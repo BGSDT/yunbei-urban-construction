@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,pole_type=horizontal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_horizontal"
+    },
+    "facing=north,pole_type=longitudinal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_longitudinal"
+    },
+    "facing=south,pole_type=horizontal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_horizontal",
+      "y": 180
+    },
+    "facing=south,pole_type=longitudinal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_longitudinal",
+      "y": 180
+    },
+    "facing=east,pole_type=horizontal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_horizontal",
+      "y": 90
+    },
+    "facing=east,pole_type=longitudinal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_longitudinal",
+      "y": 90
+    },
+    "facing=west,pole_type=horizontal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_horizontal",
+      "y": 270
+    },
+    "facing=west,pole_type=longitudinal": {
+      "model": "yunbeiuc:block/barrier_gate_1_main_longitudinal",
+      "y": 270
+    }
+  }
+}

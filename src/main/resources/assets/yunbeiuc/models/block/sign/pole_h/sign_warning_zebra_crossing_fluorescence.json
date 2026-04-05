@@ -10,7 +10,7 @@
         "3": "yunbeiuc:block/sign/sign_warning_zebra_crossing",
         "5": "yunbeiuc:block/sign/sign_single_green_2",
         "6": "yunbeiuc:block/sign/sign_single_3",
-        "particle": "yunbeiuc:block/sign/sign_warning_zebra_crossing"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

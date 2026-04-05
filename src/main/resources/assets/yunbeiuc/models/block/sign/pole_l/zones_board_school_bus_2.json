@@ -7,7 +7,7 @@
     ],
     "textures": {
         "1": "yunbeiuc:block/sign/zones_board_school_bus_2",
-        "particle": "yunbeiuc:block/sign/zones_board_school_bus_2"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

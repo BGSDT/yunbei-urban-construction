@@ -6,7 +6,7 @@
         "3": "yunbeiuc:block/sign/sign_single_blue_1",
         "4": "yunbeiuc:block/sign/sign_single_white_1",
         "5": "yunbeiuc:block/sign/sign_min_speed_limit_060",
-        "particle": "yunbeiuc:block/sign/sign_min_speed_limit_060"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

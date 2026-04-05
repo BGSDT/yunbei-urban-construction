@@ -13,6 +13,8 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+
 
 public class ModItemGroups {
 
@@ -28,22 +30,6 @@ public class ModItemGroups {
                         entries.add(ModItems.WATER_WAND);
                         entries.add(ModItems.ROTATED_WAND);
                         entries.add(ModItems.LINK_WAND);
-                        // 地面标识类方块
-                        entries.add(ModBlocks.LEFT_TURN_GROUND_MARK);
-                        entries.add(ModBlocks.STRAIGHT_GROUND_MARK);
-                        entries.add(ModBlocks.RIGHT_TURN_GROUND_MARK);
-                        entries.add(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK);
-                        entries.add(ModBlocks.RIGHT_TURN_AROUND_GROUND_MARK);
-                        entries.add(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK);
-                        entries.add(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK);
-                        entries.add(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK);
-                        entries.add(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK);
-                        entries.add(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK);
-                        entries.add(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK);
-                        entries.add(ModBlocks.RIGHT_TURN_AROUND_SINGLE_GROUND_MARK);
-                        entries.add(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK);
-                        entries.add(ModBlocks.SLOWDOWN_YIELD_GROUND_MARK);
-                        entries.add(ModBlocks.MANHOLE_COVER);
 
 // 交通灯类方块
                         entries.add(ModBlocks.TRAFFIC_LIGHTS_STRAIGHT);
@@ -78,7 +64,6 @@ public class ModItemGroups {
 // 停车位挡块类方块
                         entries.add(ModBlocks.PARKING_SPACE_BARRIER);
 
-// 龙门架类方块
                         entries.add(ModBlocks.GANTRY_FRAME_SIDE);
                         entries.add(ModBlocks.GANTRY_FRAME_CONNECTION);
                         entries.add(ModBlocks.GANTRY_FRAME_MAIN);
@@ -86,13 +71,19 @@ public class ModItemGroups {
                         entries.add(ModBlocks.GANTRY_FRAME_LADDER);
                         entries.add(ModBlocks.GANTRY_FRAME_LED_SIDE);
                         entries.add(ModBlocks.GANTRY_FRAME_LED_MAIN);
+                        entries.add(ModBlocks.GANTRY_FRAME_LED);
+                        entries.add(ModBlocks.GANTRY_FRAME_DETECTION_CAMERA);
+                        entries.add(ModBlocks.GANTRY_FRAME_LIGHTING_LAMP);
+                        entries.add(ModBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR);
 
-// 防眩网类方块
+                        entries.add(ModBlocks.HEIGHT_LIMIT_BARRIER_SIDE);
+                        entries.add(ModBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION);
+                        entries.add(ModBlocks.HEIGHT_LIMIT_BARRIER_MAIN);
+
                         entries.add(ModBlocks.ANTI_GLARE_NET);
                         entries.add(ModBlocks.ANTI_GLARE_NET_POLE);
                         entries.add(ModBlocks.ANTI_GLARE_VERSION);
 
-// 交通护栏类方块
                         entries.add(ModBlocks.TRAFFIC_BARRIER);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_YELLOW);
@@ -110,29 +101,31 @@ public class ModItemGroups {
                         entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED);
                         entries.add(ModBlocks.TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE);
 
-// 道路警示柱类方块
                         entries.add(ModBlocks.ROAD_WARNING_POLE_RED);
                         entries.add(ModBlocks.ROAD_WARNING_POLE_YELLOW);
                         entries.add(ModBlocks.ROAD_WARNING_POLE_GREEN);
 
-// 铁马类方块
                         entries.add(ModBlocks.IRON_HORSE_YELLOW);
                         entries.add(ModBlocks.IRON_HORSE_RED);
                         entries.add(ModBlocks.IRON_HORSE_WHITE);
                         entries.add(ModBlocks.IRON_HORSE_GRAY);
 
-// 反光标识类方块
                         entries.add(ModBlocks.REFLECTIVE_SIGN_YELLOW_ALL_1);
                         entries.add(ModBlocks.REFLECTIVE_SIGN_YELLOW_ALL_2);
                         entries.add(ModBlocks.REFLECTIVE_SIGN_RED_ALL_1);
                         entries.add(ModBlocks.REFLECTIVE_SIGN_RED_ALL_2);
 
-// 仪器杆类方块
                         entries.add(ModBlocks.INSTRUMENT_POLE_FOUNDATIONS);
                         entries.add(ModBlocks.INSTRUMENT_POLE_LONGITUDINAL);
                         entries.add(ModBlocks.INSTRUMENT_CAMERA);
+                        entries.add(ModBlocks.INSTRUMENT_FEE_DISPLAY);
+                        entries.add(ModBlocks.INSTRUMENT_LANE_INDICATOR);
 
-// 安全岛类方块
+                        entries.add(ModBlocks.BARRIER_GATE_1_MAIN);
+                        entries.add(ModBlocks.BARRIER_GATE_1_MAIN_SLAB);
+                        entries.add(ModBlocks.BARRIER_GATE_1_POLE_HORIZONTAL);
+                        entries.add(ModBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL);
+
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_1);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_2);
                         entries.add(ModBlocks.SAFETY_ISLAND_YELLOW_3);
@@ -151,7 +144,6 @@ public class ModItemGroups {
                         entries.add(ModBlocks.SAFETY_ISLAND_GRAY_SLAB);
                         entries.add(ModBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
 
-// 道路栏杆类方块
                         entries.add(ModBlocks.ROAD_RAILINGS_IRON);
                         entries.add(ModBlocks.ROAD_RAILINGS_IRON_ENDING_1);
                         entries.add(ModBlocks.ROAD_RAILINGS_IRON_ENDING_2);
@@ -163,18 +155,20 @@ public class ModItemGroups {
                         entries.add(ModBlocks.ROAD_RAILINGS_GREEN_POLE);
                         entries.add(ModBlocks.ROAD_RAILINGS_GREEN_OBLIQUE);
 
-// 道路封闭护栏类方块
+                        entries.add(ModBlocks.WARNING_NETWORK);
+                        entries.add(ModBlocks.WARNING_NETWORK_POLE);
+
                         entries.add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1);
                         entries.add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2);
 
-// 道路杆件类方块
                         entries.add(ModBlocks.ROAD_POLE_FOUNDATIONS);
                         entries.add(ModBlocks.ROAD_POLE_LONGITUDINAL);
                         entries.add(ModBlocks.ROAD_POLE_HORIZONTAL);
                         entries.add(ModBlocks.ROAD_POLE_TSHAPE);
                         entries.add(ModBlocks.ROAD_LIGHT);
+                        entries.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY);
+                        entries.add(ModBlocks.ROAD_POLE_FLAG);
 
-// 道路标线类方块
                         entries.add(ModBlocks.ROAD_BLOCK);
                         entries.add(ModBlocks.ROAD_FULL_OF_WHITE);
                         entries.add(ModBlocks.ROAD_FULL_OF_YELLOW);
@@ -247,12 +241,70 @@ public class ModItemGroups {
                         entries.add(ModBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE);
                         entries.add(ModBlocks.ROAD_WITH_WHITE_CROSS_LINE);
                         entries.add(ModBlocks.ROAD_WITH_YELLOW_CROSS_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_WHITE_LEFT_DIAMOND_SHAPE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_WHITE_RIGHT_DIAMOND_SHAPE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_WHITE_DOUBLE_DIAMOND_SHAPE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_YELLOW_LEFT_DIAMOND_SHAPE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_YELLOW_DOUBLE_DIAMOND_SHAPE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_YELLOW_RIGHT_DIAMOND_SHAPE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_WHITE_THREE_SQUARE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_WHITE_SIX_SQUARE_LINE);
+                        entries.add(ModBlocks.ROAD_WITH_WHITE_NINE_SQUARE_LINE);
                         entries.add(ModBlocks.ROAD_WITH_AUTO_BEVEL_LINE);
                         entries.add(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE);
 
-// 道路杆件展示类方块
-                        entries.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY);
-                        entries.add(ModBlocks.ROAD_POLE_FLAG);
+                        // 地面标识类方块
+                        entries.add(ModBlocks.STRAIGHT_GROUND_MARK);
+                        entries.add(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK);
+                        entries.add(ModBlocks.LEFT_TURN_GROUND_MARK);
+                        entries.add(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK);
+                        entries.add(ModBlocks.RIGHT_TURN_GROUND_MARK);
+                        entries.add(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK);
+                        entries.add(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK);
+                        entries.add(ModBlocks.STRAIGHT_LEFT_TURN_AROUND_GROUND_MARK);
+                        entries.add(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK);
+                        entries.add(ModBlocks.LEFT_RIGHT_TURN_GROUND_MARK);
+                        entries.add(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK);
+                        entries.add(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK);
+                        entries.add(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK);
+                        entries.add(ModBlocks.DISTANCE_CONFIRMATION_GROUND_MARK);
+                        entries.add(ModBlocks.TAXI_1_GROUND_MARK);
+                        entries.add(ModBlocks.TAXI_2_GROUND_MARK);
+                        entries.add(ModBlocks.VEHICLE_GROUND_MARK);
+                        entries.add(ModBlocks.DISABLED_PEOPLE_GROUND_MARK);
+                        entries.add(ModBlocks.NON_MOTOR_VEHICLES_GROUND_MARK);
+                        entries.add(ModBlocks.BUS_1_GROUND_MARK);
+                        entries.add(ModBlocks.BUS_2_GROUND_MARK);
+                        entries.add(ModBlocks.SCHOOL_BUS_1_GROUND_MARK);
+                        entries.add(ModBlocks.LARGE_SPEED_BUMP_GROUND_MARK);
+                        entries.add(ModBlocks.SMALL_SPEED_BUMP_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_040_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_050_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_060_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_070_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_080_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_090_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_100_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_110_GROUND_MARK);
+                        entries.add(ModBlocks.WHITE_120_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_040_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_050_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_060_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_070_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_080_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_090_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_100_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_110_GROUND_MARK);
+                        entries.add(ModBlocks.YELLOW_120_GROUND_MARK);
+                        entries.add(ModBlocks.ELECTRIC_VEHICLE_GROUND_MARK);
+                        entries.add(ModBlocks.PEDESTRIAN_GROUND_MARK);
+                        entries.add(ModBlocks.STOP_AND_YIELD_GROUND_MARK);
+                        entries.add(ModBlocks.HOV_1_GROUND_MARK);
+                        entries.add(ModBlocks.HOV_2_GROUND_MARK);
+                        entries.add(ModBlocks.HOV_3_GROUND_MARK);
+                        entries.add(ModBlocks.HOV_4_GROUND_MARK);
+                        entries.add(ModBlocks.HOV_5_GROUND_MARK);
+                        entries.add(ModBlocks.MANHOLE_COVER);
                     }).build());
 
     public static final ItemGroup YUNBEIUC_SIGN_GROUP = Registry.register(

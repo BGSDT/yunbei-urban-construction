@@ -24,7 +24,7 @@ public class GantryFrameMain extends Block {
 
     public GantryFrameMain(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getDefaultState()
+        this.setDefaultState(this.getStateManager().getDefaultState()
                 .with(FACING, Direction.NORTH)
                 .with(MAIN_TYPE, GantryFrameMainType.GANTRY_FRAME_MAIN_1));
     }
@@ -48,26 +48,20 @@ public class GantryFrameMain extends Block {
 
     @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(FACING)));
+        return state.with(FACING, mirror.apply(state.get(FACING)));
     }
 
-    // ===========================
-    // 🔥 修复 1：朝向正确（去掉 getOpposite！）
-    // ===========================
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        // 原来错误：ctx.getHorizontalPlayerFacing().getOpposite()
+        // 玩家放置时朝向玩家正面
         return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing());
     }
 
-
+    // ==================== 核心修复：邻接更新 ====================
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        Direction facing = state.get(FACING);
-        Direction left = facing.rotateYCounterclockwise();
-        Direction right = facing.rotateYClockwise();
-
-        if (direction == left || direction == right) {
+        // 东西方向变化才更新，防止无限递归
+        if (direction == Direction.EAST || direction == Direction.WEST) {
             return updateMainType(state, world, pos);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -76,95 +70,83 @@ public class GantryFrameMain extends Block {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-        updateEntireConnection(world, pos);
+        if (!world.isClient) {
+            updateConnectedFrames(world, pos); // 只在服务端更新
+        }
     }
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         super.onStateReplaced(state, world, pos, newState, moved);
-        if (!state.isOf(newState.getBlock())) {
-            updateEntireConnection(world, pos);
+        if (!state.isOf(newState.getBlock()) && !world.isClient) {
+            updateConnectedFrames(world, pos); // 破坏时刷新整条链
         }
     }
 
-
+    // ==================== 核心修复：类型计算逻辑 ====================
     private BlockState updateMainType(BlockState state, WorldAccess world, BlockPos pos) {
-        Direction facing = state.get(FACING);
-        BlockPos leftEnd = findLeftEnd(world, pos, facing);
-        int index = getIndexFromLeft(world, leftEnd, pos, facing);
-
-        GantryFrameMainType type = (index % 2 == 1)
-                ? GantryFrameMainType.GANTRY_FRAME_MAIN_1
-                : GantryFrameMainType.GANTRY_FRAME_MAIN_2;
+        // 找到最左侧的龙门架方块
+        BlockPos leftmostPos = findLeftFrame(world, pos);
+        // 计算从左数的序号
+        int index = getPositionFromLeft(world, leftmostPos, pos);
+        // 奇数=1 偶数=2
+        GantryFrameMainType type = index % 2 == 1 ?
+                GantryFrameMainType.GANTRY_FRAME_MAIN_1 :
+                GantryFrameMainType.GANTRY_FRAME_MAIN_2;
 
         return state.with(MAIN_TYPE, type);
     }
 
+    // 安全查找最左侧方块（防越界）
+    private BlockPos findLeftFrame(WorldAccess world, BlockPos startPos) {
+        BlockPos current = startPos;
+        BlockPos nextWest = current.west();
 
-    private BlockPos findLeftEnd(WorldAccess world, BlockPos start, Direction facing) {
-        Direction left = facing.rotateYCounterclockwise();
-        BlockPos current = start;
-
-        for (int i = 0; i < 32; i++) {
-            BlockPos next = current.offset(left);
-            if (isSameFrame(world, next, facing)) {
-                current = next;
-            } else {
-                break;
-            }
+        while (isSameFrame(world, nextWest)) {
+            current = nextWest;
+            nextWest = current.west();
         }
         return current;
     }
 
+    // 计算从左到右的位置序号
+    private int getPositionFromLeft(WorldAccess world, BlockPos leftPos, BlockPos targetPos) {
+        int count = 1;
+        BlockPos current = leftPos;
 
-    private int getIndexFromLeft(WorldAccess world, BlockPos leftEnd, BlockPos target, Direction facing) {
-        Direction right = facing.rotateYClockwise();
-        BlockPos current = leftEnd;
-        int index = 1;
+        while (!current.equals(targetPos)) {
+            current = current.east();
+            if (!isSameFrame(world, current)) break;
+            count++;
+        }
+        return count;
+    }
 
-        while (!current.equals(target)) {
-            current = current.offset(right);
-            if (!isSameFrame(world, current, facing)) {
-                return 1;
+    // 判断是否是同一个龙门架方块（统一判断逻辑）
+    private boolean isSameFrame(WorldAccess world, BlockPos pos) {
+        return world.getBlockState(pos).getBlock() instanceof GantryFrameMain;
+    }
+
+    // ==================== 核心修复：连锁更新整条线 ====================
+    private void updateConnectedFrames(World world, BlockPos pos) {
+        // 先找到最左和最右，更新整条链
+        BlockPos leftmost = findLeftFrame(world, pos);
+        BlockPos current = leftmost;
+
+        while (isSameFrame(world, current)) {
+            BlockState state = world.getBlockState(current);
+            BlockState newState = updateMainType(state, world, current);
+
+            // 只有状态不同才更新，避免无限递归
+            if (!newState.equals(state)) {
+                world.setBlockState(current, newState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
             }
-            index++;
-        }
-        return index;
-    }
 
-
-    private void updateEntireConnection(World world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        if (!(state.getBlock() instanceof GantryFrameMain)) return;
-
-        Direction facing = state.get(FACING);
-        Direction left = facing.rotateYCounterclockwise();
-        Direction right = facing.rotateYClockwise();
-
-        // 刷新左侧
-        BlockPos curr = pos;
-        for (int i = 0; i < 32; i++) {
-            if (!isSameFrame(world, curr, facing)) break;
-            world.setBlockState(curr, updateMainType(world.getBlockState(curr), world, curr), 3);
-            curr = curr.offset(left);
-        }
-
-        // 刷新右侧
-        curr = pos.offset(right);
-        for (int i = 0; i < 32; i++) {
-            if (!isSameFrame(world, curr, facing)) break;
-            world.setBlockState(curr, updateMainType(world.getBlockState(curr), world, curr), 3);
-            curr = curr.offset(right);
+            current = current.east();
         }
     }
 
-
-    private boolean isSameFrame(WorldAccess world, BlockPos pos, Direction facing) {
-        BlockState state = world.getBlockState(pos);
-        return state.getBlock() instanceof GantryFrameMain
-                && state.get(FACING) == facing;
-    }
-
+    // ==================== 枚举不变 ====================
     public enum GantryFrameMainType implements StringIdentifiable {
         GANTRY_FRAME_MAIN_1("gantry_frame_main_1"),
         GANTRY_FRAME_MAIN_2("gantry_frame_main_2");

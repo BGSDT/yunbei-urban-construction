@@ -1,6 +1,8 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
 import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.custom.pole.RoadPoleHorizontal;
+import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -17,23 +19,25 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
 
 public class SignBlue1Block extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 
-    private static final VoxelShape SHAPE_POLE_L_N = Block.createCuboidShape(-2, 0, 20.1, 18, 16, 21);
-    private static final VoxelShape SHAPE_POLE_L_E = Block.createCuboidShape(-5.1, 0, -2, -4, 16, 18);
-    private static final VoxelShape SHAPE_POLE_L_S = Block.createCuboidShape(-2, 0, -5.1, 18, 16, -4);
-    private static final VoxelShape SHAPE_POLE_L_W = Block.createCuboidShape(21, 0, -2, 22.1, 16, 18);
-    private static final VoxelShape SHAPE_POLE_H_N = Block.createCuboidShape(-2, 0, 21.1, 18, 16, 22);
-    private static final VoxelShape SHAPE_POLE_H_E = Block.createCuboidShape(-5.1, 0, -2, -4, 16, 18);
-    private static final VoxelShape SHAPE_POLE_H_S = Block.createCuboidShape(-2, 0, -5.1, 18, 16, -4);
-    private static final VoxelShape SHAPE_POLE_H_W = Block.createCuboidShape(21, 0, -2, 22.1, 16, 18);
-    private static final VoxelShape SHAPE_NORMAL_N = Block.createCuboidShape(-2, 0, 15.1, 18, 16, 16);
-    private static final VoxelShape SHAPE_NORMAL_E = Block.createCuboidShape(-5.1, 0, -2, -4, 16, 18);
-    private static final VoxelShape SHAPE_NORMAL_S = Block.createCuboidShape(-2, 0, -5.1, 18, 16, -4);
-    private static final VoxelShape SHAPE_NORMAL_W = Block.createCuboidShape(21, 0, -2, 22.1, 16, 18);
+    private static final VoxelShape SHAPE_POLE_L_N = Block.createCuboidShape(-4, -1, 20.1, 20, 17, 21);
+    private static final VoxelShape SHAPE_POLE_L_E = Block.createCuboidShape(-5.1, -1, -2, -4, 17, 18);
+    private static final VoxelShape SHAPE_POLE_L_S = Block.createCuboidShape(-4, -1, -5.1, 20, 17, -4);
+    private static final VoxelShape SHAPE_POLE_L_W = Block.createCuboidShape(21, -1, -2, 22.1, 17, 18);
+    private static final VoxelShape SHAPE_POLE_H_N = Block.createCuboidShape(-4, -1, 21.1, 20, 17, 22);
+    private static final VoxelShape SHAPE_POLE_H_E = Block.createCuboidShape(-5.1, -1, -2, -4, 17, 18);
+    private static final VoxelShape SHAPE_POLE_H_S = Block.createCuboidShape(-4, -1, -5.1, 20, 17, -4);
+    private static final VoxelShape SHAPE_POLE_H_W = Block.createCuboidShape(21, -1, -2, 22.1, 17, 18);
+    private static final VoxelShape SHAPE_NORMAL_N = Block.createCuboidShape(-4, -1, 15.1, 20, 17, 16);
+    private static final VoxelShape SHAPE_NORMAL_E = Block.createCuboidShape(-5.1, -1, -2, -4, 17, 18);
+    private static final VoxelShape SHAPE_NORMAL_S = Block.createCuboidShape(-2, -1, -5.1, 18, 17, -4);
+    private static final VoxelShape SHAPE_NORMAL_W = Block.createCuboidShape(21, -1, -2, 22.1, 17, 18);
 
     public SignBlue1Block(Settings settings) {
         super(settings);
@@ -82,25 +86,53 @@ public class SignBlue1Block extends Block {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
+    @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getBlockPos();
         Direction facing = ctx.getHorizontalPlayerFacing().getOpposite();
-        BlockPos backPos = pos.offset(facing);
-        BlockState backBlockState = world.getBlockState(backPos);
-        Block backBlock = backBlockState.getBlock();
 
-        Type type;
-        if (backBlock == ModBlocks.ROAD_POLE_HORIZONTAL) {
-            type = Type.POLE_H;
-        } else if (backBlock == ModBlocks.ROAD_POLE_LONGITUDINAL) {
-            type = Type.POLE_L;
-        } else {
-            type = Type.NORMAL;
+        // 获取后面的方块位置
+        BlockPos behindPos = pos.offset(facing.getOpposite());
+        BlockState behindState = world.getBlockState(behindPos);
+
+        // 根据后面方块的类型决定当前方块的类型
+        Type type = determineType(behindState);
+
+        return this.getDefaultState()
+                .with(FACING, facing)
+                .with(TYPE, type);
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
+                                                BlockState neighborState, WorldAccess world,
+                                                BlockPos pos, BlockPos neighborPos) {
+        Direction facing = state.get(FACING);
+
+        // 检查是否是后面的方块发生了变化
+        if (direction == facing.getOpposite()) {
+            Type newType = determineType(neighborState);
+            if (newType != state.get(TYPE)) {
+                return state.with(TYPE, newType);
+            }
         }
 
-        return this.getDefaultState().with(FACING, facing).with(TYPE, type);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    private Type determineType(BlockState behindState) {
+        Block behindBlock = behindState.getBlock();
+
+        // 假设你的方块类名是这样的
+        if (behindBlock instanceof RoadPoleHorizontal) {
+            return Type.POLE_H;
+        } else if (behindBlock instanceof RoadPoleLongitudinal) {
+            return Type.POLE_L;
+        } else {
+            return Type.NORMAL;
+        }
     }
 
     public enum Type implements StringIdentifiable {

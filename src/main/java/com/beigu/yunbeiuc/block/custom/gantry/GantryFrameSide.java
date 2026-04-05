@@ -23,7 +23,10 @@ public class GantryFrameSide extends Block {
 
     public static final EnumProperty<GantryFrameType> FRAME_TYPE = EnumProperty.of("frame_type", GantryFrameType.class);
 
-    private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 16);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(6.5, 0, 0, 9.5, 16, 16);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(0, 0, 6.5, 16, 16, 9.5);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(6.5, 0, 0, 9.5, 16, 16);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(0, 0, 6.5, 16, 16, 9.5);
 
     public GantryFrameSide(Settings settings) {
         super(settings);
@@ -32,7 +35,12 @@ public class GantryFrameSide extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
+        return switch (state.get(FACING)) {
+            case WEST -> SHAPE_W;
+            case SOUTH -> SHAPE_S;
+            case EAST -> SHAPE_E;
+            default -> SHAPE_N;
+        };
     }
 
     @Override

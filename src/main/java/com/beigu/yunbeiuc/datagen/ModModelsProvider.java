@@ -25,21 +25,6 @@ public class ModModelsProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.RIGHT_TURN_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.RIGHT_TURN_AROUND_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.RIGHT_TURN_AROUND_SINGLE_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SLOWDOWN_YIELD_GROUND_MARK);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.MANHOLE_COVER);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_FLOWER_BOX_1);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_FLOWER_BOX_2);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_FLOWER_BOX_2_FENCE);
@@ -49,9 +34,9 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WATER_SAFETY_BARRIER_RED);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.VIBRATION_MARKING_LINE);
 
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_RAILING);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_LADDER);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_LED_MAIN);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GANTRY_FRAME_DETECTION_CAMERA);
 
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ANTI_GLARE_NET);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ANTI_GLARE_VERSION);
@@ -107,6 +92,8 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_RAILINGS_GREEN_ENDING_2);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_RAILINGS_GREEN_POLE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_RAILINGS_GREEN_OBLIQUE);
+
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WARNING_NETWORK);
 
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2);
 
@@ -187,8 +174,69 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_CROSS_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_YELLOW_CROSS_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_LEFT_DIAMOND_SHAPE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_RIGHT_DIAMOND_SHAPE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_DOUBLE_DIAMOND_SHAPE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_YELLOW_LEFT_DIAMOND_SHAPE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_YELLOW_DOUBLE_DIAMOND_SHAPE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_YELLOW_RIGHT_DIAMOND_SHAPE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_THREE_SQUARE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_SIX_SQUARE_LINE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_WHITE_NINE_SQUARE_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_AUTO_BEVEL_LINE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE);
+
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.RIGHT_TURN_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STRAIGHT_LEFT_TURN_AROUND_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_RIGHT_TURN_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.DISTANCE_CONFIRMATION_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.TAXI_1_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.TAXI_2_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.VEHICLE_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.DISABLED_PEOPLE_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.NON_MOTOR_VEHICLES_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.BUS_1_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.BUS_2_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SCHOOL_BUS_1_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.LARGE_SPEED_BUMP_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.SMALL_SPEED_BUMP_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_040_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_050_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_060_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_070_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_080_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_090_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_100_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_110_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.WHITE_120_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_040_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_050_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_060_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_070_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_080_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_090_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_100_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_110_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.YELLOW_120_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ELECTRIC_VEHICLE_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.PEDESTRIAN_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.STOP_AND_YIELD_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.HOV_1_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.HOV_2_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.HOV_3_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.HOV_4_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.HOV_5_GROUND_MARK);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.MANHOLE_COVER);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLE_TEXT_DISPLAY);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.ROAD_POLE_FLAG);
     }

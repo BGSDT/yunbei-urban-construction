@@ -9,7 +9,7 @@
         "0": "yunbeiuc:block/sign/sign_single_2",
         "1": "yunbeiuc:block/sign/sign_single_red_2",
         "2": "yunbeiuc:block/sign/sign_stop",
-        "particle": "yunbeiuc:block/sign/sign_stop"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

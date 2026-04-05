@@ -2,7 +2,8 @@
   "format_version": "1.9.0",
   "credit": "Made with Blockbench",
   "textures": {
-    "2": "yunbeiuc:block/caltrop_yellow"
+    "2": "yunbeiuc:block/caltrop_yellow",
+    "particle": "yunbeiuc:block/caltrop_yellow"
   },
   "elements": [
     {

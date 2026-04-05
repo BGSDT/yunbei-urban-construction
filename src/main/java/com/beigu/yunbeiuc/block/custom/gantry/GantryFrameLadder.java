@@ -17,10 +17,10 @@ import net.minecraft.world.BlockView;
 public class GantryFrameLadder extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 0, 2, 7, 16, 14);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(9, 0, 2, 16, 16, 14);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(2, 0, 0, 14, 16, 7);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(2, 0, 9, 14, 16, 16);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(1.5, 0, 15.75, 14.25, 16, 22.75);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(1.5, 0, -6.75, 14.25, 16, 0.25);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(-6.75, 0, 1.5, 0.25, 16, 14.25);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(15.75, 0, 1.5, 22.75, 16, 14.25);
 
     public GantryFrameLadder(Settings settings) {
         super(settings);

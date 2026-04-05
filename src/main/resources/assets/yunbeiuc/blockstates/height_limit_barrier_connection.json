@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=north,connection_type=height_limit_barrier_connection_1": { "model": "yunbeiuc:block/height_limit_barrier_connection_1" },
+    "facing=north,connection_type=height_limit_barrier_connection_2": { "model": "yunbeiuc:block/height_limit_barrier_connection_2" },
+    "facing=north,connection_type=height_limit_barrier_connection_3": { "model": "yunbeiuc:block/height_limit_barrier_connection_3" },
+    "facing=north,connection_type=height_limit_barrier_connection_4": { "model": "yunbeiuc:block/height_limit_barrier_connection_4" },
+
+    "facing=south,connection_type=height_limit_barrier_connection_1": { "model": "yunbeiuc:block/height_limit_barrier_connection_1", "y": 180 },
+    "facing=south,connection_type=height_limit_barrier_connection_2": { "model": "yunbeiuc:block/height_limit_barrier_connection_2", "y": 180 },
+    "facing=south,connection_type=height_limit_barrier_connection_3": { "model": "yunbeiuc:block/height_limit_barrier_connection_3", "y": 180 },
+    "facing=south,connection_type=height_limit_barrier_connection_4": { "model": "yunbeiuc:block/height_limit_barrier_connection_4", "y": 180 },
+
+    "facing=east,connection_type=height_limit_barrier_connection_1": { "model": "yunbeiuc:block/height_limit_barrier_connection_1", "y": 90 },
+    "facing=east,connection_type=height_limit_barrier_connection_2": { "model": "yunbeiuc:block/height_limit_barrier_connection_2", "y": 90 },
+    "facing=east,connection_type=height_limit_barrier_connection_3": { "model": "yunbeiuc:block/height_limit_barrier_connection_3", "y": 90 },
+    "facing=east,connection_type=height_limit_barrier_connection_4": { "model": "yunbeiuc:block/height_limit_barrier_connection_4", "y": 90 },
+
+    "facing=west,connection_type=height_limit_barrier_connection_1": { "model": "yunbeiuc:block/height_limit_barrier_connection_1", "y": 270 },
+    "facing=west,connection_type=height_limit_barrier_connection_2": { "model": "yunbeiuc:block/height_limit_barrier_connection_2", "y": 270 },
+    "facing=west,connection_type=height_limit_barrier_connection_3": { "model": "yunbeiuc:block/height_limit_barrier_connection_3", "y": 270 },
+    "facing=west,connection_type=height_limit_barrier_connection_4": { "model": "yunbeiuc:block/height_limit_barrier_connection_4", "y": 270 }
+  }
+}

@@ -123,9 +123,9 @@ public class GantryFrameConnection extends Block {
         GantryFrameConnectionType finalType;
 
         if (hasMainRight) {
-            finalType = isSide1 ? GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_4 : GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_3;
+            finalType = isSide1 ? GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_3 : GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_4;
         } else if (hasMainLeft) {
-            finalType = isSide1 ? GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_2 : GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1;
+            finalType = isSide1 ? GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1 : GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_2;
         } else {
             finalType = GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_1;
         }

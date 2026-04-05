@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.instrument;
 
+import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -25,18 +26,10 @@ public class InstrumentCamera extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<DirectionType> DIRECTION_TYPE = EnumProperty.of("direction_type", DirectionType.class);
 
-    private static final VoxelShape SHAPE_MIDDLE_N = Block.createCuboidShape(5.9, -9.536743128535363e-8, 1.9624997138977047, 10.1, 5.649999904632569, 11.962499713897706);
-    private static final VoxelShape SHAPE_MIDDLE_S = Block.createCuboidShape(5.9, -9.536743128535363e-8, 4.037500286102295, 10.1, 5.649999904632569, 14.037500286102297);
-    private static final VoxelShape SHAPE_MIDDLE_E = Block.createCuboidShape(4.037500286102295, -9.536743128535363e-8, 5.9, 14.037500286102297, 5.649999904632569, 10.1);
-    private static final VoxelShape SHAPE_MIDDLE_W = Block.createCuboidShape(1.9624997138977047, -9.536743128535363e-8, 5.9, 11.962499713897706, 5.649999904632569, 10.1);
-    private static final VoxelShape SHAPE_LEFT_N = Block.createCuboidShape(5.9, -9.536743128535363e-8, 1.9624997138977047, 10.1, 5.649999904632569, 11.962499713897706);
-    private static final VoxelShape SHAPE_LEFT_S = Block.createCuboidShape(5.9, -9.536743128535363e-8, 4.037500286102295, 10.1, 5.649999904632569, 14.037500286102297);
-    private static final VoxelShape SHAPE_LEFT_E = Block.createCuboidShape(4.037500286102295, -9.536743128535363e-8, 5.9, 14.037500286102297, 5.649999904632569, 10.1);
-    private static final VoxelShape SHAPE_LEFT_W = Block.createCuboidShape(1.9624997138977047, -9.536743128535363e-8, 5.9, 11.962499713897706, 5.649999904632569, 10.1);
-    private static final VoxelShape SHAPE_RIGHT_N = Block.createCuboidShape(5.9, -9.536743128535363e-8, 1.9624997138977047, 10.1, 5.649999904632569, 11.962499713897706);
-    private static final VoxelShape SHAPE_RIGHT_S = Block.createCuboidShape(5.9, -9.536743128535363e-8, 4.037500286102295, 10.1, 5.649999904632569, 14.037500286102297);
-    private static final VoxelShape SHAPE_RIGHT_E = Block.createCuboidShape(4.037500286102295, -9.536743128535363e-8, 5.9, 14.037500286102297, 5.649999904632569, 10.1);
-    private static final VoxelShape SHAPE_RIGHT_W = Block.createCuboidShape(1.9624997138977047, -9.536743128535363e-8, 5.9, 11.962499713897706, 5.649999904632569, 10.1);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(5.9, -10, 2, 10.1, 5.625, 12);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(5.9, -10, 4, 10.1, 5.625, 14);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(4, -10, 5.9, 14, 5.625, 10.1);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(2, -10, 5.9, 12, 5.625, 10.1);
 
     public InstrumentCamera(Settings settings) {
         super(settings);
@@ -46,27 +39,11 @@ public class InstrumentCamera extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        Direction facing = state.get(FACING);
-        DirectionType type = state.get(DIRECTION_TYPE);
-        return switch (type) {
-            case MIDDLE -> switch (facing) {
-                case SOUTH -> SHAPE_MIDDLE_S;
-                case EAST -> SHAPE_MIDDLE_E;
-                case WEST -> SHAPE_MIDDLE_W;
-                default -> SHAPE_MIDDLE_N;
-            };
-            case LEFT -> switch (facing) {
-                case SOUTH -> SHAPE_LEFT_S;
-                case EAST -> SHAPE_LEFT_E;
-                case WEST -> SHAPE_LEFT_W;
-                default -> SHAPE_LEFT_N;
-            };
-            case RIGHT -> switch (facing) {
-                case SOUTH -> SHAPE_RIGHT_S;
-                case EAST -> SHAPE_RIGHT_E;
-                case WEST -> SHAPE_RIGHT_W;
-                default -> SHAPE_RIGHT_N;
-            };
+        return switch (state.get(FACING)) {
+            case WEST -> SHAPE_W;
+            case SOUTH -> SHAPE_S;
+            case EAST -> SHAPE_E;
+            default -> SHAPE_N;
         };
     }
 
@@ -93,7 +70,7 @@ public class InstrumentCamera extends Block {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         Item item = player.getStackInHand(hand).getItem();
-        if (item == Items.STICK) {
+        if (item == ModItems.WAND) {
             if (!world.isClient) {
                 DirectionType current = state.get(DIRECTION_TYPE);
                 DirectionType next = current.next();

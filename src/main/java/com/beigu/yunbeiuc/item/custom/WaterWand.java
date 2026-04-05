@@ -55,7 +55,7 @@ public class WaterWand extends Item {
         }
 
         if (count > 0) {
-            player.sendMessage(Text.translatable("item.yunbeiuc.tree_wand.success", count), true);
+            player.sendMessage(Text.translatable("item.yunbeiuc.water_wand.success", count), true);
         }
 
         return ActionResult.PASS;

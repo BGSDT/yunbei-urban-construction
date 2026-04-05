@@ -1,7 +1,8 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "yunbeiuc:block/color/f6f35c"
+    "all": "yunbeiuc:block/color/f6f35c",
+    "particle": "yunbeiuc:block/color/f6f35c"
   },
   "display": {
     "gui": {

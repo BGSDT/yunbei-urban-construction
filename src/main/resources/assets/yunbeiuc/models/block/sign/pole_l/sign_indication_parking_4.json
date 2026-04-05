@@ -10,7 +10,7 @@
         "2": "yunbeiuc:block/sign/sign_single_blue_2",
         "3": "yunbeiuc:block/sign/sign_indication_parking_4",
         "5": "yunbeiuc:block/sign/sign_indication_parking_1",
-        "particle": "yunbeiuc:block/sign/sign_indication_parking_1"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

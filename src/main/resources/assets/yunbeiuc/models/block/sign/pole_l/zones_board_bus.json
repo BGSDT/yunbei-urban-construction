@@ -8,7 +8,7 @@
     "textures": {
         "2": "yunbeiuc:block/sign/sign_bus",
         "3": "yunbeiuc:block/sign/zones_board_disabled",
-        "particle": "yunbeiuc:block/sign/zones_board_disabled"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

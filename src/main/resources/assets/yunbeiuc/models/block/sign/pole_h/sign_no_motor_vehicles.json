@@ -6,7 +6,7 @@
         "3": "yunbeiuc:block/sign/sign_single_red_1",
         "4": "yunbeiuc:block/sign/sign_red",
         "5": "yunbeiuc:block/sign/sign_no_motor_vehicles",
-        "particle": "yunbeiuc:block/sign/sign_no_motor_vehicles"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

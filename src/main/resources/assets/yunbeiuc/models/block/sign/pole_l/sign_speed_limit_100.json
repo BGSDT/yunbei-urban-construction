@@ -5,7 +5,7 @@
         "1": "yunbeiuc:block/sign/sign_single_1",
         "2": "yunbeiuc:block/sign/sign_speed_limit_100",
         "3": "yunbeiuc:block/sign/sign_single_red_1",
-        "particle": "yunbeiuc:block/sign/sign_speed_limit_100"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

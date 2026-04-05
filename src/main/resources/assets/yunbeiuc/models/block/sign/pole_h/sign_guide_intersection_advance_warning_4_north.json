@@ -10,7 +10,7 @@
         "2": "yunbeiuc:block/sign/sign_single_blue_2",
         "3": "yunbeiuc:block/sign/sign_guide_intersection_advance_warning_4",
         "4": "yunbeiuc:block/sign/sign_guide_north",
-        "particle": "yunbeiuc:block/sign/sign_guide_intersection_advance_warning_4"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

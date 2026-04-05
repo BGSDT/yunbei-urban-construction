@@ -121,7 +121,6 @@ public class TrafficLightGroup {
             blinkTick = 0;
             isBlinking = false; // 重置闪烁状态
             updateAllLights(world);
-            System.out.println("Group " + groupId.toString().substring(0, 8) + " switched to: " + currentPhase);
         }
     }
 

@@ -6,7 +6,8 @@
     64
   ],
   "textures": {
-    "1": "yunbeiuc:block/instrument_strobe_light"
+    "1": "yunbeiuc:block/instrument_strobe_light",
+    "particle": "yunbeiuc:block/instrument_strobe_light"
   },
   "elements": [
     {

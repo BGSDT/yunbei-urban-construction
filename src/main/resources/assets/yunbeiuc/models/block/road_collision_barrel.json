@@ -6,7 +6,8 @@
     128
   ],
   "textures": {
-    "0": "yunbeiuc:block/road_collision_barrel"
+    "0": "yunbeiuc:block/road_collision_barrel",
+    "particle": "yunbeiuc:block/road_collision_barrel"
   },
   "elements": [
     {

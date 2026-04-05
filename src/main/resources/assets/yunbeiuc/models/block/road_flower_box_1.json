@@ -349,24 +349,28 @@
 		{
 			"name": "wl2",
 			"origin": [26, 2, 6],
+			"scope": 0,
 			"color": 0,
 			"children": [1, 2, 3, 4, 5, 6, 7]
 		},
 		{
 			"name": "sjx1",
 			"origin": [-16, 0, 0],
+			"scope": 0,
 			"color": 0,
 			"children": [8, 9, 10, 11]
 		},
 		{
 			"name": "sjx2",
 			"origin": [-16, 0, 0],
+			"scope": 0,
 			"color": 0,
 			"children": [12, 13, 14, 15]
 		},
 		{
 			"name": "wl",
 			"origin": [0, 0, 0],
+			"scope": 0,
 			"color": 0,
 			"children": [16, 17, 18, 19, 20, 21]
 		},

@@ -11,7 +11,7 @@
         "4": "yunbeiuc:block/sign/sign_lane_four",
         "5": "yunbeiuc:block/sign/sign_indication_straight_inverted",
         "6": "yunbeiuc:block/sign/sign_indication_large_bus",
-        "particle": "yunbeiuc:block/sign/sign_indication_straight_inverted"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

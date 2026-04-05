@@ -13,13 +13,68 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 public class YunbeiUrbanConstructionClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        // 地面标识方块 - 镂空渲染层注册
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STRAIGHT_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.LEFT_TURN_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.RIGHT_TURN_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STRAIGHT_LEFT_TURN_AROUND_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.LEFT_RIGHT_TURN_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DISTANCE_CONFIRMATION_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TAXI_1_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TAXI_2_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.VEHICLE_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DISABLED_PEOPLE_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.NON_MOTOR_VEHICLES_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BUS_1_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BUS_2_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SCHOOL_BUS_1_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.LARGE_SPEED_BUMP_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SMALL_SPEED_BUMP_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_040_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_050_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_060_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_070_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_080_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_090_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_100_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_110_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WHITE_120_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_040_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_050_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_060_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_070_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_080_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_090_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_100_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_110_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.YELLOW_120_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ELECTRIC_VEHICLE_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PEDESTRIAN_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STOP_AND_YIELD_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HOV_1_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HOV_2_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HOV_3_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HOV_4_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HOV_5_GROUND_MARK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MANHOLE_COVER, RenderLayer.getCutout());
+
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANTI_GLARE_NET_POLE, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WARNING_NETWORK, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WARNING_NETWORK_POLE, RenderLayer.getCutout());
+
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_LEFT, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getTranslucent());
 
-        // 交通标志方块渲染层注册（SignBlocks）
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_20, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_30, RenderLayer.getCutout());

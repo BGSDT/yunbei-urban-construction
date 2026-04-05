@@ -6,7 +6,8 @@
     64
   ],
   "textures": {
-    "1": "yunbeiuc:block/traffic_barrier_gray_slant_red"
+    "1": "yunbeiuc:block/traffic_barrier_gray_slant_red",
+    "particle": "yunbeiuc:block/traffic_barrier_gray_slant_red"
   },
   "elements": [
     {

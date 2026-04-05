@@ -11,7 +11,7 @@
         "4": "yunbeiuc:block/sign/sign_lane_four",
         "5": "yunbeiuc:block/sign/sign_indication_left_side_median_strip",
         "6": "yunbeiuc:block/sign/sign_indication_electric_vehicle",
-        "particle": "yunbeiuc:block/sign/sign_indication_left_side_median_strip"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

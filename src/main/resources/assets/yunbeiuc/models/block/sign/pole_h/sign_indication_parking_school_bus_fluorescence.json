@@ -6,7 +6,7 @@
         "2": "yunbeiuc:block/sign/sign_single_blue_2",
         "4": "yunbeiuc:block/sign/sign_fluorescence",
         "5": "yunbeiuc:block/sign/sign_indication_parking_school_bus",
-        "particle": "yunbeiuc:block/sign/sign_indication_parking_school_bus"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

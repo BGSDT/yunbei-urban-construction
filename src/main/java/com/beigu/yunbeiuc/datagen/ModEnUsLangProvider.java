@@ -28,23 +28,6 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModItems.ROTATED_WAND,"Rotation Wand");
         translationBuilder.add("item.yunbeiuc.rotated_wand.tooltip","Right-click on a block to rotate it 90 degrees clockwise");
 
-        // Road Markings & Ground Signs
-        translationBuilder.add(ModBlocks.LEFT_TURN_GROUND_MARK, "Left Turn Ground Mark");
-        translationBuilder.add(ModBlocks.STRAIGHT_GROUND_MARK, "Straight Ground Mark");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_GROUND_MARK, "Right Turn Ground Mark");
-        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK, "Left Turn & U-Turn Ground Mark");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_AROUND_GROUND_MARK, "Right Turn & U-Turn Ground Mark");
-        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK, "Straight & Left Turn Ground Mark");
-        translationBuilder.add(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK, "Straight & Right Turn Ground Mark");
-        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK, "Straight, Left & Right Turn Ground Mark");
-        translationBuilder.add(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK, "Left Turn Merge Ground Mark");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK, "Right Turn Merge Ground Mark");
-        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK, "Left U-Turn Ground Mark");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_AROUND_SINGLE_GROUND_MARK, "Right U-Turn Ground Mark");
-        translationBuilder.add(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK, "Slow Down Warning Ground Mark");
-        translationBuilder.add(ModBlocks.SLOWDOWN_YIELD_GROUND_MARK, "Slow Down & Yield Ground Mark");
-        translationBuilder.add(ModBlocks.MANHOLE_COVER, "Manhole Cover");
-
 // Traffic Lights
         translationBuilder.add(ModBlocks.TRAFFIC_LIGHTS_STRAIGHT, "Straight Traffic Light");
         translationBuilder.add(ModBlocks.TRAFFIC_LIGHTS_LEFT, "Left Turn Traffic Light");
@@ -59,7 +42,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 // Road Monitoring Equipment
         translationBuilder.add(ModBlocks.ROAD_DETECTION_CAMERA, "Road Detection/Speed Camera");
         translationBuilder.add(ModBlocks.ROAD_LIGHTING_LAMP, "Road Supplementary Light");
-        translationBuilder.add("block.yunbeiuc.roadway_lighting_lamp.tooltip","Right-click with a Wand to toggle light state");
+        translationBuilder.add("block.yunbeiuc.lighting_lamp.tooltip","Right-click with a Wand to toggle light state");
         translationBuilder.add(ModBlocks.ROAD_RADAR_SPEED_DETECTOR, "Radar Speed Detector");
         translationBuilder.add("block.yunbeiuc.radar_speed_detector.tooltip","Right-click with a Wand to toggle light state");
 
@@ -84,8 +67,16 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.GANTRY_FRAME_MAIN, "Gantry Main Frame");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_RAILING, "Gantry Railing");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_LADDER, "Gantry Ladder");
-        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_SIDE, "Gantry Side LED Screen");
-        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_MAIN, "Gantry Main LED Screen");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_SIDE, "Gantry Side LED");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_MAIN, "Gantry Main LED");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED,"Gantry LED Screen");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_DETECTION_CAMERA,"Gantry Detection/Speed Camera");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LIGHTING_LAMP,"Gantry Supplementary Light");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"Gantry Radar Speed Detector");
+
+        translationBuilder.add(ModBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "Height Limiter Side Frame");
+        translationBuilder.add(ModBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "Height Limiter Connector");
+        translationBuilder.add(ModBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "Height Limiter Main Frame");
 
 // Anti-Glare Facilities
         translationBuilder.add(ModBlocks.ANTI_GLARE_NET, "Anti-Glare Net");
@@ -131,6 +122,13 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.INSTRUMENT_POLE_FOUNDATIONS, "Instrument Pole Foundation");
         translationBuilder.add(ModBlocks.INSTRUMENT_POLE_LONGITUDINAL, "Longitudinal Instrument Pole");
         translationBuilder.add(ModBlocks.INSTRUMENT_CAMERA, "Instrument Camera");
+        translationBuilder.add(ModBlocks.INSTRUMENT_FEE_DISPLAY, "Instrument Vehicle Information Display");
+        translationBuilder.add(ModBlocks.INSTRUMENT_LANE_INDICATOR, "Instrument Lane Indicator");
+
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_MAIN,"Barrier Gate Main Type 1");
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_MAIN_SLAB,"Barrier Gate Main Type 1 Slab");
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"Horizontal Barrier Gate Pole Type 1");
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"Longitudinal Barrier Gate Pole Type 1");
 
 // Safety Islands
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_1, "Yellow Safety Island Type 1");
@@ -162,6 +160,9 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.ROAD_RAILINGS_GREEN_ENDING_2, "Green Road Railing End Type 2");
         translationBuilder.add(ModBlocks.ROAD_RAILINGS_GREEN_POLE, "Green Road Railing Pole");
         translationBuilder.add(ModBlocks.ROAD_RAILINGS_GREEN_OBLIQUE, "Angled Green Road Railing");
+
+        translationBuilder.add(ModBlocks.WARNING_NETWORK,"Warning Network");
+        translationBuilder.add(ModBlocks.WARNING_NETWORK_POLE,"Warning Network Pole");
 
 // Road Closed Barricades
         translationBuilder.add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1, "Road Closed Barricade Type 1");
@@ -248,8 +249,69 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE, "Yellow Thick + Bevel + White Line Road");
         translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_CROSS_LINE, "White Cross Line Road");
         translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_CROSS_LINE, "Yellow Cross Line Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_LEFT_DIAMOND_SHAPE_LINE, "White Left Diamond Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_RIGHT_DIAMOND_SHAPE_LINE, "White Right Diamond Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_DOUBLE_DIAMOND_SHAPE_LINE, "White Double Diamond Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_LEFT_DIAMOND_SHAPE_LINE, "Yellow Left Diamond Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_DOUBLE_DIAMOND_SHAPE_LINE, "Yellow Right Diamond Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_RIGHT_DIAMOND_SHAPE_LINE, "Yellow Double Diamond Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_THREE_SQUARE_LINE, "White Toll Plaza Deceleration 1 Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_SIX_SQUARE_LINE, "White Toll Plaza Deceleration 2 Road");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_NINE_SQUARE_LINE, "White Toll Plaza Deceleration 3 Road");
         translationBuilder.add(ModBlocks.ROAD_WITH_AUTO_BEVEL_LINE, "Auto Bevel Line Road");
         translationBuilder.add(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE, "Auto Right Angle Line Road");
+
+        translationBuilder.add(ModBlocks.STRAIGHT_GROUND_MARK, "Straight sign");
+        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK, "Straight and left turn sign");
+        translationBuilder.add(ModBlocks.LEFT_TURN_GROUND_MARK, "Left turn sign");
+        translationBuilder.add(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK, "Straight and right turn sign");
+        translationBuilder.add(ModBlocks.RIGHT_TURN_GROUND_MARK, "Right turn sign");
+        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK, "Straight, left and right turn sign");
+        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK, "U-turn ahead sign");
+        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_TURN_AROUND_GROUND_MARK, "Straight or U-turn ahead sign");
+        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK, "Left turn or U-turn ahead sign");
+        translationBuilder.add(ModBlocks.LEFT_RIGHT_TURN_GROUND_MARK, "Left and right turn sign");
+        translationBuilder.add(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK, "Left merge sign");
+        translationBuilder.add(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK, "Right merge sign");
+        translationBuilder.add(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK, "Crosswalk warning sign");
+        translationBuilder.add(ModBlocks.DISTANCE_CONFIRMATION_GROUND_MARK, "Chevron distance confirmation sign");
+        translationBuilder.add(ModBlocks.TAXI_1_GROUND_MARK, "Exit sign");
+        translationBuilder.add(ModBlocks.TAXI_2_GROUND_MARK, "Rental sign");
+        translationBuilder.add(ModBlocks.VEHICLE_GROUND_MARK, "Vehicle sign");
+        translationBuilder.add(ModBlocks.DISABLED_PEOPLE_GROUND_MARK, "Disabled only sign");
+        translationBuilder.add(ModBlocks.NON_MOTOR_VEHICLES_GROUND_MARK, "Non-motor vehicle sign");
+        translationBuilder.add(ModBlocks.BUS_1_GROUND_MARK, "Public transport sign");
+        translationBuilder.add(ModBlocks.BUS_2_GROUND_MARK, "Bus sign");
+        translationBuilder.add(ModBlocks.SCHOOL_BUS_1_GROUND_MARK, "School sign");
+        translationBuilder.add(ModBlocks.LARGE_SPEED_BUMP_GROUND_MARK, "Large speed bump sign");
+        translationBuilder.add(ModBlocks.SMALL_SPEED_BUMP_GROUND_MARK, "Small speed bump sign");
+        translationBuilder.add(ModBlocks.WHITE_040_GROUND_MARK, "Minimum speed limit 40km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_050_GROUND_MARK, "Minimum speed limit 50km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_060_GROUND_MARK, "Minimum speed limit 60km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_070_GROUND_MARK, "Minimum speed limit 70km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_080_GROUND_MARK, "Minimum speed limit 80km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_090_GROUND_MARK, "Minimum speed limit 90km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_100_GROUND_MARK, "Minimum speed limit 100km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_110_GROUND_MARK, "Minimum speed limit 110km/h sign");
+        translationBuilder.add(ModBlocks.WHITE_120_GROUND_MARK, "Minimum speed limit 120km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_040_GROUND_MARK, "Maximum speed limit 40km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_050_GROUND_MARK, "Maximum speed limit 50km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_060_GROUND_MARK, "Maximum speed limit 60km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_070_GROUND_MARK, "Maximum speed limit 70km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_080_GROUND_MARK, "Maximum speed limit 80km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_090_GROUND_MARK, "Maximum speed limit 90km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_100_GROUND_MARK, "Maximum speed limit 100km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_110_GROUND_MARK, "Maximum speed limit 110km/h sign");
+        translationBuilder.add(ModBlocks.YELLOW_120_GROUND_MARK, "Maximum speed limit 120km/h sign");
+        translationBuilder.add(ModBlocks.ELECTRIC_VEHICLE_GROUND_MARK, "Electric bicycle sign");
+        translationBuilder.add(ModBlocks.PEDESTRIAN_GROUND_MARK, "Pedestrian sign");
+        translationBuilder.add(ModBlocks.STOP_AND_YIELD_GROUND_MARK, "Stop sign");
+        translationBuilder.add(ModBlocks.HOV_1_GROUND_MARK, "Multi-passenger sign");
+        translationBuilder.add(ModBlocks.HOV_2_GROUND_MARK, "Carpool sign");
+        translationBuilder.add(ModBlocks.HOV_3_GROUND_MARK, "Passenger vehicle sign");
+        translationBuilder.add(ModBlocks.HOV_4_GROUND_MARK, "3+ occupant sign");
+        translationBuilder.add(ModBlocks.HOV_5_GROUND_MARK, "5+ occupant sign");
+        translationBuilder.add(ModBlocks.MANHOLE_COVER, "Manhole cover");
 
 // Road Pole Attachments
         translationBuilder.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY, "Road Pole Text Display");

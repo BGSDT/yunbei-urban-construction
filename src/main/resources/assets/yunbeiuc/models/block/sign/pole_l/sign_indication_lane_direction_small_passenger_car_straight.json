@@ -11,7 +11,7 @@
         "4": "yunbeiuc:block/sign/sign_lane",
         "5": "yunbeiuc:block/sign/sign_indication_straight_inverted",
         "6": "yunbeiuc:block/sign/sign_indication_small_passenger_car",
-        "particle": "yunbeiuc:block/sign/sign_indication_straight_inverted"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

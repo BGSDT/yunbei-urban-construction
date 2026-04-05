@@ -6,7 +6,7 @@
         "3": "yunbeiuc:block/sign/sign_single_red_1",
         "5": "yunbeiuc:block/sign/sign_circle",
         "7": "yunbeiuc:block/sign/sign_height_limit_30",
-        "particle": "yunbeiuc:block/sign/sign_height_limit_30"
+        "particle": "yunbeiuc:block/sign/sign_single_1"
     },
     "elements": [
         {

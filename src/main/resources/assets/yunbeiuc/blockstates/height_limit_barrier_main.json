@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "facing=north,main_type=height_limit_barrier_main_1": { "model": "yunbeiuc:block/height_limit_barrier_main_1" },
+    "facing=north,main_type=height_limit_barrier_main_2": { "model": "yunbeiuc:block/height_limit_barrier_main_2" },
+    "facing=north,main_type=height_limit_barrier_main_3": { "model": "yunbeiuc:block/height_limit_barrier_main_3" },
+    "facing=north,main_type=height_limit_barrier_main_4": { "model": "yunbeiuc:block/height_limit_barrier_main_4" },
+    "facing=north,main_type=height_limit_barrier_main_5": { "model": "yunbeiuc:block/height_limit_barrier_main_5" },
+    "facing=north,main_type=height_limit_barrier_main_6": { "model": "yunbeiuc:block/height_limit_barrier_main_6" },
+
+    "facing=south,main_type=height_limit_barrier_main_1": { "model": "yunbeiuc:block/height_limit_barrier_main_1", "y": 180 },
+    "facing=south,main_type=height_limit_barrier_main_2": { "model": "yunbeiuc:block/height_limit_barrier_main_2", "y": 180 },
+    "facing=south,main_type=height_limit_barrier_main_3": { "model": "yunbeiuc:block/height_limit_barrier_main_3", "y": 180 },
+    "facing=south,main_type=height_limit_barrier_main_4": { "model": "yunbeiuc:block/height_limit_barrier_main_4", "y": 180 },
+    "facing=south,main_type=height_limit_barrier_main_5": { "model": "yunbeiuc:block/height_limit_barrier_main_5", "y": 180 },
+    "facing=south,main_type=height_limit_barrier_main_6": { "model": "yunbeiuc:block/height_limit_barrier_main_6", "y": 180 },
+
+    "facing=east,main_type=height_limit_barrier_main_1": { "model": "yunbeiuc:block/height_limit_barrier_main_1", "y": 90 },
+    "facing=east,main_type=height_limit_barrier_main_2": { "model": "yunbeiuc:block/height_limit_barrier_main_2", "y": 90 },
+    "facing=east,main_type=height_limit_barrier_main_3": { "model": "yunbeiuc:block/height_limit_barrier_main_3", "y": 90 },
+    "facing=east,main_type=height_limit_barrier_main_4": { "model": "yunbeiuc:block/height_limit_barrier_main_4", "y": 90 },
+    "facing=east,main_type=height_limit_barrier_main_5": { "model": "yunbeiuc:block/height_limit_barrier_main_5", "y": 90 },
+    "facing=east,main_type=height_limit_barrier_main_6": { "model": "yunbeiuc:block/height_limit_barrier_main_6", "y": 90 },
+
+    "facing=west,main_type=height_limit_barrier_main_1": { "model": "yunbeiuc:block/height_limit_barrier_main_1", "y": 270 },
+    "facing=west,main_type=height_limit_barrier_main_2": { "model": "yunbeiuc:block/height_limit_barrier_main_2", "y": 270 },
+    "facing=west,main_type=height_limit_barrier_main_3": { "model": "yunbeiuc:block/height_limit_barrier_main_3", "y": 270 },
+    "facing=west,main_type=height_limit_barrier_main_4": { "model": "yunbeiuc:block/height_limit_barrier_main_4", "y": 270 },
+    "facing=west,main_type=height_limit_barrier_main_5": { "model": "yunbeiuc:block/height_limit_barrier_main_5", "y": 270 },
+    "facing=west,main_type=height_limit_barrier_main_6": { "model": "yunbeiuc:block/height_limit_barrier_main_6", "y": 270 }
+  }
+}

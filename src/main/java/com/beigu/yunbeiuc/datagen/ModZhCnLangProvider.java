@@ -28,23 +28,6 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModItems.ROTATED_WAND,"旋转魔杖");
         translationBuilder.add("item.yunbeiuc.rotated_wand.tooltip","右键点击方块以顺时针旋转90度");
 
-        // 道路标识/标线类
-        translationBuilder.add(ModBlocks.LEFT_TURN_GROUND_MARK, "左转地面标识");
-        translationBuilder.add(ModBlocks.STRAIGHT_GROUND_MARK, "直行地面标识");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_GROUND_MARK, "右转地面标识");
-        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK, "左转和掉头地面标识");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_AROUND_GROUND_MARK, "右转和掉头地面标识");
-        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK, "直行左转地面标识");
-        translationBuilder.add(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK, "直行右转地面标识");
-        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK, "直行左右转地面标识");
-        translationBuilder.add(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK, "左转汇入地面标识");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK, "右转汇入地面标识");
-        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK, "左转掉头地面标识");
-        translationBuilder.add(ModBlocks.RIGHT_TURN_AROUND_SINGLE_GROUND_MARK, "右转掉头地面标识");
-        translationBuilder.add(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK, "减速预告地面标识");
-        translationBuilder.add(ModBlocks.SLOWDOWN_YIELD_GROUND_MARK, "减速避让地面标识");
-        translationBuilder.add(ModBlocks.MANHOLE_COVER, "井盖");
-
 // 交通信号灯类
         translationBuilder.add(ModBlocks.TRAFFIC_LIGHTS_STRAIGHT, "直行交通信号灯");
         translationBuilder.add(ModBlocks.TRAFFIC_LIGHTS_LEFT, "左转交通信号灯");
@@ -59,7 +42,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 // 道路监控设备类
         translationBuilder.add(ModBlocks.ROAD_DETECTION_CAMERA, "道路检测/测速监控摄像头");
         translationBuilder.add(ModBlocks.ROAD_LIGHTING_LAMP, "道路补光灯");
-        translationBuilder.add("block.yunbeiuc.roadway_lighting_lamp.tooltip","手持魔杖右键点击以切换灯光状态");
+        translationBuilder.add("block.yunbeiuc.lighting_lamp.tooltip","手持魔杖右键点击以切换灯光状态");
         translationBuilder.add(ModBlocks.ROAD_RADAR_SPEED_DETECTOR, "雷达测速器");
         translationBuilder.add("block.yunbeiuc.radar_speed_detector.tooltip","手持魔杖右键点击以切换灯光状态");
 
@@ -84,8 +67,16 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.GANTRY_FRAME_MAIN, "龙门架主架");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_RAILING, "龙门架栏杆");
         translationBuilder.add(ModBlocks.GANTRY_FRAME_LADDER, "龙门架爬梯");
-        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_SIDE, "龙门架侧装LED屏");
-        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_MAIN, "龙门架主装LED屏");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_SIDE, "龙门架侧装LED专用");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED_MAIN, "龙门架主装LED专用");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LED,"龙门架LED屏");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_DETECTION_CAMERA,"龙门架检测/测速监控摄像头");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_LIGHTING_LAMP,"龙门架道路补光灯");
+        translationBuilder.add(ModBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"龙门架雷达测速器");
+
+        translationBuilder.add(ModBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "限高杆侧架");
+        translationBuilder.add(ModBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "限高杆连接件");
+        translationBuilder.add(ModBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "限高杆主架");
 
 // 防眩设施类
         translationBuilder.add(ModBlocks.ANTI_GLARE_NET, "防眩网");
@@ -131,6 +122,13 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.INSTRUMENT_POLE_FOUNDATIONS, "仪器杆基础");
         translationBuilder.add(ModBlocks.INSTRUMENT_POLE_LONGITUDINAL, "纵向仪器杆");
         translationBuilder.add(ModBlocks.INSTRUMENT_CAMERA, "仪器摄像头");
+        translationBuilder.add(ModBlocks.INSTRUMENT_FEE_DISPLAY, "车辆信息显示屏");
+        translationBuilder.add(ModBlocks.INSTRUMENT_LANE_INDICATOR, "车道指示器");
+
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_MAIN,"道闸1型");
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_MAIN_SLAB,"道闸1台阶型");
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"横向道闸杆1型");
+        translationBuilder.add(ModBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"纵向道闸杆1型");
 
 // 安全岛类
         translationBuilder.add(ModBlocks.SAFETY_ISLAND_YELLOW_1, "黄色安全岛1型");
@@ -162,6 +160,9 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.ROAD_RAILINGS_GREEN_ENDING_2, "绿色道路栏杆端头2型");
         translationBuilder.add(ModBlocks.ROAD_RAILINGS_GREEN_POLE, "绿色道路栏杆立柱");
         translationBuilder.add(ModBlocks.ROAD_RAILINGS_GREEN_OBLIQUE, "斜向绿色道路栏杆");
+
+        translationBuilder.add(ModBlocks.WARNING_NETWORK,"警示网");
+        translationBuilder.add(ModBlocks.WARNING_NETWORK_POLE,"警示网立柱");
 
 // 道路封闭护栏类
         translationBuilder.add(ModBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1, "道路封闭护栏1型");
@@ -248,8 +249,69 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE, "黄色粗+斜角+白色标线道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_CROSS_LINE, "白色十字标线道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_CROSS_LINE, "黄色十字标线道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_LEFT_DIAMOND_SHAPE_LINE, "白色左菱形道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_RIGHT_DIAMOND_SHAPE_LINE, "白色右菱形道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_DOUBLE_DIAMOND_SHAPE_LINE, "白色双菱形道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_LEFT_DIAMOND_SHAPE_LINE, "黄色左菱形道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_DOUBLE_DIAMOND_SHAPE_LINE, "黄色右菱形道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_YELLOW_RIGHT_DIAMOND_SHAPE_LINE, "黄色双菱形道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_THREE_SQUARE_LINE, "白色收费广场减速1道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_SIX_SQUARE_LINE, "白色收费广场减速2道路");
+        translationBuilder.add(ModBlocks.ROAD_WITH_WHITE_NINE_SQUARE_LINE, "白色收费广场减速3道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_AUTO_BEVEL_LINE, "自动斜角标线道路");
         translationBuilder.add(ModBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE, "自动直角标线道路");
+
+        translationBuilder.add(ModBlocks.STRAIGHT_GROUND_MARK, "直行标记");
+        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK, "直行左转标记");
+        translationBuilder.add(ModBlocks.LEFT_TURN_GROUND_MARK, "左转标记");
+        translationBuilder.add(ModBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK, "直行右转标记");
+        translationBuilder.add(ModBlocks.RIGHT_TURN_GROUND_MARK, "右转标记");
+        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK, "直行左右转标记");
+        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK, "前方掉头标记");
+        translationBuilder.add(ModBlocks.STRAIGHT_LEFT_TURN_AROUND_GROUND_MARK, "前方可直行掉头标记");
+        translationBuilder.add(ModBlocks.LEFT_TURN_AROUND_GROUND_MARK, "前方可左转掉头标记");
+        translationBuilder.add(ModBlocks.LEFT_RIGHT_TURN_GROUND_MARK, "左右转标记");
+        translationBuilder.add(ModBlocks.LEFT_TURN_MERGE_GROUND_MARK, "左合流标记");
+        translationBuilder.add(ModBlocks.RIGHT_TURN_MERGE_GROUND_MARK, "右合流标记");
+        translationBuilder.add(ModBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK, "人行横道预告标记");
+        translationBuilder.add(ModBlocks.DISTANCE_CONFIRMATION_GROUND_MARK, "折线车距确认标记");
+        translationBuilder.add(ModBlocks.TAXI_1_GROUND_MARK, "“出”标记");
+        translationBuilder.add(ModBlocks.TAXI_2_GROUND_MARK, "“租”标记");
+        translationBuilder.add(ModBlocks.VEHICLE_GROUND_MARK, "“车”标记");
+        translationBuilder.add(ModBlocks.DISABLED_PEOPLE_GROUND_MARK, "残疾人专用标记");
+        translationBuilder.add(ModBlocks.NON_MOTOR_VEHICLES_GROUND_MARK, "非机动车标记");
+        translationBuilder.add(ModBlocks.BUS_1_GROUND_MARK, "“公”标记");
+        translationBuilder.add(ModBlocks.BUS_2_GROUND_MARK, "“交”标记");
+        translationBuilder.add(ModBlocks.SCHOOL_BUS_1_GROUND_MARK, "“校”标记");
+        translationBuilder.add(ModBlocks.LARGE_SPEED_BUMP_GROUND_MARK, "大型减速丘标记");
+        translationBuilder.add(ModBlocks.SMALL_SPEED_BUMP_GROUND_MARK, "小型减速丘标记");
+        translationBuilder.add(ModBlocks.WHITE_040_GROUND_MARK, "最低限速40km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_050_GROUND_MARK, "最低限速50km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_060_GROUND_MARK, "最低限速60km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_070_GROUND_MARK, "最低限速70km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_080_GROUND_MARK, "最低限速80km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_090_GROUND_MARK, "最低限速90km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_100_GROUND_MARK, "最低限速100km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_110_GROUND_MARK, "最低限速110km/h标记");
+        translationBuilder.add(ModBlocks.WHITE_120_GROUND_MARK, "最低限速120km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_040_GROUND_MARK, "最高限速40km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_050_GROUND_MARK, "最高限速50km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_060_GROUND_MARK, "最高限速60km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_070_GROUND_MARK, "最高限速70km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_080_GROUND_MARK, "最高限速80km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_090_GROUND_MARK, "最高限速90km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_100_GROUND_MARK, "最高限速100km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_110_GROUND_MARK, "最高限速110km/h标记");
+        translationBuilder.add(ModBlocks.YELLOW_120_GROUND_MARK, "最高限速120km/h标记");
+        translationBuilder.add(ModBlocks.ELECTRIC_VEHICLE_GROUND_MARK, "电动自行车标记");
+        translationBuilder.add(ModBlocks.PEDESTRIAN_GROUND_MARK, "行人标记");
+        translationBuilder.add(ModBlocks.STOP_AND_YIELD_GROUND_MARK, "停车让行标记");
+        translationBuilder.add(ModBlocks.HOV_1_GROUND_MARK, "“多”标记");
+        translationBuilder.add(ModBlocks.HOV_2_GROUND_MARK, "“乘”标记");
+        translationBuilder.add(ModBlocks.HOV_3_GROUND_MARK, "“客”标记");
+        translationBuilder.add(ModBlocks.HOV_4_GROUND_MARK, "“3+”标记");
+        translationBuilder.add(ModBlocks.HOV_5_GROUND_MARK, "“5+”标记");
+        translationBuilder.add(ModBlocks.MANHOLE_COVER, "井盖");
 
 // 道路杆件附属类
         translationBuilder.add(ModBlocks.ROAD_POLE_TEXT_DISPLAY, "道路杆件文字显示屏");
