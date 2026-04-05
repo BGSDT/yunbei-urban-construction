@@ -6,20 +6,29 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 
+import java.util.WeakHashMap;
+
 public class ModEvents {
+    private static final WeakHashMap<ServerWorld, TrafficLightManager> MANAGER_CACHE = new WeakHashMap<>();
+
     public static void register() {
-        // 世界加载完成事件
         ServerWorldEvents.LOAD.register((MinecraftServer server, ServerWorld world) -> {
-            // 确保管理器被初始化并设置世界引用
-            TrafficLightManager.get(world);
+            TrafficLightManager manager = TrafficLightManager.get(world);
+            MANAGER_CACHE.put(world, manager);
             System.out.println("World loaded: " + world.getRegistryKey().getValue() + " - Traffic light manager initialized");
         });
 
-        // 每 tick 更新红绿灯
+        ServerWorldEvents.UNLOAD.register((MinecraftServer server, ServerWorld world) -> {
+            MANAGER_CACHE.remove(world);
+        });
+
         ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (world instanceof ServerWorld) {
-                ServerWorld serverWorld = (ServerWorld) world;
-                TrafficLightManager manager = TrafficLightManager.get(serverWorld);
+            if (world instanceof ServerWorld serverWorld) {
+                TrafficLightManager manager = MANAGER_CACHE.get(serverWorld);
+                if (manager == null) {
+                    manager = TrafficLightManager.get(serverWorld);
+                    MANAGER_CACHE.put(serverWorld, manager);
+                }
                 manager.tick(serverWorld);
             }
         });

@@ -17,6 +17,7 @@ public class TrafficLightGroup {
     private int phaseTime = 0;
     private boolean active = true;
     private transient World world;
+    private final Map<Direction, Map<Boolean, TrafficLightsBlock.LightState>> cachedStates = new HashMap<>();
 
     // 闪烁相关
     private boolean isBlinking = false;
@@ -89,9 +90,12 @@ public class TrafficLightGroup {
 
     public TrafficLightGroup(UUID groupId) {
         this.groupId = groupId;
-        // 初始化每个方向的Map
         for (Direction dir : Direction.Type.HORIZONTAL) {
             lights.put(dir, new HashMap<>());
+            Map<Boolean, TrafficLightsBlock.LightState> dirStates = new HashMap<>();
+            dirStates.put(true, TrafficLightsBlock.LightState.RED);
+            dirStates.put(false, TrafficLightsBlock.LightState.RED);
+            cachedStates.put(dir, dirStates);
         }
     }
 
@@ -125,31 +129,21 @@ public class TrafficLightGroup {
     }
 
     private void updateAllLights(World world) {
-        // 根据当前阶段设置所有红绿灯的状态
-        Map<Direction, Map<Boolean, TrafficLightsBlock.LightState>> states = new HashMap<>();
-
-        // 初始化所有方向为红灯
         for (Direction dir : Direction.Type.HORIZONTAL) {
-            Map<Boolean, TrafficLightsBlock.LightState> dirStates = new HashMap<>();
+            Map<Boolean, TrafficLightsBlock.LightState> dirStates = cachedStates.get(dir);
             dirStates.put(true, TrafficLightsBlock.LightState.RED);
             dirStates.put(false, TrafficLightsBlock.LightState.RED);
-            states.put(dir, dirStates);
         }
 
-        // 根据当前阶段设置特定方向的状态
         if (currentPhase.isGreenPhase()) {
-            // 绿灯阶段
-            setGreenStates(states);
+            setGreenStates(cachedStates);
         } else if (currentPhase.isBlinkPhase()) {
-            // 闪烁阶段：根据isBlinking决定显示绿色还是灰色
-            setBlinkStates(states);
+            setBlinkStates(cachedStates);
         } else if (currentPhase.isYellowPhase()) {
-            // 黄灯阶段
-            setYellowStates(states);
+            setYellowStates(cachedStates);
         }
 
-        // 应用状态到所有方块
-        applyAllStates(world, states);
+        applyAllStates(world, cachedStates);
     }
 
     private void setGreenStates(Map<Direction, Map<Boolean, TrafficLightsBlock.LightState>> states) {

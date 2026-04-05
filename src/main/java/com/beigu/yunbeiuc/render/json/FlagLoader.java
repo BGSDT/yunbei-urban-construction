@@ -66,14 +66,13 @@ public class FlagLoader {
     }
 
     public static Map<String, CustomFlag> getCustomFlags() {
-        return new LinkedHashMap<>(CUSTOM_FLAGS);
+        return Collections.unmodifiableMap(CUSTOM_FLAGS);
     }
 
     public static CustomFlag getFlag(String id) {
         return CUSTOM_FLAGS.get(id);
     }
 
-    // 新增：获取保持顺序的旗帜列表
     public static List<CustomFlag> getFlagsInOrder() {
         return new ArrayList<>(CUSTOM_FLAGS.values());
     }

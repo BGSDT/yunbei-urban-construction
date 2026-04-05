@@ -18,19 +18,16 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FlagSelectionScreen extends Screen {
     private final List<FlagOption> options;
     private FlagListWidget listWidget;
     private CustomFlag selectedFlag;
-    private final Map<String, CustomFlag> allFlags;
     private final BlockPos blockPos;
 
     public FlagSelectionScreen(Text title, BlockPos blockPos) {
         super(title);
         this.blockPos = blockPos;
-        this.allFlags = FlagLoader.getCustomFlags();
         this.options = createFlagOptions();
 
         if (!options.isEmpty()) {
@@ -50,7 +47,8 @@ public class FlagSelectionScreen extends Screen {
                 this.height,
                 40,
                 this.height - 60,
-                20
+                20,
+                this.options
         );
 
         this.addDrawableChild(this.listWidget);
@@ -284,9 +282,8 @@ public class FlagSelectionScreen extends Screen {
 
     private List<FlagOption> createFlagOptions() {
         List<FlagOption> options = new ArrayList<>();
-        // 方法1：直接使用 LinkedHashMap 的顺序（JSON文件中的顺序）
-        for (Map.Entry<String, CustomFlag> entry : allFlags.entrySet()) {
-            options.add(new FlagOption(entry.getValue()));
+        for (CustomFlag flag : FlagLoader.getFlagsInOrder()) {
+            options.add(new FlagOption(flag));
         }
         return options;
     }
@@ -316,15 +313,13 @@ public class FlagSelectionScreen extends Screen {
     }
 
     private class FlagListWidget extends ElementListWidget<FlagListWidget.Entry> {
-        private final List<FlagOption> options;
         private final int listWidth;
 
-        public FlagListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+        public FlagListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, List<FlagOption> flagOptions) {
             super(client, width, height, top, bottom, itemHeight);
             this.listWidth = width;
-            this.options = createFlagOptions();
 
-            for (FlagOption option : options) {
+            for (FlagOption option : flagOptions) {
                 this.addEntry(new Entry(option));
             }
         }
