@@ -23,7 +23,8 @@ public class ModEvents {
         });
 
         ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (world instanceof ServerWorld serverWorld) {
+            if (world instanceof ServerWorld) {
+                ServerWorld serverWorld = (ServerWorld) world;
                 TrafficLightManager manager = MANAGER_CACHE.get(serverWorld);
                 if (manager == null) {
                     manager = TrafficLightManager.get(serverWorld);
