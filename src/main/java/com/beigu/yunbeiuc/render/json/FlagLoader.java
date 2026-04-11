@@ -14,24 +14,22 @@ import java.util.*;
 
 public class FlagLoader {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    // 使用 LinkedHashMap 保持插入顺序
     private static final Map<String, CustomFlag> CUSTOM_FLAGS = new LinkedHashMap<>();
 
     public static void loadFlags(ResourceManager resourceManager) {
         CUSTOM_FLAGS.clear();
 
         try {
-            Identifier flagFile = new Identifier("yunbeiuc", "flags_yunbeiuc.json");
-
-            // 修复：使用正确的参数名 resourceManager
-            for (Resource resource : resourceManager.getAllResources(flagFile)) {
+            resourceManager.findResources(
+                    "flags_yunbeiuc.json",
+                    id -> id.getPath().equals("flags_yunbeiuc.json")
+            ).forEach((id, resource) -> {
                 try (InputStream stream = resource.getInputStream();
                      InputStreamReader reader = new InputStreamReader(stream)) {
 
                     JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
                     JsonObject customFlags = json.getAsJsonObject("custom_flags");
 
-                    // 方法1：直接遍历，LinkedHashMap 会保持插入顺序
                     for (String flagId : customFlags.keySet()) {
                         JsonObject flagData = customFlags.getAsJsonObject(flagId);
 
@@ -49,22 +47,26 @@ public class FlagLoader {
                         if (imageParts.length == 2) {
                             texture = new Identifier(imageParts[0], imageParts[1]);
                         } else {
-                            texture = new Identifier("yunbeiuc", imagePath);
+                            texture = new Identifier(id.getNamespace(), imagePath);
                         }
 
                         CustomFlag flag = new CustomFlag(flagId, name, texture, color);
                         CUSTOM_FLAGS.put(flagId, flag);
 
-                        System.out.println("按JSON顺序加载旗帜: " + flagId + " - " + name);
+                        System.out.println("加载旗帜: " + flagId + " | 来自文件: " + id);
                     }
+                } catch (Exception e) {
+                    System.err.println("加载单个旗帜文件失败: " + e.getMessage());
                 }
-            }
+            });
+
         } catch (Exception e) {
-            System.err.println("Failed to load custom flags: " + e.getMessage());
+            System.err.println("旗帜加载失败: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // 下面的方法完全不用改
     public static Map<String, CustomFlag> getCustomFlags() {
         return Collections.unmodifiableMap(CUSTOM_FLAGS);
     }

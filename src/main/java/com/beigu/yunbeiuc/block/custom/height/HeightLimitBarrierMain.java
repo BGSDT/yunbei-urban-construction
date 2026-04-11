@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.height;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -96,7 +96,7 @@ public class HeightLimitBarrierMain extends Block {
         }
 
         if (!world.isClient) {
-            boolean hasSideBelow = world.getBlockState(pos.down()).isOf(ModBlocks.HEIGHT_LIMIT_BARRIER_SIDE);
+            boolean hasSideBelow = world.getBlockState(pos.down()).isOf(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE);
             HeightLimitBarrierMainType current = state.get(MAIN_TYPE);
             HeightLimitBarrierMainType newType = current;
 

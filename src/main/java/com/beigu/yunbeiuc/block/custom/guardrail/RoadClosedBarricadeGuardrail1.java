@@ -12,9 +12,11 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -22,18 +24,14 @@ import org.jetbrains.annotations.Nullable;
 public class RoadClosedBarricadeGuardrail1 extends HorizontalFacingBlock {
     public static final EnumProperty<BedPart> PART = Properties.BED_PART;
 
-    // 碰撞箱 - 每个部分占据半个格子
-    private static final VoxelShape FOOT_SHAPE_NORTH = Block.createCuboidShape(0, 0, 0, 8, 19, 16);  // 左边
-    private static final VoxelShape HEAD_SHAPE_NORTH = Block.createCuboidShape(8, 0, 0, 16, 19, 16); // 右边
-
-    private static final VoxelShape FOOT_SHAPE_SOUTH = Block.createCuboidShape(8, 0, 0, 16, 19, 16);  // 左边
-    private static final VoxelShape HEAD_SHAPE_SOUTH = Block.createCuboidShape(0, 0, 0, 8, 19, 16);   // 右边
-
-    private static final VoxelShape FOOT_SHAPE_EAST = Block.createCuboidShape(0, 0, 8, 16, 19, 16);   // 左边
-    private static final VoxelShape HEAD_SHAPE_EAST = Block.createCuboidShape(0, 0, 0, 16, 19, 8);    // 右边
-
-    private static final VoxelShape FOOT_SHAPE_WEST = Block.createCuboidShape(0, 0, 0, 16, 19, 8);    // 左边
-    private static final VoxelShape HEAD_SHAPE_WEST = Block.createCuboidShape(0, 0, 8, 16, 19, 16);   // 右边
+    private static final VoxelShape FOOT_SHAPE_NORTH = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 1, 7, 14, 19, 8.5), Block.createCuboidShape(5, 0, 2, 6, 1, 14), BooleanBiFunction.OR);
+    private static final VoxelShape FOOT_SHAPE_SOUTH = VoxelShapes.combineAndSimplify(Block.createCuboidShape(7, 1, 0, 8.5, 19, 14), Block.createCuboidShape(2, 0, 5, 14, 1, 6), BooleanBiFunction.OR);
+    private static final VoxelShape FOOT_SHAPE_EAST = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 1, 5, 14, 19, 8.5), Block.createCuboidShape(2, 0, 7, 6, 1, 14), BooleanBiFunction.OR);
+    private static final VoxelShape FOOT_SHAPE_WEST = VoxelShapes.combineAndSimplify(Block.createCuboidShape(7, 1, 5, 8.5, 19, 14), Block.createCuboidShape(0, 0, 2, 14, 1, 6), BooleanBiFunction.OR);
+    private static final VoxelShape HEAD_SHAPE_NORTH = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 1, 7, 14, 19, 8.5), Block.createCuboidShape(10, 0, 2, 11, 1, 14), BooleanBiFunction.OR);
+    private static final VoxelShape HEAD_SHAPE_SOUTH = VoxelShapes.combineAndSimplify(Block.createCuboidShape(7, 1, 0, 8.5, 19, 14), Block.createCuboidShape(7, 0, 2, 14, 1, 6), BooleanBiFunction.OR);
+    private static final VoxelShape HEAD_SHAPE_EAST = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 1, 5, 14, 19, 8.5), Block.createCuboidShape(7, 0, 2, 14, 1, 6), BooleanBiFunction.OR);
+    private static final VoxelShape HEAD_SHAPE_WEST = VoxelShapes.combineAndSimplify(Block.createCuboidShape(7, 1, 5, 8.5, 19, 14), Block.createCuboidShape(0, 0, 2, 14, 1, 6), BooleanBiFunction.OR);
 
     public RoadClosedBarricadeGuardrail1(Settings settings) {
         super(settings);
@@ -47,21 +45,19 @@ public class RoadClosedBarricadeGuardrail1 extends HorizontalFacingBlock {
         builder.add(FACING, PART);
     }
 
-    // --- 核心逻辑 1：放置 ---
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        Direction direction = ctx.getHorizontalPlayerFacing();
+        Direction direction = ctx.getHorizontalPlayerFacing().getOpposite();
         BlockPos pos = ctx.getBlockPos();
-        BlockPos rightPos = pos.offset(direction.rotateYClockwise()); // 右方
+        BlockPos rightPos = pos.offset(direction.rotateYClockwise());
 
-        // 检查右方格子是否可以替换
         if (ctx.getWorld().getBlockState(rightPos).canReplace(ctx)) {
             return this.getDefaultState()
                     .with(FACING, direction)
                     .with(PART, BedPart.FOOT);
         }
-        return null; // 空间不够，无法放置
+        return null;
     }
 
     @Override
@@ -73,31 +69,25 @@ public class RoadClosedBarricadeGuardrail1 extends HorizontalFacingBlock {
             Direction direction = state.get(FACING);
             BlockPos rightPos = pos.offset(direction.rotateYClockwise());
 
-            // 在右方放置另一半
             world.setBlockState(rightPos,
                     state.with(PART, BedPart.HEAD),
                     Block.NOTIFY_ALL | Block.FORCE_STATE);
         }
     }
 
-    // --- 核心逻辑 2：破坏同步 ---
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BedPart part = state.get(PART);
         Direction direction = state.get(FACING);
 
-        // 计算另一半的位置
         BlockPos otherPos;
         if (part == BedPart.FOOT) {
-            // FOOT在左边，HEAD在右边
             otherPos = pos.offset(direction.rotateYClockwise());
         } else {
-            // HEAD在右边，FOOT在左边
             otherPos = pos.offset(direction.rotateYCounterclockwise());
         }
 
         BlockState otherState = world.getBlockState(otherPos);
-        // 确保另一半也是这个方块，防止误删
         if (otherState.isOf(this) && otherState.get(PART) != part) {
             world.setBlockState(otherPos, Blocks.AIR.getDefaultState(),
                     Block.NOTIFY_ALL | Block.SKIP_DROPS);
@@ -108,53 +98,43 @@ public class RoadClosedBarricadeGuardrail1 extends HorizontalFacingBlock {
         super.onBreak(world, pos, state, player);
     }
 
-    // --- 碰撞箱 ---
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world,
                                       BlockPos pos, ShapeContext context) {
         Direction direction = state.get(FACING);
         BedPart part = state.get(PART);
 
-        // 根据朝向和部分返回不同的碰撞箱
         if (part == BedPart.FOOT) {
-            // FOOT部分（玩家放置的部分）
             return switch (direction) {
-                case NORTH -> FOOT_SHAPE_NORTH;  // 面向北时，FOOT在左边（西边）
-                case SOUTH -> FOOT_SHAPE_SOUTH;  // 面向南时，FOOT在左边（东边）
-                case EAST -> FOOT_SHAPE_EAST;    // 面向东时，FOOT在左边（北边）
-                case WEST -> FOOT_SHAPE_WEST;    // 面向西时，FOOT在左边（南边）
+                case SOUTH -> FOOT_SHAPE_SOUTH;
+                case EAST -> FOOT_SHAPE_EAST;
+                case WEST -> FOOT_SHAPE_WEST;
                 default -> FOOT_SHAPE_NORTH;
             };
         } else {
-            // HEAD部分（右方部分）
             return switch (direction) {
-                case NORTH -> HEAD_SHAPE_NORTH;  // 面向北时，HEAD在右边（东边）
-                case SOUTH -> HEAD_SHAPE_SOUTH;  // 面向南时，HEAD在右边（西边）
-                case EAST -> HEAD_SHAPE_EAST;    // 面向东时，HEAD在右边（南边）
-                case WEST -> HEAD_SHAPE_WEST;    // 面向西时，HEAD在右边（北边）
+                case SOUTH -> HEAD_SHAPE_SOUTH;
+                case EAST -> HEAD_SHAPE_EAST;
+                case WEST -> HEAD_SHAPE_WEST;
                 default -> HEAD_SHAPE_NORTH;
             };
         }
     }
 
-    // --- 旋转支持 ---
     @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
-    // --- 镜像支持 ---
     @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
-    // --- 防止活塞推动 ---
     public PistonBehavior getPistonBehavior(BlockState state) {
         return PistonBehavior.BLOCK;
     }
 
-    // --- 可选：防止方块实体被破坏 ---
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos,
                                Block block, BlockPos fromPos, boolean notify) {
@@ -162,14 +142,12 @@ public class RoadClosedBarricadeGuardrail1 extends HorizontalFacingBlock {
             BedPart part = state.get(PART);
             Direction direction = state.get(FACING);
 
-            // 检查另一半是否存在
             BlockPos otherPos = (part == BedPart.FOOT) ?
                     pos.offset(direction.rotateYClockwise()) :
                     pos.offset(direction.rotateYCounterclockwise());
 
             BlockState otherState = world.getBlockState(otherPos);
 
-            // 如果另一半不存在或不是同一方块，删除这一半
             if (!otherState.isOf(this)) {
                 world.setBlockState(pos, Blocks.AIR.getDefaultState(),
                         Block.NOTIFY_ALL | Block.SKIP_DROPS);

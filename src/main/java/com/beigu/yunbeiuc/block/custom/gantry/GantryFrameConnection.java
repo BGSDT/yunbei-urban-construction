@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -116,8 +116,8 @@ public class GantryFrameConnection extends Block {
         Direction left = facing.rotateYCounterclockwise();
         Direction right = facing.rotateYClockwise();
 
-        boolean hasMainRight = world.getBlockState(pos.offset(right)).isOf(ModBlocks.GANTRY_FRAME_MAIN);
-        boolean hasMainLeft = world.getBlockState(pos.offset(left)).isOf(ModBlocks.GANTRY_FRAME_MAIN);
+        boolean hasMainRight = world.getBlockState(pos.offset(right)).isOf(MunicipalBlocks.GANTRY_FRAME_MAIN);
+        boolean hasMainLeft = world.getBlockState(pos.offset(left)).isOf(MunicipalBlocks.GANTRY_FRAME_MAIN);
         boolean isSide1 = isBelowSideType1(world, pos);
 
         GantryFrameConnectionType finalType;

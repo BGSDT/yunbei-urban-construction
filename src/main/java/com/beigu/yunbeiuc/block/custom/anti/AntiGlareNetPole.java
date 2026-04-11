@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.anti;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -137,7 +137,7 @@ public class AntiGlareNetPole extends Block {
 
     private boolean hasAntiGlareNet(WorldAccess world, BlockPos pos) {
         // 替换 ModBlocks.ANTI_GLARE_NET 为您的实际防眩网方块
-        return world.getBlockState(pos).getBlock() == ModBlocks.ANTI_GLARE_NET;
+        return world.getBlockState(pos).getBlock() == MunicipalBlocks.ANTI_GLARE_NET;
     }
 
     public enum AntiGlareNetPoleType implements StringIdentifiable {

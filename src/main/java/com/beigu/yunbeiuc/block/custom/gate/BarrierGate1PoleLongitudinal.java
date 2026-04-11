@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.gate;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -85,7 +85,7 @@ public class BarrierGate1PoleLongitudinal extends Block {
         BlockState downState = world.getBlockState(downPos);
 
         boolean isNormalGateBelow =
-                downState.isOf(ModBlocks.BARRIER_GATE_1_MAIN);
+                downState.isOf(MunicipalBlocks.BARRIER_GATE_1_MAIN);
 
         return state.with(POLE_TYPE, isNormalGateBelow ? PoleType.OFFSET : PoleType.NORMAL);
     }

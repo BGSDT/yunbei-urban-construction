@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.gate;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -124,7 +124,7 @@ public class BarrierGate1PoleHorizontal extends Block {
         Direction facing = state.get(FACING);
         Direction left = facing.rotateYCounterclockwise();
         BlockState leftState = world.getBlockState(pos.offset(left));
-        if (leftState.isOf(ModBlocks.BARRIER_GATE_1_POLE_HORIZONTAL) && leftState.get(GATE_TYPE) == GateType.SLAB) {
+        if (leftState.isOf(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL) && leftState.get(GATE_TYPE) == GateType.SLAB) {
             return state.with(GATE_TYPE, GateType.SLAB);
         }
         return state;

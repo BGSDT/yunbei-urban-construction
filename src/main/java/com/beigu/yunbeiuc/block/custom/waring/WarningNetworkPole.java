@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.waring;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -137,7 +137,7 @@ public class WarningNetworkPole extends Block {
 
     private boolean hasAntiGlareNet(WorldAccess world, BlockPos pos) {
         // 替换 ModBlocks.WARNING_NETWORK 为您的实际防眩网方块
-        return world.getBlockState(pos).getBlock() == ModBlocks.WARNING_NETWORK;
+        return world.getBlockState(pos).getBlock() == MunicipalBlocks.WARNING_NETWORK;
     }
 
     public enum AntiGlareNetPoleType implements StringIdentifiable {

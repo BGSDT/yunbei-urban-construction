@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.gate;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

@@ -13,21 +13,20 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
 public class ModItems {
+    public static final Item WAND = registerItems("wand", new Item(new Item.Settings()
+            .maxCount(1)));
+
     public static final Item TREE_WAND = registerItems("tree_wand", new TreeWand(new Item.Settings()
-            .maxCount(1).maxDamage(9)));//Count(物品栏数量) Damage(耐久值)
+            .maxCount(1).maxDamage(9)));
 
     public static final Item WATER_WAND = registerItems("water_wand", new WaterWand(new Item.Settings()
-            .maxCount(1).maxDamage(9)));//Count(物品栏数量) Damage(耐久值)
+            .maxCount(1).maxDamage(9)));
 
     public static final Item ROTATED_WAND = registerItems("rotated_wand", new RotatedWand(new Item.Settings()
-            .maxCount(1).maxDamage(9)));//Count(物品栏数量) Damage(耐久值)
+            .maxCount(1)));
 
     public static final Item LINK_WAND = registerItems("link_wand", new LinkWand(new Item.Settings()
-            .maxCount(1)));//Count(物品栏数量) Damage(耐久值)
-
-
-    public static final Item WAND = registerItems("wand", new Item(new Item.Settings()
-            .maxCount(1)));//Count(物品栏数量) Damage(耐久值)
+            .maxCount(1)));
 
     public static Item registerItems(String id, Item item) {
         return Registry.register(Registries.ITEM, RegistryKey.of(Registries.ITEM.getKey(), new Identifier(YunbeiUrbanConstruction.MOD_ID, id)), item);

@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.screen.FlagSelectionScreen;
@@ -12,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;

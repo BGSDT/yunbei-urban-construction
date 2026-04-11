@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.entity;
 
-import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
@@ -16,13 +15,13 @@ public class ModBlockEntities {
         ROAD_POLE_TEXT_DISPLAY_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
                 new Identifier("yunbeiuc", "road_pole_text_display_entity"),
-                FabricBlockEntityTypeBuilder.create(RoadPoleTextDisplayEntity::new, ModBlocks.ROAD_POLE_TEXT_DISPLAY).build()
+                FabricBlockEntityTypeBuilder.create(RoadPoleTextDisplayEntity::new, MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY).build()
         );
 
         FLAG_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
                 new Identifier("yunbeiuc", "flag_block_entity"),
-                FabricBlockEntityTypeBuilder.create(FlagBlockEntity::new, ModBlocks.ROAD_POLE_FLAG).build()
+                FabricBlockEntityTypeBuilder.create(FlagBlockEntity::new, MunicipalBlocks.ROAD_POLE_FLAG).build()
         );
     }
 }

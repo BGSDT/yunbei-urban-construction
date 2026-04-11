@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.item.custom;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightGroup;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightManager;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsBlock;
@@ -125,7 +125,7 @@ public class LinkWand extends Item {
 
         for (BlockPos pos : selections) {
             Direction facing = world.getBlockState(pos).get(TrafficLightsBlock.FACING);
-            boolean isLeft = world.getBlockState(pos).getBlock() == ModBlocks.TRAFFIC_LIGHTS_LEFT;
+            boolean isLeft = world.getBlockState(pos).getBlock() == MunicipalBlocks.TRAFFIC_LIGHTS_LEFT;
 
             switch (facing) {
                 case NORTH:

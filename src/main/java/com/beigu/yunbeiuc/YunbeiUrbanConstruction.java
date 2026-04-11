@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc;
 
-import com.beigu.yunbeiuc.block.ModBlocks;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
+import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.network.ChatCommandHandler;
 import com.beigu.yunbeiuc.network.ModEvents;
@@ -36,7 +37,8 @@ public class YunbeiUrbanConstruction implements ModInitializer {
 		LOGGER.info("YunbeiUrbanConstruction has finished loading");
 
 
-        ModBlocks.registerModBlocks();
+        MunicipalBlocks.registerModBlocks();
+        RoadBlocks.registerRoadBlocks();
         SignBlocks.registerSignBlocks();
         ModBlockEntities.registerBlockEntities();
         ModMessages.registerC2SPackets();

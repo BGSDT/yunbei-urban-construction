@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:white_concrete"
+        },
+        "B": {
+            "item": "minecraft:yellow_concrete"
+        }
+    },
+    "pattern": [
+        "AB"
+    ],
+    "result": {
+        "item": "yunbeiuc:height_limit_barrier_main",
+        "count": 2
+    }
+}
