@@ -14,9 +14,174 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 
     @Override
     public void generateTranslations(TranslationBuilder translationBuilder) {
+        // 道路杆件类
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS, "路杆（底座）");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL, "路杆（纵向）");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL, "路杆（横向）");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TSHAPE, "路杆（连接）");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT, "道路照明灯");
+        translationBuilder.add("block.yunbeiuc.road_light.tooltip","手持魔杖右键点击以切换灯光状态");
+
+// 道路杆件附属类
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "路杆文字显示屏");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "路杆旗帜");
+        translationBuilder.add("text.yunbeiuc.flag_selection.title", "旗帜选择");
+        translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "当前选择：%s");
+        translationBuilder.add("text.yunbeiuc.flag_selection.preview_panel", "旗帜预览");
+        translationBuilder.add("text.yunbeiuc.flag_selection.save_button", "保存");
+        translationBuilder.add("text.yunbeiuc.flag_selection.load_failed", "加载失败");
+
+// 道路监控设备类
+        translationBuilder.add(MunicipalBlocks.ROAD_DETECTION_CAMERA, "道路检测/测速监控摄像头");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHTING_LAMP, "道路补光灯");
+        translationBuilder.add("block.yunbeiuc.lighting_lamp.tooltip","手持魔杖右键点击以切换灯光状态");
+        translationBuilder.add(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR, "道路雷达测速器");
+        translationBuilder.add("block.yunbeiuc.radar_speed_detector.tooltip","手持魔杖右键点击以切换灯光状态");
+
+// 交通信号灯类
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, "直行交通信号灯");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, "左转交通信号灯");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, "人行道交通信号灯");
+        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","使用链接魔杖将4左4直交通信号灯链接，即可自动变换");
+        translationBuilder.add("block.yunbeiuc.traffic_lights_pavement.tooltip","手持魔杖右键点击以切换交通信号灯的状态");
+
+// 道路安全设施类
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_CONE, "交通锥");
+        translationBuilder.add(MunicipalBlocks.ROAD_COLLISION_BARREL, "防撞桶");
+        translationBuilder.add(MunicipalBlocks.WATER_SAFETY_BARRIER_RED, "红色水马");
+
+// 道路标线/障碍类
+        translationBuilder.add(MunicipalBlocks.SPEED_BUMP, "减速带");
+        translationBuilder.add(MunicipalBlocks.VIBRATION_MARKING_LINE, "振动标线");
+        translationBuilder.add(MunicipalBlocks.PARKING_SPACE_BARRIER, "车位挡轮杆");
+
+// 龙门架类
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_SIDE, "龙门架（侧架）");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_CONNECTION, "龙门架（连接）");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_MAIN, "龙门架（主架）");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RAILING, "龙门架（栏杆）");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LADDER, "龙门架（爬梯）");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_SIDE, "LED专用龙门架（侧架）");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_MAIN, "LED专用龙门架（主架）");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED,"龙门架LED屏");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA,"龙门架检测/测速监控摄像头");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP,"龙门架道路补光灯");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"龙门架雷达测速器");
+
+// 限高杆类
+        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "限高杆（侧架）");
+        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "限高杆（连接）");
+        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "限高杆（主架）");
+
+// 警示网类
+        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK,"警示网");
+        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK_POLE,"警示网（立柱）");
+
+// 防眩设施类
+        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET, "防眩网");
+        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET_POLE, "防眩网（立柱）");
+        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_VERSION, "防眩板");
+
+// 隔离墩类
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER, "隔离墩");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE, "隔离墩（双格、黄色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW, "隔离墩（黄色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED, "隔离墩（红色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED_DOUBLE, "隔离墩（双格、红色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_OBLIQUE, "隔离墩（斜向）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY, "灰色隔离墩");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_OBLIQUE, "灰色隔离墩（斜向）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED, "灰色隔离墩（红色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED_OBLIQUE,"灰色隔离墩（斜向、红色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW, "灰色隔离墩（黄色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE, "灰色隔离墩（斜向、黄色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT, "灰色斜切面隔离墩");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW, "灰色斜切面隔离墩(黄色)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED, "灰色斜切面隔离墩（红色）");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE, "灰色斜切面隔离墩（斜向）");
+
+// 反光标识类
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_1, "全反光标识1型(黄色)");
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_2, "全反光标识2型(黄色)");
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_1, "全反光标识1型(红色)");
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_2, "全反光标识2型(红色)");
+
+// 安全岛类
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_1, "安全岛1型(黄色)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_2, "安全岛2型(黄色)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_3, "安全岛3型(黄色)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_4, "安全岛4型(黄色)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY, "安全岛");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1, "安全岛1型(斜向、黄色)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2, "安全岛2型(斜向、黄色)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_OBLIQUE, "安全岛(斜向)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1, "安全岛边缘1型（黄色）");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2, "安全岛边缘2型（黄色）");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3, "安全岛边缘3型（黄色）");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_4, "安全岛边缘4型（黄色）");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE, "安全岛边缘");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1, "安全岛边缘1型（斜向、黄色）");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2, "安全岛边缘2型（斜向、黄色）");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "安全岛内部");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "安全岛边缘（斜向）");
+
+// 仪器杆类
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "仪器杆（底座）");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "仪器杆（纵向）");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_CAMERA, "仪器摄像头");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY, "车辆信息显示屏");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR, "车道指示器");
+
+// 高速公路护栏类
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON, "铁质高速公路护栏");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1, "铁质高速公路护栏1型（侧缘）");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2, "铁质高速公路护栏2型（侧缘）");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_POLE, "铁质高速公路护栏（立柱）");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_OBLIQUE, "铁质高速公路护栏（斜向）");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN, "绿色高速公路护栏");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_1, "绿色高速公路护栏1型（侧缘）");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_2, "绿色高速公路护栏2型（侧缘）");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_POLE, "绿色高速公路护栏立柱（立柱）");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_OBLIQUE, "绿色高速公路护栏（斜向）");
+
+// 道路设施类
+        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_1, "道路花箱1型");
+        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2, "道路花箱2型");
+        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE, "道路花箱2型（护栏）");
+
+// 环卫设施类
+        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_WHITE, "白色垃圾桶");
+        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_GRAY_GREEN, "灰绿色垃圾桶");
+        translationBuilder.add("block.yunbeiuc.rubbish_bin.tooltip","手持魔杖右键清空垃圾桶");
+
+// 道路封闭护栏类
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1, "施工路障1型");
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2, "施工路障2型");
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_3, "施工路障3型");
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_4, "施工路障4型");
+
+// 警示柱类
+        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_RED, "警示柱（红色）");
+        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW, "警示柱（黄色）");
+        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_GREEN, "警示柱（绿色）");
+
+// 铁马类
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_YELLOW, "铁马（黄色）");
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_RED, "铁马（红色）");
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_WHITE, "铁马（白色）");
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_GRAY, "铁马（灰色）");
+
+// 道闸类
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN,"道闸1型");
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"道闸1台阶型");
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"道闸杆1型（横向）");
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"道闸杆1型（纵向）");
+
+// 物品类
         translationBuilder.add(ModItems.WAND,"魔杖");
         translationBuilder.add(ModItems.TREE_WAND,"树木魔杖");
         translationBuilder.add(ModItems.LINK_WAND,"链接魔杖");
+        translationBuilder.add("item.yunbeiuc.link_wand.tooltip","右键链接交通信号灯使自动变换");
         translationBuilder.add("item.yunbeiuc.tree_wand.tooltip","右键点击草方块或泥土方块以种植一棵橡树");
         translationBuilder.add("item.yunbeiuc.tree_wand.success","成功种植了一棵橡树!");
         translationBuilder.add("item.yunbeiuc.tree_wand.planted_sapling","种植了一棵橡树苗!");
@@ -29,184 +194,36 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModItems.ROTATED_WAND,"旋转魔杖");
         translationBuilder.add("item.yunbeiuc.rotated_wand.tooltip","右键点击方块以顺时针旋转90度");
 
-// 交通信号灯类
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, "直行交通信号灯");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, "左转交通信号灯");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, "人行道交通信号灯");
-        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","手持魔杖右键点击以切换交通信号灯的状态");
-
-// 道路设施类
-        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_1, "道路花箱1型");
-        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2, "道路花箱2型");
-        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE, "道路花箱2型围栏");
-
-// 道路监控设备类
-        translationBuilder.add(MunicipalBlocks.ROAD_DETECTION_CAMERA, "道路检测/测速监控摄像头");
-        translationBuilder.add(MunicipalBlocks.ROAD_LIGHTING_LAMP, "道路补光灯");
-        translationBuilder.add("block.yunbeiuc.lighting_lamp.tooltip","手持魔杖右键点击以切换灯光状态");
-        translationBuilder.add(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR, "雷达测速器");
-        translationBuilder.add("block.yunbeiuc.radar_speed_detector.tooltip","手持魔杖右键点击以切换灯光状态");
-
-// 道路安全设施类
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_CONE, "交通锥");
-        translationBuilder.add(MunicipalBlocks.ROAD_COLLISION_BARREL, "道路防撞桶");
-        translationBuilder.add(MunicipalBlocks.WATER_SAFETY_BARRIER_RED, "红色水上安全护栏");
-
-// 环卫设施类
-        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_WHITE, "白色垃圾桶");
-        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_GRAY_GREEN, "灰绿色垃圾桶");
-        translationBuilder.add("block.yunbeiuc.rubbish_bin.tooltip","手持魔杖右键清空垃圾桶");
-
-// 道路标线/障碍类
-        translationBuilder.add(MunicipalBlocks.SPEED_BUMP, "减速带");
-        translationBuilder.add(MunicipalBlocks.VIBRATION_MARKING_LINE, "振动标线");
-        translationBuilder.add(MunicipalBlocks.PARKING_SPACE_BARRIER, "车位地锁");
-
-// 龙门架类
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_SIDE, "龙门架侧架");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_CONNECTION, "龙门架连接件");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_MAIN, "龙门架主架");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RAILING, "龙门架栏杆");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LADDER, "龙门架爬梯");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_SIDE, "龙门架侧装LED专用");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_MAIN, "龙门架主装LED专用");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED,"龙门架LED屏");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA,"龙门架检测/测速监控摄像头");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP,"龙门架道路补光灯");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"龙门架雷达测速器");
-
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "限高杆侧架");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "限高杆连接件");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "限高杆主架");
-
-// 防眩设施类
-        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET, "防眩网");
-        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET_POLE, "防眩网立柱");
-        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_VERSION, "防眩板");
-
-// 交通护栏类
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER, "交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE, "黄色双体交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW, "黄色交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED, "红色交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED_DOUBLE, "红色双体交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_OBLIQUE, "斜向交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY, "灰色交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_OBLIQUE, "灰色斜向交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED, "红灰色交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED_OBLIQUE,"红灰色斜向交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW, "黄灰色交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE, "黄灰色斜向交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT, "灰色倾斜交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW, "黄灰色倾斜交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED, "红灰色倾斜交通护栏");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE, "灰色斜向倾斜交通护栏");
-
-// 道路警示柱类
-        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_RED, "红色道路警示柱");
-        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW, "黄色道路警示柱");
-        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_GREEN, "绿色道路警示柱");
-
-// 铁马护栏类
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_YELLOW, "黄色铁马护栏");
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_RED, "红色铁马护栏");
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_WHITE, "白色铁马护栏");
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_GRAY, "灰色铁马护栏");
-
-// 反光标识类
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_1, "黄色全反光标识1型");
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_2, "黄色全反光标识2型");
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_1, "红色全反光标识1型");
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_2, "红色全反光标识2型");
-
-// 仪器杆类
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "仪器杆基础");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "纵向仪器杆");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_CAMERA, "仪器摄像头");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY, "车辆信息显示屏");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR, "车道指示器");
-
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN,"道闸1型");
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"道闸1台阶型");
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"横向道闸杆1型");
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"纵向道闸杆1型");
-
-// 安全岛类
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_1, "黄色安全岛1型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_2, "黄色安全岛2型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_3, "黄色安全岛3型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_4, "黄色安全岛4型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY, "灰色安全岛");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1, "黄色斜向安全岛1型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2, "黄色斜向安全岛2型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_OBLIQUE, "灰色斜向安全岛");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1, "黄色安全岛石板边缘1型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2, "黄色安全岛石板边缘2型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3, "黄色安全岛石板边缘3型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_4, "黄色安全岛石板边缘4型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE, "灰色安全岛石板边缘");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1, "黄色斜向安全岛石板边缘1型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2, "黄色斜向安全岛石板边缘2型");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "灰色安全岛石板");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "灰色斜向安全岛石板边缘");
-
-// 道路栏杆类
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON, "铁质道路栏杆");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1, "铁质道路栏杆端头1型");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2, "铁质道路栏杆端头2型");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_POLE, "铁质道路栏杆立柱");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_OBLIQUE, "斜向铁质道路栏杆");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN, "绿色道路栏杆");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_1, "绿色道路栏杆端头1型");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_2, "绿色道路栏杆端头2型");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_POLE, "绿色道路栏杆立柱");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_OBLIQUE, "斜向绿色道路栏杆");
-
-        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK,"警示网");
-        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK_POLE,"警示网立柱");
-
-// 道路封闭护栏类
-        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1, "道路封闭护栏1型");
-        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2, "道路封闭护栏2型");
-
-// 道路杆件类
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS, "道路杆件基础");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL, "纵向道路杆件");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL, "横向道路杆件");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TSHAPE, "T型道路杆件");
-        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT, "道路照明灯");
-        translationBuilder.add("block.yunbeiuc.road_light.tooltip","手持魔杖右键点击以切换灯光状态");
-
 // 道路及标线类
-        translationBuilder.add(RoadBlocks.ROAD_BLOCK, "道路块");
+        translationBuilder.add(RoadBlocks.ROAD_BLOCK, "道路方块");
         translationBuilder.add(RoadBlocks.ROAD_FULL_OF_WHITE,"全白道路");
         translationBuilder.add(RoadBlocks.ROAD_FULL_OF_YELLOW,"全黄道路");
         translationBuilder.add(RoadBlocks.ROAD_WHITE_YELLOW,"白黄道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_LINE, "白色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE, "白色双实线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE, "白色双标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_LINE, "白色粗标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_LINE, "黄色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE, "黄色双实线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE, "黄色双标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE, "黄色粗标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE, "白黄双实线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE, "白色半双实线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE, "黄色半双实线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE, "白黄双标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE, "白色半双标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE, "黄色半双标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_OFFSET_LINE, "白色偏移标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE, "黄色偏移标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE, "白色直角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE, "黄色直角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE, "白黄直角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE, "白色粗+普通直角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE, "白色粗+黄色直角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE, "白色粗+黄色双实直角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE, "白色+黄色双实直角标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE, "白色直角粗标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE, "白色直角粗标线黄色标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE, "白色直角粗标线黄色双标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE, "白色直角普通标线黄色双标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE, "白色斜角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE, "白色斜角双实线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE, "白色斜角双标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_THICK_LINE, "白色粗斜角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE, "白色外偏移斜角直角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE, "白色内偏移斜角直角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_LINE, "黄色斜角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE, "黄色斜角双实线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE, "黄色斜角双标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_THICK_LINE, "黄色粗斜角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE, "黄色外偏移斜角直角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_BEVEL_RIGHTANGLE_LINE, "黄色内偏移斜角直角标线道路");
@@ -220,34 +237,34 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_RIGHTANGLE_LINE, "黄色内偏移直角标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE, "白色T型标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE, "黄色T型标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE, "白色T型双实线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE, "白色T型双标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_THICK_LINE, "白色粗T型标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE, "白色双实T型标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE, "白色粗实T型标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE, "白色T型+黄色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE, "黄色T型+白色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE, "白色T型+黄色双实标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE, "白色粗T型+黄色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE, "白色粗T型+黄色双实标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE, "白色双标T型标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE, "白色粗标T型标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE, "白色T型黄色标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE, "黄色T型白色标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE, "白色T型黄色双标标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE, "白色粗T型黄色标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE, "白色粗T型黄色双标标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_LINE, "白色T型偏移标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_LINE, "黄色T型偏移标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE, "白色双实T型偏移标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE, "白色双标T型偏移标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_LINE, "白色粗T型偏移标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_YELLOW_LINE, "白色粗T型偏移+黄色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE, "黄色T型偏移+白色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE, "白色T型偏移+黄色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE, "白色斜角双实标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE, "黄色斜角双实标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE, "白色普通+斜角双实标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE, "黄色普通+斜角双实标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE, "白色普通+斜角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_LINE, "黄色普通+斜角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_YELLOW_LINE, "白色普通+斜角+黄色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_WHITE_LINE, "黄色普通+斜角+白色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE, "白色粗+斜角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_LINE, "黄色粗+斜角标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE, "白色粗+斜角+黄色标线道路");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE, "黄色粗+斜角+白色标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE, "黄色T型偏移白色标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE, "白色T型偏移黄色标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE, "白色箭头无中标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE, "黄色箭头无中标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE, "白色箭头标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE, "黄色箭头标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE, "白色箭头无右标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_LINE, "黄色箭头无右标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_YELLOW_LINE, "白色箭头无右标线黄色左标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_WHITE_LINE, "黄色箭头无右标线白色左标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE, "白色箭头粗标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_LINE, "黄色箭头粗标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE, "白色粗箭头无右标线黄色左标线道路");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE, "黄色粗箭头无右标线白色左标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_CROSS_LINE, "白色十字标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_CROSS_LINE, "黄色十字标线道路");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_LEFT_DIAMOND_SHAPE_LINE, "白色左菱形道路");
@@ -313,15 +330,6 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(RoadBlocks.HOV_4_GROUND_MARK, "“3+”标记");
         translationBuilder.add(RoadBlocks.HOV_5_GROUND_MARK, "“5+”标记");
         translationBuilder.add(RoadBlocks.MANHOLE_COVER, "井盖");
-
-// 道路杆件附属类
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "道路杆件文字显示屏");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "道路杆件旗帜");
-        translationBuilder.add("text.yunbeiuc.flag_selection.title", "旗帜选择");
-        translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "当前选择：%s");
-        translationBuilder.add("text.yunbeiuc.flag_selection.preview_panel", "旗帜预览");
-        translationBuilder.add("text.yunbeiuc.flag_selection.save_button", "保存");
-        translationBuilder.add("text.yunbeiuc.flag_selection.load_failed", "加载失败");
 
         translationBuilder.add(SignBlocks.SIGN_STOP, "停车让行标志");
         translationBuilder.add(SignBlocks.SIGN_YIELD, "减速让行标志");

@@ -20,31 +20,25 @@ public class ModItemGroups {
                     .displayName(Text.translatable("itemGroup.yunbeiuc_municipal_group"))
                     .icon(() -> new ItemStack(MunicipalBlocks.ROAD_FLOWER_BOX_2))
                     .entries((displayContext, entries) -> {
-                        entries.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT);
-                        entries.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT);
-                        entries.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT);
-
-                        entries.add(MunicipalBlocks.ROAD_FLOWER_BOX_1);
-                        entries.add(MunicipalBlocks.ROAD_FLOWER_BOX_2);
-                        entries.add(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE);
-
+                        entries.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
+                        entries.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
+                        entries.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL);
+                        entries.add(MunicipalBlocks.ROAD_POLE_TSHAPE);
+                        entries.add(MunicipalBlocks.ROAD_LIGHT);
+                        entries.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY);
+                        entries.add(MunicipalBlocks.ROAD_POLE_FLAG);
                         entries.add(MunicipalBlocks.ROAD_DETECTION_CAMERA);
                         entries.add(MunicipalBlocks.ROAD_LIGHTING_LAMP);
                         entries.add(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR);
-
+                        entries.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT);
+                        entries.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT);
+                        entries.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT);
                         entries.add(MunicipalBlocks.TRAFFIC_CONE);
                         entries.add(MunicipalBlocks.ROAD_COLLISION_BARREL);
                         entries.add(MunicipalBlocks.WATER_SAFETY_BARRIER_RED);
-
-                        entries.add(MunicipalBlocks.RUBBISH_BIN_WHITE);
-                        entries.add(MunicipalBlocks.RUBBISH_BIN_GRAY_GREEN);
-
                         entries.add(MunicipalBlocks.SPEED_BUMP);
-
                         entries.add(MunicipalBlocks.VIBRATION_MARKING_LINE);
-
                         entries.add(MunicipalBlocks.PARKING_SPACE_BARRIER);
-
                         entries.add(MunicipalBlocks.GANTRY_FRAME_SIDE);
                         entries.add(MunicipalBlocks.GANTRY_FRAME_CONNECTION);
                         entries.add(MunicipalBlocks.GANTRY_FRAME_MAIN);
@@ -56,15 +50,14 @@ public class ModItemGroups {
                         entries.add(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA);
                         entries.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP);
                         entries.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR);
-
                         entries.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE);
                         entries.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION);
                         entries.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN);
-
+                        entries.add(MunicipalBlocks.WARNING_NETWORK);
+                        entries.add(MunicipalBlocks.WARNING_NETWORK_POLE);
                         entries.add(MunicipalBlocks.ANTI_GLARE_NET);
                         entries.add(MunicipalBlocks.ANTI_GLARE_NET_POLE);
                         entries.add(MunicipalBlocks.ANTI_GLARE_VERSION);
-
                         entries.add(MunicipalBlocks.TRAFFIC_BARRIER);
                         entries.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE);
                         entries.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW);
@@ -81,32 +74,10 @@ public class ModItemGroups {
                         entries.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW);
                         entries.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED);
                         entries.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE);
-
-                        entries.add(MunicipalBlocks.ROAD_WARNING_POLE_RED);
-                        entries.add(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW);
-                        entries.add(MunicipalBlocks.ROAD_WARNING_POLE_GREEN);
-
-                        entries.add(MunicipalBlocks.IRON_HORSE_YELLOW);
-                        entries.add(MunicipalBlocks.IRON_HORSE_RED);
-                        entries.add(MunicipalBlocks.IRON_HORSE_WHITE);
-                        entries.add(MunicipalBlocks.IRON_HORSE_GRAY);
-
                         entries.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_1);
                         entries.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_2);
                         entries.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_1);
                         entries.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_2);
-
-                        entries.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS);
-                        entries.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL);
-                        entries.add(MunicipalBlocks.INSTRUMENT_CAMERA);
-                        entries.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY);
-                        entries.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR);
-
-                        entries.add(MunicipalBlocks.BARRIER_GATE_1_MAIN);
-                        entries.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB);
-                        entries.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL);
-                        entries.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL);
-
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_1);
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_2);
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_3);
@@ -124,7 +95,11 @@ public class ModItemGroups {
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2);
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB);
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
-
+                        entries.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS);
+                        entries.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL);
+                        entries.add(MunicipalBlocks.INSTRUMENT_CAMERA);
+                        entries.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY);
+                        entries.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR);
                         entries.add(MunicipalBlocks.ROAD_RAILINGS_IRON);
                         entries.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1);
                         entries.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2);
@@ -135,20 +110,26 @@ public class ModItemGroups {
                         entries.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_2);
                         entries.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_POLE);
                         entries.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_OBLIQUE);
-
-                        entries.add(MunicipalBlocks.WARNING_NETWORK);
-                        entries.add(MunicipalBlocks.WARNING_NETWORK_POLE);
-
+                        entries.add(MunicipalBlocks.ROAD_FLOWER_BOX_1);
+                        entries.add(MunicipalBlocks.ROAD_FLOWER_BOX_2);
+                        entries.add(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE);
+                        entries.add(MunicipalBlocks.RUBBISH_BIN_WHITE);
+                        entries.add(MunicipalBlocks.RUBBISH_BIN_GRAY_GREEN);
                         entries.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1);
                         entries.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2);
-
-                        entries.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
-                        entries.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
-                        entries.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL);
-                        entries.add(MunicipalBlocks.ROAD_POLE_TSHAPE);
-                        entries.add(MunicipalBlocks.ROAD_LIGHT);
-                        entries.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY);
-                        entries.add(MunicipalBlocks.ROAD_POLE_FLAG);
+                        entries.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_3);
+                        entries.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_4);
+                        entries.add(MunicipalBlocks.ROAD_WARNING_POLE_RED);
+                        entries.add(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW);
+                        entries.add(MunicipalBlocks.ROAD_WARNING_POLE_GREEN);
+                        entries.add(MunicipalBlocks.IRON_HORSE_YELLOW);
+                        entries.add(MunicipalBlocks.IRON_HORSE_RED);
+                        entries.add(MunicipalBlocks.IRON_HORSE_WHITE);
+                        entries.add(MunicipalBlocks.IRON_HORSE_GRAY);
+                        entries.add(MunicipalBlocks.BARRIER_GATE_1_MAIN);
+                        entries.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB);
+                        entries.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL);
+                        entries.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL);
                     }).build());
 
     public static final ItemGroup YUNBEIUC_ROAD_GROUP = Registry.register(

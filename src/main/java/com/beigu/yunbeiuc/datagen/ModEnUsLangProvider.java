@@ -14,199 +14,216 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 
     @Override
     public void generateTranslations(TranslationBuilder translationBuilder) {
+        // Road Poles
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS, "Road Pole (Base)");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL, "Road Pole (Vertical)");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL, "Road Pole (Horizontal)");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TSHAPE, "Road Pole (Connector)");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT, "Road Light");
+        translationBuilder.add("block.yunbeiuc.road_light.tooltip","Right-click with Wand to toggle light state");
+
+        // Road Pole Attachments
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "Road Pole Text Display");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "Road Pole Flag");
+        translationBuilder.add("text.yunbeiuc.flag_selection.title", "Flag Selection");
+        translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "Current Selection: %s");
+        translationBuilder.add("text.yunbeiuc.flag_selection.preview_panel", "Flag Preview");
+        translationBuilder.add("text.yunbeiuc.flag_selection.save_button", "Save");
+        translationBuilder.add("text.yunbeiuc.flag_selection.load_failed", "Load Failed");
+
+        // Road Monitoring Equipment
+        translationBuilder.add(MunicipalBlocks.ROAD_DETECTION_CAMERA, "Road Detection/Speed Camera");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHTING_LAMP, "Road Illuminator");
+        translationBuilder.add("block.yunbeiuc.lighting_lamp.tooltip","Right-click with Wand to toggle light state");
+        translationBuilder.add(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR, "Road Radar Speed Detector");
+        translationBuilder.add("block.yunbeiuc.radar_speed_detector.tooltip","Right-click with Wand to toggle light state");
+
+        // Traffic Lights
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, "Straight Traffic Light");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, "Left-Turn Traffic Light");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, "Crosswalk Traffic Light");
+        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","Use Link Wand to connect 4 left & 4 straight lights for automatic sequence");
+        translationBuilder.add("block.yunbeiuc.traffic_lights_pavement.tooltip","Right-click with Wand to toggle traffic light state");
+
+        // Road Safety Facilities
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_CONE, "Traffic Cone");
+        translationBuilder.add(MunicipalBlocks.ROAD_COLLISION_BARREL, "Collision Barrel");
+        translationBuilder.add(MunicipalBlocks.WATER_SAFETY_BARRIER_RED, "Red Water Safety Barrier");
+
+        // Road Markings & Barriers
+        translationBuilder.add(MunicipalBlocks.SPEED_BUMP, "Speed Bump");
+        translationBuilder.add(MunicipalBlocks.VIBRATION_MARKING_LINE, "Vibration Marking Line");
+        translationBuilder.add(MunicipalBlocks.PARKING_SPACE_BARRIER, "Parking Space Wheel Stopper");
+
+        // Gantry Frames
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_SIDE, "Gantry (Side Frame)");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_CONNECTION, "Gantry (Connector)");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_MAIN, "Gantry (Main Frame)");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RAILING, "Gantry (Railing)");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LADDER, "Gantry (Ladder)");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_SIDE, "LED Gantry (Side Frame)");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_MAIN, "LED Gantry (Main Frame)");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED,"Gantry LED Screen");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA,"Gantry Detection/Speed Camera");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP,"Gantry Road Illuminator");
+        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"Gantry Radar Speed Detector");
+
+        // Height Barriers
+        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "Height Barrier (Side Frame)");
+        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "Height Barrier (Connector)");
+        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "Height Barrier (Main Frame)");
+
+        // Warning Nets
+        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK,"Warning Net");
+        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK_POLE,"Warning Net (Pole)");
+
+        // Anti-Glare Facilities
+        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET, "Anti-Glare Net");
+        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET_POLE, "Anti-Glare Net (Pole)");
+        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_VERSION, "Anti-Glare Board");
+
+        // Traffic Barriers
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER, "Traffic Barrier");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE, "Traffic Barrier (Dual, Yellow)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW, "Traffic Barrier (Yellow)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED, "Traffic Barrier (Red)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED_DOUBLE, "Traffic Barrier (Dual, Red)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_OBLIQUE, "Traffic Barrier (Angled)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY, "Gray Traffic Barrier");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_OBLIQUE, "Gray Traffic Barrier (Angled)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED, "Gray Traffic Barrier (Red)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED_OBLIQUE,"Gray Traffic Barrier (Angled, Red)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW, "Gray Traffic Barrier (Yellow)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE, "Gray Traffic Barrier (Angled, Yellow)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT, "Gray Slant Traffic Barrier");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW, "Gray Slant Traffic Barrier (Yellow)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED, "Gray Slant Traffic Barrier (Red)");
+        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE, "Gray Slant Traffic Barrier (Angled)");
+
+        // Reflective Signs
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_1, "Full Reflective Sign Type 1 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_2, "Full Reflective Sign Type 2 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_1, "Full Reflective Sign Type 1 (Red)");
+        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_2, "Full Reflective Sign Type 2 (Red)");
+
+        // Safety Islands
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_1, "Safety Island Type 1 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_2, "Safety Island Type 2 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_3, "Safety Island Type 3 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_4, "Safety Island Type 4 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY, "Safety Island");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1, "Safety Island Type 1 (Angled, Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2, "Safety Island Type 2 (Angled, Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_OBLIQUE, "Safety Island (Angled)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1, "Safety Island Edge Type 1 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2, "Safety Island Edge Type 2 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3, "Safety Island Edge Type 3 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_4, "Safety Island Edge Type 4 (Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE, "Safety Island Edge");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1, "Safety Island Edge Type 1 (Angled, Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2, "Safety Island Edge Type 2 (Angled, Yellow)");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "Safety Island Interior");
+        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "Safety Island Edge (Angled)");
+
+        // Instrument Poles
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "Instrument Pole (Base)");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "Instrument Pole (Vertical)");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_CAMERA, "Instrument Camera");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY, "Vehicle Info Display");
+        translationBuilder.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR, "Lane Indicator");
+
+        // Highway Guardrails
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON, "Iron Highway Guardrail");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1, "Iron Highway Guardrail Type 1 (End)");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2, "Iron Highway Guardrail Type 2 (End)");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_POLE, "Iron Highway Guardrail (Pole)");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_OBLIQUE, "Iron Highway Guardrail (Angled)");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN, "Green Highway Guardrail");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_1, "Green Highway Guardrail Type 1 (End)");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_2, "Green Highway Guardrail Type 2 (End)");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_POLE, "Green Highway Guardrail (Pole)");
+        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_OBLIQUE, "Green Highway Guardrail (Angled)");
+
+        // Road Facilities
+        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_1, "Road Planter Type 1");
+        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2, "Road Planter Type 2");
+        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE, "Road Planter Type 2 (Fence)");
+
+        // Sanitation Facilities
+        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_WHITE, "White Trash Can");
+        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_GRAY_GREEN, "Gray-Green Trash Can");
+        translationBuilder.add("block.yunbeiuc.rubbish_bin.tooltip","Right-click with Wand to empty trash can");
+
+        // Road Closed Barricades
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1, "Construction Barricade Type 1");
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2, "Construction Barricade Type 2");
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_3, "Construction Barricade Type 3");
+        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_4, "Construction Barricade Type 4");
+
+        // Warning Poles
+        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_RED, "Warning Pole (Red)");
+        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW, "Warning Pole (Yellow)");
+        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_GREEN, "Warning Pole (Green)");
+
+        // Iron Horses
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_YELLOW, "Crowd Control Barrier (Yellow)");
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_RED, "Crowd Control Barrier (Red)");
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_WHITE, "Crowd Control Barrier (White)");
+        translationBuilder.add(MunicipalBlocks.IRON_HORSE_GRAY, "Crowd Control Barrier (Gray)");
+
+        // Barrier Gates
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN,"Barrier Gate Type 1");
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"Barrier Gate Type 1 (Step)");
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"Barrier Gate Arm Type 1 (Horizontal)");
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"Barrier Gate Arm Type 1 (Vertical)");
+
+        // Items
         translationBuilder.add(ModItems.WAND,"Wand");
         translationBuilder.add(ModItems.TREE_WAND,"Tree Wand");
         translationBuilder.add(ModItems.LINK_WAND,"Link Wand");
-        translationBuilder.add("item.yunbeiuc.tree_wand.tooltip","Right-click on Grass Block or Dirt to plant an Oak Tree");
-        translationBuilder.add("item.yunbeiuc.tree_wand.success","Successfully planted an Oak Tree!");
+        translationBuilder.add("item.yunbeiuc.link_wand.tooltip","Right-click to link traffic lights for automatic sequencing");
+        translationBuilder.add("item.yunbeiuc.tree_wand.tooltip","Right-click Grass/Dirt to plant an Oak tree");
+        translationBuilder.add("item.yunbeiuc.tree_wand.success","Successfully planted an Oak tree!");
         translationBuilder.add("item.yunbeiuc.tree_wand.planted_sapling","Planted an Oak Sapling!");
-        translationBuilder.add("item.yunbeiuc.tree_wand.failed","Cannot generate Oak Tree here!");
-        translationBuilder.add("item.yunbeiuc.tree_wand.no_space","Not enough space to plant a tree!");
-        translationBuilder.add("item.yunbeiuc.tree_wand.invalid_block","Cannot plant trees on this block!");
+        translationBuilder.add("item.yunbeiuc.tree_wand.failed","Cannot spawn Oak tree here!");
+        translationBuilder.add("item.yunbeiuc.tree_wand.no_space","Not enough space to grow tree!");
+        translationBuilder.add("item.yunbeiuc.tree_wand.invalid_block","Cannot grow tree on this block!");
         translationBuilder.add(ModItems.WATER_WAND,"Water Wand");
-        translationBuilder.add("item.yunbeiuc.water_wand.tooltip","Right-click to replace a 3*3*3 area with Water Source");
+        translationBuilder.add("item.yunbeiuc.water_wand.tooltip","Right-click to replace 3x3x3 area with Water Source");
         translationBuilder.add("item.yunbeiuc.water_wand.success","Successfully replaced with Water Source!");
         translationBuilder.add(ModItems.ROTATED_WAND,"Rotation Wand");
-        translationBuilder.add("item.yunbeiuc.rotated_wand.tooltip","Right-click on a block to rotate it 90 degrees clockwise");
+        translationBuilder.add("item.yunbeiuc.rotated_wand.tooltip","Right-click block to rotate 90° clockwise");
 
-// Traffic Lights
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, "Straight Traffic Light");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, "Left Turn Traffic Light");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, "Pedestrian Traffic Light");
-        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","Right-click with a Wand to toggle traffic light state");
-
-// Road Facilities
-        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_1, "Road Flower Box Type 1");
-        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2, "Road Flower Box Type 2");
-        translationBuilder.add(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE, "Road Flower Box Type 2 Fence");
-
-// Road Monitoring Equipment
-        translationBuilder.add(MunicipalBlocks.ROAD_DETECTION_CAMERA, "Road Detection/Speed Camera");
-        translationBuilder.add(MunicipalBlocks.ROAD_LIGHTING_LAMP, "Road Supplementary Light");
-        translationBuilder.add("block.yunbeiuc.lighting_lamp.tooltip","Right-click with a Wand to toggle light state");
-        translationBuilder.add(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR, "Radar Speed Detector");
-        translationBuilder.add("block.yunbeiuc.radar_speed_detector.tooltip","Right-click with a Wand to toggle light state");
-
-// Road Safety Facilities
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_CONE, "Traffic Cone");
-        translationBuilder.add(MunicipalBlocks.ROAD_COLLISION_BARREL, "Road Crash Barrel");
-        translationBuilder.add(MunicipalBlocks.WATER_SAFETY_BARRIER_RED, "Red Water Safety Barrier");
-
-// Sanitation Facilities
-        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_WHITE, "White Trash Can");
-        translationBuilder.add(MunicipalBlocks.RUBBISH_BIN_GRAY_GREEN, "Gray-Green Trash Can");
-        translationBuilder.add("block.yunbeiuc.rubbish_bin.tooltip","Right-click with a Wand to empty the trash can");
-
-// Road Markings & Barriers
-        translationBuilder.add(MunicipalBlocks.SPEED_BUMP, "Speed Bump");
-        translationBuilder.add(MunicipalBlocks.VIBRATION_MARKING_LINE, "Vibration Marking Line");
-        translationBuilder.add(MunicipalBlocks.PARKING_SPACE_BARRIER, "Parking Space Lock");
-
-// Gantry Frames
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_SIDE, "Gantry Side Frame");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_CONNECTION, "Gantry Connector");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_MAIN, "Gantry Main Frame");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RAILING, "Gantry Railing");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LADDER, "Gantry Ladder");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_SIDE, "Gantry Side LED");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED_MAIN, "Gantry Main LED");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LED,"Gantry LED Screen");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA,"Gantry Detection/Speed Camera");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP,"Gantry Supplementary Light");
-        translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"Gantry Radar Speed Detector");
-
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "Height Limiter Side Frame");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "Height Limiter Connector");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "Height Limiter Main Frame");
-
-// Anti-Glare Facilities
-        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET, "Anti-Glare Net");
-        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_NET_POLE, "Anti-Glare Net Pole");
-        translationBuilder.add(MunicipalBlocks.ANTI_GLARE_VERSION, "Anti-Glare Board");
-
-// Traffic Barriers
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER, "Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE, "Yellow Double Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW, "Yellow Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED, "Red Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED_DOUBLE, "Red Double Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_OBLIQUE, "Angled Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY, "Gray Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_OBLIQUE, "Gray Angled Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED, "Red-Gray Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_RED_OBLIQUE,"Red-Gray Angled Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW, "Yellow-Gray Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_YELLOW_OBLIQUE, "Yellow-Gray Angled Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT, "Gray Slanted Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW, "Yellow-Gray Slanted Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED, "Red-Gray Slanted Traffic Barrier");
-        translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE, "Gray Slanted Angled Traffic Barrier");
-
-// Road Warning Poles
-        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_RED, "Red Road Warning Pole");
-        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW, "Yellow Road Warning Pole");
-        translationBuilder.add(MunicipalBlocks.ROAD_WARNING_POLE_GREEN, "Green Road Warning Pole");
-
-// Iron Horse Barriers
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_YELLOW, "Yellow Crowd Control Barrier");
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_RED, "Red Crowd Control Barrier");
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_WHITE, "White Crowd Control Barrier");
-        translationBuilder.add(MunicipalBlocks.IRON_HORSE_GRAY, "Gray Crowd Control Barrier");
-
-// Reflective Signs
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_1, "Yellow Full Reflective Sign Type 1");
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_2, "Yellow Full Reflective Sign Type 2");
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_1, "Red Full Reflective Sign Type 1");
-        translationBuilder.add(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_2, "Red Full Reflective Sign Type 2");
-
-// Instrument Poles
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "Instrument Pole Foundation");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "Longitudinal Instrument Pole");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_CAMERA, "Instrument Camera");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY, "Instrument Vehicle Information Display");
-        translationBuilder.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR, "Instrument Lane Indicator");
-
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN,"Barrier Gate Main Type 1");
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"Barrier Gate Main Type 1 Slab");
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"Horizontal Barrier Gate Pole Type 1");
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"Longitudinal Barrier Gate Pole Type 1");
-
-// Safety Islands
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_1, "Yellow Safety Island Type 1");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_2, "Yellow Safety Island Type 2");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_3, "Yellow Safety Island Type 3");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_4, "Yellow Safety Island Type 4");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY, "Gray Safety Island");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_1, "Yellow Angled Safety Island Type 1");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_OBLIQUE_2, "Yellow Angled Safety Island Type 2");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_OBLIQUE, "Gray Angled Safety Island");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_1, "Yellow Safety Island Slab Edge Type 1");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_2, "Yellow Safety Island Slab Edge Type 2");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_3, "Yellow Safety Island Slab Edge Type 3");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_4, "Yellow Safety Island Slab Edge Type 4");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE, "Gray Safety Island Slab Edge");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_1, "Yellow Angled Safety Island Slab Edge Type 1");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2, "Yellow Angled Safety Island Slab Edge Type 2");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "Gray Safety Island Slab");
-        translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "Gray Angled Safety Island Slab Edge");
-
-// Road Railings
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON, "Iron Road Railing");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1, "Iron Road Railing End Type 1");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2, "Iron Road Railing End Type 2");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_POLE, "Iron Road Railing Pole");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON_OBLIQUE, "Angled Iron Road Railing");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN, "Green Road Railing");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_1, "Green Road Railing End Type 1");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_2, "Green Road Railing End Type 2");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_POLE, "Green Road Railing Pole");
-        translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_GREEN_OBLIQUE, "Angled Green Road Railing");
-
-        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK,"Warning Network");
-        translationBuilder.add(MunicipalBlocks.WARNING_NETWORK_POLE,"Warning Network Pole");
-
-// Road Closed Barricades
-        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_1, "Road Closed Barricade Type 1");
-        translationBuilder.add(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2, "Road Closed Barricade Type 2");
-
-// Road Poles
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS, "Road Pole Foundation");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL, "Longitudinal Road Pole");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL, "Horizontal Road Pole");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TSHAPE, "T-Shape Road Pole");
-        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT, "Road Light");
-        translationBuilder.add("block.yunbeiuc.road_light.tooltip","Right-click with a Wand to toggle light state");
-
-// Road Blocks & Markings
+        // Road Blocks & Markings
         translationBuilder.add(RoadBlocks.ROAD_BLOCK, "Road Block");
-        translationBuilder.add(RoadBlocks.ROAD_FULL_OF_WHITE,"All-White Road");
-        translationBuilder.add(RoadBlocks.ROAD_FULL_OF_YELLOW,"All-Yellow Road");
+        translationBuilder.add(RoadBlocks.ROAD_FULL_OF_WHITE,"Solid White Road");
+        translationBuilder.add(RoadBlocks.ROAD_FULL_OF_YELLOW,"Solid Yellow Road");
         translationBuilder.add(RoadBlocks.ROAD_WHITE_YELLOW,"White-Yellow Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_LINE, "White Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE, "White Double Solid Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE, "White Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_LINE, "White Thick Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_LINE, "Yellow Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE, "Yellow Double Solid Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE, "Yellow Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE, "Yellow Thick Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE, "White-Yellow Double Solid Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE, "White Half Double Solid Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE, "Yellow Half Double Solid Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE, "White-Yellow Double Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE, "White Half Double Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE, "Yellow Half Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_OFFSET_LINE, "White Offset Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE, "Yellow Offset Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE, "White Right Angle Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE, "Yellow Right Angle Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE, "White-Yellow Right Angle Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE, "White Thick + Normal Right Angle Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE, "White Thick + Yellow Right Angle Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE, "White Thick + Yellow Double Solid Right Angle Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE, "White + Yellow Double Solid Right Angle Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE, "White Thick Right Angle Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE, "White Thick Right Angle Yellow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE, "White Thick Right Angle Yellow Double Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE, "White Right Angle Yellow Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE, "White Bevel Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE, "White Bevel Double Solid Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE, "White Bevel Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_THICK_LINE, "White Thick Bevel Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE, "White Outer Offset Bevel Right Angle Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE, "White Inner Offset Bevel Right Angle Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_LINE, "Yellow Bevel Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE, "Yellow Bevel Double Solid Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE, "Yellow Bevel Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_THICK_LINE, "Yellow Thick Bevel Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE, "Yellow Outer Offset Bevel Right Angle Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_BEVEL_RIGHTANGLE_LINE, "Yellow Inner Offset Bevel Right Angle Line Road");
@@ -220,34 +237,34 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_RIGHTANGLE_LINE, "Yellow Inner Offset Right Angle Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE, "White T-Shape Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE, "Yellow T-Shape Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE, "White T-Shape Double Solid Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE, "White T-Shape Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_THICK_LINE, "White Thick T-Shape Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE, "White Double Solid T-Shape Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE, "White Thick Solid T-Shape Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE, "White T-Shape + Yellow Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE, "Yellow T-Shape + White Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE, "White T-Shape + Yellow Double Solid Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE, "White Thick T-Shape + Yellow Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE, "White Thick T-Shape + Yellow Double Solid Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE, "White Double T-Shape Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE, "White Thick T-Shape Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE, "White T-Shape Yellow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE, "Yellow T-Shape White Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE, "White T-Shape Yellow Double Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE, "White Thick T-Shape Yellow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE, "White Thick T-Shape Yellow Double Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_LINE, "White T-Shape Offset Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_LINE, "Yellow T-Shape Offset Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE, "White Double Solid T-Shape Offset Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE, "White Double T-Shape Offset Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_LINE, "White Thick T-Shape Offset Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_YELLOW_LINE, "White Thick T-Shape Offset + Yellow Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE, "Yellow T-Shape Offset + White Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE, "White T-Shape Offset + Yellow Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE, "White Bevel Double Solid Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE, "Yellow Bevel Double Solid Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE, "White Normal + Bevel Double Solid Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE, "Yellow Normal + Bevel Double Solid Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE, "White Normal + Bevel Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_LINE, "Yellow Normal + Bevel Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_YELLOW_LINE, "White Normal + Bevel + Yellow Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_WHITE_LINE, "Yellow Normal + Bevel + White Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE, "White Thick + Bevel Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_LINE, "Yellow Thick + Bevel Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE, "White Thick + Bevel + Yellow Line Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE, "Yellow Thick + Bevel + White Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE, "Yellow T-Shape Offset White Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE, "White T-Shape Offset Yellow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE, "White Arrow No Center Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE, "Yellow Arrow No Center Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE, "White Arrow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE, "Yellow Arrow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE, "White Arrow No Right Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_LINE, "Yellow Arrow No Right Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_YELLOW_LINE, "White Arrow No Right Yellow Left Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_WHITE_LINE, "Yellow Arrow No Right White Left Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE, "White Thick Arrow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_LINE, "Yellow Thick Arrow Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE, "White Thick Arrow No Right Yellow Left Line Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE, "Yellow Thick Arrow No Right White Left Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_CROSS_LINE, "White Cross Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_CROSS_LINE, "Yellow Cross Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_LEFT_DIAMOND_SHAPE_LINE, "White Left Diamond Road");
@@ -256,72 +273,63 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_LEFT_DIAMOND_SHAPE_LINE, "Yellow Left Diamond Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_DIAMOND_SHAPE_LINE, "Yellow Right Diamond Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_YELLOW_RIGHT_DIAMOND_SHAPE_LINE, "Yellow Double Diamond Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THREE_SQUARE_LINE, "White Toll Plaza Deceleration 1 Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_SIX_SQUARE_LINE, "White Toll Plaza Deceleration 2 Road");
-        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_NINE_SQUARE_LINE, "White Toll Plaza Deceleration 3 Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_THREE_SQUARE_LINE, "White Toll Plaza Slowdown 1 Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_SIX_SQUARE_LINE, "White Toll Plaza Slowdown 2 Road");
+        translationBuilder.add(RoadBlocks.ROAD_WITH_WHITE_NINE_SQUARE_LINE, "White Toll Plaza Slowdown 3 Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_AUTO_BEVEL_LINE, "Auto Bevel Line Road");
         translationBuilder.add(RoadBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE, "Auto Right Angle Line Road");
 
-        translationBuilder.add(RoadBlocks.STRAIGHT_GROUND_MARK, "Straight sign");
-        translationBuilder.add(RoadBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK, "Straight and left turn sign");
-        translationBuilder.add(RoadBlocks.LEFT_TURN_GROUND_MARK, "Left turn sign");
-        translationBuilder.add(RoadBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK, "Straight and right turn sign");
-        translationBuilder.add(RoadBlocks.RIGHT_TURN_GROUND_MARK, "Right turn sign");
-        translationBuilder.add(RoadBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK, "Straight, left and right turn sign");
-        translationBuilder.add(RoadBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK, "U-turn ahead sign");
-        translationBuilder.add(RoadBlocks.STRAIGHT_LEFT_TURN_AROUND_GROUND_MARK, "Straight or U-turn ahead sign");
-        translationBuilder.add(RoadBlocks.LEFT_TURN_AROUND_GROUND_MARK, "Left turn or U-turn ahead sign");
-        translationBuilder.add(RoadBlocks.LEFT_RIGHT_TURN_GROUND_MARK, "Left and right turn sign");
-        translationBuilder.add(RoadBlocks.LEFT_TURN_MERGE_GROUND_MARK, "Left merge sign");
-        translationBuilder.add(RoadBlocks.RIGHT_TURN_MERGE_GROUND_MARK, "Right merge sign");
-        translationBuilder.add(RoadBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK, "Crosswalk warning sign");
-        translationBuilder.add(RoadBlocks.DISTANCE_CONFIRMATION_GROUND_MARK, "Chevron distance confirmation sign");
-        translationBuilder.add(RoadBlocks.TAXI_1_GROUND_MARK, "Exit sign");
-        translationBuilder.add(RoadBlocks.TAXI_2_GROUND_MARK, "Rental sign");
-        translationBuilder.add(RoadBlocks.VEHICLE_GROUND_MARK, "Vehicle sign");
-        translationBuilder.add(RoadBlocks.DISABLED_PEOPLE_GROUND_MARK, "Disabled only sign");
-        translationBuilder.add(RoadBlocks.NON_MOTOR_VEHICLES_GROUND_MARK, "Non-motor vehicle sign");
-        translationBuilder.add(RoadBlocks.BUS_1_GROUND_MARK, "Public transport sign");
-        translationBuilder.add(RoadBlocks.BUS_2_GROUND_MARK, "Bus sign");
-        translationBuilder.add(RoadBlocks.SCHOOL_BUS_1_GROUND_MARK, "School sign");
-        translationBuilder.add(RoadBlocks.LARGE_SPEED_BUMP_GROUND_MARK, "Large speed bump sign");
-        translationBuilder.add(RoadBlocks.SMALL_SPEED_BUMP_GROUND_MARK, "Small speed bump sign");
-        translationBuilder.add(RoadBlocks.WHITE_040_GROUND_MARK, "Minimum speed limit 40km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_050_GROUND_MARK, "Minimum speed limit 50km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_060_GROUND_MARK, "Minimum speed limit 60km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_070_GROUND_MARK, "Minimum speed limit 70km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_080_GROUND_MARK, "Minimum speed limit 80km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_090_GROUND_MARK, "Minimum speed limit 90km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_100_GROUND_MARK, "Minimum speed limit 100km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_110_GROUND_MARK, "Minimum speed limit 110km/h sign");
-        translationBuilder.add(RoadBlocks.WHITE_120_GROUND_MARK, "Minimum speed limit 120km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_040_GROUND_MARK, "Maximum speed limit 40km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_050_GROUND_MARK, "Maximum speed limit 50km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_060_GROUND_MARK, "Maximum speed limit 60km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_070_GROUND_MARK, "Maximum speed limit 70km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_080_GROUND_MARK, "Maximum speed limit 80km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_090_GROUND_MARK, "Maximum speed limit 90km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_100_GROUND_MARK, "Maximum speed limit 100km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_110_GROUND_MARK, "Maximum speed limit 110km/h sign");
-        translationBuilder.add(RoadBlocks.YELLOW_120_GROUND_MARK, "Maximum speed limit 120km/h sign");
-        translationBuilder.add(RoadBlocks.ELECTRIC_VEHICLE_GROUND_MARK, "Electric bicycle sign");
-        translationBuilder.add(RoadBlocks.PEDESTRIAN_GROUND_MARK, "Pedestrian sign");
-        translationBuilder.add(RoadBlocks.STOP_AND_YIELD_GROUND_MARK, "Stop sign");
-        translationBuilder.add(RoadBlocks.HOV_1_GROUND_MARK, "Multi-passenger sign");
-        translationBuilder.add(RoadBlocks.HOV_2_GROUND_MARK, "Carpool sign");
-        translationBuilder.add(RoadBlocks.HOV_3_GROUND_MARK, "Passenger vehicle sign");
-        translationBuilder.add(RoadBlocks.HOV_4_GROUND_MARK, "3+ occupant sign");
-        translationBuilder.add(RoadBlocks.HOV_5_GROUND_MARK, "5+ occupant sign");
-        translationBuilder.add(RoadBlocks.MANHOLE_COVER, "Manhole cover");
-
-// Road Pole Attachments
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "Road Pole Text Display");
-        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "Road Pole Flag");
-        translationBuilder.add("text.yunbeiuc.flag_selection.title", "Flag Selection");
-        translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "Selected: %s");
-        translationBuilder.add("text.yunbeiuc.flag_selection.preview_panel", "Flag Preview");
-        translationBuilder.add("text.yunbeiuc.flag_selection.save_button", "Save");
-        translationBuilder.add("text.yunbeiuc.flag_selection.load_failed", "Load Failed");
+        translationBuilder.add(RoadBlocks.STRAIGHT_GROUND_MARK, "Straight Marking");
+        translationBuilder.add(RoadBlocks.STRAIGHT_LEFT_TURN_GROUND_MARK, "Straight & Left Turn Marking");
+        translationBuilder.add(RoadBlocks.LEFT_TURN_GROUND_MARK, "Left Turn Marking");
+        translationBuilder.add(RoadBlocks.STRAIGHT_RIGHT_TURN_GROUND_MARK, "Straight & Right Turn Marking");
+        translationBuilder.add(RoadBlocks.RIGHT_TURN_GROUND_MARK, "Right Turn Marking");
+        translationBuilder.add(RoadBlocks.STRAIGHT_LEFT_RIGHT_TURN_GROUND_MARK, "Straight & Left/Right Turn Marking");
+        translationBuilder.add(RoadBlocks.LEFT_TURN_AROUND_SINGLE_GROUND_MARK, "U-Turn Ahead Marking");
+        translationBuilder.add(RoadBlocks.STRAIGHT_LEFT_TURN_AROUND_GROUND_MARK, "Straight & U-Turn Ahead Marking");
+        translationBuilder.add(RoadBlocks.LEFT_TURN_AROUND_GROUND_MARK, "Left & U-Turn Ahead Marking");
+        translationBuilder.add(RoadBlocks.LEFT_RIGHT_TURN_GROUND_MARK, "Left & Right Turn Marking");
+        translationBuilder.add(RoadBlocks.LEFT_TURN_MERGE_GROUND_MARK, "Left Merge Marking");
+        translationBuilder.add(RoadBlocks.RIGHT_TURN_MERGE_GROUND_MARK, "Right Merge Marking");
+        translationBuilder.add(RoadBlocks.SLOWDOWN_ANNOUNCEMENT_GROUND_MARK, "Crosswalk Warning Marking");
+        translationBuilder.add(RoadBlocks.DISTANCE_CONFIRMATION_GROUND_MARK, "Distance Confirmation Marking");
+        translationBuilder.add(RoadBlocks.TAXI_1_GROUND_MARK, "\"Exit\" Marking");
+        translationBuilder.add(RoadBlocks.TAXI_2_GROUND_MARK, "\"Rent\" Marking");
+        translationBuilder.add(RoadBlocks.VEHICLE_GROUND_MARK, "\"Vehicle\" Marking");
+        translationBuilder.add(RoadBlocks.DISABLED_PEOPLE_GROUND_MARK, "Disabled Access Marking");
+        translationBuilder.add(RoadBlocks.NON_MOTOR_VEHICLES_GROUND_MARK, "Non-Motor Vehicle Marking");
+        translationBuilder.add(RoadBlocks.BUS_1_GROUND_MARK, "\"Public\" Marking");
+        translationBuilder.add(RoadBlocks.BUS_2_GROUND_MARK, "\"Transport\" Marking");
+        translationBuilder.add(RoadBlocks.SCHOOL_BUS_1_GROUND_MARK, "\"School\" Marking");
+        translationBuilder.add(RoadBlocks.LARGE_SPEED_BUMP_GROUND_MARK, "Large Speed Bump Marking");
+        translationBuilder.add(RoadBlocks.SMALL_SPEED_BUMP_GROUND_MARK, "Small Speed Bump Marking");
+        translationBuilder.add(RoadBlocks.WHITE_040_GROUND_MARK, "Min Speed Limit 40km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_050_GROUND_MARK, "Min Speed Limit 50km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_060_GROUND_MARK, "Min Speed Limit 60km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_070_GROUND_MARK, "Min Speed Limit 70km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_080_GROUND_MARK, "Min Speed Limit 80km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_090_GROUND_MARK, "Min Speed Limit 90km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_100_GROUND_MARK, "Min Speed Limit 100km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_110_GROUND_MARK, "Min Speed Limit 110km/h Marking");
+        translationBuilder.add(RoadBlocks.WHITE_120_GROUND_MARK, "Min Speed Limit 120km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_040_GROUND_MARK, "Max Speed Limit 40km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_050_GROUND_MARK, "Max Speed Limit 50km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_060_GROUND_MARK, "Max Speed Limit 60km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_070_GROUND_MARK, "Max Speed Limit 70km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_080_GROUND_MARK, "Max Speed Limit 80km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_090_GROUND_MARK, "Max Speed Limit 90km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_100_GROUND_MARK, "Max Speed Limit 100km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_110_GROUND_MARK, "Max Speed Limit 110km/h Marking");
+        translationBuilder.add(RoadBlocks.YELLOW_120_GROUND_MARK, "Max Speed Limit 120km/h Marking");
+        translationBuilder.add(RoadBlocks.ELECTRIC_VEHICLE_GROUND_MARK, "E-Bike Marking");
+        translationBuilder.add(RoadBlocks.PEDESTRIAN_GROUND_MARK, "Pedestrian Marking");
+        translationBuilder.add(RoadBlocks.STOP_AND_YIELD_GROUND_MARK, "Stop & Yield Marking");
+        translationBuilder.add(RoadBlocks.HOV_1_GROUND_MARK, "\"Multi\" Marking");
+        translationBuilder.add(RoadBlocks.HOV_2_GROUND_MARK, "\"Ride\" Marking");
+        translationBuilder.add(RoadBlocks.HOV_3_GROUND_MARK, "\"Pass\" Marking");
+        translationBuilder.add(RoadBlocks.HOV_4_GROUND_MARK, "\"3+\" Marking");
+        translationBuilder.add(RoadBlocks.HOV_5_GROUND_MARK, "\"5+\" Marking");
+        translationBuilder.add(RoadBlocks.MANHOLE_COVER, "Manhole Cover");
 
         // Traffic Signs
         translationBuilder.add(SignBlocks.SIGN_STOP, "Stop Sign");
@@ -333,9 +341,9 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_NO_LARGE_BUS, "No Large Buses Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_SMALL_PASSENGER_CAR, "No Small Passenger Cars Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_TRUCK, "No Trucks Sign");
-        translationBuilder.add(SignBlocks.SIGN_NO_TRAILER, "No Trailers/Semi-Trailers Sign");
+        translationBuilder.add(SignBlocks.SIGN_NO_TRAILER, "No Trailers Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_TRACTOR, "No Tractors Sign");
-        translationBuilder.add(SignBlocks.SIGN_NO_THREE_WHEELED_VEHICLE, "No Three-Wheeled Vehicles/Low-Speed Trucks Sign");
+        translationBuilder.add(SignBlocks.SIGN_NO_THREE_WHEELED_VEHICLE, "No Three-Wheelers Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_MOTORCYCLE, "No Motorcycles Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_NON_MOTOR_VEHICLES, "No Non-Motor Vehicles Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_ELECTRIC_VEHICLE, "No E-Bikes Sign");
@@ -346,16 +354,16 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_NO_RICKSHAW, "No Rickshaws Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_PEDESTRIAN, "No Pedestrians Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_LEFT_TURN, "No Left Turn Sign");
-        translationBuilder.add(SignBlocks.SIGN_NO_STRAIGHT, "No Straight Ahead Sign");
+        translationBuilder.add(SignBlocks.SIGN_NO_STRAIGHT, "No Straight Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_RIGHT_TURN, "No Right Turn Sign");
-        translationBuilder.add(SignBlocks.SIGN_NO_LEFT_RIGHT_TURN, "No Left or Right Turn Sign");
-        translationBuilder.add(SignBlocks.SIGN_NO_STRAIGHT_LEFT_TURN, "No Straight or Left Turn Sign");
-        translationBuilder.add(SignBlocks.SIGN_NO_STRAIGHT_RIGHT_TURN, "No Straight or Right Turn Sign");
+        translationBuilder.add(SignBlocks.SIGN_NO_LEFT_RIGHT_TURN, "No Left/Right Turn Sign");
+        translationBuilder.add(SignBlocks.SIGN_NO_STRAIGHT_LEFT_TURN, "No Straight/Left Turn Sign");
+        translationBuilder.add(SignBlocks.SIGN_NO_STRAIGHT_RIGHT_TURN, "No Straight/Right Turn Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_SINGLE_LEFT_TURN_AROUND, "No U-Turn Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_OVERTAKE, "No Overtaking Sign");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_OVERTAKE, "End of No Overtaking Zone Sign");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_OVERTAKE, "End No Overtaking Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_PARKING, "No Parking Sign");
-        translationBuilder.add(SignBlocks.SIGN_NO_PARKING_LONG_TIME, "No Long Parking Sign");
+        translationBuilder.add(SignBlocks.SIGN_NO_PARKING_LONG_TIME, "No Standing Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_HONK_HORN, "No Honking Sign");
         translationBuilder.add(SignBlocks.SIGN_WIDTH_LIMIT_20, "Width Limit: 2.0m");
         translationBuilder.add(SignBlocks.SIGN_WIDTH_LIMIT_25, "Width Limit: 2.5m");
@@ -376,78 +384,78 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10, "Axle Load Limit: 10t");
         translationBuilder.add(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_20, "Axle Load Limit: 20t");
         translationBuilder.add(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_30, "Axle Load Limit: 30t");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_005, "Speed Limit: 5 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_010, "Speed Limit: 10 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_020, "Speed Limit: 20 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_030, "Speed Limit: 30 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_040, "Speed Limit: 40 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_050, "Speed Limit: 50 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_060, "Speed Limit: 60 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_070, "Speed Limit: 70 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_080, "Speed Limit: 80 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_090, "Speed Limit: 90 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_100, "Speed Limit: 100 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_110, "Speed Limit: 110 km/h");
-        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_120, "Speed Limit: 120 km/h");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_005, "End of 5 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_010, "End of 10 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_020, "End of 20 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_030, "End of 30 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_040, "End of 40 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_050, "End of 50 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_060, "End of 60 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_070, "End of 70 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_080, "End of 80 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_090, "End of 90 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_100, "End of 100 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_110, "End of 110 km/h Speed Limit");
-        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_120, "End of 120 km/h Speed Limit");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_005, "Speed Limit: 5km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_010, "Speed Limit: 10km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_020, "Speed Limit: 20km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_030, "Speed Limit: 30km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_040, "Speed Limit: 40km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_050, "Speed Limit: 50km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_060, "Speed Limit: 60km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_070, "Speed Limit: 70km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_080, "Speed Limit: 80km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_090, "Speed Limit: 90km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_100, "Speed Limit: 100km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_110, "Speed Limit: 110km/h");
+        translationBuilder.add(SignBlocks.SIGN_SPEED_LIMIT_120, "Speed Limit: 120km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_005, "End Speed Limit: 5km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_010, "End Speed Limit: 10km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_020, "End Speed Limit: 20km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_030, "End Speed Limit: 30km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_040, "End Speed Limit: 40km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_050, "End Speed Limit: 50km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_060, "End Speed Limit: 60km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_070, "End Speed Limit: 70km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_080, "End Speed Limit: 80km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_090, "End Speed Limit: 90km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_100, "End Speed Limit: 100km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_110, "End Speed Limit: 110km/h");
+        translationBuilder.add(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_120, "End Speed Limit: 120km/h");
         translationBuilder.add(SignBlocks.SIGN_CHECK, "Stop for Inspection Sign");
         translationBuilder.add(SignBlocks.SIGN_PORT_CHECK, "Port Inspection Sign");
         translationBuilder.add(SignBlocks.SIGN_NO_HAZARDOUS_MATERIALS_TRANSPORT_VEHICLE, "No Hazardous Materials Vehicles Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_STRAIGHT, "Straight Ahead Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_STRAIGHT, "Straight Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LEFT_TURN, "Left Turn Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_RIGHT_TURN, "Right Turn Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_STRAIGHT_LEFT_TURN, "Straight or Left Turn Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_STRAIGHT_RIGHT_TURN, "Straight or Right Turn Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LEFT_RIGHT_TURN, "Left or Right Turn Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_STRAIGHT_LEFT_TURN, "Straight & Left Turn Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_STRAIGHT_RIGHT_TURN, "Straight & Right Turn Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LEFT_RIGHT_TURN, "Left & Right Turn Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_RIGHT_SIDE_MEDIAN_STRIP, "Keep Right of Median Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LEFT_SIDE_MEDIAN_STRIP, "Keep Left of Median Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_ROUNDABOUT, "Roundabout Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_LEFT_RIGHT, "One Way (Left/Right) Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_STRAIGHT, "One Way (Straight) Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_HONK_HORN, "Honk Horn Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_HONK_HORN, "Honk Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_HEADLIGHTS, "Turn On Headlights Sign");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_005, "Minimum Speed: 5 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_010, "Minimum Speed: 10 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_020, "Minimum Speed: 20 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_030, "Minimum Speed: 30 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_040, "Minimum Speed: 40 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_050, "Minimum Speed: 50 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_060, "Minimum Speed: 60 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_070, "Minimum Speed: 70 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_080, "Minimum Speed: 80 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_090, "Minimum Speed: 90 km/h");
-        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_100, "Minimum Speed: 100 km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_005, "Minimum Speed: 5km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_010, "Minimum Speed: 10km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_020, "Minimum Speed: 20km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_030, "Minimum Speed: 30km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_040, "Minimum Speed: 40km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_050, "Minimum Speed: 50km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_060, "Minimum Speed: 60km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_070, "Minimum Speed: 70km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_080, "Minimum Speed: 80km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_090, "Minimum Speed: 90km/h");
+        translationBuilder.add(SignBlocks.SIGN_MIN_SPEED_LIMIT_100, "Minimum Speed: 100km/h");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_YIELD_TO_ONCOMING_TRAFFIC, "Priority Over Oncoming Traffic Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING, "Zebra Crossing Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING_FLUORESCENCE, "Fluorescent Zebra Crossing Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING, "Crosswalk Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING_FLUORESCENCE, "Fluorescent Crosswalk Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_RIGHT_TURN, "Right Turn Lane Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LEFT_TURN, "Left Turn Lane Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT, "Straight Lane Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT_RIGHT_TURN, "Straight & Right Turn Lane Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT_LEFT_TURN, "Straight & Left Turn Lane Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT_RIGHT_TURN, "Straight/Right Turn Lane Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_STRAIGHT_LEFT_TURN, "Straight/Left Turn Lane Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SINGLE_LEFT_TURN_AROUND, "U-Turn Lane Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LEFT_TURN_AROUND, "U-Turn & Left Turn Lane Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LEFT_TURN_AROUND, "U-Turn/Left Turn Lane Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_MOTOR_VEHICLES, "Motor Vehicles Only Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES, "Motor Vehicle Lane Sign 1");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES_STRAIGHT, "Motor Vehicle Lane Sign 2");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES_LEFT_SIDE_MEDIAN_STRIP, "Motor Vehicle Lane Sign 3");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_MOTOR_VEHICLES_RIGHT_SIDE_MEDIAN_STRIP, "Motor Vehicle Lane Sign 4");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR, "Small Passenger Car Lane Sign 1");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_STRAIGHT, "Small Passenger Car Lane Sign 2");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_LEFT_SIDE_MEDIAN_STRIP, "Small Passenger Car Lane Sign 3");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_RIGHT_SIDE_MEDIAN_STRIP, "Small Passenger Car Lane Sign 4");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR, "Small Car Lane Sign 1");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_STRAIGHT, "Small Car Lane Sign 2");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_LEFT_SIDE_MEDIAN_STRIP, "Small Car Lane Sign 3");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_SMALL_PASSENGER_CAR_RIGHT_SIDE_MEDIAN_STRIP, "Small Car Lane Sign 4");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS, "Bus Lane Sign 1");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_STRAIGHT, "Bus Lane Sign 2");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_LARGE_BUS_LEFT_SIDE_MEDIAN_STRIP, "Bus Lane Sign 3");
@@ -467,15 +475,15 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_NON_MOTOR_VEHICLES_STRAIGHT, "Non-Motor Vehicle Lane Sign 2");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_NON_MOTOR_VEHICLES_LEFT_SIDE_MEDIAN_STRIP, "Non-Motor Vehicle Lane Sign 3");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_NON_MOTOR_VEHICLES_RIGHT_SIDE_MEDIAN_STRIP, "Non-Motor Vehicle Lane Sign 4");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_ELECTRIC_VEHICLE, "E-Bikes Only Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_ELECTRIC_VEHICLE, "E-Bike Only Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE, "E-Bike Lane Sign 1");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE_STRAIGHT, "E-Bike Lane Sign 2");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE_LEFT_SIDE_MEDIAN_STRIP, "E-Bike Lane Sign 3");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_LANE_DIRECTION_ELECTRIC_VEHICLE_RIGHT_SIDE_MEDIAN_STRIP, "E-Bike Lane Sign 4");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN, "Pedestrians Only Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_1, "Pedestrians & Non-Motor Vehicles Sign 1");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_2, "Pedestrians & Non-Motor Vehicles Sign 2");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_3, "Pedestrians & Non-Motor Vehicles Sign 3");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_1, "Pedestrian & Non-Motor Vehicle Sign 1");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_2, "Pedestrian & Non-Motor Vehicle Sign 2");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_PEDESTRIAN_NON_MOTOR_VEHICLES_3, "Pedestrian & Non-Motor Vehicle Sign 3");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PROMOTION_NON_MOTOR_VEHICLES, "Push Non-Motor Vehicles Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PROMOTION_DRIVE_RIGHT, "Keep Right Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_1, "Parking Sign 1");
@@ -483,9 +491,9 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_3, "Parking Sign 3");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_4, "Parking Sign 4");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_DISABLED, "Disabled Parking Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_SCHOOL_BUS, "School Bus Parking/Stop Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_SCHOOL_BUS, "School Bus Parking Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_SCHOOL_BUS_WUXI, "Wuxi School Bus Stop Sign");
-        translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_SCHOOL_BUS_FLUORESCENCE, "Fluorescent School Bus Parking/Stop Sign");
+        translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_SCHOOL_BUS_FLUORESCENCE, "Fluorescent School Bus Parking Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_TAXI, "Taxi Parking Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_NON_MOTOR_VEHICLE, "Non-Motor Vehicle Parking Sign");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PARKING_BUS, "Bus Parking Sign");
@@ -496,50 +504,50 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PAVED_SHOULDER_2, "Paved Shoulder Allowed Sign 2");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_PAVED_SHOULDER_3, "Paved Shoulder Allowed Sign 3");
         translationBuilder.add(SignBlocks.SIGN_INDICATION_OK_TRUCK, "Trucks Allowed Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_1, "Crossroads Warning Sign 1");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_2, "Crossroads Warning Sign 2");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_3, "Crossroads Warning Sign 3");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_4, "Crossroads Warning Sign 4");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_5, "Crossroads Warning Sign 5");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_6, "Crossroads Warning Sign 6");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_7, "Crossroads Warning Sign 7");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_8, "Crossroads Warning Sign 8");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_9, "Crossroads Warning Sign 9");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_10, "Crossroads Warning Sign 10");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_11, "Crossroads Warning Sign 11");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_1, "Crossroad Sign 1");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_2, "Crossroad Sign 2");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_3, "Crossroad Sign 3");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_4, "Crossroad Sign 4");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_5, "Crossroad Sign 5");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_6, "Crossroad Sign 6");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_7, "Crossroad Sign 7");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_8, "Crossroad Sign 8");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_9, "Crossroad Sign 9");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_10, "Crossroad Sign 10");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSING_11, "Crossroad Sign 11");
         translationBuilder.add(SignBlocks.SIGN_WARNING_SHARP_TURN_1, "Sharp Left Turn Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_SHARP_TURN_2, "Sharp Right Turn Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_1, "Reverse Curve Sign 1");
         translationBuilder.add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_2, "Reverse Curve Sign 2");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_1, "Winding Road Sign 1");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CONTINUOU_WINDING_ROADS_2, "Winding Road Sign 2");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_UP, "Steep Upward Slope Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_DOWN, "Steep Downward Slope Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_UP, "Steep Upgrade Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_DOWN, "Steep Downgrade Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CONTINUOUS_DOWNHILL, "Continuous Downhill Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_DOUBLE, "Road Narrows on Both Sides Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_LEFT, "Road Narrows on Left Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_RIGHT, "Road Narrows on Right Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_DOUBLE, "Road Narrows Both Sides Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_LEFT, "Road Narrows Left Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_NARROW_ROAD_RIGHT, "Road Narrows Right Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_NARROW_BRIDGE, "Narrow Bridge Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_TWO_WAY_TRAFFIC, "Two-Way Traffic Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_ZEBRA_CROSSING, "Watch for Pedestrians Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_ZEBRA_CROSSING_FLUORESCENCE, "Fluorescent Watch for Pedestrians Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CHILDREN, "Watch for Children Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CHILDREN_FLUORESCENCE, "Fluorescent Watch for Children Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_DISABLED, "Watch for Disabled Persons Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_DISABLED_FLUORESCENCE, "Fluorescent Watch for Disabled Persons Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_NON_MOTOR_VEHICLES, "Watch for Non-Motor Vehicles Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_ELECTRIC_VEHICLE, "Watch for E-Bikes Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_LIVESTOCK, "Watch for Livestock Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_WILDLIFE, "Watch for Wildlife Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_TRAFFIC_LIGHTS, "Watch for Traffic Lights Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_FALLING_ROCKS_LEFT, "Falling Rocks on Left Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_FALLING_ROCKS_RIGHT, "Falling Rocks on Right Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_ZEBRA_CROSSING, "Watch For Pedestrians Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_ZEBRA_CROSSING_FLUORESCENCE, "Fluorescent Watch For Pedestrians Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CHILDREN, "Watch For Children Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CHILDREN_FLUORESCENCE, "Fluorescent Watch For Children Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_DISABLED, "Watch For Disabled Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_DISABLED_FLUORESCENCE, "Fluorescent Watch For Disabled Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_NON_MOTOR_VEHICLES, "Watch For Non-Motor Vehicles Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_ELECTRIC_VEHICLE, "Watch For E-Bikes Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_LIVESTOCK, "Watch For Livestock Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_WILDLIFE, "Watch For Wildlife Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_TRAFFIC_LIGHTS, "Watch For Traffic Lights Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_FALLING_ROCKS_LEFT, "Falling Rocks Left Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_FALLING_ROCKS_RIGHT, "Falling Rocks Right Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CROSSWIND, "Crosswind Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_SLIPPERY, "Slippery Road Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_PERILOUS_ROAD_ALONG_THE_MOUNTAIN_LEFT, "Mountain Road on Left Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_PERILOUS_ROAD_ALONG_THE_MOUNTAIN_RIGHT, "Mountain Road on Right Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_EMBANKMENT_ROAD_LEFT, "Embankment Road Sign 1");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_EMBANKMENT_ROAD_RIGHT, "Embankment Road Sign 2");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_PERILOUS_ROAD_ALONG_THE_MOUNTAIN_LEFT, "Mountain Road Left Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_PERILOUS_ROAD_ALONG_THE_MOUNTAIN_RIGHT, "Mountain Road Right Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_EMBANKMENT_ROAD_LEFT, "Embankment Road Left Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_EMBANKMENT_ROAD_RIGHT, "Embankment Road Right Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_VILLAGE, "Village Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_TUNNEL, "Tunnel Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CAMEL_BACK_BRIDGE, "Hump Bridge Sign");
@@ -548,26 +556,26 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_WARNING_ROAD_WET, "Flooded Road Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_SOMEONE_GUARDING_THE_RAILWAY_CROSSING, "Railroad Crossing (Guarded) Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_UNMANNED_GUARDING_THE_RAILWAY_CROSSING, "Railroad Crossing (Unguarded) Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_ACCIDENT_PRONE_ROAD, "Accident Prone Area Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_DETOUR_DOUBLE, "Obstacle - Detour Both Sides Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_DETOUR_LEFT, "Obstacle - Detour Left Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_DETOUR_RIGHT, "Obstacle - Detour Right Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_ACCIDENT_PRONE_ROAD, "Accident Area Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_DETOUR_DOUBLE, "Obstacle Detour Both Sides Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_DETOUR_LEFT, "Obstacle Detour Left Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_DETOUR_RIGHT, "Obstacle Detour Right Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_DANGEROUS, "Danger Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CONSTRUCTION, "Road Work Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_ACCIDENT, "Traffic Accident Management Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_TIDAL_LANE, "Watch for Tidal Lane Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_DISTANCE_BETWEEN_VEHICLES, "Maintain Safe Distance Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CONFLUENCE_LEFT, "Merge from Left Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CONFLUENCE_RIGHT, "Merge from Right Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARING_LESS_3_TO_2, "Lane Reduction (3→2) Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARING_LESS_4_TO_3, "Lane Reduction (4→3) Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_TIDAL_LANE, "Watch For Tidal Lane Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_DISTANCE_BETWEEN_VEHICLES, "Keep Distance Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CONFLUENCE_LEFT, "Merge Left Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CONFLUENCE_RIGHT, "Merge Right Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARING_LESS_3_TO_2, "Lane Reduction Sign (3→2)");
+        translationBuilder.add(SignBlocks.SIGN_WARING_LESS_4_TO_3, "Lane Reduction Sign (4→3)");
         translationBuilder.add(SignBlocks.SIGN_WARNING_EMERGENCY_LANE_1, "Escape Ramp Sign 1");
         translationBuilder.add(SignBlocks.SIGN_WARNING_EMERGENCY_LANE_2, "Escape Ramp Sign 2");
         translationBuilder.add(SignBlocks.SIGN_WARNING_ROAD_ICY, "Icy Road Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_WEATHER_RAINY_SNOWY, "Rain/Snow Warning Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_WEATHER_FOGGY, "Fog Warning Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_WEATHER_THUNDER, "Adverse Weather Warning Sign");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_VEHICLES_QUEUED_AHEAD, "Queue Ahead Warning Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_WEATHER_RAINY_SNOWY, "Slippery When Wet Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_WEATHER_FOGGY, "Fog Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_WEATHER_THUNDER, "Adverse Weather Sign");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_VEHICLES_QUEUED_AHEAD, "Queue Ahead Sign");
         translationBuilder.add(SignBlocks.ZONES_BOARD_BUS, "Bus Zone Sign");
         translationBuilder.add(SignBlocks.ZONES_BOARD_CHARGING, "Charging Zone Sign");
         translationBuilder.add(SignBlocks.ZONES_BOARD_COMPANY, "Private Zone Sign");
@@ -578,6 +586,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2, "School Bus Zone Sign 2");
         translationBuilder.add(SignBlocks.ZONES_BOARD_TAXI, "Taxi Zone Sign");
 
+        // Item Groups
         translationBuilder.add("itemGroup.yunbeiuc_municipal_group","Yunbei Urban Construction | Municipal Facilities");
         translationBuilder.add("itemGroup.yunbeiuc_rb_group","Yunbei Urban Construction | Road Blocks");
         translationBuilder.add("itemGroup.yunbeiuc_sign_group","Yunbei Urban Construction | Road Signs");

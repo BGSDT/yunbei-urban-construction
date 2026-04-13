@@ -15,45 +15,83 @@ public class ModModelsProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_FLOWER_BOX_1);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_FLOWER_BOX_2);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE);
+        // Road Poles
+        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
+        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_HORIZONTAL);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_TSHAPE);
+
+// Road Monitoring Equipment
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_DETECTION_CAMERA);
+
+// Road Safety Facilities
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.TRAFFIC_CONE);
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_COLLISION_BARREL);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.WATER_SAFETY_BARRIER_RED);
+
+// Road Markings & Barriers
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.VIBRATION_MARKING_LINE);
 
+// Gantry Frames
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.GANTRY_FRAME_LADDER);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.GANTRY_FRAME_LED_MAIN);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA);
 
+// Warning Network
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.WARNING_NETWORK);
+
+// Anti-Glare Facilities
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ANTI_GLARE_NET);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ANTI_GLARE_VERSION);
 
-
+// Traffic Barriers
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_YELLOW);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_RED);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.TRAFFIC_BARRIER_GRAY_SLANT_OBLIQUE);
 
+// Road Warning Poles
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_WARNING_POLE_RED);
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW);
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_WARNING_POLE_GREEN);
 
+// Iron Horse Barriers
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.IRON_HORSE_YELLOW);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.IRON_HORSE_RED);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.IRON_HORSE_WHITE);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.IRON_HORSE_GRAY);
 
+// Reflective Signs
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_1);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.REFLECTIVE_SIGN_YELLOW_ALL_2);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_1);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.REFLECTIVE_SIGN_RED_ALL_2);
 
+// Instrument Poles
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS);
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL);
 
+// Road Railings
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_POLE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_OBLIQUE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_1);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_2);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_POLE);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_OBLIQUE);
+
+// Road Facilities
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_FLOWER_BOX_1);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_FLOWER_BOX_2);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE);
+
+// Road Closed Barricades
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2);
+
+// Safety Islands
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_YELLOW_1);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_YELLOW_2);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_YELLOW_3);
@@ -71,26 +109,6 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
-
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_POLE);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_IRON_OBLIQUE);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_1);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_ENDING_2);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_POLE);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_RAILINGS_GREEN_OBLIQUE);
-
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.WARNING_NETWORK);
-
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2);
-
-        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
-        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_HORIZONTAL);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_TSHAPE);
 
         blockStateModelGenerator.registerCubeAllModelTexturePool(RoadBlocks.ROAD_BLOCK);
         blockStateModelGenerator.registerSimpleState(RoadBlocks.ROAD_FULL_OF_WHITE);
