@@ -43,9 +43,6 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA);
         addDrop(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP);
         addDrop(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR);
-        addDrop(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE);
-        addDrop(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION);
-        addDrop(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN);
         addDrop(MunicipalBlocks.WARNING_NETWORK);
         addDrop(MunicipalBlocks.WARNING_NETWORK_POLE);
         addDrop(MunicipalBlocks.ANTI_GLARE_NET);

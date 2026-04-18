@@ -3,17 +3,18 @@
     "category": "building",
     "key": {
         "A": {
-            "item": "minecraft:white_concrete"
+            "item": "yunbeiuc:reflective_sign_red_all_2"
         },
         "B": {
-            "item": "minecraft:yellow_concrete"
+            "item": "minecraft:white_concrete"
         }
     },
     "pattern": [
-        "AB"
+        "AAA",
+        "B B"
     ],
     "result": {
-        "item": "yunbeiuc:height_limit_barrier_main",
+        "item": "yunbeiuc:road_closed_barricade_guardrail_3",
         "count": 2
     }
 }

@@ -8,27 +8,42 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public class FlagBlock extends BlockWithEntity implements BlockEntityProvider {
+import java.util.List;
+
+public class RoadPoleFlag extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-    
-    // 简单的碰撞箱
-    private static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 
-    public FlagBlock(Settings settings) {
+    private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, 0, 5, 11, 16, 11), Block.createCuboidShape(-9.75, -5.25, 7.75, 25.75, 21.25, 8.25), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_S = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, 0, 5, 11, 16, 11), Block.createCuboidShape(-9.75, -5.25, 7.75, 25.75, 21.25, 8.25), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_E = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, 0, 5, 11, 16, 11), Block.createCuboidShape(7.75, -5.25, -9.75, 8.25, 21.25, 25.75), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_W = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, 0, 5, 11, 16, 11), Block.createCuboidShape(7.75, -5.25, -9.75, 8.25, 21.25, 25.75), BooleanBiFunction.OR);
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        tooltip.add(Text.translatable("block.yunbeiuc.road_pole_flag.tooltip"));
+        super.appendTooltip(stack, world, tooltip, options);
+    }
+
+    public RoadPoleFlag(Settings settings) {
         super(settings);
     }
 
@@ -50,18 +65,17 @@ public class FlagBlock extends BlockWithEntity implements BlockEntityProvider {
 
     @Environment(EnvType.CLIENT)
     private void openFlagScreen(BlockPos pos) {
-        // 传递blockPos参数
         MinecraftClient.getInstance().setScreen(new FlagSelectionScreen(Text.literal("选择旗帜"), pos));
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
-    }
-
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
+        return switch (state.get(FACING)) {
+            case SOUTH -> SHAPE_S;
+            case EAST -> SHAPE_E;
+            case WEST -> SHAPE_W;
+            default -> SHAPE_N;
+        };
     }
 
     @Override

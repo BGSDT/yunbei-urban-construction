@@ -19,10 +19,10 @@ import net.minecraft.world.BlockView;
 public class RoadPoleTshape extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.createCuboidShape(6, 6, 0, 10, 10, 14.5), Block.createCuboidShape(3.25, 3.25, 14.5, 12.75, 12.75, 27.5), BooleanBiFunction.OR);
-    private static final VoxelShape SHAPE_S = VoxelShapes.combineAndSimplify(Block.createCuboidShape(6, 6, 0, 10, 10, 14.5), Block.createCuboidShape(3.25, 3.25, 1.5, 12.75, 12.75, 14.5), BooleanBiFunction.OR);
-    private static final VoxelShape SHAPE_E = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 6, 6, 14.5, 10, 10), Block.createCuboidShape(1.5, 3.25, 3.25, 14.5, 12.75, 12.75), BooleanBiFunction.OR);
-    private static final VoxelShape SHAPE_W = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 6, 6, 14.5, 10, 10), Block.createCuboidShape(1.5, 3.25, 3.25, 14.5, 12.75, 12.75), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(6, 6, 0, 10, 10, 27.25);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(6, 6, 27.75, 10, 10, 32);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(27.75, 6, 6, 32, 10, 10);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(0, 6, 6, 27.25, 10, 10);
 
     public RoadPoleTshape(Settings settings) {
         super(settings);

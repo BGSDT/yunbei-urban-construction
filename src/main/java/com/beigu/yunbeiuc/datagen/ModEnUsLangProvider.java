@@ -24,6 +24,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 
         // Road Pole Attachments
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "Road Pole Text Display");
+        translationBuilder.add("block.yunbeiuc.road_pole_flag.tooltip","Hold Wand and Right-click to toggle flag state");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "Road Pole Flag");
         translationBuilder.add("text.yunbeiuc.flag_selection.title", "Flag Selection");
         translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "Current Selection: %s");
@@ -68,11 +69,6 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP,"Gantry Road Illuminator");
         translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"Gantry Radar Speed Detector");
 
-        // Height Barriers
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "Height Barrier (Side Frame)");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "Height Barrier (Connector)");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "Height Barrier (Main Frame)");
-
         // Warning Nets
         translationBuilder.add(MunicipalBlocks.WARNING_NETWORK,"Warning Net");
         translationBuilder.add(MunicipalBlocks.WARNING_NETWORK_POLE,"Warning Net (Pole)");
@@ -84,6 +80,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 
         // Traffic Barriers
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER, "Traffic Barrier");
+        translationBuilder.add("block.yunbeiuc.traffic_barrier.tooltip","Can be stacked upward to increase height");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE, "Traffic Barrier (Dual, Yellow)");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW, "Traffic Barrier (Yellow)");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED, "Traffic Barrier (Red)");
@@ -129,8 +126,11 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "Instrument Pole (Base)");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "Instrument Pole (Vertical)");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_CAMERA, "Instrument Camera");
+        translationBuilder.add("block.yunbeiuc.instrument_camera.tooltip","Right-click with Wand to toggle camera state");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY, "Vehicle Info Display");
+        translationBuilder.add("block.yunbeiuc.instrument_fee_display.tooltip","Right-click with Wand to toggle display state");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR, "Lane Indicator");
+        translationBuilder.add("block.yunbeiuc.instrument_lane_indicator.tooltip","Right-click with Wand to toggle lane indicator state");
 
         // Highway Guardrails
         translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON, "Iron Highway Guardrail");
@@ -173,8 +173,10 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 
         // Barrier Gates
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN,"Barrier Gate Type 1");
+        translationBuilder.add("block.yunbeiuc.barrier_gate_1_main.tooltip","Right-click with Wand to toggle barrier gate state");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"Barrier Gate Type 1 (Step)");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"Barrier Gate Arm Type 1 (Horizontal)");
+        translationBuilder.add("block.yunbeiuc.barrier_gate_1_pole_horizontal.tooltip","Right-click with Wand to toggle barrier gate arm height");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"Barrier Gate Arm Type 1 (Vertical)");
 
         // Items

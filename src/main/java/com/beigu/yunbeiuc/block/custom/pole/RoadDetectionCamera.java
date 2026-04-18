@@ -19,29 +19,10 @@ import net.minecraft.world.BlockView;
 import java.util.stream.Stream;
 
 public class RoadDetectionCamera extends Block {
-    private static final VoxelShape SHAPE_N = Stream.of(
-            Block.createCuboidShape(5.5, 5.5, 0, 10.5, 10, 16),
-            Block.createCuboidShape(4.5, 10, 0, 11.5, 10.5, 16),
-            Block.createCuboidShape(3.75, 10.5, 5.3, 14.7, 17.85, 10.7)
-    ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
-
-    private static final VoxelShape SHAPE_E = Stream.of(
-            Block.createCuboidShape(0, 5.5, 5.5, 16, 10, 10.5),
-            Block.createCuboidShape(0, 10, 4.5, 16, 10.5, 11.5),
-            Block.createCuboidShape(5.3, 10.5, 3.75, 10.7, 17.85, 14.7)
-    ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
-
-    private static final VoxelShape SHAPE_S = Stream.of(
-            Block.createCuboidShape(5.5, 5.5, 0, 10.5, 10, 16),
-            Block.createCuboidShape(4.5, 10, 0, 11.5, 10.5, 16),
-            Block.createCuboidShape(3.75, 10.5, 5.3, 14.7, 17.85, 10.7)
-    ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
-
-    private static final VoxelShape SHAPE_W = Stream.of(
-            Block.createCuboidShape(0, 5.5, 5.5, 16, 10, 10.5),
-            Block.createCuboidShape(0, 10, 4.5, 16, 10.5, 11.5),
-            Block.createCuboidShape(5.3, 10.5, 3.75, 10.7, 17.85, 14.7)
-    ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
+    private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5.5, 5.5, 0, 10.5, 10, 16), Block.createCuboidShape(1.75, 10, 5, 14.25, 18, 11), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_S = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5.5, 5.5, 0, 10.5, 10, 16), Block.createCuboidShape(1.75, 10, 5, 14.25, 18, 11), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_E = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 5.5, 5.5, 16, 10.5, 10.5), Block.createCuboidShape(5, 10, 1.75, 11, 18, 14.25), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_W = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 5.5, 5.5, 16, 10.5, 10.5), Block.createCuboidShape(5, 10, 1.75, 11, 18, 14.25), BooleanBiFunction.OR);
 
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public RoadDetectionCamera(Settings settings) {

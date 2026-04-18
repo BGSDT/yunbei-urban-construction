@@ -240,7 +240,6 @@ public class TrafficLightGroup {
     public void updateAllLightsImmediately(World world) {
         if (world == null) return;
         updateAllLights(world);
-        System.out.println("Group " + groupId.toString().substring(0, 8) + " initial state set to: " + currentPhase);
     }
 
     public void addLight(BlockPos pos, Direction direction, boolean isLeft) {

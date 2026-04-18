@@ -31,10 +31,10 @@ public class TrafficLightsPavement extends Block {
         super.appendTooltip(stack, world, tooltip, options);
     }
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(4, 0, 4, 12, 16, 16);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4, 0, 0, 12, 16, 12);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(0, 0, 4, 12, 16, 12);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(4, 0, 4, 16, 16, 12);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(4.25, -0.5, 10.25, 11.75, 16.5, 21);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.25, -0.5, 4.25, 11.75, 16.5, 21);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(10.25, -0.5, 4.25, 21, 16.5, 11.75);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(4.25, -0.5, 4.25, 21, 16.5, 11.75);
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightPavementState> LIGHT_PAVEMENT_STATE = EnumProperty.of("light_pavement_state", LightPavementState.class);
 

@@ -32,16 +32,15 @@ public class SafetyIslandObliqueBlock extends Block {
             Block.createCuboidShape(0, 0, 0, 4.5, 8, 4.5)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
     private static final VoxelShape SHAPE_E = Stream.of(
-            Block.createCuboidShape(4.5, 0, 0, 16, 20, 4.5),
             Block.createCuboidShape(0, 0, 4.5, 4.5, 20, 16),
-            Block.createCuboidShape(0, 0, 4.5, 4.5, 8, 16)
+            Block.createCuboidShape(4.5, 0, 0, 16, 20, 4.5),
+            Block.createCuboidShape(11.5, 0, 0, 16, 8, 4.5)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
     private static final VoxelShape SHAPE_W = Stream.of(
-            Block.createCuboidShape(0, 0, 11.5, 11.5, 20, 16),
-            Block.createCuboidShape(11.5, 0, 0, 16, 20, 11.5),
-            Block.createCuboidShape(11.5, 0, 0, 16, 8, 11.5)
+            Block.createCuboidShape(0, 0, 4.5, 4.5, 20, 16),
+            Block.createCuboidShape(4.5, 0, 0, 16, 20, 4.5),
+            Block.createCuboidShape(0, 0, 0, 4.5, 8, 4.5)
     ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
-
     public SafetyIslandObliqueBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH));

@@ -25,6 +25,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 // 道路杆件附属类
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "路杆文字显示屏");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "路杆旗帜");
+        translationBuilder.add("block.yunbeiuc.road_pole_flag.tooltip","手持魔杖右键点击以切换旗帜状态");
         translationBuilder.add("text.yunbeiuc.flag_selection.title", "旗帜选择");
         translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "当前选择：%s");
         translationBuilder.add("text.yunbeiuc.flag_selection.preview_panel", "旗帜预览");
@@ -68,11 +69,6 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP,"龙门架道路补光灯");
         translationBuilder.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR,"龙门架雷达测速器");
 
-// 限高杆类
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE, "限高杆（侧架）");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION, "限高杆（连接）");
-        translationBuilder.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN, "限高杆（主架）");
-
 // 警示网类
         translationBuilder.add(MunicipalBlocks.WARNING_NETWORK,"警示网");
         translationBuilder.add(MunicipalBlocks.WARNING_NETWORK_POLE,"警示网（立柱）");
@@ -84,6 +80,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 
 // 隔离墩类
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER, "隔离墩");
+        translationBuilder.add("block.yunbeiuc.traffic_barrier.tooltip","可向上堆叠增高隔离墩");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW_DOUBLE, "隔离墩（双格、黄色）");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_YELLOW, "隔离墩（黄色）");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_BARRIER_RED, "隔离墩（红色）");
@@ -129,8 +126,11 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "仪器杆（底座）");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "仪器杆（纵向）");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_CAMERA, "仪器摄像头");
+        translationBuilder.add("block.yunbeiuc.instrument_camera.tooltip","手持魔杖右键点击以切换摄像头状态");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY, "车辆信息显示屏");
+        translationBuilder.add("block.yunbeiuc.instrument_fee_display.tooltip","手持魔杖右键点击以切换显示屏状态");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR, "车道指示器");
+        translationBuilder.add("block.yunbeiuc.instrument_lane_indicator.tooltip","手持魔杖右键点击以切换车道指示器状态");
 
 // 高速公路护栏类
         translationBuilder.add(MunicipalBlocks.ROAD_RAILINGS_IRON, "铁质高速公路护栏");
@@ -173,8 +173,10 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 
 // 道闸类
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN,"道闸1型");
+        translationBuilder.add("block.yunbeiuc.barrier_gate_1_main.tooltip","手持魔杖右键点击以切换道闸杆方向");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"道闸1台阶型");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"道闸杆1型（横向）");
+        translationBuilder.add("block.yunbeiuc.barrier_gate_1_pole_horizontal.tooltip","手持魔杖右键点击以切换道闸杆高度");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"道闸杆1型（纵向）");
 
 // 物品类

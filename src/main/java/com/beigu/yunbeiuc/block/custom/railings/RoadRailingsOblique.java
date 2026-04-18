@@ -17,10 +17,7 @@ import net.minecraft.world.BlockView;
 public class RoadRailingsOblique extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(2.0983495705504476, 0, 9.098349570550447, 18.098349570550447, 20, 15.598349570550447);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(-2.0983495705504476, 0, 0.401650429449553, 13.901650429449553, 20, 6.901650429449553);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(9.098349570550447, 0, -2.0983495705504476, 15.598349570550447, 20, 13.901650429449553);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(0.401650429449553, 0, 2.0983495705504476, 6.901650429449553, 20, 15.598349570550447);
+    private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 20, 16);
 
     public RoadRailingsOblique(Settings settings) {
         super(settings);
@@ -29,12 +26,7 @@ public class RoadRailingsOblique extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return switch (state.get(FACING)) {
-            case SOUTH -> SHAPE_S;
-            case EAST -> SHAPE_E;
-            case WEST -> SHAPE_W;
-            default -> SHAPE_N;
-        };
+        return SHAPE;
     }
 
     @Override

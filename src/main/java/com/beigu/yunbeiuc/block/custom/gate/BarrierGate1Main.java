@@ -4,12 +4,15 @@ import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -22,6 +25,9 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class BarrierGate1Main extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
@@ -32,6 +38,12 @@ public class BarrierGate1Main extends Block {
         this.setDefaultState(this.getDefaultState()
                 .with(FACING, Direction.NORTH)
                 .with(POLE_TYPE, PoleType.LONGITUDINAL));
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        tooltip.add(Text.translatable("block.yunbeiuc.barrier_gate_1_main.tooltip"));
+        super.appendTooltip(stack, world, tooltip, options);
     }
 
     private static final VoxelShape SHAPE = Block.createCuboidShape(4, 0, 4, 12, 22, 12);

@@ -50,9 +50,6 @@ public class ModItemGroups {
                         entries.add(MunicipalBlocks.GANTRY_FRAME_DETECTION_CAMERA);
                         entries.add(MunicipalBlocks.GANTRY_FRAME_LIGHTING_LAMP);
                         entries.add(MunicipalBlocks.GANTRY_FRAME_RADAR_SPEED_DETECTOR);
-                        entries.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_SIDE);
-                        entries.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_CONNECTION);
-                        entries.add(MunicipalBlocks.HEIGHT_LIMIT_BARRIER_MAIN);
                         entries.add(MunicipalBlocks.WARNING_NETWORK);
                         entries.add(MunicipalBlocks.WARNING_NETWORK_POLE);
                         entries.add(MunicipalBlocks.ANTI_GLARE_NET);

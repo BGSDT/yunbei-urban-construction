@@ -16,9 +16,6 @@ import com.beigu.yunbeiuc.block.custom.gate.BarrierGate1PoleLongitudinal;
 import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail2;
 import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail3;
 import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail4;
-import com.beigu.yunbeiuc.block.custom.height.HeightLimitBarrierConnection;
-import com.beigu.yunbeiuc.block.custom.height.HeightLimitBarrierMain;
-import com.beigu.yunbeiuc.block.custom.height.HeightLimitBarrierSide;
 import com.beigu.yunbeiuc.block.custom.instrument.*;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandBlock;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandEdgeBlock;
@@ -50,7 +47,7 @@ public class MunicipalBlocks {
     public static final Block ROAD_POLE_TSHAPE = register("road_pole_tshape",new RoadPoleTshape(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_LIGHT = register("road_light",new RoadLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_TEXT_DISPLAY = register("road_pole_text_display", new RoadPoleTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block ROAD_POLE_FLAG = register("road_pole_flag", new FlagBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_FLAG = register("road_pole_flag", new RoadPoleFlag(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static final Block ROAD_DETECTION_CAMERA = register("road_detection_camera",new RoadDetectionCamera(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
     public static final Block ROAD_LIGHTING_LAMP = register("road_lighting_lamp",new RoadLightingLamp(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
@@ -81,10 +78,6 @@ public class MunicipalBlocks {
     public static final Block GANTRY_FRAME_LIGHTING_LAMP = register("gantry_frame_lighting_lamp", new GantryFrameLightingLamp(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block GANTRY_FRAME_RADAR_SPEED_DETECTOR = register("gantry_frame_radar_speed_detector", new GantryFrameRadarSpeedDetector(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
-    public static final Block HEIGHT_LIMIT_BARRIER_SIDE = register("height_limit_barrier_side", new HeightLimitBarrierSide(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block HEIGHT_LIMIT_BARRIER_CONNECTION = register("height_limit_barrier_connection", new HeightLimitBarrierConnection(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block HEIGHT_LIMIT_BARRIER_MAIN = register("height_limit_barrier_main", new HeightLimitBarrierMain(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-
     public static final Block WARNING_NETWORK = register("warning_network", new WarningNetwork(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block WARNING_NETWORK_POLE = register("warning_network_pole", new WarningNetworkPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
@@ -93,8 +86,8 @@ public class MunicipalBlocks {
     public static final Block ANTI_GLARE_VERSION = register("anti_glare_version", new AntiGlareVersion(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
     public static final Block TRAFFIC_BARRIER = register("traffic_barrier", new TrafficBarrierBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block TRAFFIC_BARRIER_YELLOW_DOUBLE = register("traffic_barrier_yellow_double", new TrafficBarrierBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block TRAFFIC_BARRIER_YELLOW = register("traffic_barrier_yellow", new TrafficBarrierDoubleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_YELLOW_DOUBLE = register("traffic_barrier_yellow_double", new TrafficBarrierDoubleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block TRAFFIC_BARRIER_YELLOW = register("traffic_barrier_yellow", new TrafficBarrierBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_RED = register("traffic_barrier_red", new TrafficBarrierBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_RED_DOUBLE = register("traffic_barrier_red_double", new TrafficBarrierDoubleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block TRAFFIC_BARRIER_OBLIQUE = register("traffic_barrier_oblique", new TrafficBarrierObliqueBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));

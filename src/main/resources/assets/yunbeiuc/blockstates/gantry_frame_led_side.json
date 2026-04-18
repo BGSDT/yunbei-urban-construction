@@ -1,19 +1,19 @@
 {
   "variants": {
     "facing=north,type=single": {
-      "model": "yunbeiuc:block/gantry_frame_led_side",
+      "model": "yunbeiuc:block/gantry_frame_led_connection",
       "y": 0
     },
     "facing=east,type=single": {
-      "model": "yunbeiuc:block/gantry_frame_led_side",
+      "model": "yunbeiuc:block/gantry_frame_led_connection",
       "y": 90
     },
     "facing=south,type=single": {
-      "model": "yunbeiuc:block/gantry_frame_led_side",
+      "model": "yunbeiuc:block/gantry_frame_led_connection",
       "y": 180
     },
     "facing=west,type=single": {
-      "model": "yunbeiuc:block/gantry_frame_led_side",
+      "model": "yunbeiuc:block/gantry_frame_led_connection",
       "y": 270
     },
     "facing=north,type=up": {

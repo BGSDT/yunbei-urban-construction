@@ -30,8 +30,8 @@ public class TrafficLightsBlock extends Block {
     }
 
     private static final VoxelShape SHAPE_N = Block.createCuboidShape(4.25, -1.5, 12.25, 11.75, 17.5, 22);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.25, -1.5, -9.75, 11.75, 17.5, 0);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(-9.75, -1.5, 4.25, 0, 17.5, 11.75);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.25, -1.5, 0.25, 11.75, 17.5, 8.75);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(0.25, -1.5, 4.25, 8.75, 17.5, 11.75);
     private static final VoxelShape SHAPE_W = Block.createCuboidShape(12.25, -1.5, 4.25, 22, 17.5, 11.75);
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.of("light_state", LightState.class);

@@ -67,6 +67,10 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(RoadBlocks.HOV_5_GROUND_MARK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(RoadBlocks.MANHOLE_COVER, RenderLayer.getCutout());
 
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.ROAD_FLOWER_BOX_1, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.ROAD_FLOWER_BOX_2, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE, RenderLayer.getCutout());
+
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.ANTI_GLARE_NET, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.ANTI_GLARE_NET_POLE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.WARNING_NETWORK, RenderLayer.getCutout());

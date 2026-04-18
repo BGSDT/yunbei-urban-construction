@@ -3,11 +3,14 @@ package com.beigu.yunbeiuc.block.custom.barrier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
@@ -16,15 +19,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class TrafficBarrierGrayObliqueBlock extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(1, 0, 0, 16, 16, 15);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(0, 0, 1, 15, 16, 16);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(1, 0, 0, 16, 16, 15);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(0, 0, 1, 15, 16, 16);
+    private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 16);
 
     public TrafficBarrierGrayObliqueBlock(Settings settings) {
         super(settings);
@@ -33,12 +36,13 @@ public class TrafficBarrierGrayObliqueBlock extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return switch (state.get(FACING)) {
-            case SOUTH -> SHAPE_S;
-            case EAST -> SHAPE_E;
-            case WEST -> SHAPE_W;
-            default -> SHAPE_N;
-        };
+        return SHAPE;
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        tooltip.add(Text.translatable("block.yunbeiuc.traffic_barrier.tooltip"));
+        super.appendTooltip(stack, world, tooltip, options);
     }
 
     @Override
@@ -58,7 +62,7 @@ public class TrafficBarrierGrayObliqueBlock extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(TYPE, Type.SINGLE);
     }
 
     @Override

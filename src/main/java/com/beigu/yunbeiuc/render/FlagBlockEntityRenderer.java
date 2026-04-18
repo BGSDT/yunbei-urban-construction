@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.render;
 
-import com.beigu.yunbeiuc.block.custom.pole.FlagBlock;
+import com.beigu.yunbeiuc.block.custom.pole.RoadPoleFlag;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -31,7 +31,7 @@ public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEnt
             // 纹理路径
             Identifier texture = new Identifier("yunbeiuc", "textures/block/flags/" + flagId + ".png");
 
-            Direction facing = entity.getCachedState().get(FlagBlock.FACING);
+            Direction facing = entity.getCachedState().get(RoadPoleFlag.FACING);
 
             if(facing == Direction.WEST || facing == Direction.EAST){
                 matrices.translate(0.5, 0.5, -0.3);
