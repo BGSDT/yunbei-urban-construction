@@ -8,15 +8,15 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public class ChatCommandHandler {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 CommandManager.literal("yunbeiuc")
-                        // 模式选择
                         .then(CommandManager.literal("lights")
-                                .then(CommandManager.argument("mode", IntegerArgumentType.integer(1, 1))
+                                .then(CommandManager.argument("mode", IntegerArgumentType.integer(1, 2))
                                         .executes(context -> {
                                             ServerCommandSource source = context.getSource();
                                             ServerPlayerEntity player = source.getPlayer();
@@ -29,9 +29,14 @@ public class ChatCommandHandler {
                                             int mode = IntegerArgumentType.getInteger(context, "mode");
 
                                             if (mode == 1) {
-                                                LinkWand.setModeSelected(player);
-                                                player.sendMessage(Text.literal("✓ 已选择模式 " + mode + "，现在可以使用链接法杖点击红绿灯了！"), false);
+                                                LinkWand.setPlayerMode(player, 1);
+                                                player.sendMessage(Text.literal("✓ 已选择十字路口模式，现在可以使用链接法杖点击红绿灯了！"), false);
                                                 player.sendMessage(Text.literal("需要选择8个红绿灯：每个方向各一个左转和一个直行"), false);
+                                                return 1;
+                                            } else if (mode == 2) {
+                                                LinkWand.setPlayerMode(player, 2);
+                                                player.sendMessage(Text.literal("✓ 已选择T字路口模式，现在可以使用链接法杖点击红绿灯了！"), false);
+                                                player.sendMessage(Text.literal("需要选择3个红绿灯：三个不同方向各一个直行红绿灯（北东南/北东西/北西南/东西南）"), false);
                                                 return 1;
                                             }
 
@@ -39,7 +44,6 @@ public class ChatCommandHandler {
                                         })
                                 )
                         )
-                        // 回答命令：/yunbeiuc answer <confirm/reset/cancel>
                         .then(CommandManager.literal("answer")
                                 .then(CommandManager.argument("action", StringArgumentType.word())
                                         .suggests((context, builder) -> {
@@ -59,7 +63,6 @@ public class ChatCommandHandler {
 
                                             String action = StringArgumentType.getString(context, "action");
 
-                                            // 验证action是否有效
                                             if (!action.equalsIgnoreCase("confirm") &&
                                                     !action.equalsIgnoreCase("reset") &&
                                                     !action.equalsIgnoreCase("cancel")) {
