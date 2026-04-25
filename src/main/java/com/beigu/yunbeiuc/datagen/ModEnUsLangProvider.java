@@ -16,10 +16,20 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
     public void generateTranslations(TranslationBuilder translationBuilder) {
         // Road Poles
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS, "Road Pole (Base)");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB, "Road Pole (Base) (Slab)");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL, "Road Pole (Vertical)");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL, "Road Pole (Horizontal)");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TSHAPE, "Road Pole (Connector)");
-        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT, "Road Light");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS, "Street Light Pole (Base)");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB, "Street Light Pole (Base) (Slab)");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL, "Street Light Pole (Vertical)");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_1, "Street Lamp Connector Type 1");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_2, "Street Lamp Connector Type 2");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_3, "Street Lamp Connector Type 3");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT_HIGH_MAST, "High Mast Light");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT_1, "Street Lamp Type 1");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT_2, "Street Lamp Type 2");
+        translationBuilder.add(MunicipalBlocks.ROAD_SOLAR_PANEL, "Street Lamp Solar Panel");
         translationBuilder.add("block.yunbeiuc.road_light.tooltip","Right-click with Wand to toggle light state");
 
         // Road Pole Attachments

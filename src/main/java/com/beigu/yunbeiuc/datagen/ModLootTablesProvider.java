@@ -14,12 +14,22 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         addDrop(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
+        addDrop(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB);
         addDrop(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
         addDrop(MunicipalBlocks.ROAD_POLE_HORIZONTAL);
         addDrop(MunicipalBlocks.ROAD_POLE_TSHAPE);
-        addDrop(MunicipalBlocks.ROAD_LIGHT);
         addDrop(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY);
         addDrop(MunicipalBlocks.ROAD_POLE_FLAG);
+        addDrop(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS);
+        addDrop(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB);
+        addDrop(MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL);
+        addDrop(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_1);
+        addDrop(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_2);
+        addDrop(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_3);
+        addDrop(MunicipalBlocks.ROAD_LIGHT_HIGH_MAST);
+        addDrop(MunicipalBlocks.ROAD_LIGHT_1);
+        addDrop(MunicipalBlocks.ROAD_LIGHT_2);
+        addDrop(MunicipalBlocks.ROAD_SOLAR_PANEL);
         addDrop(MunicipalBlocks.ROAD_DETECTION_CAMERA);
         addDrop(MunicipalBlocks.ROAD_LIGHTING_LAMP);
         addDrop(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR);

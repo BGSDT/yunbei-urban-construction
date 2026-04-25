@@ -11,6 +11,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -29,13 +30,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class RoadLight extends Block {
+    public static final BooleanProperty LIT = Properties.LIT;
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<TFType> TF_TYPE = EnumProperty.of("tf_type", TFType.class);
 
-    private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.createCuboidShape(6.5, 6.5, 13.2, 9.5, 9.5, 16), Block.createCuboidShape(4.9, 6.5, 0, 11.1, 9.8, 13.2), BooleanBiFunction.OR);
-    private static final VoxelShape SHAPE_S = VoxelShapes.combineAndSimplify(Block.createCuboidShape(6.5, 6.5, 0, 9.5, 9.5, 2.8), Block.createCuboidShape(4.9, 6.5, 2.8, 11.1, 9.8, 16), BooleanBiFunction.OR);
-    private static final VoxelShape SHAPE_E = VoxelShapes.combineAndSimplify(Block.createCuboidShape(0, 6.5, 6.5, 2.8, 9.5, 9.5), Block.createCuboidShape(2.8, 6.5, 4.9, 16, 9.8, 11.1), BooleanBiFunction.OR);
-    private static final VoxelShape SHAPE_W = VoxelShapes.combineAndSimplify(Block.createCuboidShape(13.2, 6.5, 6.5, 16, 9.5, 9.5), Block.createCuboidShape(0, 6.5, 4.9, 13.2, 9.8, 11.1), BooleanBiFunction.OR);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(4.5, 2.5, 1.5, 11.5, 8.5, 13.5);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(1.5, 2.5, 4.5, 13.5, 8.5, 11.5);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.5, 2.5, 1.5, 11.5, 8.5, 13.5);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(1.5, 2.5, 4.5, 13.5, 8.5, 11.5);
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
@@ -44,9 +46,10 @@ public class RoadLight extends Block {
     }
 
     public RoadLight(Settings settings) {
-        super(settings);
+        super(settings.luminance(state -> state.get(LIT) ? 15 : 0));
         this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH)
-                .with(TF_TYPE, TFType.OFF));
+                .with(LIT, true)
+                .with(TF_TYPE, TFType.ON));
     }
 
     @Override
@@ -61,7 +64,7 @@ public class RoadLight extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, TF_TYPE);
+        builder.add(LIT, FACING, TF_TYPE);
     }
 
     @Override
@@ -81,13 +84,13 @@ public class RoadLight extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        Item item = player.getStackInHand(hand).getItem();
-        if (item == ModItems.WAND) {
-            if (!world.isClient) {
-                TFType current = state.get(TF_TYPE);
-                TFType next = current.next();
-                world.setBlockState(pos, state.with(TF_TYPE, next));
-                return ActionResult.SUCCESS;
+        ItemStack heldItem = player.getStackInHand(hand);
+        // 直接使用 ModItems.WAND 判断是否为魔杖
+        if (!world.isClient()) {
+            if (heldItem.isOf(ModItems.WAND)) {
+                boolean newLitState = !state.get(LIT);
+                TFType newLightState = state.get(TF_TYPE).next();
+                world.setBlockState(pos, state.with(LIT, newLitState).with(TF_TYPE, newLightState));
             }
         }
         return ActionResult.PASS;

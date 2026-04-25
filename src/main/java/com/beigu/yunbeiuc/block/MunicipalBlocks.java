@@ -42,12 +42,22 @@ import net.minecraft.util.Identifier;
 
 public class MunicipalBlocks {
     public static final Block ROAD_POLE_FOUNDATIONS = register("road_pole_foundations", new RoadPoleFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_FOUNDATIONS_SLAB = register("road_pole_foundations_slab", new RoadPoleFoundationsSlab(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_LONGITUDINAL = register("road_pole_longitudinal", new RoadPoleLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_HORIZONTAL = register("road_pole_horizontal",new RoadPoleHorizontal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_TSHAPE = register("road_pole_tshape",new RoadPoleHorizontal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block ROAD_LIGHT = register("road_light",new RoadLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_TEXT_DISPLAY = register("road_pole_text_display", new RoadPoleTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_POLE_FLAG = register("road_pole_flag", new RoadPoleFlag(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_LIGHT_FOUNDATIONS = register("road_pole_light_foundations", new RoadPoleLightFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_LIGHT_FOUNDATIONS_SLAB = register("road_pole_light_foundations_slab", new RoadPoleLightFoundationsSlab(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block ROAD_POLE_LIGHT_LONGITUDINAL = register("road_pole_light_longitudinal", new RoadPoleLightLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_LIGHT_BRANCH_1 = register("road_pole_light_branch_1", new RoadPoleLightBranch(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_LIGHT_BRANCH_2 = register("road_pole_light_branch_2", new RoadPoleLightBranch(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_POLE_LIGHT_BRANCH_3 = register("road_pole_light_branch_3", new RoadPoleLightBranch(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_LIGHT_HIGH_MAST = register("road_light_high_mast", new RoadLightHighMast(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_LIGHT_1 = register("road_light_1", new RoadLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_LIGHT_2 = register("road_light_2", new RoadLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final Block ROAD_SOLAR_PANEL = register("road_solar_panel", new RoadSolarPanel(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
 
     public static final Block ROAD_DETECTION_CAMERA = register("road_detection_camera",new RoadDetectionCamera(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
     public static final Block ROAD_LIGHTING_LAMP = register("road_lighting_lamp",new RoadLightingLamp(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));

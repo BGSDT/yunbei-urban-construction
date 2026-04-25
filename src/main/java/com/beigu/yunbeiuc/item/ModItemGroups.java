@@ -21,12 +21,22 @@ public class ModItemGroups {
                     .icon(() -> new ItemStack(MunicipalBlocks.ROAD_FLOWER_BOX_2))
                     .entries((displayContext, entries) -> {
                         entries.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
+                        entries.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB);
                         entries.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
                         entries.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL);
                         entries.add(MunicipalBlocks.ROAD_POLE_TSHAPE);
-                        entries.add(MunicipalBlocks.ROAD_LIGHT);
                         entries.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY);
                         entries.add(MunicipalBlocks.ROAD_POLE_FLAG);
+                        entries.add(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS);
+                        entries.add(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB);
+                        entries.add(MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL);
+                        entries.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_1);
+                        entries.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_2);
+                        entries.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_3);
+                        entries.add(MunicipalBlocks.ROAD_LIGHT_HIGH_MAST);
+                        entries.add(MunicipalBlocks.ROAD_LIGHT_1);
+                        entries.add(MunicipalBlocks.ROAD_LIGHT_2);
+                        entries.add(MunicipalBlocks.ROAD_SOLAR_PANEL);
                         entries.add(MunicipalBlocks.ROAD_DETECTION_CAMERA);
                         entries.add(MunicipalBlocks.ROAD_LIGHTING_LAMP);
                         entries.add(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR);

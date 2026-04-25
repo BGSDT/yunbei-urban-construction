@@ -16,10 +16,20 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
     public void generateTranslations(TranslationBuilder translationBuilder) {
         // 道路杆件类
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS, "路杆（底座）");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB, "路杆（底座）（阶型）");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_LONGITUDINAL, "路杆（纵向）");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_HORIZONTAL, "路杆（横向）");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TSHAPE, "路杆（连接）");
-        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT, "道路照明灯");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS, "路灯杆（底座）");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB, "路灯杆（底座）（阶型）");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL, "路灯杆（纵向）");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_1, "路灯连接件1型");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_2, "路灯连接件2型");
+        translationBuilder.add(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_3, "路灯连接件3型");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT_HIGH_MAST, "高杆灯");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT_1, "路灯1型");
+        translationBuilder.add(MunicipalBlocks.ROAD_LIGHT_2, "路灯2型");
+        translationBuilder.add(MunicipalBlocks.ROAD_SOLAR_PANEL, "路灯太阳能板");
         translationBuilder.add("block.yunbeiuc.road_light.tooltip","手持魔杖右键点击以切换灯光状态");
 
 // 道路杆件附属类
@@ -174,7 +184,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 // 道闸类
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN,"道闸1型");
         translationBuilder.add("block.yunbeiuc.barrier_gate_1_main.tooltip","手持魔杖右键点击以切换道闸杆方向");
-        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"道闸1台阶型");
+        translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_MAIN_SLAB,"道闸1台（阶型）");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL,"道闸杆1型（横向）");
         translationBuilder.add("block.yunbeiuc.barrier_gate_1_pole_horizontal.tooltip","手持魔杖右键点击以切换道闸杆高度");
         translationBuilder.add(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL,"道闸杆1型（纵向）");

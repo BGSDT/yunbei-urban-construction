@@ -17,10 +17,17 @@ public class ModModelsProvider extends FabricModelProvider {
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
         // Road Poles
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
+        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB);
         blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_HORIZONTAL);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_TSHAPE);
-
+        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS);
+        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB);
+        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_1);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_2);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_3);
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_SOLAR_PANEL);
 // Road Monitoring Equipment
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_DETECTION_CAMERA);
 
