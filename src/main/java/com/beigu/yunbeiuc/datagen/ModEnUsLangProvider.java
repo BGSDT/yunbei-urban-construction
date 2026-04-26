@@ -34,7 +34,24 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 
         // Road Pole Attachments
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "Road Pole Text Display");
-        translationBuilder.add("block.yunbeiuc.road_pole_flag.tooltip","Hold Wand and Right-click to toggle flag state");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.title", "Road Pole Text Display Text Display Settings");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.content", "Display Content");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.placeholder", "Enter Display Text...");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color", "Color Value");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color_placeholder", "Hex Color");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.preview", "Preview");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.common_colors", "Common Colors");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.black", "Black");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.red", "Red");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.green", "Green");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.blue", "Blue");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.yellow", "Yellow");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.purple", "Purple");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.cyan", "Cyan");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.white", "White");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.save", "Save");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.cancel", "Cancel");
+        translationBuilder.add("block.yunbeiuc.road_pole_flag.tooltip","Right-click with the wand to switch the flag state, and automatically judge the lower road pole to change to the appropriate basic road pole (road pole, street lamp pole)");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "Road Pole Flag");
         translationBuilder.add("text.yunbeiuc.flag_selection.title", "Flag Selection");
         translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "Current Selection: %s");
@@ -53,7 +70,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, "Straight Traffic Light");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, "Left-Turn Traffic Light");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, "Crosswalk Traffic Light");
-        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","Use Link Wand to connect 4 left & 4 straight lights for automatic sequence");
+        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","Use Link Wand to connect traffic lights for automatic sequence");
         translationBuilder.add("block.yunbeiuc.traffic_lights_pavement.tooltip","Right-click with Wand to toggle traffic light state");
 
         // Road Safety Facilities

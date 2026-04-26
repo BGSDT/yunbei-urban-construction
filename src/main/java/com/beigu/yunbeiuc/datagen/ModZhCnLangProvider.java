@@ -34,8 +34,25 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 
 // 道路杆件附属类
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "路杆文字显示屏");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.title", "路杆文字显示屏文本显示设置");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.content", "显示内容");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.placeholder", "请输入显示文本...");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color", "颜色值");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color_placeholder", "十六进制颜色");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.preview", "预览");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.common_colors", "常用颜色");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.black", "黑");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.red", "红");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.green", "绿");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.blue", "蓝");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.yellow", "黄");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.purple", "紫");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.cyan", "青");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.color.white", "白");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.save", "保存");
+        translationBuilder.add("text.yunbeiuc.road_pole_text_display.cancel", "取消");
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_FLAG, "路杆旗帜");
-        translationBuilder.add("block.yunbeiuc.road_pole_flag.tooltip","手持魔杖右键点击以切换旗帜状态");
+        translationBuilder.add("block.yunbeiuc.road_pole_flag.tooltip","手持魔杖右键点击以切换旗帜状态，自动判断下方路杆变换合适基础路杆（路杆、路灯杆）");
         translationBuilder.add("text.yunbeiuc.flag_selection.title", "旗帜选择");
         translationBuilder.add("text.yunbeiuc.flag_selection.current_selection", "当前选择：%s");
         translationBuilder.add("text.yunbeiuc.flag_selection.preview_panel", "旗帜预览");
@@ -53,7 +70,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, "直行交通信号灯");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, "左转交通信号灯");
         translationBuilder.add(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, "人行道交通信号灯");
-        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","使用链接魔杖将4左4直交通信号灯链接，即可自动变换");
+        translationBuilder.add("block.yunbeiuc.traffic_lights.tooltip","使用链接魔杖将交通信号灯链接，即可自动变换");
         translationBuilder.add("block.yunbeiuc.traffic_lights_pavement.tooltip","手持魔杖右键点击以切换交通信号灯的状态");
 
 // 道路安全设施类

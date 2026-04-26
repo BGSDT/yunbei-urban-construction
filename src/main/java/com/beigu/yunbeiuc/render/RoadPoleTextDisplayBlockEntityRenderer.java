@@ -25,7 +25,7 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
         matrices.push();
 
         // 1. 调整位置到方块中心（先平移）
-        matrices.translate(0.5, 0.25, 0.5);
+        matrices.translate(0.5, 0.05, 0.5);
 
         // 2. 根据方块朝向旋转（旋转顺序很重要）
         float originalRotation = entity.getCachedState().get(RoadPoleTextDisplay.FACING).asRotation();

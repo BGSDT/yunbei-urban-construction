@@ -254,7 +254,6 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(RoadBlocks.MANHOLE_COVER);
 
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY);
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.ROAD_POLE_FLAG);
     }
 
     @Override
