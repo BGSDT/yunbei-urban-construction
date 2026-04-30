@@ -5,21 +5,9 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.util.Identifier;
 
 public class ModMessages {
-    public static final Identifier UPDATE_SPEED_LIMIT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_speed_limit");
-    public static final Identifier UPDATE_CANCEL_SPEED_LIMIT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_cancel_speed_limit");
-    public static final Identifier UPDATE_VEHICLE_TYPE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_vehicle_type");
-    public static final Identifier UPDATE_DIRECTION_TYPE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_direction_type");
-    public static final Identifier UPDATE_HEIGHT_LIMIT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_height_limit");
-    public static final Identifier UPDATE_WIDTH_LIMIT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_width_limit");
-    public static final Identifier UPDATE_WEIGHT_LIMIT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_weight_limit");
-    public static final Identifier UPDATE_NO_SPECIAL_TYPE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_no_special_type");
-    public static final Identifier UPDATE_INDICATION_DIRECTION = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_indication_direction");
-    public static final Identifier UPDATE_INDICATION_LANE_DIRECTION = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_indication_lane_direction");
+
     public static final Identifier UPDATE_ROAD_POLES_TEXT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_road_poles_text");
     public static final Identifier UPDATE_FLAG = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_flag");
-    public static final Identifier ENTITY_CONVERSION = new Identifier(YunbeiUrbanConstruction.MOD_ID, "entity_conversion");
-    public static final Identifier TRANSFORM_UPDATE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "transform_update");
-    public static final Identifier UPDATE_WARNING_TYPE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_warning_type");
 
     // register receiver for warning text updates
     public static void registerC2SPackets() {
