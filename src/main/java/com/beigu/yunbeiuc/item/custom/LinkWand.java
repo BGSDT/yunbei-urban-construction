@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.item.custom;
 
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
-import com.beigu.yunbeiuc.block.custom.lights.TrafficLightGroup;
-import com.beigu.yunbeiuc.block.custom.lights.TrafficLightManager;
+import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsGroup;
+import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsManager;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +23,7 @@ import java.util.*;
 
 public class LinkWand extends Item {
     private static final Map<PlayerEntity, List<BlockPos>> playerSelections = new HashMap<>();
-    private static final Map<PlayerEntity, TrafficLightGroup> pendingGroups = new HashMap<>();
+    private static final Map<PlayerEntity, TrafficLightsGroup> pendingGroups = new HashMap<>();
     private static final Map<PlayerEntity, Integer> playerModes = new HashMap<>(); // 存储每个玩家的模式
 
     public LinkWand(Settings settings) {
@@ -83,7 +83,7 @@ public class LinkWand extends Item {
 
     // ==================== 十字路口验证（原有逻辑） ====================
     private void checkAndPromptForCross(World world, PlayerEntity player, List<BlockPos> selections) {
-        TrafficLightGroup tempGroup = validateCrossGroup(world, selections);
+        TrafficLightsGroup tempGroup = validateCrossGroup(world, selections);
 
         if (tempGroup != null) {
             pendingGroups.put(player, tempGroup);
@@ -97,7 +97,7 @@ public class LinkWand extends Item {
         }
     }
 
-    private TrafficLightGroup validateCrossGroup(World world, List<BlockPos> selections) {
+    private TrafficLightsGroup validateCrossGroup(World world, List<BlockPos> selections) {
         Map<Direction, List<BlockPos>> leftMap = new HashMap<>();
         Map<Direction, List<BlockPos>> straightMap = new HashMap<>();
         for (Direction dir : Direction.Type.HORIZONTAL) {
@@ -121,7 +121,7 @@ public class LinkWand extends Item {
             }
         }
 
-        TrafficLightGroup group = new TrafficLightGroup(UUID.randomUUID(), 1);
+        TrafficLightsGroup group = new TrafficLightsGroup(UUID.randomUUID(), 1);
         for (Direction dir : Direction.Type.HORIZONTAL) {
             group.addLight(leftMap.get(dir).get(0), dir, true);
             group.addLight(straightMap.get(dir).get(0), dir, false);
@@ -131,7 +131,7 @@ public class LinkWand extends Item {
 
     // ==================== T字路口验证 ====================
     private void checkAndPromptForT(World world, PlayerEntity player, List<BlockPos> selections) {
-        TrafficLightGroup tempGroup = validateTGroup(world, selections);
+        TrafficLightsGroup tempGroup = validateTGroup(world, selections);
 
         if (tempGroup != null) {
             pendingGroups.put(player, tempGroup);
@@ -146,7 +146,7 @@ public class LinkWand extends Item {
         }
     }
 
-    private TrafficLightGroup validateTGroup(World world, List<BlockPos> selections) {
+    private TrafficLightsGroup validateTGroup(World world, List<BlockPos> selections) {
         // T字路口只用直行灯
         Set<Direction> selectedDirs = new HashSet<>();
         Map<Direction, BlockPos> dirToPos = new HashMap<>();
@@ -178,7 +178,7 @@ public class LinkWand extends Item {
         }
 
         // 有效的T字组合：缺失方向为NORTH/EAST/SOUTH/WEST之一
-        TrafficLightGroup group = new TrafficLightGroup(UUID.randomUUID(), 2);
+        TrafficLightsGroup group = new TrafficLightsGroup(UUID.randomUUID(), 2);
         for (Direction dir : selectedDirs) {
             group.addLight(dirToPos.get(dir), dir, false); // 全部作为直行灯
         }
@@ -200,11 +200,11 @@ public class LinkWand extends Item {
         }
 
         if (action.equalsIgnoreCase("confirm")) {
-            TrafficLightGroup group = pendingGroups.get(player);
+            TrafficLightsGroup group = pendingGroups.get(player);
             ServerWorld serverWorld = player.getServerWorld();
 
             group.setWorld(serverWorld);
-            TrafficLightManager.get(serverWorld).addGroup(group);
+            TrafficLightsManager.get(serverWorld).addGroup(group);
             group.updateAllLightsImmediately(serverWorld);
 
             player.sendMessage(Text.literal("✓ 红绿灯组创建成功！").formatted(Formatting.GREEN), false);

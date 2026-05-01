@@ -2,14 +2,13 @@ package com.beigu.yunbeiuc.block.custom.lights;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import java.util.*;
 
-public class TrafficLightGroup {
+public class TrafficLightsGroup {
     private final UUID groupId;
     private final int mode; // 1=十字路口, 2=T字路口
     private final Map<Direction, Map<Boolean, BlockPos>> lights = new HashMap<>();
@@ -162,7 +161,7 @@ public class TrafficLightGroup {
     }
 
     // ==================== 构造函数 ====================
-    public TrafficLightGroup(UUID groupId, int mode) {
+    public TrafficLightsGroup(UUID groupId, int mode) {
         this.groupId = groupId;
         this.mode = mode;
         for (Direction dir : Direction.Type.HORIZONTAL) {
@@ -468,9 +467,9 @@ public class TrafficLightGroup {
         return nbt;
     }
 
-    public static TrafficLightGroup fromNbt(NbtCompound nbt) {
+    public static TrafficLightsGroup fromNbt(NbtCompound nbt) {
         int mode = nbt.contains("mode") ? nbt.getInt("mode") : 1; // 默认为十字路口，兼容旧数据
-        TrafficLightGroup group = new TrafficLightGroup(nbt.getUuid("groupId"), mode);
+        TrafficLightsGroup group = new TrafficLightsGroup(nbt.getUuid("groupId"), mode);
 
         int phaseOrdinal = nbt.getInt("currentPhase");
         if (mode == 1) {
