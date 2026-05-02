@@ -95,6 +95,10 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2);
         addDrop(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB);
         addDrop(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
+        addDrop(MunicipalBlocks.SOUND_BARRIER_1_NORMAL);
+        addDrop(MunicipalBlocks.SOUND_BARRIER_1_TB);
+        addDrop(MunicipalBlocks.SOUND_BARRIER_2_NORMAL);
+        addDrop(MunicipalBlocks.SOUND_BARRIER_2_TB);
         addDrop(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS);
         addDrop(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL);
         addDrop(MunicipalBlocks.INSTRUMENT_CAMERA);

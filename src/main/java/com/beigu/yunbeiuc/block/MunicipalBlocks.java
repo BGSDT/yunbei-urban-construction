@@ -29,6 +29,8 @@ import com.beigu.yunbeiuc.block.custom.rubbish.RubbishBinGrayGreen;
 import com.beigu.yunbeiuc.block.custom.rubbish.RubbishBinWhite;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsBlock;
 import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsPavement;
+import com.beigu.yunbeiuc.block.custom.sound.SoundBarrier1;
+import com.beigu.yunbeiuc.block.custom.sound.SoundBarrier2;
 import com.beigu.yunbeiuc.block.custom.waring.WarningNetwork;
 import com.beigu.yunbeiuc.block.custom.waring.WarningNetworkPole;
 import net.minecraft.block.AbstractBlock;
@@ -134,6 +136,11 @@ public class MunicipalBlocks {
     public static final Block SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2 = register("safety_island_yellow_slab_edge_oblique_2", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_GRAY_SLAB = register("safety_island_gray_slab", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE = register("safety_island_gray_slab_edge_oblique", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
+    public static final Block SOUND_BARRIER_1_NORMAL = register("sound_barrier_1_normal", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_1_TB = register("sound_barrier_1_tb", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_2_NORMAL = register("sound_barrier_2_normal", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_2_TB = register("sound_barrier_2_tb", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
     public static final Block INSTRUMENT_POLE_FOUNDATIONS = register("instrument_pole_foundations", new InstrumentPoleFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block INSTRUMENT_POLE_LONGITUDINAL = register("instrument_pole_longitudinal", new InstrumentPolelLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));

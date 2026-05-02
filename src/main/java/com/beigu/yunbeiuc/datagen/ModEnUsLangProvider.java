@@ -149,6 +149,11 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "Safety Island Interior");
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "Safety Island Edge (Angled)");
 
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_NORMAL,"Sound Barrier Type 1 (Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_TB,"Sound Barrier Type 1 (Traffic Barrier)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_NORMAL,"Sound Barrier Type 2 (Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_TB,"Sound Barrier Type 2 (Traffic Barrier)");
+
         // Instrument Poles
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "Instrument Pole (Base)");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "Instrument Pole (Vertical)");

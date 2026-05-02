@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "facing=north,half=lower,layer=0": {
+      "model": "yunbeiuc:block/sound_barrier_2_bottom_normal",
+      "y": 0
+    },
+    "facing=east,half=lower,layer=0": {
+      "model": "yunbeiuc:block/sound_barrier_2_bottom_normal",
+      "y": 90
+    },
+    "facing=south,half=lower,layer=0": {
+      "model": "yunbeiuc:block/sound_barrier_2_bottom_normal",
+      "y": 180
+    },
+    "facing=west,half=lower,layer=0": {
+      "model": "yunbeiuc:block/sound_barrier_2_bottom_normal",
+      "y": 270
+    },
+    "facing=north,half=lower,layer=1": {
+      "model": "yunbeiuc:block/sound_barrier_2_middle"
+    },
+    "facing=east,half=lower,layer=1": {
+      "model": "yunbeiuc:block/sound_barrier_2_middle",
+      "y": 90
+    },
+    "facing=south,half=lower,layer=1": {
+      "model": "yunbeiuc:block/sound_barrier_2_middle",
+      "y": 180
+    },
+    "facing=west,half=lower,layer=1": {
+      "model": "yunbeiuc:block/sound_barrier_2_middle",
+      "y": 270
+    },
+    "facing=north,half=upper,layer=2": {
+      "model": "yunbeiuc:block/sound_barrier_2_top"
+    },
+    "facing=east,half=upper,layer=2": {
+      "model": "yunbeiuc:block/sound_barrier_2_top",
+      "y": 90
+    },
+    "facing=south,half=upper,layer=2": {
+      "model": "yunbeiuc:block/sound_barrier_2_top",
+      "y": 180
+    },
+    "facing=west,half=upper,layer=2": {
+      "model": "yunbeiuc:block/sound_barrier_2_top",
+      "y": 270
+    }
+  }
+}

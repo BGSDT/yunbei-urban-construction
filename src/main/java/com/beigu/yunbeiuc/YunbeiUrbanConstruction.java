@@ -36,7 +36,6 @@ public class YunbeiUrbanConstruction implements ModInitializer {
 
 		LOGGER.info("YunbeiUrbanConstruction has finished loading");
 
-
         MunicipalBlocks.registerModBlocks();
         RoadBlocks.registerRoadBlocks();
         SignBlocks.registerSignBlocks();

@@ -102,6 +102,10 @@ public class ModItemGroups {
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_YELLOW_SLAB_EDGE_OBLIQUE_2);
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB);
                         entries.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
+                        entries.add(MunicipalBlocks.SOUND_BARRIER_1_NORMAL);
+                        entries.add(MunicipalBlocks.SOUND_BARRIER_1_TB);
+                        entries.add(MunicipalBlocks.SOUND_BARRIER_2_NORMAL);
+                        entries.add(MunicipalBlocks.SOUND_BARRIER_2_TB);
                         entries.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS);
                         entries.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL);
                         entries.add(MunicipalBlocks.INSTRUMENT_CAMERA);

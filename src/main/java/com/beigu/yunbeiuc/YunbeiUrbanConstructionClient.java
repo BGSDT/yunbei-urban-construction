@@ -80,6 +80,11 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getTranslucent());
 
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_NORMAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_TB, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_2_NORMAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_2_TB, RenderLayer.getTranslucent());
+
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_20, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_30, RenderLayer.getCutout());

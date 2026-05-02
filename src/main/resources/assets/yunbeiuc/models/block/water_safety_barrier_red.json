@@ -2,7 +2,8 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "yunbeiuc:block/water_safety_barrier_red"
+		"1": "yunbeiuc:block/water_safety_barrier_red",
+		"particle": "yunbeiuc:block/water_safety_barrier_red"
 	},
 	"elements": [
 		{

@@ -149,6 +149,11 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "安全岛内部");
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "安全岛边缘（斜向）");
 
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_NORMAL,"声屏障1型(普通)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_TB,"声屏障1型(隔离墩)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_NORMAL,"声屏障2型(普通)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_TB,"声屏障2型(隔离墩)");
+
 // 仪器杆类
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "仪器杆（底座）");
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_LONGITUDINAL, "仪器杆（纵向）");
