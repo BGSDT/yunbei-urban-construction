@@ -34,6 +34,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
 
 // 道路杆件附属类
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "路杆文字显示屏");
+        translationBuilder.add("block.yunbeiuc.road_pole_text_display.tooltip","手持魔杖右键点击以编辑文字");
         translationBuilder.add("text.yunbeiuc.road_pole_text_display.title", "路杆文字显示屏文本显示设置");
         translationBuilder.add("text.yunbeiuc.road_pole_text_display.content", "显示内容");
         translationBuilder.add("text.yunbeiuc.road_pole_text_display.placeholder", "请输入显示文本...");
@@ -149,10 +150,30 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "安全岛内部");
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "安全岛边缘（斜向）");
 
-        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_NORMAL,"声屏障1型(普通)");
-        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_TB,"声屏障1型(隔离墩)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_WHITE_NORMAL,"声屏障1型(白色、普通)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_WHITE_TB,"声屏障1型(白色、隔离墩)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_BLUE_NORMAL,"声屏障1型(蓝色、普通)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_BLUE_TB,"声屏障1型(蓝色、隔离墩)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_GREEN_NORMAL,"声屏障1型(绿色、普通)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_GREEN_TB,"声屏障1型(绿色、隔离墩)");
         translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_NORMAL,"声屏障2型(普通)");
         translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_TB,"声屏障2型(隔离墩)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_WHITE_NORMAL,"声屏障3型(白色、普通)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_WHITE_TB,"声屏障3型(白色、隔离墩)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_BLUE_NORMAL,"声屏障3型(蓝色、普通)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_BLUE_TB,"声屏障3型(蓝色、隔离墩)");
+
+        translationBuilder.add(MunicipalBlocks.ROAD_NAME_SIGN_RC, "道路名牌（圆角）");
+        translationBuilder.add(MunicipalBlocks.ROAD_NAME_SIGN_RA, "道路名牌（直角）");
+        translationBuilder.add("block.yunbeiuc.road_name_sign.tooltip","手持魔杖右键点击以编辑道路名牌文本");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.title", "道路名牌文本显示设置");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.content","显示内容");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.placeholder","请输入显示文本...");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.save", "保存");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.cancel", "取消");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.chinese_name","中文显示文本");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.english_name","英文显示文本");
+        translationBuilder.add(MunicipalBlocks.ROAD_NAME_SIGN_POLE, "道路名牌（杆）");
 
 // 仪器杆类
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "仪器杆（底座）");

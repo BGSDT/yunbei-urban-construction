@@ -34,6 +34,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
 
         // Road Pole Attachments
         translationBuilder.add(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, "Road Pole Text Display");
+        translationBuilder.add("block.yunbeiuc.road_pole_text_display.tooltip","Right-click with the wand to edit text");
         translationBuilder.add("text.yunbeiuc.road_pole_text_display.title", "Road Pole Text Display Text Display Settings");
         translationBuilder.add("text.yunbeiuc.road_pole_text_display.content", "Display Content");
         translationBuilder.add("text.yunbeiuc.road_pole_text_display.placeholder", "Enter Display Text...");
@@ -149,10 +150,30 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB, "Safety Island Interior");
         translationBuilder.add(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE, "Safety Island Edge (Angled)");
 
-        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_NORMAL,"Sound Barrier Type 1 (Normal)");
-        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_TB,"Sound Barrier Type 1 (Traffic Barrier)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_WHITE_NORMAL,"Sound Barrier Type 1 (White, Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_WHITE_TB,"Sound Barrier Type 1 (White, Traffic Barrier)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_BLUE_NORMAL, "Sound Barrier Type 1 (Blue, Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_BLUE_TB, "Sound Barrier Type 1 (Blue, Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_GREEN_NORMAL, "Sound Barrier Type 1 (Green, Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_1_GREEN_TB, "Sound Barrier Type 1 (Green, Normal)");
         translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_NORMAL,"Sound Barrier Type 2 (Normal)");
         translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_2_TB,"Sound Barrier Type 2 (Traffic Barrier)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_WHITE_NORMAL,"Sound Barrier Type 3 (White, Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_WHITE_TB,"Sound Barrier Type 3 (White, Traffic Barrier)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_BLUE_NORMAL,"Sound Barrier Type 3 (Blue, Normal)");
+        translationBuilder.add(MunicipalBlocks.SOUND_BARRIER_3_BLUE_TB,"Sound Barrier Type 3 (Blue, Traffic Barrier)");
+
+        translationBuilder.add(MunicipalBlocks.ROAD_NAME_SIGN_RC, "Road Name Sign (Rounded Corner)");
+        translationBuilder.add(MunicipalBlocks.ROAD_NAME_SIGN_RA, "Road Name Sign (Right Angle)");
+        translationBuilder.add("block.yunbeiuc.road_name_sign.tooltip", "Right-click with the wand to edit road name sign text");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.title", "Road Name Sign Text Display Settings");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.content", "Display Content");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.placeholder", "Enter display text...");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.save", "Save");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.cancel", "Cancel");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.chinese_name", "Chinese Display Text");
+        translationBuilder.add("text.yunbeiuc.road_name_sign.english_name", "English Display Text");
+        translationBuilder.add(MunicipalBlocks.ROAD_NAME_SIGN_POLE, "Road Name Sign (Pole)");
 
         // Instrument Poles
         translationBuilder.add(MunicipalBlocks.INSTRUMENT_POLE_FOUNDATIONS, "Instrument Pole (Base)");

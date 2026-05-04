@@ -137,10 +137,22 @@ public class MunicipalBlocks {
     public static final Block SAFETY_ISLAND_GRAY_SLAB = register("safety_island_gray_slab", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE = register("safety_island_gray_slab_edge_oblique", new SafetyIslandEdgeBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
-    public static final Block SOUND_BARRIER_1_NORMAL = register("sound_barrier_1_normal", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final Block SOUND_BARRIER_1_TB = register("sound_barrier_1_tb", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_1_WHITE_NORMAL = register("sound_barrier_1_white_normal", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_1_WHITE_TB = register("sound_barrier_1_white_tb", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_1_BLUE_NORMAL = register("sound_barrier_1_blue_normal", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_1_BLUE_TB = register("sound_barrier_1_blue_tb", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_1_GREEN_NORMAL = register("sound_barrier_1_green_normal", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_1_GREEN_TB = register("sound_barrier_1_green_tb", new SoundBarrier1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block SOUND_BARRIER_2_NORMAL = register("sound_barrier_2_normal", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block SOUND_BARRIER_2_TB = register("sound_barrier_2_tb", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_3_WHITE_NORMAL = register("sound_barrier_3_white_normal", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_3_WHITE_TB = register("sound_barrier_3_white_tb", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_3_BLUE_NORMAL = register("sound_barrier_3_blue_normal", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block SOUND_BARRIER_3_BLUE_TB = register("sound_barrier_3_blue_tb", new SoundBarrier2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+
+    public static final Block ROAD_NAME_SIGN_RC = register("road_name_sign_rc", new RoadNameSignBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block ROAD_NAME_SIGN_RA = register("road_name_sign_ra", new RoadNameSignBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final Block ROAD_NAME_SIGN_POLE = register("road_name_sign_pole", new InstrumentPolelLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
     public static final Block INSTRUMENT_POLE_FOUNDATIONS = register("instrument_pole_foundations", new InstrumentPoleFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block INSTRUMENT_POLE_LONGITUDINAL = register("instrument_pole_longitudinal", new InstrumentPolelLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));

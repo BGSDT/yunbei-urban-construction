@@ -80,10 +80,18 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getTranslucent());
 
-        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_NORMAL, RenderLayer.getTranslucent());
-        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_TB, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_WHITE_NORMAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_WHITE_TB, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_BLUE_NORMAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_BLUE_TB, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_GREEN_NORMAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_GREEN_TB, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_2_NORMAL, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_2_TB, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_3_WHITE_NORMAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_3_WHITE_TB, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_3_BLUE_NORMAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_3_BLUE_TB, RenderLayer.getTranslucent());
 
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_20, RenderLayer.getCutout());
@@ -339,5 +347,6 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
 
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY, RoadNameSignBlockEntityRenderer::new);
     }
 }

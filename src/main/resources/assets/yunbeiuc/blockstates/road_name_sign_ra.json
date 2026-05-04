@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,bg_type=blue": {
+      "model": "yunbeiuc:block/road_name_sign_ra_blue"
+    },
+    "facing=east,bg_type=blue": {
+      "model": "yunbeiuc:block/road_name_sign_ra_blue",
+      "y": 90
+    },
+    "facing=south,bg_type=blue": {
+      "model": "yunbeiuc:block/road_name_sign_ra_blue",
+      "y": 180
+    },
+    "facing=west,bg_type=blue": {
+      "model": "yunbeiuc:block/road_name_sign_ra_blue",
+      "y": 270
+    },
+    "facing=north,bg_type=green": {
+      "model": "yunbeiuc:block/road_name_sign_ra_green"
+    },
+    "facing=east,bg_type=green": {
+      "model": "yunbeiuc:block/road_name_sign_ra_green",
+      "y": 90
+    },
+    "facing=south,bg_type=green": {
+      "model": "yunbeiuc:block/road_name_sign_ra_green",
+      "y": 180
+    },
+    "facing=west,bg_type=green": {
+      "model": "yunbeiuc:block/road_name_sign_ra_green",
+      "y": 270
+    }
+  }
+}

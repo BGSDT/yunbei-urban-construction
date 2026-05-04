@@ -117,6 +117,8 @@ public class ModModelsProvider extends FabricModelProvider {
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB);
         blockStateModelGenerator.registerNorthDefaultHorizontalRotation(MunicipalBlocks.SAFETY_ISLAND_GRAY_SLAB_EDGE_OBLIQUE);
 
+        blockStateModelGenerator.registerSimpleState(MunicipalBlocks.ROAD_NAME_SIGN_POLE);
+
         blockStateModelGenerator.registerCubeAllModelTexturePool(RoadBlocks.ROAD_BLOCK);
         blockStateModelGenerator.registerSimpleState(RoadBlocks.ROAD_FULL_OF_WHITE);
         blockStateModelGenerator.registerSimpleState(RoadBlocks.ROAD_FULL_OF_YELLOW);
