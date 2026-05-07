@@ -263,7 +263,7 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CONSTRUCTION, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CONTINUOUS_DOWNHILL, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_1, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CONTINUOU_WINDING_ROADS_2, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_2, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CROSSING_1, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CROSSING_10, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_WARNING_CROSSING_11, RenderLayer.getCutout());
@@ -345,8 +345,13 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_TAXI, RenderLayer.getCutout());
 
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT,RenderLayer.getCutout());
+
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY, RoadNameSignBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY, SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);
     }
 }

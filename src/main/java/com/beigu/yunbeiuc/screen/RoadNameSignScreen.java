@@ -1,9 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
-import com.beigu.yunbeiuc.entity.RoadPoleTextDisplayEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.RoadNameSignUpdatePacket;
+import com.beigu.yunbeiuc.network.RoadNameSignBlockUpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
@@ -87,7 +86,7 @@ public class RoadNameSignScreen extends Screen {
             String chineseText = this.chineseNameTextField.getText();
             String englishText = this.englishNameTextField.getText();
 
-            RoadNameSignUpdatePacket packet = new RoadNameSignUpdatePacket(pos, chineseText, englishText);
+            RoadNameSignBlockUpdatePacket packet = new RoadNameSignBlockUpdatePacket(pos, chineseText, englishText);
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             ClientPlayNetworking.send(ModMessages.UPDATE_ROAD_NAME_SIGN, buf);

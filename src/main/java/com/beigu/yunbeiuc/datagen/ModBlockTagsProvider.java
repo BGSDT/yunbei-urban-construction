@@ -473,7 +473,7 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_1)
                 .add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_2)
                 .add(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_1)
-                .add(SignBlocks.SIGN_WARNING_CONTINUOU_WINDING_ROADS_2)
+                .add(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_2)
                 .add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_UP)
                 .add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_DOWN)
                 .add(SignBlocks.SIGN_WARNING_CONTINUOUS_DOWNHILL)
@@ -537,7 +537,11 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .add(SignBlocks.ZONES_BOARD_SCHOOL)
                 .add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_1)
                 .add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2)
-                .add(SignBlocks.ZONES_BOARD_TAXI);
+                .add(SignBlocks.ZONES_BOARD_TAXI)
+
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT);
 
 
         getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)

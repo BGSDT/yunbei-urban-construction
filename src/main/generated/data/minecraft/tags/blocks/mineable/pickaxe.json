@@ -455,7 +455,7 @@
     "yunbeiuc:sign_warning_reverse_detour_1",
     "yunbeiuc:sign_warning_reverse_detour_2",
     "yunbeiuc:sign_warning_continuous_winding_roads_1",
-    "yunbeiuc:sign_warning_continuou_winding_roads_2",
+    "yunbeiuc:sign_warning_continuous_winding_roads_2",
     "yunbeiuc:sign_warning_steep_slope_up",
     "yunbeiuc:sign_warning_steep_slope_down",
     "yunbeiuc:sign_warning_continuous_downhill",
@@ -519,6 +519,9 @@
     "yunbeiuc:zones_board_school",
     "yunbeiuc:zones_board_school_bus_1",
     "yunbeiuc:zones_board_school_bus_2",
-    "yunbeiuc:zones_board_taxi"
+    "yunbeiuc:zones_board_taxi",
+    "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_left",
+    "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_straight",
+    "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_right"
   ]
 }

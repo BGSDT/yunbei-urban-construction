@@ -6,18 +6,18 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
-public class RoadNameSignUpdatePacket {
+public class RoadNameSignBlockUpdatePacket {
     private final BlockPos pos;
     private final String chineseText;
     private final String englishText;
 
-    public RoadNameSignUpdatePacket(BlockPos pos, String chineseText, String englishText) {
+    public RoadNameSignBlockUpdatePacket(BlockPos pos, String chineseText, String englishText) {
         this.pos = pos;
         this.chineseText = chineseText;
         this.englishText = englishText;
     }
 
-    public RoadNameSignUpdatePacket(PacketByteBuf buf) {
+    public RoadNameSignBlockUpdatePacket(PacketByteBuf buf) {
         this.pos = buf.readBlockPos();
         this.chineseText = buf.readString();
         this.englishText = buf.readString();

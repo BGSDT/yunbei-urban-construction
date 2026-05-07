@@ -468,7 +468,7 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_1);
         addDrop(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_2);
         addDrop(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_1);
-        addDrop(SignBlocks.SIGN_WARNING_CONTINUOU_WINDING_ROADS_2);
+        addDrop(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_2);
         addDrop(SignBlocks.SIGN_WARNING_STEEP_SLOPE_UP);
         addDrop(SignBlocks.SIGN_WARNING_STEEP_SLOPE_DOWN);
         addDrop(SignBlocks.SIGN_WARNING_CONTINUOUS_DOWNHILL);
@@ -533,5 +533,9 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(SignBlocks.ZONES_BOARD_SCHOOL_BUS_1);
         addDrop(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2);
         addDrop(SignBlocks.ZONES_BOARD_TAXI);
+
+        addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT);
+        addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT);
+        addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT);
     }
 }

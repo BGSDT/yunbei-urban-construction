@@ -67,6 +67,6 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
 
     @Override
     public int getRenderDistance() {
-        return 128;
+        return 256;
     }
 }

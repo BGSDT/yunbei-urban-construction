@@ -37,16 +37,16 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
                     "enLeftBack", "W", "enRightBack", "E"
             ),
             Direction.WEST, Map.of(
-                    "cnLeft", "北", "cnRight", "南",
-                    "enLeft", "N", "enRight", "S",
-                    "cnLeftBack", "南", "cnRightBack", "北",
-                    "enLeftBack", "S", "enRightBack", "N"
-            ),
-            Direction.EAST, Map.of(
                     "cnLeft", "南", "cnRight", "北",
                     "enLeft", "S", "enRight", "N",
                     "cnLeftBack", "北", "cnRightBack", "南",
                     "enLeftBack", "N", "enRightBack", "S"
+            ),
+            Direction.EAST, Map.of(
+                    "cnLeft", "北", "cnRight", "南",
+                    "enLeft", "N", "enRight", "S",
+                    "cnLeftBack", "南", "cnRightBack", "北",
+                    "enLeftBack", "S", "enRightBack", "N"
             )
     );
 
@@ -77,7 +77,7 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(facing.asRotation()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
         if (backTF) {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
         }
@@ -135,7 +135,7 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(facing.asRotation()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
         if (backTF) {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
         }
@@ -187,6 +187,6 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
 
     @Override
     public int getRenderDistance() {
-        return 128;
+        return 256;
     }
 }

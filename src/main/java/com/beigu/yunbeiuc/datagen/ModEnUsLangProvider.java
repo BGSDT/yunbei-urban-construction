@@ -575,7 +575,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_1, "Reverse Curve Sign 1");
         translationBuilder.add(SignBlocks.SIGN_WARNING_REVERSE_DETOUR_2, "Reverse Curve Sign 2");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_1, "Winding Road Sign 1");
-        translationBuilder.add(SignBlocks.SIGN_WARNING_CONTINUOU_WINDING_ROADS_2, "Winding Road Sign 2");
+        translationBuilder.add(SignBlocks.SIGN_WARNING_CONTINUOUS_WINDING_ROADS_2, "Winding Road Sign 2");
         translationBuilder.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_UP, "Steep Upgrade Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_STEEP_SLOPE_DOWN, "Steep Downgrade Sign");
         translationBuilder.add(SignBlocks.SIGN_WARNING_CONTINUOUS_DOWNHILL, "Continuous Downhill Sign");
@@ -640,6 +640,24 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_1, "School Bus Zone Sign 1");
         translationBuilder.add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2, "School Bus Zone Sign 2");
         translationBuilder.add(SignBlocks.ZONES_BOARD_TAXI, "Taxi Zone Sign");
+
+        translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT, "Wuhan Pudao Expressway Guide Left");
+        translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT, "Wuhan Pudao Expressway Guide Straight");
+        translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT, "Wuhan Pudao Expressway Guide Right");
+        translationBuilder.add("block.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.tooltip", "Right-click with the wand to edit intersection advance warning sign text");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.title", "Warning Sign Text Display Settings");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.content", "Display Content");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.placeholder", "Enter display text...");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.save", "Save");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.cancel", "Cancel");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.text_1_name", "Text Above Arrow");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.text_2_name", "Text Below Arrow");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.cn_text_3_name", "Road 1 Chinese Text");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.en_text_3_name", "Road 1 English Text");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.cn_text_4_name", "Road 2 Chinese Text");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.en_text_4_name", "Road 2 English Text");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.cn_text_5_name", "Road 3 Chinese Text");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.en_text_5_name", "Road 3 English Text");
 
         // Item Groups
         translationBuilder.add("itemGroup.yunbeiuc_municipal_group","Yunbei Urban Construction | Municipal Facilities");

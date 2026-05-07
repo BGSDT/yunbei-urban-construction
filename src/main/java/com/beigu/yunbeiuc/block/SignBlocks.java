@@ -234,7 +234,7 @@ public class SignBlocks {
     public static final Block SIGN_WARNING_REVERSE_DETOUR_2 = register("sign_warning_reverse_detour_2", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static final Block SIGN_WARNING_CONTINUOUS_WINDING_ROADS_1 = register("sign_warning_continuous_winding_roads_1", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
-    public static final Block SIGN_WARNING_CONTINUOU_WINDING_ROADS_2 = register("sign_warning_continuou_winding_roads_2", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SIGN_WARNING_CONTINUOUS_WINDING_ROADS_2 = register("sign_warning_continuous_winding_roads_2", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static final Block SIGN_WARNING_STEEP_SLOPE_UP = register("sign_warning_steep_slope_up", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_WARNING_STEEP_SLOPE_DOWN = register("sign_warning_steep_slope_down", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
@@ -336,6 +336,11 @@ public class SignBlocks {
 //    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6 = register("sign_guide_intersection_advance_warning_6", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 //    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7 = register("sign_guide_intersection_advance_warning_7", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 //    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8 = register("sign_guide_intersection_advance_warning_8", new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
+    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT = register("sign_guide_intersection_advance_warning_1_wuhan_left", new SignGuideIntersectionAdvanceWarning1Wuhan(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT = register("sign_guide_intersection_advance_warning_1_wuhan_straight", new SignGuideIntersectionAdvanceWarning1Wuhan(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT = register("sign_guide_intersection_advance_warning_1_wuhan_right", new SignGuideIntersectionAdvanceWarning1Wuhan(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
 
     public static Block register(String id, Block block) {
         registerBlockItems(id, block);
