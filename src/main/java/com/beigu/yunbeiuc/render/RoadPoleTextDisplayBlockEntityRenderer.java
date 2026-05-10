@@ -7,6 +7,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
 
@@ -45,7 +46,7 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
         int color = entity.getColor();
 
         this.textRenderer.draw(
-                Text.literal(text),
+                Text.literal(text).setStyle(Style.EMPTY.withBold(true)),
                 x,
                 y,
                 color,

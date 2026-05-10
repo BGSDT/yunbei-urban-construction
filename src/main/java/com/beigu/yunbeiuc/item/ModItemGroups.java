@@ -563,6 +563,10 @@ public class ModItemGroups {
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT);
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT);
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4);
                     }).build());
 
     public static final ItemGroup YUNBEIUC_WAND_GROUP = Registry.register(

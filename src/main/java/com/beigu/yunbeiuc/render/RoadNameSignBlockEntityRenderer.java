@@ -9,6 +9,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
@@ -90,7 +91,7 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         float cy = -chineseTextHeight / 2.0f;
 
         this.textRenderer.draw(
-                Text.literal(chineseText),
+                Text.literal(chineseText).setStyle(Style.EMPTY.withBold(true)),
                 cx,
                 cy - 8,
                 0xFFFFFF,

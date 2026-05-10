@@ -10,6 +10,8 @@ public class ModMessages {
     public static final Identifier UPDATE_FLAG = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_flag");
     public static final Identifier UPDATE_ROAD_NAME_SIGN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_road_name_sign");
     public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_sign_guide_intersection_advance_warning_1_wuhan");
+    public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_sign_guide_intersection_advance_warning_1");
+    public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "update_sign_guide_intersection_advance_warning_3");
 
     // register receiver for warning text updates
     public static void registerC2SPackets() {
@@ -30,6 +32,16 @@ public class ModMessages {
 
         ServerPlayNetworking.registerGlobalReceiver(UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN, (server, player, handler, buf, responseSender) -> {
             SignGuideIntersectionAdvanceWarning1WuhanUpdatePacket packet = new SignGuideIntersectionAdvanceWarning1WuhanUpdatePacket(buf);
+            server.execute(() -> packet.apply(player));
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1, (server, player, handler, buf, responseSender) -> {
+            SignGuideIntersectionAdvanceWarning1UpdatePacket packet = new SignGuideIntersectionAdvanceWarning1UpdatePacket(buf);
+            server.execute(() -> packet.apply(player));
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3, (server, player, handler, buf, responseSender) -> {
+            SignGuideIntersectionAdvanceWarning3UpdatePacket packet = new SignGuideIntersectionAdvanceWarning3UpdatePacket(buf);
             server.execute(() -> packet.apply(player));
         });
     }

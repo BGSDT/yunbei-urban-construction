@@ -2,11 +2,9 @@ package com.beigu.yunbeiuc.block.custom.sign;
 
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleHorizontal;
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
-import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
-import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning1WuhanEntity;
+import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning3Entity;
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.screen.RoadNameSignScreen;
-import com.beigu.yunbeiuc.screen.SignGuideIntersectionAdvanceWarning1WuhanScreen;
+import com.beigu.yunbeiuc.screen.SignGuideIntersectionAdvanceWarning3Screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -34,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class SignGuideIntersectionAdvanceWarning1Wuhan extends BlockWithEntity implements BlockEntityProvider {
+public class SignGuideIntersectionAdvanceWarning3 extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 
@@ -43,7 +41,7 @@ public class SignGuideIntersectionAdvanceWarning1Wuhan extends BlockWithEntity i
     private static final VoxelShape SHAPE_S = Block.createCuboidShape(-10, 0, 6.25, 26, 16, 9.75);
     private static final VoxelShape SHAPE_W = Block.createCuboidShape(6.25, 0, -10, 9.75, 16, 26);
 
-    public SignGuideIntersectionAdvanceWarning1Wuhan(Settings settings) {
+    public SignGuideIntersectionAdvanceWarning3(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(FACING, Direction.NORTH)
@@ -52,7 +50,7 @@ public class SignGuideIntersectionAdvanceWarning1Wuhan extends BlockWithEntity i
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.sign_guide_intersection_advance_warning.tooltip"));
+        tooltip.add(Text.translatable("block.yunbeiuc.sign_guide_intersection_advance_warning_3.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -75,7 +73,7 @@ public class SignGuideIntersectionAdvanceWarning1Wuhan extends BlockWithEntity i
 
     @Environment(EnvType.CLIENT)
     private void openTextDisplayScreen(BlockPos pos) {
-        MinecraftClient.getInstance().setScreen(new SignGuideIntersectionAdvanceWarning1WuhanScreen(pos));
+        MinecraftClient.getInstance().setScreen(new SignGuideIntersectionAdvanceWarning3Screen(pos));
     }
 
     @Override
@@ -148,7 +146,7 @@ public class SignGuideIntersectionAdvanceWarning1Wuhan extends BlockWithEntity i
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new SignGuideIntersectionAdvanceWarning1WuhanEntity(pos, state);
+        return new SignGuideIntersectionAdvanceWarning3Entity(pos, state);
     }
 
     @Override

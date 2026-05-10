@@ -522,6 +522,8 @@
     "yunbeiuc:zones_board_taxi",
     "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_left",
     "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_straight",
-    "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_right"
+    "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_right",
+    "yunbeiuc:sign_guide_intersection_advance_warning_1",
+    "yunbeiuc:sign_guide_intersection_advance_warning_2"
   ]
 }

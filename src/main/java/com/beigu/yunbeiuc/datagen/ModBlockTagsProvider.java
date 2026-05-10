@@ -541,7 +541,9 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
 
                 .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT)
                 .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT)
-                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT);
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2);
 
 
         getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)

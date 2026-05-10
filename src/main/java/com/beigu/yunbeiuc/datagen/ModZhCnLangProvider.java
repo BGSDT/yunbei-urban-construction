@@ -643,7 +643,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT, "武汉普道快速路导向左");
         translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT, "武汉普道快速路导向直行");
         translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT, "武汉普道快速路导向右");
-        translationBuilder.add("block.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.tooltip","手持魔杖右键点击以编辑路口预告指示牌文本");
+        translationBuilder.add("block.yunbeiuc.sign_guide_intersection_advance_warning.tooltip","手持魔杖右键点击以编辑路口预告指示牌文本");
         translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.title", "指示牌文本显示设置");
         translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.content","显示内容");
         translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.placeholder","请输入显示文本...");
@@ -657,6 +657,15 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.en_text_4_name","路名2英文文本");
         translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.cn_text_5_name","路名3中文文本");
         translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.en_text_5_name","路名3英文文本");
+        translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1,"交叉路口预告标志1（图形式）");
+        translationBuilder.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2,"交叉路口预告标志2（图形式）");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1.title", "指示牌文本显示设置");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1.content", "显示内容");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1.placeholder", "请输入显示文本...");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1.save", "保存");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1.cancel", "取消");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1.text_1_name", "箭头上文本");
+        translationBuilder.add("text.yunbeiuc.sign_guide_intersection_advance_warning_1.text_2_name", "箭头下文本");
 
         translationBuilder.add("itemGroup.yunbeiuc_municipal_group","云北城建 | 市政设施");
         translationBuilder.add("itemGroup.yunbeiuc_rb_group","云北城建 | 道路方块");

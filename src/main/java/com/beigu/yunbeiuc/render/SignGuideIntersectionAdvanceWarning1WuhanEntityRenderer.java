@@ -9,13 +9,13 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 
 public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning1WuhanEntity> {
     private final TextRenderer textRenderer;
-    private Block currentBlock;
 
     public SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
@@ -56,12 +56,12 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         if (enText5 == null || enText5.isEmpty()) {
             enText5 = " ";
         }
-        this.currentBlock = entity.getCachedState().getBlock();
+        Block currentBlock = entity.getCachedState().getBlock();
 
         Direction facing = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1Wuhan.FACING);
         SignGuideIntersectionAdvanceWarning1Wuhan.Type type = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1Wuhan.TYPE);
 
-        if(this.currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT){
+        if(currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT){
             renderText(matrices, vertexConsumers, light, facing, text1, type, true, 45, -35, true);
             renderText(matrices, vertexConsumers, light, facing, text2, type, true, 45, 35, true);
             renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, -13, -20, false);
@@ -113,7 +113,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         float cy = -textHeight / 2.0f;
 
         this.textRenderer.draw(
-                Text.literal(text),
+                Text.literal(text).setStyle(Style.EMPTY.withBold(true)),
                 cx + andX,
                 cy + andY,
                 color1,
