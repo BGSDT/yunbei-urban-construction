@@ -17,7 +17,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
     private TextFieldWidget textField;
     private TextFieldWidget colorField;
 
-    // 常用颜色
     private final int[] commonColors = {
             0x000000, // 黑色
             0xFF5555, // 红色
@@ -45,7 +44,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
             0xFFAA00, 0xAA00AA, 0x00AAAA, 0xCCCCCC
     };
 
-    // 面板尺寸常量
     private static final int PANEL_WIDTH = 320;
     private static final int PANEL_HEIGHT = 195;
 
@@ -58,7 +56,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
     protected void init() {
         super.init();
 
-        // 获取现有设置
         String existingText = "";
         String existingColor = "FFFFFF";
 
@@ -71,11 +68,9 @@ public class RoadPoleTextDisplayScreen extends Screen {
             }
         }
 
-        // 计算面板位置（垂直居中）
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        // === 文本输入区域 ===
         this.textField = new TextFieldWidget(
                 this.textRenderer,
                 panelX + 10, panelY + 25,
@@ -87,7 +82,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
         this.textField.setPlaceholder(Text.translatable("text.yunbeiuc.road_pole_text_display.placeholder"));
         this.addSelectableChild(this.textField);
 
-        // === 颜色输入区域 ===
         this.colorField = new TextFieldWidget(
                 this.textRenderer,
                 panelX + 10, panelY + 70,
@@ -99,7 +93,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
         this.colorField.setPlaceholder(Text.translatable("text.yunbeiuc.road_pole_text_display.color_placeholder"));
         this.addSelectableChild(this.colorField);
 
-        // === 常用颜色按钮 ===
         int colorStartX = panelX + 10;
         int colorStartY = panelY + 100;
         for (int i = 0; i < commonColors.length; i++) {
@@ -114,7 +107,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
             );
         }
 
-        // === 底部按钮 ===
         int buttonY = panelY + 160;
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.road_pole_text_display.save"), button -> this.saveAndClose())
@@ -155,20 +147,15 @@ public class RoadPoleTextDisplayScreen extends Screen {
 
     @Override
     public void render(net.minecraft.client.gui.DrawContext context, int mouseX, int mouseY, float delta) {
-        // 背景
         this.renderBackground(context);
 
-        // 计算面板位置（垂直居中）
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        // 绘制面板底色（深灰色半透明）
         context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
 
-        // 绘制面板边框（浅灰色）
         context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        // === 标题 ===
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.road_pole_text_display.title"),
@@ -176,7 +163,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
                 0xFFCCCCCC
         );
 
-        // === 标签 ===
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.road_pole_text_display.content"),
@@ -191,7 +177,6 @@ public class RoadPoleTextDisplayScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // === 颜色预览 ===
         int previewX = panelX + 180;
         int previewY = panelY + 70;
         int previewSize = 22;
@@ -205,13 +190,9 @@ public class RoadPoleTextDisplayScreen extends Screen {
             }
         } catch (NumberFormatException ignored) {}
 
-        // 预览方块背景阴影
         context.fill(previewX + 1, previewY + 1, previewX + previewSize + 1, previewY + previewSize + 1, 0x40000000);
-        // 预览方块
         context.fill(previewX, previewY, previewX + previewSize, previewY + previewSize, previewColor);
-        // 预览边框
         context.drawBorder(previewX, previewY, previewSize, previewSize, 0xFF888888);
-        // 预览标签
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.road_pole_text_display.preview"),
@@ -219,25 +200,20 @@ public class RoadPoleTextDisplayScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // === 渲染输入框 ===
         this.textField.render(context, mouseX, mouseY, delta);
         this.colorField.render(context, mouseX, mouseY, delta);
 
-        // === 渲染按钮 ===
         super.render(context, mouseX, mouseY, delta);
 
-        // 覆盖渲染颜色按钮上的色块和文本
         int colorStartX = panelX + 10;
         int colorStartY = panelY + 100;
         for (int i = 0; i < commonColors.length; i++) {
             int bx = colorStartX + (i % 4) * 76;
             int by = colorStartY + (i / 4) * 28;
 
-            // 色块
             context.fill(bx + 6, by + 6, bx + 20, by + 20, 0xFF000000 | colorDisplayColors[i]);
             context.drawBorder(bx + 6, by + 6, 14, 14, 0xFF888888);
 
-            // 颜色名称文本
             context.drawTextWithShadow(
                     this.textRenderer,
                     Text.translatable(colorTranslationKeys[i]),

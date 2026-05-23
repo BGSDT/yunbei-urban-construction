@@ -344,6 +344,8 @@ public class SignBlocks {
     public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2 = register("sign_guide_intersection_advance_warning_2", new SignGuideIntersectionAdvanceWarning1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3 = register("sign_guide_intersection_advance_warning_3", new SignGuideIntersectionAdvanceWarning3(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4 = register("sign_guide_intersection_advance_warning_4", new SignGuideIntersectionAdvanceWarning3(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5 = register("sign_guide_intersection_advance_warning_5", new SignGuideIntersectionAdvanceWarning5(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final Block SIGN_GUIDE_LANE_INDICATOR_1 = register("sign_guide_lane_indicator_1", new SignGuideLaneIndicator1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
 
     public static Block register(String id, Block block) {

@@ -30,25 +30,28 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
         float originalRotation = entity.getCachedState().get(RoadPoleTextDisplay.FACING).asRotation();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-originalRotation - 90));
 
-        matrices.translate(0.0, 0.0, 0.2);
-
         float baseScale = 0.01f;
         float sizeMultiplier = entity.getFontSize() / 12.0f;
         float scale = baseScale * sizeMultiplier;
-        matrices.scale(scale, -scale, scale);
 
-        int textWidth = this.textRenderer.getWidth(text);
+        // 新的居中计算方式
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
+        float zOffset = 0.2f;
 
-        float x = -textWidth / 2.0f;
-        float y = -textHeight / 2.0f;
+        float centeredX = -1 * (textWidth * scale) / 2f;
+        float centeredY = 0;
+        matrices.translate(centeredX, centeredY, zOffset);
+
+        matrices.scale(scale, -scale, scale);
 
         int color = entity.getColor();
 
         this.textRenderer.draw(
-                Text.literal(text).setStyle(Style.EMPTY.withBold(true)),
-                x,
-                y,
+                styledText,
+                0,
+                -textHeight / 2.0f,
                 color,
                 false,
                 matrices.peek().getPositionMatrix(),

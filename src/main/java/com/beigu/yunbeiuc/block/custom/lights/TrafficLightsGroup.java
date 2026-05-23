@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.lights;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
@@ -23,6 +24,11 @@ public class TrafficLightsGroup {
     private int blinkTick = 0;
     private static final int BLINK_INTERVAL = 10;
     private static final int BLINK_DURATION = 60;
+
+    // 完整性检测相关
+    private int integrityCheckTick = 0;
+    private static final int INTEGRITY_CHECK_INTERVAL = 20; // 每秒检测一次
+    private boolean markedForRemoval = false;
 
     // ==================== 十字路口相位枚举 ====================
     public enum CrossPhase {
@@ -187,6 +193,19 @@ public class TrafficLightsGroup {
     public void tick(World world) {
         if (!active || world == null || world.isClient) return;
 
+        // 完整性检测
+        integrityCheckTick++;
+        if (integrityCheckTick >= INTEGRITY_CHECK_INTERVAL) {
+            integrityCheckTick = 0;
+            if (!checkIntegrity(world)) {
+                // 如果检测到损坏，标记为移除并停止所有操作
+                markedForRemoval = true;
+                active = false;
+                cleanupAllLights(world);
+                return;
+            }
+        }
+
         phaseTime++;
 
         if (currentPhase.isBlink) {
@@ -209,6 +228,103 @@ public class TrafficLightsGroup {
             isBlinking = false;
             updateAllLights(world);
         }
+    }
+
+    /**
+     * 检查组内所有红绿灯是否完好
+     * @return true表示所有灯都在，false表示有灯被破坏
+     */
+    private boolean checkIntegrity(World world) {
+        for (Map.Entry<Direction, Map<Boolean, BlockPos>> directionEntry : lights.entrySet()) {
+            for (Map.Entry<Boolean, BlockPos> lightEntry : directionEntry.getValue().entrySet()) {
+                BlockPos pos = lightEntry.getValue();
+                if (pos != null) {
+                    BlockState state = world.getBlockState(pos);
+                    // 检查该位置的方块是否还是红绿灯方块
+                    if (!(state.getBlock() instanceof TrafficLightsBlock)) {
+                        // 检查方块是否被移除（空气或其他方块）
+                        if (state.isAir() || !(state.getBlock() instanceof TrafficLightsBlock)) {
+                            System.out.println("[TrafficLightsGroup] 检测到红绿灯被破坏! 组ID: " + groupId + " 位置: " + pos);
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 清理所有红绿灯的状态
+     */
+    private void cleanupAllLights(World world) {
+        System.out.println("[TrafficLightsGroup] 正在清理红绿灯组: " + groupId);
+
+        // 将所有灯重置为关闭状态或默认状态
+        for (Map.Entry<Direction, Map<Boolean, BlockPos>> directionEntry : lights.entrySet()) {
+            for (Map.Entry<Boolean, BlockPos> lightEntry : directionEntry.getValue().entrySet()) {
+                BlockPos pos = lightEntry.getValue();
+                if (pos != null) {
+                    BlockState state = world.getBlockState(pos);
+                    if (state.getBlock() instanceof TrafficLightsBlock) {
+                        // 设置为默认状态（例如关闭或灰色）
+                        world.setBlockState(pos, state.with(TrafficLightsBlock.LIGHT_STATE,
+                                TrafficLightsBlock.LightState.GRAY));
+                    }
+                }
+            }
+        }
+
+        // 清空内部数据结构
+        clearAllData();
+    }
+
+    /**
+     * 清空所有内部数据
+     */
+    private void clearAllData() {
+        for (Direction dir : Direction.Type.HORIZONTAL) {
+            Map<Boolean, BlockPos> dirLights = lights.get(dir);
+            if (dirLights != null) {
+                dirLights.clear();
+            }
+
+            Map<Boolean, TrafficLightsBlock.LightState> dirStates = cachedStates.get(dir);
+            if (dirStates != null) {
+                dirStates.put(true, TrafficLightsBlock.LightState.GRAY);
+                dirStates.put(false, TrafficLightsBlock.LightState.GRAY);
+            }
+        }
+    }
+
+    /**
+     * 检查是否已标记为移除
+     */
+    public boolean isMarkedForRemoval() {
+        return markedForRemoval;
+    }
+
+    /**
+     * 强制检查完整性（可用于方块破坏事件）
+     */
+    public boolean forceIntegrityCheck(World world) {
+        if (!checkIntegrity(world)) {
+            markedForRemoval = true;
+            active = false;
+            cleanupAllLights(world);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 当单个红绿灯方块被破坏时调用
+     */
+    public void onLightBroken(World world, BlockPos brokenPos) {
+        System.out.println("[TrafficLightsGroup] 红绿灯被破坏事件触发! 组ID: " + groupId + " 破坏位置: " + brokenPos);
+        markedForRemoval = true;
+        active = false;
+        cleanupAllLights(world);
     }
 
     private void updateAllLights(World world) {

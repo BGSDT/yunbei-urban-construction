@@ -352,6 +352,8 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2,RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3,RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1,RenderLayer.getCutout());
 
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
@@ -359,5 +361,7 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY, SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_ENTITY,SignGuideIntersectionAdvanceWarning1EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY, SignGuideIntersectionAdvanceWarning3EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5_ENTITY, SignGuideIntersectionAdvanceWarning5EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_LANE_INDICATOR_1_ENTITY, SignGuideLaneIndicator1EntityRenderer::new);
     }
 }

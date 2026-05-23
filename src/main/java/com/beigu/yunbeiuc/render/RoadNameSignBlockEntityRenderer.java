@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.custom.RoadNameSignBlock;
+import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1Wuhan;
 import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.client.font.TextRenderer;
@@ -61,8 +62,10 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         Direction facing = entity.getCachedState().get(RoadNameSignBlock.FACING);
         this.currentBlock = entity.getCachedState().getBlock();
 
-        renderRoadName(matrices, vertexConsumers, light, facing, chineseText, englishText, false);
-        renderRoadName(matrices, vertexConsumers, light, facing, chineseText, englishText, true);
+        renderText(matrices, vertexConsumers, light, facing, chineseText, true, 4.5f, false, false);
+        renderText(matrices, vertexConsumers, light, facing, chineseText, true, 4.5f, true, false);
+        renderText(matrices, vertexConsumers, light, facing, englishText, false, 0f, false, true);
+        renderText(matrices, vertexConsumers, light, facing, englishText, false, 0f, true, true);
 
         renderDirectionText(matrices, vertexConsumers, light, facing, "cnLeft", false, true, true);
         renderDirectionText(matrices, vertexConsumers, light, facing, "cnRight", false, false, true);
@@ -74,7 +77,7 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         renderDirectionText(matrices, vertexConsumers, light, facing, "enRightBack", true, false, false);
     }
 
-    private void renderRoadName(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String chineseText, String englishText, boolean backTF) {
+    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, boolean isBlack, float andY, boolean backTF, boolean isSmallScale) {
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
@@ -82,45 +85,31 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         if (backTF) {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
         }
-        matrices.translate(0.0, 0.0, 0.1);
-        matrices.scale(0.035f, -0.035f, 0.035f);
 
-        int chineseTextWidth = this.textRenderer.getWidth(chineseText);
-        int chineseTextHeight = this.textRenderer.fontHeight;
-        float cx = -chineseTextWidth / 2.0f;
-        float cy = -chineseTextHeight / 2.0f;
+        float scaleValue = isSmallScale ? 0.025f : 0.035f;
 
-        this.textRenderer.draw(
-                Text.literal(chineseText).setStyle(Style.EMPTY.withBold(true)),
-                cx,
-                cy - 8,
-                0xFFFFFF,
-                false,
-                matrices.peek().getPositionMatrix(),
-                vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
-                0,
-                light
-        );
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        int textWidth = this.textRenderer.getWidth(styledText);
+        int textHeight = this.textRenderer.fontHeight;
+        float zOffset = 1.5f;
 
-        matrices.scale(0.4f, 0.4f, 0.4f);
+        float centeredX = -1 * (textWidth * scaleValue) / 2f;
+        float centeredY = andY / 16f;
+        matrices.translate(centeredX, centeredY, zOffset / 16f);
 
-        int englishTextWidth = this.textRenderer.getWidth(englishText);
-        int englishTextHeight = this.textRenderer.fontHeight;
-        float ex = -englishTextWidth / 2.0f;
-        float ey = -englishTextHeight / 2.0f;
+        matrices.scale(scaleValue, -scaleValue, scaleValue);
 
-        int color = 0X000000;
+        int textColor = isSmallScale ? 0X000000 : 0xFFFFFF;
 
         if(this.currentBlock == MunicipalBlocks.ROAD_NAME_SIGN_RA){
-            color = 0xFFFFFF;
+            textColor = 0xFFFFFF;
         }
 
         this.textRenderer.draw(
-                Text.literal(englishText),
-                ex,
-                ey + 2,
-                color,
+                styledText,
+                0,
+                -textHeight / 2.0f,
+                textColor,
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
@@ -140,43 +129,46 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         if (backTF) {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
         }
-        matrices.translate(0.0, 0.0, 0.1);
-        matrices.scale(0.02f, -0.02f, 0.02f);
+        String directionText = DIRECTION_MAP.get(facing).get(directionKey);
+        Text styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true));
+        int textWidth = this.textRenderer.getWidth(styledText);
+        int textHeight = this.textRenderer.fontHeight;
+        float zOffset = 1.5f;
 
-        int x = 45;
-        int y;
+        float x = 14f;
+        float y;
         int color;
         if (!leftTF) {
             x = -x;
         }
-
         if (cnTF) {
-            y = -15;
+            y = 4f;
             color = 0xFFFFFF;
         }else{
-            y = -3;
+            y = 0f;
             color = 0x000000;
         }
+        float centeredX = x / 16f - (textWidth * 0.02f) / 2f;
+        float centeredY = y / 16f;
+        matrices.translate(centeredX, centeredY, zOffset / 16f);
+        matrices.scale(0.02f, -0.02f, 0.02f);
 
         if(this.currentBlock == MunicipalBlocks.ROAD_NAME_SIGN_RA){
             color = 0xFFFFFF;
         }
 
-        String directionText = DIRECTION_MAP.get(facing).get(directionKey);
-        if (directionText != null) {
-            this.textRenderer.draw(
-                    Text.literal(directionText),
-                    x,
-                    y,
-                    color,
-                    false,
-                    matrices.peek().getPositionMatrix(),
-                    vertexConsumers,
-                    TextRenderer.TextLayerType.NORMAL,
-                    0,
-                    light
-            );
-        }
+        this.textRenderer.draw(
+                styledText,
+                0,
+                -textHeight / 2.0f,
+                color,
+                false,
+                matrices.peek().getPositionMatrix(),
+                vertexConsumers,
+                TextRenderer.TextLayerType.NORMAL,
+                0,
+                light
+        );
 
         matrices.pop();
     }

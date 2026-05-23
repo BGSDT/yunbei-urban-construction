@@ -50,7 +50,7 @@ public class SignGuideIntersectionAdvanceWarning3 extends BlockWithEntity implem
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.sign_guide_intersection_advance_warning_3.tooltip"));
+        tooltip.add(Text.translatable("block.yunbeiuc.sign_guide_intersection_advance_warning.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 

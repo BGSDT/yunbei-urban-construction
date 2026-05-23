@@ -32,91 +32,69 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         String cnText5 = entity.getCnText5();
         String enText5 = entity.getEnText5();
 
-        if (text1 == null || text1.isEmpty()) {
-            text1 = " ";
-        }
-        if (text2 == null || text2.isEmpty()) {
-            text2 = " ";
-        }
-        if (cnText3 == null || cnText3.isEmpty()) {
-            cnText3 = " ";
-        }
-        if (enText3 == null || enText3.isEmpty()) {
-            enText3 = " ";
-        }
-        if (cnText4 == null || cnText4.isEmpty()) {
-            cnText4 = " ";
-        }
-        if (enText4 == null || enText4.isEmpty()) {
-            enText4 = " ";
-        }
-        if (cnText5 == null || cnText5.isEmpty()) {
-            cnText5 = " ";
-        }
-        if (enText5 == null || enText5.isEmpty()) {
-            enText5 = " ";
-        }
+        if (text1 == null || text1.isEmpty()) text1 = " ";
+        if (text2 == null || text2.isEmpty()) text2 = " ";
+        if (cnText3 == null || cnText3.isEmpty()) cnText3 = " ";
+        if (enText3 == null || enText3.isEmpty()) enText3 = " ";
+        if (cnText4 == null || cnText4.isEmpty()) cnText4 = " ";
+        if (enText4 == null || enText4.isEmpty()) enText4 = " ";
+        if (cnText5 == null || cnText5.isEmpty()) cnText5 = " ";
+        if (enText5 == null || enText5.isEmpty()) enText5 = " ";
         Block currentBlock = entity.getCachedState().getBlock();
 
         Direction facing = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1Wuhan.FACING);
         SignGuideIntersectionAdvanceWarning1Wuhan.Type type = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1Wuhan.TYPE);
 
         if(currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT){
-            renderText(matrices, vertexConsumers, light, facing, text1, type, true, 45, -35, true);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, true, 45, 35, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, -13, -20, false);
-            renderText(matrices, vertexConsumers, light, facing, enText3, type, false, -20, -20, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, -13, -4, false);
-            renderText(matrices, vertexConsumers, light, facing, enText4, type, false, -20, 6, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, -13, 15, false);
-            renderText(matrices, vertexConsumers, light, facing, enText5, type, false, -20, 35, true);
+            renderText(matrices, vertexConsumers, light, facing, text1, type, true, 16.5f, 12f, true);
+            renderText(matrices, vertexConsumers, light, facing, text2, type, true, 16.5f, -12f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, -6f, 12f, false);
+            renderText(matrices, vertexConsumers, light, facing, enText3, type, false, -6f, 8f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, -6f, 1f, false);
+            renderText(matrices, vertexConsumers, light, facing, enText4, type, false, -6f, -3f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, -6f, -10f, false);
+            renderText(matrices, vertexConsumers, light, facing, enText5, type, false, -6f, -14f, true);
         }else {
-            renderText(matrices, vertexConsumers, light, facing, text1, type, true, -45, -35, true);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, true, -45, 35, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, 13, -20, false);
-            renderText(matrices, vertexConsumers, light, facing, enText3, type, false, 20, -20, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, 13, -4, false);
-            renderText(matrices, vertexConsumers, light, facing, enText4, type, false, 20, 6, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, 13, 15, false);
-            renderText(matrices, vertexConsumers, light, facing, enText5, type, false, 20, 35, true);
+            renderText(matrices, vertexConsumers, light, facing, text1, type, true, -16.5f, 12f, true);
+            renderText(matrices, vertexConsumers, light, facing, text2, type, true, -16.5f, -12f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, 6f, 12f, false);
+            renderText(matrices, vertexConsumers, light, facing, enText3, type, false, 6f, 8f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, 6f, 1f, false);
+            renderText(matrices, vertexConsumers, light, facing, enText4, type, false, 6f, -3f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, 6f, -10f, false);
+            renderText(matrices, vertexConsumers, light, facing, enText5, type, false, 6f, -14f, true);
         }
     }
 
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignGuideIntersectionAdvanceWarning1Wuhan.Type type, boolean color, int andX,int andY, boolean scale) {
+    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignGuideIntersectionAdvanceWarning1Wuhan.Type type, boolean isBlue, float andX, float andY, boolean isSmallScale) {
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        float scaleValue = isSmallScale ? 0.023f : 0.035f;
+
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        int textWidth = this.textRenderer.getWidth(styledText);
+        int textHeight = this.textRenderer.fontHeight;
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
             case POLE_H -> -0.79f;
             case NORMAL -> -0.43f;
         };
-        matrices.translate(0.0, 0.0, zOffset);
-        float scale1;
-        if(scale) {
-            scale1 = 0.023f;
-        }else{
-            scale1 = 0.035f;
-        }
-        matrices.scale(scale1, -scale1, scale1);
-        int color1;
-        if (color){
-            color1 = 0X275aa8;
-        }else{
-            color1 = 0xFFFFFF;
-        }
 
-        int textWidth = this.textRenderer.getWidth(text);
-        int textHeight = this.textRenderer.fontHeight;
-        float cx = -textWidth / 2.0f;
-        float cy = -textHeight / 2.0f;
+        float centeredX = andX / 16f - (textWidth * scaleValue) / 2f;
+        float centeredY = andY / 16f;
+        matrices.translate(centeredX, centeredY, zOffset);
+
+        matrices.scale(scaleValue, -scaleValue, scaleValue);
+
+        int textColor = isBlue ? 0X275aa8 : 0xFFFFFF;
 
         this.textRenderer.draw(
-                Text.literal(text).setStyle(Style.EMPTY.withBold(true)),
-                cx + andX,
-                cy + andY,
-                color1,
+                styledText,
+                0,
+                -textHeight / 2.0f,
+                textColor,
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,

@@ -93,7 +93,7 @@ public class RoadLight extends Block {
                 world.setBlockState(pos, state.with(LIT, newLitState).with(TF_TYPE, newLightState));
             }
         }
-        return ActionResult.PASS;
+        return ActionResult.SUCCESS;
     }
 
     public enum TFType implements StringIdentifiable {

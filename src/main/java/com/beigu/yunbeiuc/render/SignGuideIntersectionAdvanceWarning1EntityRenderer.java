@@ -26,49 +26,50 @@ public class SignGuideIntersectionAdvanceWarning1EntityRenderer implements Block
         String text1 = entity.getText1();
         String text2 = entity.getText2();
 
-        if (text1 == null || text1.isEmpty()) {
-            text1 = " ";
-        }
-        if (text2 == null || text2.isEmpty()) {
-            text2 = " ";
-        }
+        if (text1 == null || text1.isEmpty()) text1 = " ";
+        if (text2 == null || text2.isEmpty()) text2 = " ";
         Block currentBlock = entity.getCachedState().getBlock();
 
         Direction facing = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1.FACING);
         SignGuideIntersectionAdvanceWarning1.Type type = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1.TYPE);
 
         if(currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2){
-            renderText(matrices, vertexConsumers, light, facing, text1, type, -30, -18);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, 5,  3);
+            renderText(matrices, vertexConsumers, light, facing, text1, type, -17f, 10f);
+            renderText(matrices, vertexConsumers, light, facing, text2, type, 3f,  -1f);
         }else {
-            renderText(matrices, vertexConsumers, light, facing, text1, type, -20, -20);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, -10, 15);
+            renderText(matrices, vertexConsumers, light, facing, text1, type, -12f, 12f);
+            renderText(matrices, vertexConsumers, light, facing, text2, type, -5f, -7f);
         }
     }
 
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignGuideIntersectionAdvanceWarning1.Type type, int andX, int andY) {
+    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignGuideIntersectionAdvanceWarning1.Type type, float andX, float andY) {
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+
+        float scaleValue = 0.035f;
+
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        int textHeight = this.textRenderer.fontHeight;
+
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
             case POLE_H -> -0.79f;
             case NORMAL -> -0.43f;
         };
-        matrices.translate(0.0, 0.0, zOffset);
-        float scale = 0.035f;
-        matrices.scale(scale, -scale, scale);
-        int color = 0xFFFFFF;
 
-        int textHeight = this.textRenderer.fontHeight;
-        float cy = -textHeight / 2.0f;
+        float leftX = andX / 16f;
+        float centeredY = andY / 16f;
+        matrices.translate(leftX, centeredY, zOffset);
+
+        matrices.scale(scaleValue, -scaleValue, scaleValue);
 
         this.textRenderer.draw(
-                Text.literal(text).setStyle(Style.EMPTY.withBold(true)),
-                andX,
-                cy + andY,
-                color,
+                styledText,
+                0,
+                -textHeight / 2.0f,
+                0xFFFFFF,
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,

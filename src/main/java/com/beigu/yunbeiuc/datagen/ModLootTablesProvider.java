@@ -539,5 +539,9 @@ public class ModLootTablesProvider extends FabricBlockLootTableProvider {
         addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT);
         addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1);
         addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2);
+        addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3);
+        addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4);
+        addDrop(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5);
+        addDrop(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1);
     }
 }

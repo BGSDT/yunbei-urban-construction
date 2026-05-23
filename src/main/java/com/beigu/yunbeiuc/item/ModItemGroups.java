@@ -567,6 +567,8 @@ public class ModItemGroups {
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2);
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3);
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5);
+                        entries.add(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1);
                     }).build());
 
     public static final ItemGroup YUNBEIUC_WAND_GROUP = Registry.register(
