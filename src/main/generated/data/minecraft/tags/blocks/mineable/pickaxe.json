@@ -520,6 +520,13 @@
     "yunbeiuc:zones_board_school_bus_1",
     "yunbeiuc:zones_board_school_bus_2",
     "yunbeiuc:zones_board_taxi",
+    "yunbeiuc:zones_board_arrow_left",
+    "yunbeiuc:zones_board_arrow_right",
+    "yunbeiuc:zones_board_two_way",
+    "yunbeiuc:zones_board_red",
+    "yunbeiuc:zones_board_yellow",
+    "yunbeiuc:zones_board_white",
+    "yunbeiuc:zones_board_image",
     "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_left",
     "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_straight",
     "yunbeiuc:sign_guide_intersection_advance_warning_1_wuhan_right",
@@ -528,6 +535,18 @@
     "yunbeiuc:sign_guide_intersection_advance_warning_3",
     "yunbeiuc:sign_guide_intersection_advance_warning_4",
     "yunbeiuc:sign_guide_intersection_advance_warning_5",
-    "yunbeiuc:sign_guide_lane_indicator_1"
+    "yunbeiuc:sign_guide_intersection_advance_warning_6",
+    "yunbeiuc:sign_guide_intersection_advance_warning_7",
+    "yunbeiuc:sign_guide_intersection_advance_warning_8",
+    "yunbeiuc:sign_guide_intersection_warning_1",
+    "yunbeiuc:sign_guide_intersection_warning_2",
+    "yunbeiuc:sign_guide_intersection_warning_3",
+    "yunbeiuc:sign_guide_intersection_warning_4",
+    "yunbeiuc:sign_guide_intersection_warning_5",
+    "yunbeiuc:sign_guide_intersection_warning_6",
+    "yunbeiuc:sign_guide_confirmation_1",
+    "yunbeiuc:sign_guide_confirmation_2",
+    "yunbeiuc:sign_guide_lane_indicator_1",
+    "yunbeiuc:sign_expressway_exit_8"
   ]
 }

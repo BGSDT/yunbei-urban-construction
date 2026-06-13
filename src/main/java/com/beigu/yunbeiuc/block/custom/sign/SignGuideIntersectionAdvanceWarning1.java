@@ -36,10 +36,20 @@ public class SignGuideIntersectionAdvanceWarning1 extends BlockWithEntity implem
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(-10, 0, 6.25, 26, 16, 9.75);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(6.25, 0, -10, 9.75, 16, 26);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(-10, 0, 6.25, 26, 16, 9.75);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(6.25, 0, -10, 9.75, 16, 26);
+    private static final VoxelShape SHAPE_POLE_L_N = Block.createCuboidShape(0, 0, 19.1, 16, 16, 20);
+    private static final VoxelShape SHAPE_POLE_L_E = Block.createCuboidShape(-2.1, 0, 0, -1, 16, 16);
+    private static final VoxelShape SHAPE_POLE_L_S = Block.createCuboidShape(0, 0, -2.1, 16, 16, -1);
+    private static final VoxelShape SHAPE_POLE_L_W = Block.createCuboidShape(20, 0, 0, 21.1, 16, 16);
+
+    private static final VoxelShape SHAPE_POLE_H_N = Block.createCuboidShape(0, 0, 20.1, 16, 16, 21);
+    private static final VoxelShape SHAPE_POLE_H_E = Block.createCuboidShape(-3.1, 0, 0, -2, 16, 16);
+    private static final VoxelShape SHAPE_POLE_H_S = Block.createCuboidShape(0, 0, -3.1, 16, 16, -2);
+    private static final VoxelShape SHAPE_POLE_H_W = Block.createCuboidShape(20, 0, 0, 21.1, 16, 16);
+
+    private static final VoxelShape SHAPE_NORMAL_N = Block.createCuboidShape(0, 0, 15.1, 16, 16, 16);
+    private static final VoxelShape SHAPE_NORMAL_S = Block.createCuboidShape(0, 0, 0, 16, 16, 0.9);
+    private static final VoxelShape SHAPE_NORMAL_E = Block.createCuboidShape(0, 0, 0, 0.9, 16, 16);
+    private static final VoxelShape SHAPE_NORMAL_W = Block.createCuboidShape(15.1, 0, 0, 16, 16, 16);
 
     public SignGuideIntersectionAdvanceWarning1(Settings settings) {
         super(settings);
@@ -78,11 +88,27 @@ public class SignGuideIntersectionAdvanceWarning1 extends BlockWithEntity implem
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return switch (state.get(FACING)) {
-            case SOUTH -> SHAPE_S;
-            case EAST -> SHAPE_E;
-            case WEST -> SHAPE_W;
-            default -> SHAPE_N;
+        Direction facing = state.get(FACING);
+        Type type = state.get(TYPE);
+        return switch (type) {
+            case POLE_L -> switch (facing) {
+                case SOUTH -> SHAPE_POLE_L_S;
+                case EAST -> SHAPE_POLE_L_E;
+                case WEST -> SHAPE_POLE_L_W;
+                default -> SHAPE_POLE_L_N;
+            };
+            case POLE_H -> switch (facing) {
+                case SOUTH -> SHAPE_POLE_H_S;
+                case EAST -> SHAPE_POLE_H_E;
+                case WEST -> SHAPE_POLE_H_W;
+                default -> SHAPE_POLE_H_N;
+            };
+            case NORMAL -> switch (facing) {
+                case SOUTH -> SHAPE_NORMAL_S;
+                case EAST -> SHAPE_NORMAL_E;
+                case WEST -> SHAPE_NORMAL_W;
+                default -> SHAPE_NORMAL_N;
+            };
         };
     }
 

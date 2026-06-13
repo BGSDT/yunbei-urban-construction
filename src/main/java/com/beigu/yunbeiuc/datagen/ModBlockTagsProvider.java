@@ -538,6 +538,13 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_1)
                 .add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2)
                 .add(SignBlocks.ZONES_BOARD_TAXI)
+                .add(SignBlocks.ZONES_BOARD_ARROW_LEFT)
+                .add(SignBlocks.ZONES_BOARD_ARROW_RIGHT)
+                .add(SignBlocks.ZONES_BOARD_TWO_WAY)
+                .add(SignBlocks.ZONES_BOARD_RED)
+                .add(SignBlocks.ZONES_BOARD_YELLOW)
+                .add(SignBlocks.ZONES_BOARD_WHITE)
+                .add(SignBlocks.ZONES_BOARD_IMAGE)
 
                 .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT)
                 .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT)
@@ -547,7 +554,20 @@ public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
                 .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3)
                 .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4)
                 .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5)
-                .add(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1);
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_1)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_2)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_3)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_5)
+                .add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_6)
+                .add(SignBlocks.SIGN_GUIDE_CONFIRMATION_1)
+                .add(SignBlocks.SIGN_GUIDE_CONFIRMATION_2)
+                .add(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1)
+
+                .add(SignBlocks.SIGN_EXPRESSWAY_EXIT_8);
 
 
         getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)

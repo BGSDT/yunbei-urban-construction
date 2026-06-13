@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gate;
 
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
+import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -101,7 +102,7 @@ public class BarrierGate1PoleHorizontal extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!world.isClient) {
+        if (!world.isClient && player.getStackInHand(hand).isOf(ModItems.WAND)) {
             world.setBlockState(pos, state.cycle(GATE_TYPE), 3);
         }
         return ActionResult.SUCCESS;

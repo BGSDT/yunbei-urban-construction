@@ -3,7 +3,7 @@ package com.beigu.yunbeiuc.screen;
 import com.beigu.yunbeiuc.render.json.CustomFlag;
 import com.beigu.yunbeiuc.render.json.FlagLoader;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.UpdateFlagPacket;
+import com.beigu.yunbeiuc.network.FlagUpdatePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
@@ -266,7 +266,7 @@ public class FlagSelectionScreen extends Screen {
             // 发送网络数据包到服务器
             if (client != null && client.getNetworkHandler() != null) {
                 PacketByteBuf buf = PacketByteBufs.create();
-                new UpdateFlagPacket(blockPos, selectedFlag.getId()).write(buf);
+                new FlagUpdatePacket(blockPos, selectedFlag.getId()).write(buf);
                 ClientPlayNetworking.send(ModMessages.UPDATE_FLAG, buf);
             }
 

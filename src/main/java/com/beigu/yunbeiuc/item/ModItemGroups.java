@@ -559,6 +559,13 @@ public class ModItemGroups {
                         entries.add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_1);
                         entries.add(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2);
                         entries.add(SignBlocks.ZONES_BOARD_TAXI);
+                        entries.add(SignBlocks.ZONES_BOARD_ARROW_LEFT);
+                        entries.add(SignBlocks.ZONES_BOARD_ARROW_RIGHT);
+                        entries.add(SignBlocks.ZONES_BOARD_TWO_WAY);
+                        entries.add(SignBlocks.ZONES_BOARD_RED);
+                        entries.add(SignBlocks.ZONES_BOARD_YELLOW);
+                        entries.add(SignBlocks.ZONES_BOARD_WHITE);
+                        entries.add(SignBlocks.ZONES_BOARD_IMAGE);
 
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT);
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT);
@@ -568,7 +575,20 @@ public class ModItemGroups {
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3);
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4);
                         entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_1);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_2);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_3);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_5);
+                        entries.add(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_6);
+                        entries.add(SignBlocks.SIGN_GUIDE_CONFIRMATION_1);
+                        entries.add(SignBlocks.SIGN_GUIDE_CONFIRMATION_2);
                         entries.add(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1);
+
+                        entries.add(SignBlocks.SIGN_EXPRESSWAY_EXIT_8);
                     }).build());
 
     public static final ItemGroup YUNBEIUC_WAND_GROUP = Registry.register(

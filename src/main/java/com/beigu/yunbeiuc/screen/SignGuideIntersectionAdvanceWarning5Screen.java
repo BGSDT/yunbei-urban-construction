@@ -25,10 +25,10 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
     private float text3AndY = 0f;
     private float text4AndY = 0f;
 
-    private ButtonWidget text1YButton;
-    private ButtonWidget text2YButton;
-    private ButtonWidget text3YButton;
-    private ButtonWidget text4YButton;
+    private ValueAdjustButton text1YButton;
+    private ValueAdjustButton text2YButton;
+    private ValueAdjustButton text3YButton;
+    private ValueAdjustButton text4YButton;
 
     private static final int PANEL_WIDTH = 320;
     private static final int PANEL_HEIGHT = 245;
@@ -108,10 +108,10 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
         this.addSelectableChild(this.text4TextField);
 
         this.text1YButton = this.addDrawableChild(
-                new YValueButton(
+                new ValueAdjustButton(
                         panelX + 220, panelY + 40,
                         24, 24,
-                        text1AndY,
+                        text1AndY, "Y",
                         button -> {},
                         (button, isLeftClick) -> {
                             if (isLeftClick) {
@@ -119,16 +119,16 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
                             } else {
                                 text1AndY -= 1.0f;
                             }
-                            ((YValueButton) button).setYValue(text1AndY);
+                            ((ValueAdjustButton) button).setValue(text1AndY);
                         }
                 )
         );
 
         this.text2YButton = this.addDrawableChild(
-                new YValueButton(
+                new ValueAdjustButton(
                         panelX + 220, panelY + 85,
                         24, 24,
-                        text2AndY,
+                        text2AndY, "Y",
                         button -> {},
                         (button, isLeftClick) -> {
                             if (isLeftClick) {
@@ -136,16 +136,16 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
                             } else {
                                 text2AndY -= 1.0f;
                             }
-                            ((YValueButton) button).setYValue(text2AndY);
+                            ((ValueAdjustButton) button).setValue(text2AndY);
                         }
                 )
         );
 
         this.text3YButton = this.addDrawableChild(
-                new YValueButton(
+                new ValueAdjustButton(
                         panelX + 220, panelY + 130,
                         24, 24,
-                        text3AndY,
+                        text3AndY, "Y",
                         button -> {},
                         (button, isLeftClick) -> {
                             if (isLeftClick) {
@@ -153,16 +153,16 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
                             } else {
                                 text3AndY -= 1.0f;
                             }
-                            ((YValueButton) button).setYValue(text3AndY);
+                            ((ValueAdjustButton) button).setValue(text3AndY);
                         }
                 )
         );
 
         this.text4YButton = this.addDrawableChild(
-                new YValueButton(
+                new ValueAdjustButton(
                         panelX + 220, panelY + 175,
                         24, 24,
-                        text4AndY,
+                        text4AndY, "Y",
                         button -> {},
                         (button, isLeftClick) -> {
                             if (isLeftClick) {
@@ -170,7 +170,7 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
                             } else {
                                 text4AndY -= 1.0f;
                             }
-                            ((YValueButton) button).setYValue(text4AndY);
+                            ((ValueAdjustButton) button).setValue(text4AndY);
                         }
                 )
         );
@@ -291,9 +291,9 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (var child : this.children()) {
-            if (child instanceof YValueButton yButton && child.isMouseOver(mouseX, mouseY)) {
+            if (child instanceof ValueAdjustButton valueButton && child.isMouseOver(mouseX, mouseY)) {
                 if (button == 1) {
-                    yButton.onClick(false);
+                    valueButton.onClick(false);
                     return true;
                 }
             }

@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
+import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideLaneIndicator1;
 import com.beigu.yunbeiuc.entity.SignGuideLaneIndicator1Entity;
 import net.minecraft.client.font.TextRenderer;
@@ -24,9 +25,9 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private static final Identifier ARROW_LEFT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/lane_arrow_left.png");
-    private static final Identifier ARROW_STRAIGHT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/lane_arrow_straight.png");
-    private static final Identifier ARROW_RIGHT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/lane_arrow_right.png");
+    private static final Identifier ARROW_LEFT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_left.png");
+    private static final Identifier ARROW_STRAIGHT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight.png");
+    private static final Identifier ARROW_RIGHT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_right.png");
 
     @Override
     public void render(SignGuideLaneIndicator1Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -38,19 +39,13 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         Direction facing = entity.getCachedState().get(SignGuideLaneIndicator1.FACING);
         SignGuideLaneIndicator1.Type type = entity.getCachedState().get(SignGuideLaneIndicator1.TYPE);
 
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.79f;
-            case NORMAL -> -0.43f;
-        };
-
-        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction1, -18f, 3f, zOffset);
-        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction2, -6f, 3f, zOffset);
-        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction3, 6f, 3f, zOffset);
-        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction4, 18f, 3f, zOffset);
+        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction1, -18f, 3f, type);
+        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction2, -6f, 3f, type);
+        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction3, 6f, 3f, type);
+        renderArrow(matrices, vertexConsumers, light, overlay, facing, direction4, 18f, 3f, type);
     }
 
-    private void renderArrow(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignGuideLaneIndicator1Entity.Direction direction, float andX, float andY, float zOffset) {
+    private void renderArrow(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignGuideLaneIndicator1Entity.Direction direction, float andX, float andY, SignGuideLaneIndicator1.Type type) {
         Identifier texture = switch (direction) {
             case LEFT -> ARROW_LEFT;
             case STRAIGHT -> ARROW_STRAIGHT;
@@ -58,6 +53,12 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         };
 
         matrices.push();
+
+        float zOffset = switch (type) {
+            case POLE_L -> -0.75f;
+            case POLE_H -> -0.79f;
+            case NORMAL -> -0.43f;
+        };
 
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
@@ -73,7 +74,6 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        // 翻转 V 坐标：原本 0→1 和 1→0 互换
         consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
         consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
         consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();

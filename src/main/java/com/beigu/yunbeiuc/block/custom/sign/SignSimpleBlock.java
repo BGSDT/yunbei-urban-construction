@@ -25,18 +25,20 @@ public class SignSimpleBlock extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 
-    private static final VoxelShape SHAPE_POLE_L_N = Block.createCuboidShape(0, 0, 20.1, 16, 16, 21);
-    private static final VoxelShape SHAPE_POLE_L_E = Block.createCuboidShape(-5.1, 0, 0, -4, 16, 16);
-    private static final VoxelShape SHAPE_POLE_L_S = Block.createCuboidShape(0, 0, -5.1, 16, 16, -4);
-    private static final VoxelShape SHAPE_POLE_L_W = Block.createCuboidShape(21, 0, 0, 22.1, 16, 16);
-    private static final VoxelShape SHAPE_POLE_H_N = Block.createCuboidShape(0, 0, 21.1, 16, 16, 22);
-    private static final VoxelShape SHAPE_POLE_H_E = Block.createCuboidShape(-5.1, 0, 0, -4, 16, 16);
-    private static final VoxelShape SHAPE_POLE_H_S = Block.createCuboidShape(0, 0, -5.1, 16, 16, -4);
-    private static final VoxelShape SHAPE_POLE_H_W = Block.createCuboidShape(21, 0, 0, 22.1, 16, 16);
+    private static final VoxelShape SHAPE_POLE_L_N = Block.createCuboidShape(0, 0, 19.1, 16, 16, 20);
+    private static final VoxelShape SHAPE_POLE_L_E = Block.createCuboidShape(-2.1, 0, 0, -1, 16, 16);
+    private static final VoxelShape SHAPE_POLE_L_S = Block.createCuboidShape(0, 0, -2.1, 16, 16, -1);
+    private static final VoxelShape SHAPE_POLE_L_W = Block.createCuboidShape(20, 0, 0, 21.1, 16, 16);
+
+    private static final VoxelShape SHAPE_POLE_H_N = Block.createCuboidShape(0, 0, 20.1, 16, 16, 21);
+    private static final VoxelShape SHAPE_POLE_H_E = Block.createCuboidShape(-3.1, 0, 0, -2, 16, 16);
+    private static final VoxelShape SHAPE_POLE_H_S = Block.createCuboidShape(0, 0, -3.1, 16, 16, -2);
+    private static final VoxelShape SHAPE_POLE_H_W = Block.createCuboidShape(20, 0, 0, 21.1, 16, 16);
+
     private static final VoxelShape SHAPE_NORMAL_N = Block.createCuboidShape(0, 0, 15.1, 16, 16, 16);
-    private static final VoxelShape SHAPE_NORMAL_E = Block.createCuboidShape(-5.1, 0, 0, -4, 16, 16);
-    private static final VoxelShape SHAPE_NORMAL_S = Block.createCuboidShape(0, 0, -5.1, 16, 16, -4);
-    private static final VoxelShape SHAPE_NORMAL_W = Block.createCuboidShape(21, 0, 0, 22.1, 16, 16);
+    private static final VoxelShape SHAPE_NORMAL_S = Block.createCuboidShape(0, 0, 0, 16, 16, 0.9);
+    private static final VoxelShape SHAPE_NORMAL_E = Block.createCuboidShape(0, 0, 0, 0.9, 16, 16);
+    private static final VoxelShape SHAPE_NORMAL_W = Block.createCuboidShape(15.1, 0, 0, 16, 16, 16);
 
     public SignSimpleBlock(Settings settings) {
         super(settings);

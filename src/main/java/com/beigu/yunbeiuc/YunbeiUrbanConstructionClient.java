@@ -76,9 +76,9 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.WARNING_NETWORK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.WARNING_NETWORK_POLE, RenderLayer.getCutout());
 
-        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, RenderLayer.getTranslucent());
-        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getTranslucent());
-        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, RenderLayer.getCutout());
 
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_WHITE_NORMAL, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_1_WHITE_TB, RenderLayer.getTranslucent());
@@ -344,6 +344,13 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_SCHOOL_BUS_1, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_SCHOOL_BUS_2, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_TAXI, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_ARROW_LEFT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_ARROW_RIGHT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_TWO_WAY, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_RED, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_YELLOW, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_WHITE, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.ZONES_BOARD_IMAGE, RenderLayer.getCutout());
 
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT,RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT,RenderLayer.getCutout());
@@ -353,7 +360,19 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3,RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4,RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_1,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_2,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_3,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_5,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_6,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_CONFIRMATION_1,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_CONFIRMATION_2,RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_EXIT_8,RenderLayer.getCutout());
 
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
@@ -362,6 +381,14 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_ENTITY,SignGuideIntersectionAdvanceWarning1EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY, SignGuideIntersectionAdvanceWarning3EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5_ENTITY, SignGuideIntersectionAdvanceWarning5EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6_ENTITY, SignGuideIntersectionAdvanceWarning6EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7_ENTITY, SignGuideIntersectionAdvanceWarning7EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_WARNING_1_ENTITY, SignGuideIntersectionWarning1EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_WARNING_4_ENTITY, SignGuideIntersectionWarning4EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_CONFIRMATION_1_ENTITY, SignGuideConfirmation1EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_LANE_INDICATOR_1_ENTITY, SignGuideLaneIndicator1EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_8_ENTITY, SignExpresswayExit8EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_1_ENTITY, ZonesBoard1EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_2_ENTITY, ZonesBoard2EntityRenderer::new);
     }
 }
