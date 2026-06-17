@@ -1,9 +1,7 @@
 ---
 name: Bug 反馈
-about: 在使用 云北城建 的过程中遇到了 Bug。
-title: ''
+description: 在使用 云北城建 的过程中遇到了 Bug。
 labels: bug
-assignees: BGSDT, Rolling-Catawa
 body:
   - type: markdown
     attributes:
