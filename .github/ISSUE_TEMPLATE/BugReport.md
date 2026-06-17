@@ -1,6 +1,5 @@
 name: Bug 反馈
 description: 在使用 云北城建 的过程中遇到了 Bug。
-title: （将此栏【替换】为你的标题）
 labels: bug
 type: Bug
 body:
