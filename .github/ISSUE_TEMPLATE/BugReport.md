@@ -1,7 +1,7 @@
 name: Bug 反馈
-description: 在使用 云北城建 的过程中遇到了 Bug。
+about: 在使用 云北城建 的过程中遇到了 Bug。
+title: ''
 labels: bug
-type: Bug
 body:
   - type: markdown
     attributes:
