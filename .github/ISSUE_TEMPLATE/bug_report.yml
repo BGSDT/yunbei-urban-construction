@@ -1,7 +1,8 @@
+---
 name: Bug 反馈
-about: 在使用 云北城建 的过程中遇到了 Bug。
-title: ''
-labels: bug
+description: 在使用 云北城建 的过程中遇到了 Bug。
+labels: ["Bug"]
+type: Bug
 body:
   - type: markdown
     attributes:
@@ -31,16 +32,21 @@ body:
       value: |
         ### Bug 信息
 
-        描述你所发现的 Bug。
-        1. 游戏日志：请附上完整的游戏日志文件，如遇到崩溃以及闪退等问题，可以并附带 crash 信息。
-        2. 模组版本：请明确说明您使用的游戏版本号。
+        描述您遇到的 Bug。你可以附上截图、录屏、日志等材料，便于开发者追踪问题。
 
         > [!note]
         > 上传附件时请使用 GitHub 的附件系统上传附件，将需要上传的附件粘贴或拖动到撰写区域即可上传。多个文件可打包为 zip 格式后上传。
   - type: textarea
+    id: what-happened
+    attributes:
+      label: 实际结果
+      description: 请详细描述你在游戏过程中遇到的此 Bug。
+    validations:
+      required: true
+  - type: textarea
     id: excepted
     attributes:
-      label: 正确的行为
+      label: 正确的结果
       description: 详细的描述你心中认为此问题中应该修复后的效果。
     validations:
       required: true
@@ -65,9 +71,11 @@ body:
   - type: textarea
     id: stacktrace
     attributes:
-      label: 堆栈跟踪（可选）
-      description: 如果在遇到这个 Bug 时发生了崩溃，部分启动器会给出可能的错误原因，请将产生的信息粘贴到此处，辅助开发者定位原因。
+      label: 日志提交
+      description: 请上传游戏日志文件（作附件上传），并且在文本输入框中写出游戏版本与模组版本。
       render: shell
+    validations:
+      required: true
   - type: checkboxes
     id: revision
     attributes:
@@ -76,3 +84,4 @@ body:
       options:
         - label: 我认为上述的描述已经十分详细，能够让开发人员能复现该问题且修复此 Bug。如果我的 issue 没有按照上述的要求填写，可能会被无视。
           required: true
+---
