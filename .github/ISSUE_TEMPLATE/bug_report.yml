@@ -71,7 +71,6 @@ body:
     attributes:
       label: 日志提交
       description: 请上传游戏日志文件（作附件上传），并且在文本输入框中写出游戏版本与模组版本。
-      render: shell
     validations:
       required: true
   - type: checkboxes
