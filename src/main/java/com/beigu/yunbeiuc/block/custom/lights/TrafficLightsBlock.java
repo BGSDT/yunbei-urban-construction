@@ -11,6 +11,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +27,7 @@ import java.util.List;
 public class TrafficLightsBlock extends Block {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.traffic_lights.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -72,7 +74,7 @@ public class TrafficLightsBlock extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     public enum LightState implements StringIdentifiable {

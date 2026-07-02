@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -21,7 +23,7 @@ public class RotatedWand extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.translatable("item.yunbeiuc.rotated_wand.tooltip"));
+        tooltip.add(new TranslatableText("item.yunbeiuc.rotated_wand.tooltip"));
         super.appendTooltip(stack, world, tooltip, context);
     }
 

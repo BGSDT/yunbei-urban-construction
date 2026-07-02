@@ -36,10 +36,10 @@ import com.beigu.yunbeiuc.block.custom.waring.WarningNetworkPole;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class MunicipalBlocks {
@@ -61,21 +61,21 @@ public class MunicipalBlocks {
     public static final Block ROAD_LIGHT_2 = register("road_light_2", new RoadLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
     public static final Block ROAD_SOLAR_PANEL = register("road_solar_panel", new RoadSolarPanel(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
 
-    public static final Block ROAD_DETECTION_CAMERA = register("road_detection_camera",new RoadDetectionCamera(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block ROAD_LIGHTING_LAMP = register("road_lighting_lamp",new RoadLightingLamp(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block ROAD_RADAR_SPEED_DETECTOR = register("road_radar_speed_detector",new RoadRadarSpeedDetector(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_DETECTION_CAMERA = register("road_detection_camera",new RoadDetectionCamera(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_LIGHTING_LAMP = register("road_lighting_lamp",new RoadLightingLamp(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_RADAR_SPEED_DETECTOR = register("road_radar_speed_detector",new RoadRadarSpeedDetector(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
-    public static final Block TRAFFIC_LIGHTS_STRAIGHT = register("traffic_lights_straight",new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
-    public static final Block TRAFFIC_LIGHTS_LEFT = register("traffic_lights_left",new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
-    public static final Block TRAFFIC_LIGHTS_PAVEMENT = register("traffic_lights_pavement",new TrafficLightsPavement(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final Block TRAFFIC_LIGHTS_STRAIGHT = register("traffic_lights_straight",new TrafficLightsBlock(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final Block TRAFFIC_LIGHTS_LEFT = register("traffic_lights_left",new TrafficLightsBlock(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final Block TRAFFIC_LIGHTS_PAVEMENT = register("traffic_lights_pavement",new TrafficLightsPavement(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
 
-    public static final Block TRAFFIC_CONE = register("traffic_cone",new TrafficCone(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block ROAD_COLLISION_BARREL = register("road_collision_barrel",new RoadCollisionBarrel(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block WATER_SAFETY_BARRIER_RED = register("water_safety_barrier_red",new WaterSafetyBarrier(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block TRAFFIC_CONE = register("traffic_cone",new TrafficCone(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_COLLISION_BARREL = register("road_collision_barrel",new RoadCollisionBarrel(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block WATER_SAFETY_BARRIER_RED = register("water_safety_barrier_red",new WaterSafetyBarrier(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
-    public static final Block SPEED_BUMP = register("speed_bump",new SpeedBump(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block VIBRATION_MARKING_LINE = register("vibration_marking_line",new VibrationMarkingLine(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block PARKING_SPACE_BARRIER = register("parking_space_barrier",new ParkingSpaceBarrier(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block SPEED_BUMP = register("speed_bump",new SpeedBump(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block VIBRATION_MARKING_LINE = register("vibration_marking_line",new VibrationMarkingLine(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block PARKING_SPACE_BARRIER = register("parking_space_barrier",new ParkingSpaceBarrier(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
     public static final Block GANTRY_FRAME_SIDE = register("gantry_frame_side", new GantryFrameSide(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final Block GANTRY_FRAME_CONNECTION = register("gantry_frame_connection", new GantryFrameConnection(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
@@ -171,12 +171,12 @@ public class MunicipalBlocks {
     public static final Block ROAD_RAILINGS_GREEN_POLE = register("road_railings_green_pole", new RoadRailingsPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_RAILINGS_GREEN_OBLIQUE = register("road_railings_green_oblique", new RoadRailingsOblique(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
-    public static final Block ROAD_FLOWER_BOX_1 = register("road_flower_box_1",new RoadFlowerBox1(AbstractBlock.Settings.create().strength( 1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block ROAD_FLOWER_BOX_2 = register("road_flower_box_2",new DirectionBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block ROAD_FLOWER_BOX_2_FENCE = register("road_flower_box_2_fence",new RoadFlowerBox2Fence(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_FLOWER_BOX_1 = register("road_flower_box_1",new RoadFlowerBox1(AbstractBlock.Settings.of(Material.AIR).strength( 1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_FLOWER_BOX_2 = register("road_flower_box_2",new DirectionBlock(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block ROAD_FLOWER_BOX_2_FENCE = register("road_flower_box_2_fence",new RoadFlowerBox2Fence(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
-    public static final Block RUBBISH_BIN_WHITE = register("rubbish_bin_white",new RubbishBinWhite(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
-    public static final Block RUBBISH_BIN_GRAY_GREEN = register("rubbish_bin_gray_green",new RubbishBinGrayGreen(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block RUBBISH_BIN_WHITE = register("rubbish_bin_white",new RubbishBinWhite(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
+    public static final Block RUBBISH_BIN_GRAY_GREEN = register("rubbish_bin_gray_green",new RubbishBinGrayGreen(AbstractBlock.Settings.of(Material.AIR).strength(1.25F, 4.2F).requiresTool().nonOpaque()));
 
     public static final Block ROAD_CLOSED_BARRICADE_GUARDRAIL_1 = register("road_closed_barricade_guardrail_1", new RoadClosedBarricadeGuardrail1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final Block ROAD_CLOSED_BARRICADE_GUARDRAIL_2 = register("road_closed_barricade_guardrail_2", new RoadClosedBarricadeGuardrail2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
@@ -199,11 +199,11 @@ public class MunicipalBlocks {
 
     public static Block register(String id, Block block) {
         registerBlockItems(id, block);
-        return Registry.register(Registries.BLOCK, new Identifier(YunbeiUrbanConstruction.MOD_ID, id), block);
+        return Registry.register(Registry.BLOCK, new Identifier(YunbeiUrbanConstruction.MOD_ID, id), block);
     }
 
     public static void registerBlockItems(String id, Block block) {
-        Registry.register(Registries.ITEM, new Identifier(YunbeiUrbanConstruction.MOD_ID, id),
+        Registry.register(Registry.ITEM, new Identifier(YunbeiUrbanConstruction.MOD_ID, id),
                 new BlockItem(block, new Item.Settings()));
     }
 

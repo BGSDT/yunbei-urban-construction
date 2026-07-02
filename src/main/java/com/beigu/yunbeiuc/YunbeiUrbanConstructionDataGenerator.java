@@ -7,13 +7,12 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 public class YunbeiUrbanConstructionDataGenerator implements DataGeneratorEntrypoint {
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
-		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
-		pack.addProvider(ModBlockTagsProvider::new);
-		pack.addProvider(ModItemTagsProvider::new);
-		pack.addProvider(ModEnUsLangProvider::new);
-		pack.addProvider(ModLootTablesProvider::new);
-		pack.addProvider(ModModelsProvider::new);
-		pack.addProvider(ModRecipesProvider::new);
-		pack.addProvider(ModZhCnLangProvider::new);
+		fabricDataGenerator.addProvider(ModBlockTagsProvider::new);
+		fabricDataGenerator.addProvider(ModItemTagsProvider::new);
+		fabricDataGenerator.addProvider(ModEnUsLangProvider::new);
+		fabricDataGenerator.addProvider(ModLootTablesProvider::new);
+		fabricDataGenerator.addProvider(ModModelsProvider::new);
+		fabricDataGenerator.addProvider(ModRecipesProvider::new);
+		fabricDataGenerator.addProvider(ModZhCnLangProvider::new);
 	}
 }

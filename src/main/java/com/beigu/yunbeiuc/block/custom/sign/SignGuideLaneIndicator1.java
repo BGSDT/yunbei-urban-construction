@@ -20,6 +20,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -60,7 +62,7 @@ public class SignGuideLaneIndicator1 extends BlockWithEntity implements BlockEnt
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.sign_guide_intersection_advance_warning.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.sign_guide_intersection_advance_warning.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -117,7 +119,7 @@ public class SignGuideLaneIndicator1 extends BlockWithEntity implements BlockEnt
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getBlockPos();
-        Direction facing = ctx.getHorizontalPlayerFacing().getOpposite();
+        Direction facing = ctx.getPlayerFacing().getOpposite();
 
         // 获取后面的方块位置
         BlockPos behindPos = pos.offset(facing.getOpposite());

@@ -7,8 +7,8 @@ import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 
 
 public class YunbeiUrbanConstructionClient implements ClientModInitializer {
@@ -374,21 +374,21 @@ public class YunbeiUrbanConstructionClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1,RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_EXIT_8,RenderLayer.getCutout());
 
-        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY, RoadNameSignBlockEntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY, SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_ENTITY,SignGuideIntersectionAdvanceWarning1EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY, SignGuideIntersectionAdvanceWarning3EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5_ENTITY, SignGuideIntersectionAdvanceWarning5EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6_ENTITY, SignGuideIntersectionAdvanceWarning6EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7_ENTITY, SignGuideIntersectionAdvanceWarning7EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_WARNING_1_ENTITY, SignGuideIntersectionWarning1EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_WARNING_4_ENTITY, SignGuideIntersectionWarning4EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_CONFIRMATION_1_ENTITY, SignGuideConfirmation1EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_LANE_INDICATOR_1_ENTITY, SignGuideLaneIndicator1EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_8_ENTITY, SignExpresswayExit8EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_1_ENTITY, ZonesBoard1EntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_2_ENTITY, ZonesBoard2EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY, RoadPoleTextDisplayBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.FLAG_BLOCK_ENTITY, FlagBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY, RoadNameSignBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY, SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_ENTITY,SignGuideIntersectionAdvanceWarning1EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY, SignGuideIntersectionAdvanceWarning3EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5_ENTITY, SignGuideIntersectionAdvanceWarning5EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6_ENTITY, SignGuideIntersectionAdvanceWarning6EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7_ENTITY, SignGuideIntersectionAdvanceWarning7EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_WARNING_1_ENTITY, SignGuideIntersectionWarning1EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_WARNING_4_ENTITY, SignGuideIntersectionWarning4EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_CONFIRMATION_1_ENTITY, SignGuideConfirmation1EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_GUIDE_LANE_INDICATOR_1_ENTITY, SignGuideLaneIndicator1EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_8_ENTITY, SignExpresswayExit8EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.ZONES_BOARD_1_ENTITY, ZonesBoard1EntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ModBlockEntities.ZONES_BOARD_2_ENTITY, ZonesBoard2EntityRenderer::new);
     }
 }

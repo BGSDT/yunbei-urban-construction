@@ -15,6 +15,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -44,7 +46,7 @@ public class RoadLightHighMast extends Block {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.road_light.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.road_light.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 

@@ -22,6 +22,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -53,7 +55,7 @@ public class RoadNameSignBlock extends BlockWithEntity implements BlockEntityPro
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.road_name_sign.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.road_name_sign.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -91,7 +93,7 @@ public class RoadNameSignBlock extends BlockWithEntity implements BlockEntityPro
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        Direction facing = ctx.getHorizontalPlayerFacing().getOpposite();
+        Direction facing = ctx.getPlayerFacing().getOpposite();
         BGType bgType = switch (facing) {
             case EAST, WEST -> BGType.BLUE;
             case NORTH, SOUTH -> BGType.GREEN;

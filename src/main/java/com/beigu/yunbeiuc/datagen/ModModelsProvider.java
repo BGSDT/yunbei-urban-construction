@@ -3,14 +3,14 @@ package com.beigu.yunbeiuc.datagen;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.data.client.*;
 
 public class ModModelsProvider extends FabricModelProvider {
 
-    public ModModelsProvider(FabricDataOutput output) {
-        super(output);
+    public ModModelsProvider(FabricDataGenerator dataGenerator) {
+        super(dataGenerator);
     }
 
     @Override

@@ -7,12 +7,15 @@ import com.beigu.yunbeiuc.network.FlagUpdatePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -55,7 +58,7 @@ public class FlagSelectionScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         // 绘制背景
         super.renderBackground(context);
 
@@ -69,9 +72,10 @@ public class FlagSelectionScreen extends Screen {
         int listAreaLeft = 0;
 
         // 标题在列表区域内居中
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.flag_selection.title"),
+                new TranslatableText("text.yunbeiuc.flag_selection.title"),
                 listAreaLeft + listAreaWidth / 2,
                 10,
                 0xFFFFFF
@@ -79,9 +83,10 @@ public class FlagSelectionScreen extends Screen {
 
         // 当前选择信息在列表区域内左对齐
         if (selectedFlag != null) {
-            context.drawTextWithShadow(
+            DrawableHelper.drawTextWithShadow(
+                    context, 
                     this.textRenderer,
-                    Text.translatable("text.yunbeiuc.flag_selection.current_selection", selectedFlag.getName()),
+                    new TranslatableText("text.yunbeiuc.flag_selection.current_selection", selectedFlag.getName()),
                     listAreaLeft + 10,
                     this.height - 55,
                     0xFFFFFF
@@ -92,7 +97,7 @@ public class FlagSelectionScreen extends Screen {
         drawPreviewPanel(context);
     }
 
-    private void drawPreviewPanel(DrawContext context) {
+    private void drawPreviewPanel(MatrixStack context) {
         int panelWidth = 200;
         int panelHeight = 230;
 
@@ -101,15 +106,16 @@ public class FlagSelectionScreen extends Screen {
         int panelY = (this.height - panelHeight) / 2;
 
         // 绘制面板底色（深灰色半透明）
-        context.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xAA333333);
 
         // 绘制面板边框（浅灰色）
-        context.drawBorder(panelX, panelY, panelWidth, panelHeight, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, panelWidth, panelHeight, 0xFFCCCCCC);
 
         // 面板标题
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.flag_selection.preview_panel"),
+                new TranslatableText("text.yunbeiuc.flag_selection.preview_panel"),
                 panelX + panelWidth / 2,
                 panelY + 10,
                 0xFFFFFF
@@ -127,25 +133,27 @@ public class FlagSelectionScreen extends Screen {
             int previewY = panelY + 35;
 
             // 绘制预览图背景框 - 贴合缩放后的图片尺寸
-            context.fill(previewX - 2, previewY - 2, previewX + scaledWidth + 2, previewY + scaledHeight + 2, 0xFF000000);
-            context.drawBorder(previewX - 2, previewY - 2, scaledWidth + 4, scaledHeight + 4, 0xFFFFFFFF);
+            DrawableHelper.fill(context, previewX - 2, previewY - 2, previewX + scaledWidth + 2, previewY + scaledHeight + 2, 0xFF000000);
+            DrawableHelper.fill(context, previewX - 2, previewY - 2, scaledWidth + 4, scaledHeight + 4, 0xFFFFFFFF);
 
             // 绘制旗帜预览图
             drawFlagPreview(context, previewX, previewY, previewSize);
 
             // 旗帜名称
-            context.drawCenteredTextWithShadow(
+            DrawableHelper.drawCenteredText(
+                    context, 
                     this.textRenderer,
-                    Text.literal(selectedFlag.getName()),
+                    new LiteralText(selectedFlag.getName()),
                     panelX + panelWidth / 2,
                     previewY + scaledHeight + 10,
                     0xFFFFFF
             );
 
             // 旗帜ID（颜色较浅）
-            context.drawCenteredTextWithShadow(
+            DrawableHelper.drawCenteredText(
+                    context, 
                     this.textRenderer,
-                    Text.literal("ID: " + selectedFlag.getId()),
+                    new LiteralText("ID: " + selectedFlag.getId()),
                     panelX + panelWidth / 2,
                     previewY + scaledHeight + 25,
                     0xAAAAAA
@@ -158,13 +166,14 @@ public class FlagSelectionScreen extends Screen {
             int saveButtonY = panelY + panelHeight - 40;
 
             // 绘制保存按钮背景
-            context.fill(saveButtonX, saveButtonY, saveButtonX + saveButtonWidth, saveButtonY + saveButtonHeight, 0xFF555555);
-            context.drawBorder(saveButtonX, saveButtonY, saveButtonWidth, saveButtonHeight, 0xFFFFFFFF);
+            DrawableHelper.fill(context, saveButtonX, saveButtonY, saveButtonX + saveButtonWidth, saveButtonY + saveButtonHeight, 0xFF555555);
+            DrawableHelper.fill(context, saveButtonX, saveButtonY, saveButtonWidth, saveButtonHeight, 0xFFFFFFFF);
 
             // 绘制保存按钮文字
-            context.drawCenteredTextWithShadow(
+            DrawableHelper.drawCenteredText(
+                    context, 
                     this.textRenderer,
-                    Text.translatable("text.yunbeiuc.flag_selection.save_button"),
+                    new TranslatableText("text.yunbeiuc.flag_selection.save_button"),
                     saveButtonX + saveButtonWidth / 2,
                     saveButtonY + 6,
                     0xFFFFFF
@@ -188,7 +197,7 @@ public class FlagSelectionScreen extends Screen {
         return new int[]{scaledWidth, scaledHeight};
     }
 
-    private void drawFlagPreview(DrawContext context, int x, int y, int maxSize) {
+    private void drawFlagPreview(MatrixStack context, int x, int y, int maxSize) {
         if (selectedFlag == null) return;
 
         try {
@@ -212,18 +221,20 @@ public class FlagSelectionScreen extends Screen {
             int centeredY = y;
 
             // 绘制等比例缩放的图片
-            context.drawTexture(texture, centeredX, centeredY, scaledWidth, scaledHeight, 0, 0, originalWidth, originalHeight, originalWidth, originalHeight);
+            MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
+            DrawableHelper.drawTexture(context, centeredX, centeredY, scaledWidth, scaledHeight, 0, 0, originalWidth, originalHeight, originalWidth, originalHeight);
 
         } catch (Exception e) {
             // 如果图片加载失败，绘制备用矩形
             int[] scaledDimensions = getScaledDimensions(maxSize);
-            context.fill(x, y, x + scaledDimensions[0], y + scaledDimensions[1], 0x44FF0000);
-            context.drawBorder(x, y, scaledDimensions[0], scaledDimensions[1], 0xFFFF0000);
+            DrawableHelper.fill(context, x, y, x + scaledDimensions[0], y + scaledDimensions[1], 0x44FF0000);
+            DrawableHelper.fill(context, x, y, scaledDimensions[0], scaledDimensions[1], 0xFFFF0000);
 
             // 错误信息
-            context.drawCenteredTextWithShadow(
+            DrawableHelper.drawCenteredText(
+                    context, 
                     this.textRenderer,
-                    Text.translatable("text.yunbeiuc.flag_selection.load_failed"),
+                    new TranslatableText("text.yunbeiuc.flag_selection.load_failed"),
                     x + scaledDimensions[0] / 2,
                     y + scaledDimensions[1] / 2 - 5,
                     0xFFFFFF
@@ -352,11 +363,11 @@ public class FlagSelectionScreen extends Screen {
             }
 
             @Override
-            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            public void render(MatrixStack context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
                 if (option.getFlag() == selectedFlag) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
+                    DrawableHelper.fill(context, x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
                 } else if (hovered) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
+                    DrawableHelper.fill(context, x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
                 }
 
                 // 绘制颜色方块 (16x16像素)
@@ -365,14 +376,15 @@ public class FlagSelectionScreen extends Screen {
                 int colorY = y + (entryHeight - colorSize) / 2;
 
                 // 绘制颜色方块
-                context.fill(colorX, colorY, colorX + colorSize, colorY + colorSize, 0xFF000000 | option.getColor());
-                context.drawBorder(colorX, colorY, colorSize, colorSize, 0xFFCCCCCC);
+                DrawableHelper.fill(context, colorX, colorY, colorX + colorSize, colorY + colorSize, 0xFF000000 | option.getColor());
+                DrawableHelper.fill(context, colorX, colorY, colorSize, colorSize, 0xFFCCCCCC);
 
                 // 绘制文本，向右偏移给颜色方块留出空间
                 int textX = colorX + colorSize + 8;
-                context.drawTextWithShadow(
+                DrawableHelper.drawCenteredText(
+                        context, 
                         textRenderer,
-                        Text.literal(option.getDisplayName()),
+                        new LiteralText(option.getDisplayName()),
                         textX,
                         y + (entryHeight - 8) / 2,
                         0xFFFFFF

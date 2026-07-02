@@ -3,20 +3,17 @@ package com.beigu.yunbeiuc.datagen;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
-
-import java.util.concurrent.CompletableFuture;
+import net.minecraft.tag.BlockTags;
 
 public class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
-    public ModBlockTagsProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
-        super(output, registriesFuture);
+    public ModBlockTagsProvider(FabricDataGenerator dataGenerator) {
+        super(dataGenerator);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+    protected void generateTags() {
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
                 .add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS)
                 .add(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB)

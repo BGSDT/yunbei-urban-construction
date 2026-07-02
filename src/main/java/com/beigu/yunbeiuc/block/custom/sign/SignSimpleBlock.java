@@ -92,7 +92,7 @@ public class SignSimpleBlock extends Block {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getBlockPos();
-        Direction facing = ctx.getHorizontalPlayerFacing().getOpposite();
+        Direction facing = ctx.getPlayerFacing().getOpposite();
 
         // 获取后面的方块位置
         BlockPos behindPos = pos.offset(facing.getOpposite());

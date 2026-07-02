@@ -1,8 +1,9 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
 
 import java.util.function.BiConsumer;
 
@@ -18,7 +19,7 @@ public class ValueAdjustButton extends ButtonWidget {
 
     public ValueAdjustButton(int x, int y, int width, int height, float initialValue, String displayText,
                              PressAction onPress, BiConsumer<ValueAdjustButton, Boolean> onPressWithButton) {
-        super(x, y, width, height, Text.literal(displayText), onPress, DEFAULT_NARRATION_SUPPLIER);
+        super(x, y, width, height, new LiteralText(displayText), onPress);
         this.value = initialValue;
         this.displayText = displayText;
         this.onPressWithButton = onPressWithButton;
@@ -60,16 +61,17 @@ public class ValueAdjustButton extends ButtonWidget {
         }
     }
 
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(MatrixStack context, int mouseX, int mouseY, float delta) {
         int color = this.isHovered() ? 0xFF888888 : 0xFF666666;
-        context.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, color);
-        context.drawBorder(this.getX(), this.getY(), this.width, this.height, 0xFFAAAAAA);
+        DrawableHelper.fill(context, this.x, this.y, this.x + this.width, this.y + this.height, color);
+        DrawableHelper.fill(context, this.x, this.y, this.width, this.height, 0xFFAAAAAA);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 net.minecraft.client.MinecraftClient.getInstance().textRenderer,
-                Text.literal(displayText),
-                this.getX() + this.width / 2,
-                this.getY() + (this.height - 8) / 2,
+                new LiteralText(displayText),
+                this.x + this.width / 2,
+                this.y + (this.height - 8) / 2,
                 0xFFFFFF00
         );
     }

@@ -4,12 +4,12 @@ import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 
 public class ModZhCnLangProvider extends FabricLanguageProvider {
-    public ModZhCnLangProvider(FabricDataOutput dataOutput) {
-        super(dataOutput,"zh_cn");
+    public ModZhCnLangProvider(FabricDataGenerator dataGenerator) {
+        super(dataGenerator,"zh_cn");
     }
 
     @Override
@@ -804,7 +804,7 @@ public class ModZhCnLangProvider extends FabricLanguageProvider {
         translationBuilder.add("text.yunbeiuc.unit.kilometre", "千米");
 
         translationBuilder.add(SignBlocks.SIGN_EXPRESSWAY_EXIT_8, "高速公路出口标志8");
-        translationBuilder.add("block.yunbeiuc.sign_expressway_exit_8.tooltip","手持魔杖右键点击以编辑高速公路出口预告标志文本");;
+        translationBuilder.add("block.yunbeiuc.sign_expressway_exit_8.tooltip","手持魔杖右键点击以编辑高速公路出口预告标志文本");
         translationBuilder.add("text.yunbeiuc.sign_expressway_exit_8.title", "高速公路出口预告标志设置");
         translationBuilder.add("text.yunbeiuc.sign_expressway_exit_8.content", "显示内容");
         translationBuilder.add("text.yunbeiuc.sign_expressway_exit_8.placeholder", "请输入显示文本...");

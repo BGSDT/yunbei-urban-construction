@@ -48,7 +48,7 @@ public class RoadClosedBarricadeGuardrail3 extends HorizontalFacingBlock {
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        Direction direction = ctx.getHorizontalPlayerFacing().getOpposite();
+        Direction direction = ctx.getPlayerFacing().getOpposite();
         BlockPos pos = ctx.getBlockPos();
         BlockPos rightPos = pos.offset(direction.rotateYClockwise());
 

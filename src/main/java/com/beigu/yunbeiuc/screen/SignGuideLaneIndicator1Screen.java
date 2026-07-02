@@ -5,11 +5,14 @@ import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.SignGuideLaneIndicator1UpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SignGuideLaneIndicator1Screen extends Screen {
@@ -24,7 +27,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
     private static final int PANEL_HEIGHT = 245;
 
     public SignGuideLaneIndicator1Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.title"));
+        super(new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.title"));
         this.pos = pos;
     }
 
@@ -51,83 +54,79 @@ public class SignGuideLaneIndicator1Screen extends Screen {
 
         // Direction 1 buttons
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left"), button -> {
+                new ButtonWidget(panelX + 10, panelY + 40, 80, 20, new TranslatableText("text.yunbeiuc.direction.left"), button -> {
                     direction1 = SignGuideLaneIndicator1Entity.Direction.LEFT;
-                }).dimensions(panelX + 10, panelY + 40, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.straight"), button -> {
+                new ButtonWidget(panelX + 95, panelY + 40, 80, 20, new TranslatableText("text.yunbeiuc.direction.straight"), button -> {
                     direction1 = SignGuideLaneIndicator1Entity.Direction.STRAIGHT;
-                }).dimensions(panelX + 95, panelY + 40, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.right"), button -> {
+                new ButtonWidget(panelX + 180, panelY + 40, 80, 20, new TranslatableText("text.yunbeiuc.direction.right"), button -> {
                     direction1 = SignGuideLaneIndicator1Entity.Direction.RIGHT;
-                }).dimensions(panelX + 180, panelY + 40, 80, 20).build()
+                })
         );
 
         // Direction 2 buttons
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left"), button -> {
+                new ButtonWidget(panelX + 10, panelY + 85, 80, 20, new TranslatableText("text.yunbeiuc.direction.left"), button -> {
                     direction2 = SignGuideLaneIndicator1Entity.Direction.LEFT;
-                }).dimensions(panelX + 10, panelY + 85, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.straight"), button -> {
+                new ButtonWidget(panelX + 95, panelY + 85, 80, 20, new TranslatableText("text.yunbeiuc.direction.straight"), button -> {
                     direction2 = SignGuideLaneIndicator1Entity.Direction.STRAIGHT;
-                }).dimensions(panelX + 95, panelY + 85, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.right"), button -> {
+                new ButtonWidget(panelX + 180, panelY + 85, 80, 20, new TranslatableText("text.yunbeiuc.direction.right"), button -> {
                     direction2 = SignGuideLaneIndicator1Entity.Direction.RIGHT;
-                }).dimensions(panelX + 180, panelY + 85, 80, 20).build()
+                })
         );
 
         // Direction 3 buttons
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left"), button -> {
+                new ButtonWidget(panelX + 10, panelY + 130, 80, 20, new TranslatableText("text.yunbeiuc.direction.left"), button -> {
                     direction3 = SignGuideLaneIndicator1Entity.Direction.LEFT;
-                }).dimensions(panelX + 10, panelY + 130, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.straight"), button -> {
+                new ButtonWidget(panelX + 95, panelY + 130, 80, 20, new TranslatableText("text.yunbeiuc.direction.straight"), button -> {
                     direction3 = SignGuideLaneIndicator1Entity.Direction.STRAIGHT;
-                }).dimensions(panelX + 95, panelY + 130, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.right"), button -> {
+                new ButtonWidget(panelX + 180, panelY + 130, 80, 20, new TranslatableText("text.yunbeiuc.direction.right"), button -> {
                     direction3 = SignGuideLaneIndicator1Entity.Direction.RIGHT;
-                }).dimensions(panelX + 180, panelY + 130, 80, 20).build()
+                })
         );
 
         // Direction 4 buttons
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left"), button -> {
+                new ButtonWidget(panelX + 10, panelY + 175, 80, 20, new TranslatableText("text.yunbeiuc.direction.left"), button -> {
                     direction4 = SignGuideLaneIndicator1Entity.Direction.LEFT;
-                }).dimensions(panelX + 10, panelY + 175, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.straight"), button -> {
+                new ButtonWidget(panelX + 95, panelY + 175, 80, 20, new TranslatableText("text.yunbeiuc.direction.straight"), button -> {
                     direction4 = SignGuideLaneIndicator1Entity.Direction.STRAIGHT;
-                }).dimensions(panelX + 95, panelY + 175, 80, 20).build()
+                })
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.right"), button -> {
+                new ButtonWidget(panelX + 180, panelY + 175, 80, 20, new TranslatableText("text.yunbeiuc.direction.right"), button -> {
                     direction4 = SignGuideLaneIndicator1Entity.Direction.RIGHT;
-                }).dimensions(panelX + 180, panelY + 175, 80, 20).build()
+                })
         );
 
         int buttonY = panelY + 215;
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.save"), button -> this.saveAndClose())
-                        .dimensions(panelX + 60, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 60, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.save"), button -> this.saveAndClose())
         );
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.cancel"), button -> this.close())
-                        .dimensions(panelX + 170, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 170, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.cancel"), button -> this.close())
         );
     }
 
@@ -143,69 +142,78 @@ public class SignGuideLaneIndicator1Screen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.title"),
+                new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.title"),
                 panelX + PANEL_WIDTH / 2, panelY + 12,
                 0xFFCCCCCC
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.direction_1"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.direction_1"),
                 panelX + 10, panelY + 31,
                 0xFFAAAAAA
         );
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.direction_2"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.direction_2"),
                 panelX + 10, panelY + 76,
                 0xFFAAAAAA
         );
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.direction_3"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.direction_3"),
                 panelX + 10, panelY + 121,
                 0xFFAAAAAA
         );
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.direction_4"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_lane_indicator_1.direction_4"),
                 panelX + 10, panelY + 166,
                 0xFFAAAAAA
         );
 
         // 显示当前选中的方向
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.direction." + direction1.getName()),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.direction." + direction1.getName()),
                 panelX + 270, panelY + 46,
                 0xFFFFFF00
         );
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.direction." + direction2.getName()),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.direction." + direction2.getName()),
                 panelX + 270, panelY + 91,
                 0xFFFFFF00
         );
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.direction." + direction3.getName()),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.direction." + direction3.getName()),
                 panelX + 270, panelY + 136,
                 0xFFFFFF00
         );
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.direction." + direction4.getName()),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.direction." + direction4.getName()),
                 panelX + 270, panelY + 181,
                 0xFFFFFF00
         );

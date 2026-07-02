@@ -19,6 +19,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -44,7 +46,7 @@ public class RoadPoleFlag extends BlockWithEntity implements BlockEntityProvider
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.road_pole_flag.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.road_pole_flag.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -67,7 +69,7 @@ public class RoadPoleFlag extends BlockWithEntity implements BlockEntityProvider
         PoleType poleType = getPoleTypeForPosition(world, pos);
 
         return this.getDefaultState()
-                .with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())
+                .with(FACING, ctx.getPlayerFacing().getOpposite())
                 .with(POLE_TYPE, poleType);
     }
 
@@ -106,7 +108,7 @@ public class RoadPoleFlag extends BlockWithEntity implements BlockEntityProvider
 
     @Environment(EnvType.CLIENT)
     private void openFlagScreen(BlockPos pos) {
-        MinecraftClient.getInstance().setScreen(new FlagSelectionScreen(Text.literal("选择旗帜"), pos));
+        MinecraftClient.getInstance().setScreen(new FlagSelectionScreen(new LiteralText("选择旗帜"), pos));
     }
 
     @Override

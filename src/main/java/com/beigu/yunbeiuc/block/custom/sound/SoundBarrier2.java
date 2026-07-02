@@ -54,7 +54,7 @@ public class SoundBarrier2 extends HorizontalFacingBlock {
         }
 
         return this.getDefaultState()
-                .with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())
+                .with(FACING, ctx.getPlayerFacing().getOpposite())
                 .with(LAYER, 0);
     }
 

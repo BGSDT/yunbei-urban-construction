@@ -19,10 +19,12 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Matrix4f;
 
 import java.util.Map;
 
@@ -98,7 +100,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
 
         float arrowSize = 0.4f;
         float halfSize = arrowSize / 2f;
@@ -136,7 +138,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
 
         float arrowSize = 1.75f;
         float halfSize = arrowSize / 2f;
@@ -162,11 +164,11 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
 
         float scaleValue = 0.035f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = new LiteralText(text).setStyle(Style.EMPTY.withBold(true));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -190,7 +192,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
+                false,
                 0,
                 light
         );
@@ -202,9 +204,9 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
         String directionText = DIRECTION_MAP.get(facing).get(directionKey);
-        Text styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = new LiteralText(directionText).setStyle(Style.EMPTY.withBold(true));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
         float zOffset = switch (type) {
@@ -228,7 +230,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
+                false,
                 0,
                 light
         );
@@ -240,11 +242,11 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
 
         float scaleValue = 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = new LiteralText(text).setStyle(Style.EMPTY.withBold(true));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -269,7 +271,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
+                false,
                 0,
                 light
         );

@@ -12,6 +12,8 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +34,7 @@ public class LinkWand extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.translatable("item.yunbeiuc.link_wand.tooltip"));
+        tooltip.add(new TranslatableText("item.yunbeiuc.link_wand.tooltip"));
         super.appendTooltip(stack, world, tooltip, context);
     }
 
@@ -45,12 +47,12 @@ public class LinkWand extends Item {
         BlockPos pos = context.getBlockPos();
 
         if (!playerModes.containsKey(player)) {
-            player.sendMessage(Text.literal("请先输入 /yunbeiuc lights <mode> 选择模式！").formatted(Formatting.RED), false);
+            player.sendMessage(new LiteralText("请先输入 /yunbeiuc lights <mode> 选择模式！").formatted(Formatting.RED), false);
             return ActionResult.FAIL;
         }
 
         if (!(world.getBlockState(pos).getBlock() instanceof TrafficLightsBlock)) {
-            player.sendMessage(Text.literal("请点击红绿灯方块！").formatted(Formatting.RED), false);
+            player.sendMessage(new LiteralText("请点击红绿灯方块！").formatted(Formatting.RED), false);
             return ActionResult.FAIL;
         }
 
@@ -63,12 +65,12 @@ public class LinkWand extends Item {
         int requiredCount = (mode == 1) ? 8 : 3;
 
         if (selections.contains(pos)) {
-            player.sendMessage(Text.literal("已经选择了这个方块！").formatted(Formatting.YELLOW), false);
+            player.sendMessage(new LiteralText("已经选择了这个方块！").formatted(Formatting.YELLOW), false);
             return ActionResult.FAIL;
         }
 
         selections.add(pos);
-        player.sendMessage(Text.literal("已选择第 " + selections.size() + " 个方块 (需要" + requiredCount + "个)").formatted(Formatting.GREEN), false);
+        player.sendMessage(new LiteralText("已选择第 " + selections.size() + " 个方块 (需要" + requiredCount + "个)").formatted(Formatting.GREEN), false);
 
         if (selections.size() == requiredCount) {
             if (mode == 1) {
@@ -87,13 +89,13 @@ public class LinkWand extends Item {
 
         if (tempGroup != null) {
             pendingGroups.put(player, tempGroup);
-            player.sendMessage(Text.literal("✓ 检测到一组有效的十字路口红绿灯！").formatted(Formatting.GREEN), false);
-            player.sendMessage(Text.literal("请输入 §e/yunbeiuc answer confirm §r确认创建").formatted(Formatting.GOLD), false);
-            player.sendMessage(Text.literal("输入 §e/yunbeiuc answer reset §r重新选择，§e/yunbeiuc answer cancel §r取消").formatted(Formatting.GOLD), false);
+            player.sendMessage(new LiteralText("✓ 检测到一组有效的十字路口红绿灯！").formatted(Formatting.GREEN), false);
+            player.sendMessage(new LiteralText("请输入 §e/yunbeiuc answer confirm §r确认创建").formatted(Formatting.GOLD), false);
+            player.sendMessage(new LiteralText("输入 §e/yunbeiuc answer reset §r重新选择，§e/yunbeiuc answer cancel §r取消").formatted(Formatting.GOLD), false);
         } else {
             playerSelections.remove(player);
-            player.sendMessage(Text.literal("✗ 选择的8个方块不符合标准！需要每个方向各一个左转和一个直行").formatted(Formatting.RED), false);
-            player.sendMessage(Text.literal("请重新选择8个方块").formatted(Formatting.YELLOW), false);
+            player.sendMessage(new LiteralText("✗ 选择的8个方块不符合标准！需要每个方向各一个左转和一个直行").formatted(Formatting.RED), false);
+            player.sendMessage(new LiteralText("请重新选择8个方块").formatted(Formatting.YELLOW), false);
         }
     }
 
@@ -135,14 +137,14 @@ public class LinkWand extends Item {
 
         if (tempGroup != null) {
             pendingGroups.put(player, tempGroup);
-            player.sendMessage(Text.literal("✓ 检测到一组有效的T字路口红绿灯！").formatted(Formatting.GREEN), false);
-            player.sendMessage(Text.literal("请输入 §e/yunbeiuc answer confirm §r确认创建").formatted(Formatting.GOLD), false);
-            player.sendMessage(Text.literal("输入 §e/yunbeiuc answer reset §r重新选择，§e/yunbeiuc answer cancel §r取消").formatted(Formatting.GOLD), false);
+            player.sendMessage(new LiteralText("✓ 检测到一组有效的T字路口红绿灯！").formatted(Formatting.GREEN), false);
+            player.sendMessage(new LiteralText("请输入 §e/yunbeiuc answer confirm §r确认创建").formatted(Formatting.GOLD), false);
+            player.sendMessage(new LiteralText("输入 §e/yunbeiuc answer reset §r重新选择，§e/yunbeiuc answer cancel §r取消").formatted(Formatting.GOLD), false);
         } else {
             playerSelections.remove(player);
-            player.sendMessage(Text.literal("✗ 选择的3个方块不符合T字路口标准！").formatted(Formatting.RED), false);
-            player.sendMessage(Text.literal("T字路口需要3个不同方向各一个直行红绿灯，且缺失方向形成T字形").formatted(Formatting.RED), false);
-            player.sendMessage(Text.literal("请重新选择3个方块").formatted(Formatting.YELLOW), false);
+            player.sendMessage(new LiteralText("✗ 选择的3个方块不符合T字路口标准！").formatted(Formatting.RED), false);
+            player.sendMessage(new LiteralText("T字路口需要3个不同方向各一个直行红绿灯，且缺失方向形成T字形").formatted(Formatting.RED), false);
+            player.sendMessage(new LiteralText("请重新选择3个方块").formatted(Formatting.YELLOW), false);
         }
     }
 
@@ -195,23 +197,23 @@ public class LinkWand extends Item {
     // ==================== 回答处理 ====================
     public static boolean handleAnswerInput(ServerPlayerEntity player, String action) {
         if (!pendingGroups.containsKey(player)) {
-            player.sendMessage(Text.literal("没有待确认的红绿灯组！请先点击红绿灯").formatted(Formatting.RED), false);
+            player.sendMessage(new LiteralText("没有待确认的红绿灯组！请先点击红绿灯").formatted(Formatting.RED), false);
             return false;
         }
 
         if (action.equalsIgnoreCase("confirm")) {
             TrafficLightsGroup group = pendingGroups.get(player);
-            ServerWorld serverWorld = player.getServerWorld();
+            ServerWorld serverWorld = player.getWorld();
 
             group.setWorld(serverWorld);
             TrafficLightsManager.get(serverWorld).addGroup(group);
             group.updateAllLightsImmediately(serverWorld);
 
-            player.sendMessage(Text.literal("✓ 红绿灯组创建成功！").formatted(Formatting.GREEN), false);
-            player.sendMessage(Text.literal("组ID: " + group.getGroupId().toString().substring(0, 8) +
+            player.sendMessage(new LiteralText("✓ 红绿灯组创建成功！").formatted(Formatting.GREEN), false);
+            player.sendMessage(new LiteralText("组ID: " + group.getGroupId().toString().substring(0, 8) +
                     " | 模式: " + (group.getMode() == 1 ? "十字路口" : "T字路口") +
                     " | 包含 " + group.getLightCount() + " 个红绿灯").formatted(Formatting.AQUA), false);
-            player.sendMessage(Text.literal("现在可以继续选择下一组红绿灯了").formatted(Formatting.AQUA), false);
+            player.sendMessage(new LiteralText("现在可以继续选择下一组红绿灯了").formatted(Formatting.AQUA), false);
 
             pendingGroups.remove(player);
             playerSelections.remove(player);
@@ -220,14 +222,14 @@ public class LinkWand extends Item {
         } else if (action.equalsIgnoreCase("reset")) {
             pendingGroups.remove(player);
             playerSelections.remove(player);
-            player.sendMessage(Text.literal("已取消当前选择，请重新点击红绿灯").formatted(Formatting.YELLOW), false);
+            player.sendMessage(new LiteralText("已取消当前选择，请重新点击红绿灯").formatted(Formatting.YELLOW), false);
             return true;
 
         } else if (action.equalsIgnoreCase("cancel")) {
             pendingGroups.remove(player);
             playerSelections.remove(player);
             playerModes.remove(player);
-            player.sendMessage(Text.literal("已取消所有操作，如需继续请重新输入 /yunbeiuc lights <mode>").formatted(Formatting.GRAY), false);
+            player.sendMessage(new LiteralText("已取消所有操作，如需继续请重新输入 /yunbeiuc lights <mode>").formatted(Formatting.GRAY), false);
             return true;
         }
 

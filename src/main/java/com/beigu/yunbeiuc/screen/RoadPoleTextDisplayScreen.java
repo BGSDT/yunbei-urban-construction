@@ -5,11 +5,15 @@ import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.RoadPoleTextDisplayUpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class RoadPoleTextDisplayScreen extends Screen {
@@ -48,7 +52,7 @@ public class RoadPoleTextDisplayScreen extends Screen {
     private static final int PANEL_HEIGHT = 195;
 
     public RoadPoleTextDisplayScreen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.road_pole_text_display.title"));
+        super(new TranslatableText("text.yunbeiuc.road_pole_text_display.title"));
         this.pos = pos;
     }
 
@@ -75,22 +79,20 @@ public class RoadPoleTextDisplayScreen extends Screen {
                 this.textRenderer,
                 panelX + 10, panelY + 25,
                 300, 24,
-                Text.translatable("text.yunbeiuc.road_pole_text_display.content")
+                new TranslatableText("text.yunbeiuc.road_pole_text_display.content")
         );
         this.textField.setMaxLength(256);
         this.textField.setText(existingText);
-        this.textField.setPlaceholder(Text.translatable("text.yunbeiuc.road_pole_text_display.placeholder"));
         this.addSelectableChild(this.textField);
 
         this.colorField = new TextFieldWidget(
                 this.textRenderer,
                 panelX + 10, panelY + 70,
                 140, 22,
-                Text.translatable("text.yunbeiuc.road_pole_text_display.color")
+                new TranslatableText("text.yunbeiuc.road_pole_text_display.color")
         );
         this.colorField.setMaxLength(6);
         this.colorField.setText(existingColor);
-        this.colorField.setPlaceholder(Text.translatable("text.yunbeiuc.road_pole_text_display.color_placeholder"));
         this.addSelectableChild(this.colorField);
 
         int colorStartX = panelX + 10;
@@ -98,26 +100,20 @@ public class RoadPoleTextDisplayScreen extends Screen {
         for (int i = 0; i < commonColors.length; i++) {
             final int colorIndex = i;
             this.addDrawableChild(
-                    ButtonWidget.builder(Text.literal("■"), button -> {
+                    new ButtonWidget(colorStartX + (i % 4) * 76, colorStartY + (i / 4) * 28, 72, 24, new LiteralText("■"), button -> {
                                 String hexColor = String.format("%06X", commonColors[colorIndex] & 0xFFFFFF);
                                 this.colorField.setText(hexColor);
                             })
-                            .dimensions(colorStartX + (i % 4) * 76, colorStartY + (i / 4) * 28, 72, 24)
-                            .build()
             );
         }
 
         int buttonY = panelY + 160;
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.road_pole_text_display.save"), button -> this.saveAndClose())
-                        .dimensions(panelX + 60, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 60, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.road_pole_text_display.save"), button -> this.saveAndClose())
         );
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.road_pole_text_display.cancel"), button -> this.close())
-                        .dimensions(panelX + 170, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 170, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.road_pole_text_display.cancel"), button -> this.close())
         );
 
         this.setFocused(this.textField);
@@ -146,33 +142,36 @@ public class RoadPoleTextDisplayScreen extends Screen {
     }
 
     @Override
-    public void render(net.minecraft.client.gui.DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
 
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.road_pole_text_display.title"),
+                new TranslatableText("text.yunbeiuc.road_pole_text_display.title"),
                 panelX + PANEL_WIDTH / 2, panelY + 12,
                 0xFFCCCCCC
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.road_pole_text_display.content"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.road_pole_text_display.content"),
                 panelX + 10, panelY + 16,
                 0xFFAAAAAA
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.road_pole_text_display.color"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.road_pole_text_display.color"),
                 panelX + 10, panelY + 61,
                 0xFFAAAAAA
         );
@@ -190,12 +189,13 @@ public class RoadPoleTextDisplayScreen extends Screen {
             }
         } catch (NumberFormatException ignored) {}
 
-        context.fill(previewX + 1, previewY + 1, previewX + previewSize + 1, previewY + previewSize + 1, 0x40000000);
-        context.fill(previewX, previewY, previewX + previewSize, previewY + previewSize, previewColor);
-        context.drawBorder(previewX, previewY, previewSize, previewSize, 0xFF888888);
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.road_pole_text_display.preview"),
+        DrawableHelper.fill(context, previewX + 1, previewY + 1, previewX + previewSize + 1, previewY + previewSize + 1, 0x40000000);
+        DrawableHelper.fill(context, previewX, previewY, previewX + previewSize, previewY + previewSize, previewColor);
+        DrawableHelper.fill(context, previewX, previewY, previewSize, previewSize, 0xFF888888);
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.road_pole_text_display.preview"),
                 previewX, previewY - 11,
                 0xFFAAAAAA
         );
@@ -211,12 +211,13 @@ public class RoadPoleTextDisplayScreen extends Screen {
             int bx = colorStartX + (i % 4) * 76;
             int by = colorStartY + (i / 4) * 28;
 
-            context.fill(bx + 6, by + 6, bx + 20, by + 20, 0xFF000000 | colorDisplayColors[i]);
-            context.drawBorder(bx + 6, by + 6, 14, 14, 0xFF888888);
+            DrawableHelper.fill(context, bx + 6, by + 6, bx + 20, by + 20, 0xFF000000 | colorDisplayColors[i]);
+            DrawableHelper.fill(context, bx + 6, by + 6, 14, 14, 0xFF888888);
 
-            context.drawTextWithShadow(
+            DrawableHelper.drawTextWithShadow(
+                    context, 
                     this.textRenderer,
-                    Text.translatable(colorTranslationKeys[i]),
+                    new TranslatableText(colorTranslationKeys[i]),
                     bx + 26, by + 8,
                     0xFFCCCCCC
             );

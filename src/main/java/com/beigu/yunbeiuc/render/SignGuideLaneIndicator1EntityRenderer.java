@@ -13,10 +13,12 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Matrix4f;
 
 public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRenderer<SignGuideLaneIndicator1Entity> {
     private final TextRenderer textRenderer;
@@ -61,7 +63,7 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
 
         float arrowSize = 1f;
         float halfSize = arrowSize / 2f;

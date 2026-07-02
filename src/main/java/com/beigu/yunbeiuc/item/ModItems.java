@@ -7,9 +7,9 @@ import com.beigu.yunbeiuc.item.custom.TreeWand;
 import com.beigu.yunbeiuc.item.custom.WaterWand;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
 public class ModItems {
@@ -29,11 +29,11 @@ public class ModItems {
             .maxCount(1)));
 
     public static Item registerItems(String id, Item item) {
-        return Registry.register(Registries.ITEM, RegistryKey.of(Registries.ITEM.getKey(), new Identifier(YunbeiUrbanConstruction.MOD_ID, id)), item);
+        return Registry.register(Registry.ITEM, RegistryKey.of(Registry.ITEM.getKey(), new Identifier(YunbeiUrbanConstruction.MOD_ID, id)), item);
     }
 
     public static Item registerItem(String id, Item item) {
-        return Registry.register(Registries.ITEM, new Identifier(YunbeiUrbanConstruction.MOD_ID, id), item);
+        return Registry.register(Registry.ITEM, new Identifier(YunbeiUrbanConstruction.MOD_ID, id), item);
     }
 
 
@@ -42,7 +42,7 @@ public class ModItems {
     }
 
     public static Item register(Identifier id, Item item) {
-        return register(RegistryKey.of(Registries.ITEM.getKey(), id), item);
+        return register(RegistryKey.of(Registry.ITEM.getKey(), id), item);
     }
 
     public static Item register(RegistryKey<Item> key, Item item) {
@@ -50,7 +50,7 @@ public class ModItems {
             ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
         }
 
-        return Registry.register(Registries.ITEM, key, item);
+        return Registry.register(Registry.ITEM, key, item);
     }
 
 

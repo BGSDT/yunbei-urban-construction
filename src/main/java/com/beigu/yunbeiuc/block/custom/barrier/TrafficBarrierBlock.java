@@ -11,6 +11,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
@@ -39,7 +41,7 @@ public class TrafficBarrierBlock extends Block {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.traffic_barrier.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.traffic_barrier.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -70,7 +72,7 @@ public class TrafficBarrierBlock extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(TYPE, Type.SINGLE);
+        return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite()).with(TYPE, Type.SINGLE);
     }
 
     @Override

@@ -3,16 +3,16 @@ package com.beigu.yunbeiuc.datagen;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 
 public class ModLootTablesProvider extends FabricBlockLootTableProvider {
-    public ModLootTablesProvider(FabricDataOutput dataOutput) {
+    public ModLootTablesProvider(FabricDataGenerator dataOutput) {
         super(dataOutput);
     }
 
     @Override
-    public void generate() {
+    public void generateBlockLootTables() {
         addDrop(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
         addDrop(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB);
         addDrop(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);

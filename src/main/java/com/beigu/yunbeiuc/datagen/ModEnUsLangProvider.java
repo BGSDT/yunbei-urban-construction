@@ -4,12 +4,12 @@ import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 
 public class ModEnUsLangProvider extends FabricLanguageProvider {
-    public ModEnUsLangProvider(FabricDataOutput dataOutput) {
-        super(dataOutput,"en_us");
+    public ModEnUsLangProvider(FabricDataGenerator dataGenerator) {
+        super(dataGenerator,"en_us");
     }
 
     @Override
@@ -805,7 +805,7 @@ public class ModEnUsLangProvider extends FabricLanguageProvider {
         translationBuilder.add("text.yunbeiuc.unit.kilometre", "km");
 
         translationBuilder.add(SignBlocks.SIGN_EXPRESSWAY_EXIT_8, "Expressway Exit Sign 8");
-        translationBuilder.add("block.yunbeiuc.sign_expressway_exit_8.tooltip","Right-click with your wand to edit the expressway exit warning sign text");;
+        translationBuilder.add("block.yunbeiuc.sign_expressway_exit_8.tooltip","Right-click with your wand to edit the expressway exit warning sign text");
         translationBuilder.add("text.yunbeiuc.sign_expressway_exit_8.title", "Expressway Exit Sign Display Settings");
         translationBuilder.add("text.yunbeiuc.sign_expressway_exit_8.content", "Display Content");
         translationBuilder.add("text.yunbeiuc.sign_expressway_exit_8.placeholder", "Enter display text...");

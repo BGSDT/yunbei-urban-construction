@@ -54,7 +54,7 @@ public class GantryFrameMain extends Block {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         // 玩家放置时朝向玩家正面
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing());
+        return this.getDefaultState().with(FACING, ctx.getPlayerFacing());
     }
 
     // ==================== 核心修复：邻接更新 ====================

@@ -5,12 +5,13 @@ import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.SignGuideConfirmation1UpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SignGuideConfirmation1Screen extends Screen {
@@ -30,7 +31,7 @@ public class SignGuideConfirmation1Screen extends Screen {
     private static final int PANEL_HEIGHT = 245;
 
     public SignGuideConfirmation1Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.title"));
+        super(new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.title"));
         this.pos = pos;
     }
 
@@ -70,33 +71,27 @@ public class SignGuideConfirmation1Screen extends Screen {
                 this.textRenderer,
                 panelX + 10, panelY + 40,
                 130, 20,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.text_1")
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.text_1")
         );
         this.text1TextField.setMaxLength(256);
         this.text1TextField.setText(existingText1);
-        this.text1TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.placeholder"));
         this.addSelectableChild(this.text1TextField);
 
         this.length1TextField = new TextFieldWidget(
                 this.textRenderer,
                 panelX + 150, panelY + 40,
                 70, 20,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.length_1")
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.length_1")
         );
         this.length1TextField.setMaxLength(256);
         this.length1TextField.setText(existingLength1);
-        this.length1TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.placeholder"));
         this.addSelectableChild(this.length1TextField);
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.unit.metre"), button -> {
-                    unit1 = SignGuideConfirmation1Entity.Unit.METRE;
-                }).dimensions(panelX + 230, panelY + 40, 45, 20).build()
+                new ButtonWidget(panelX + 230, panelY + 40, 45, 20, new TranslatableText("text.yunbeiuc.unit.metre"), button -> unit1 = SignGuideConfirmation1Entity.Unit.METRE)
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.unit.kilometre"), button -> {
-                    unit1 = SignGuideConfirmation1Entity.Unit.KILOMETRE;
-                }).dimensions(panelX + 280, panelY + 40, 55, 20).build()
+                new ButtonWidget(panelX + 280, panelY + 40, 55, 20, new TranslatableText("text.yunbeiuc.unit.kilometre"), button -> unit1 = SignGuideConfirmation1Entity.Unit.KILOMETRE)
         );
 
         // 第二行：text2输入框 + length2输入框 + 单位2选择
@@ -104,33 +99,27 @@ public class SignGuideConfirmation1Screen extends Screen {
                 this.textRenderer,
                 panelX + 10, panelY + 80,
                 130, 20,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.text_2")
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.text_2")
         );
         this.text2TextField.setMaxLength(256);
         this.text2TextField.setText(existingText2);
-        this.text2TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.placeholder"));
         this.addSelectableChild(this.text2TextField);
 
         this.length2TextField = new TextFieldWidget(
                 this.textRenderer,
                 panelX + 150, panelY + 80,
                 70, 20,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.length_2")
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.length_2")
         );
         this.length2TextField.setMaxLength(256);
         this.length2TextField.setText(existingLength2);
-        this.length2TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.placeholder"));
         this.addSelectableChild(this.length2TextField);
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.unit.metre"), button -> {
-                    unit2 = SignGuideConfirmation1Entity.Unit.METRE;
-                }).dimensions(panelX + 230, panelY + 80, 45, 20).build()
+                new ButtonWidget(panelX + 230, panelY + 80, 45, 20, new TranslatableText("text.yunbeiuc.unit.metre"), button -> unit2 = SignGuideConfirmation1Entity.Unit.METRE)
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.unit.kilometre"), button -> {
-                    unit2 = SignGuideConfirmation1Entity.Unit.KILOMETRE;
-                }).dimensions(panelX + 280, panelY + 80, 55, 20).build()
+                new ButtonWidget(panelX + 280, panelY + 80, 55, 20, new TranslatableText("text.yunbeiuc.unit.kilometre"), button -> unit2 = SignGuideConfirmation1Entity.Unit.KILOMETRE)
         );
 
         // 第三行：text3输入框 + length3输入框 + 单位3选择
@@ -138,47 +127,41 @@ public class SignGuideConfirmation1Screen extends Screen {
                 this.textRenderer,
                 panelX + 10, panelY + 120,
                 130, 20,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.text_3")
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.text_3")
         );
         this.text3TextField.setMaxLength(256);
         this.text3TextField.setText(existingText3);
-        this.text3TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.placeholder"));
         this.addSelectableChild(this.text3TextField);
 
         this.length3TextField = new TextFieldWidget(
                 this.textRenderer,
                 panelX + 150, panelY + 120,
                 70, 20,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.length_3")
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.length_3")
         );
         this.length3TextField.setMaxLength(256);
         this.length3TextField.setText(existingLength3);
-        this.length3TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.placeholder"));
         this.addSelectableChild(this.length3TextField);
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.unit.metre"), button -> {
-                    unit3 = SignGuideConfirmation1Entity.Unit.METRE;
-                }).dimensions(panelX + 230, panelY + 120, 45, 20).build()
+                new ButtonWidget(panelX + 230, panelY + 120, 45, 20, new TranslatableText("text.yunbeiuc.unit.metre"), button -> unit3 = SignGuideConfirmation1Entity.Unit.METRE)
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.unit.kilometre"), button -> {
-                    unit3 = SignGuideConfirmation1Entity.Unit.KILOMETRE;
-                }).dimensions(panelX + 280, panelY + 120, 55, 20).build()
+                new ButtonWidget(panelX + 280, panelY + 120, 55, 20, new TranslatableText("text.yunbeiuc.unit.kilometre"), button -> unit3 = SignGuideConfirmation1Entity.Unit.KILOMETRE)
         );
 
         // 保存和取消按钮
         int buttonY = panelY + 215;
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.save"), button -> this.saveAndClose())
-                        .dimensions(panelX + 100, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 100, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.save"), button -> this.saveAndClose())
+                        
+                        
         );
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.cancel"), button -> this.close())
-                        .dimensions(panelX + 210, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 210, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.cancel"), button -> this.close())
+                        
+                        
         );
     }
 
@@ -201,63 +184,70 @@ public class SignGuideConfirmation1Screen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.title"),
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.title"),
                 panelX + PANEL_WIDTH / 2, panelY + 12,
                 0xFFCCCCCC
         );
 
         // 第一行标签和状态
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.1_name"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.1_name"),
                 panelX + 10, panelY + 28,
                 0xFFAAAAAA
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.unit." + unit1.getName()),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.unit." + unit1.getName()),
                 panelX + 340, panelY + 42,
                 0xFFFFFF00
         );
 
         // 第二行标签和状态
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.2_name"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.2_name"),
                 panelX + 10, panelY + 68,
                 0xFFAAAAAA
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.unit." + unit2.getName()),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.unit." + unit2.getName()),
                 panelX + 340, panelY + 82,
                 0xFFFFFF00
         );
 
         // 第三行标签和状态
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.3_name"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_confirmation_1.3_name"),
                 panelX + 10, panelY + 108,
                 0xFFAAAAAA
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.unit." + unit3.getName()),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.unit." + unit3.getName()),
                 panelX + 340, panelY + 122,
                 0xFFFFFF00
         );

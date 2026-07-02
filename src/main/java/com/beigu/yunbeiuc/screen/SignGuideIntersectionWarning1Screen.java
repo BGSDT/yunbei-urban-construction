@@ -5,12 +5,15 @@ import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.SignGuideIntersectionWarning1UpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SignGuideIntersectionWarning1Screen extends Screen {
@@ -21,7 +24,7 @@ public class SignGuideIntersectionWarning1Screen extends Screen {
     private static final int PANEL_HEIGHT = 195;
 
     public SignGuideIntersectionWarning1Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_guide_intersection_warning_1.title"));
+        super(new TranslatableText("text.yunbeiuc.sign_guide_intersection_warning_1.title"));
         this.pos = pos;
     }
 
@@ -44,24 +47,19 @@ public class SignGuideIntersectionWarning1Screen extends Screen {
                 this.textRenderer,
                 panelX + 10, panelY + 25,
                 300, 24,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_warning_1.content")
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_warning_1.content")
         );
         this.text1TextField.setMaxLength(256);
         this.text1TextField.setText(existingText1);
-        this.text1TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_intersection_warning_1.placeholder"));
         this.addSelectableChild(this.text1TextField);
 
         int buttonY = panelY + 160;
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_intersection_warning_1.save"), button -> this.saveAndClose())
-                        .dimensions(panelX + 60, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 60, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_intersection_warning_1.save"), button -> this.saveAndClose())
         );
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_intersection_warning_1.cancel"), button -> this.close())
-                        .dimensions(panelX + 170, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 170, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_intersection_warning_1.cancel"), button -> this.close())
         );
 
         this.setFocused(this.text1TextField);
@@ -80,25 +78,27 @@ public class SignGuideIntersectionWarning1Screen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_warning_1.title"),
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_warning_1.title"),
                 panelX + PANEL_WIDTH / 2, panelY + 12,
                 0xFFCCCCCC
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_warning_1.text_1_name"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_warning_1.text_1_name"),
                 panelX + 10, panelY + 16,
                 0xFFAAAAAA
         );

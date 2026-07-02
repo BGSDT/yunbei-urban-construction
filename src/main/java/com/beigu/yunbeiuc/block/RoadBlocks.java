@@ -9,8 +9,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class RoadBlocks {
@@ -152,11 +152,11 @@ public class RoadBlocks {
 
     public static Block register(String id, Block block) {
         registerBlockItems(id, block);
-        return Registry.register(Registries.BLOCK, new Identifier(YunbeiUrbanConstruction.MOD_ID, id), block);
+        return Registry.register(Registry.BLOCK, new Identifier(YunbeiUrbanConstruction.MOD_ID, id), block);
     }
 
     public static void registerBlockItems(String id, Block block) {
-        Registry.register(Registries.ITEM, new Identifier(YunbeiUrbanConstruction.MOD_ID, id),
+        Registry.register(Registry.ITEM, new Identifier(YunbeiUrbanConstruction.MOD_ID, id),
                 new BlockItem(block, new Item.Settings()));
     }
 

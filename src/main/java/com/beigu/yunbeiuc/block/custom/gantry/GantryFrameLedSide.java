@@ -58,7 +58,7 @@ public class GantryFrameLedSide extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(TYPE, Type.SINGLE);
+        return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite()).with(TYPE, Type.SINGLE);
     }
 
     @Override

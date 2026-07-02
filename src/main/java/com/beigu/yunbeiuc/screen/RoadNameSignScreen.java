@@ -5,12 +5,15 @@ import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.RoadNameSignBlockUpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class RoadNameSignScreen extends Screen {
@@ -22,7 +25,7 @@ public class RoadNameSignScreen extends Screen {
     private static final int PANEL_HEIGHT = 195;
 
     public RoadNameSignScreen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.road_name_sign.title"));
+        super(new TranslatableText("text.yunbeiuc.road_name_sign.title"));
         this.pos = pos;
     }
 
@@ -47,35 +50,29 @@ public class RoadNameSignScreen extends Screen {
                 this.textRenderer,
                 panelX + 10, panelY + 25,
                 300, 24,
-                Text.translatable("text.yunbeiuc.road_name_sign.content")
+                new TranslatableText("text.yunbeiuc.road_name_sign.content")
         );
         this.chineseNameTextField.setMaxLength(256);
         this.chineseNameTextField.setText(existingChineseName);
-        this.chineseNameTextField.setPlaceholder(Text.translatable("text.yunbeiuc.road_name_sign.placeholder"));
         this.addSelectableChild(this.chineseNameTextField);
 
         this.englishNameTextField = new TextFieldWidget(
                 this.textRenderer,
                 panelX + 10, panelY + 70,
                 300, 24,
-                Text.translatable("text.yunbeiuc.road_name_sign.content")
+                new TranslatableText("text.yunbeiuc.road_name_sign.content")
         );
         this.englishNameTextField.setMaxLength(256);
         this.englishNameTextField.setText(existingEnglishName);
-        this.englishNameTextField.setPlaceholder(Text.translatable("text.yunbeiuc.road_name_sign.placeholder"));
         this.addSelectableChild(this.englishNameTextField);
 
         int buttonY = panelY + 160;
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.road_name_sign.save"), button -> this.saveAndClose())
-                        .dimensions(panelX + 60, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 60, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.road_name_sign.save"), button -> this.saveAndClose())
         );
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.road_name_sign.cancel"), button -> this.close())
-                        .dimensions(panelX + 170, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 170, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.road_name_sign.cancel"), button -> this.close())
         );
 
         this.setFocused(this.chineseNameTextField);
@@ -95,32 +92,31 @@ public class RoadNameSignScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.road_name_sign.title"),
+                new TranslatableText("text.yunbeiuc.road_name_sign.title"),
                 panelX + PANEL_WIDTH / 2, panelY + 12,
                 0xFFCCCCCC
-        );
-
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.road_name_sign.chinese_name"),
+        );textRenderer.drawWithShadow(context, 
+                new TranslatableText("text.yunbeiuc.road_name_sign.chinese_name"),
                 panelX + 10, panelY + 16,
                 0xFFAAAAAA
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.road_name_sign.english_name"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.road_name_sign.english_name"),
                 panelX + 10, panelY + 61,
                 0xFFAAAAAA
         );

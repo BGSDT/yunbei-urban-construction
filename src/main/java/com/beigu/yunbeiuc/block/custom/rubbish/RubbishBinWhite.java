@@ -13,6 +13,8 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +29,7 @@ import java.util.List;
 public class RubbishBinWhite extends Block {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.rubbish_bin.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.rubbish_bin.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -74,7 +76,7 @@ public class RubbishBinWhite extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     @Override
@@ -86,7 +88,7 @@ public class RubbishBinWhite extends Block {
             return ActionResult.success(world.isClient());
         }else {
             if (currentState == NumberState.NINE) {
-                player.sendMessage(Text.translatable("block.yunbeiuc.rubbish_bin.full"), true);
+                player.sendMessage(new TranslatableText("block.yunbeiuc.rubbish_bin.full"), true);
                 return ActionResult.success(world.isClient());
             } else if (!heldItem.isEmpty()) {
                 // 移除手中的物品（设置为空栈）

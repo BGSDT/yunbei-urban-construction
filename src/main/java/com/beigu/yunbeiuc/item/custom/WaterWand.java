@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,7 +22,7 @@ public class WaterWand extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.translatable("item.yunbeiuc.water_wand.tooltip"));
+        tooltip.add(new TranslatableText("item.yunbeiuc.water_wand.tooltip"));
         super.appendTooltip(stack, world, tooltip, context);
     }
 
@@ -55,7 +56,7 @@ public class WaterWand extends Item {
         }
 
         if (count > 0) {
-            player.sendMessage(Text.translatable("item.yunbeiuc.water_wand.success", count), true);
+            player.sendMessage(new TranslatableText("item.yunbeiuc.water_wand.success", count), true);
         }
 
         return ActionResult.PASS;

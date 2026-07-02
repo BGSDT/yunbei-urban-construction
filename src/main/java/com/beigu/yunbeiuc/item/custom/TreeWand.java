@@ -12,12 +12,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Random;
 
 public class TreeWand extends Item {
     public TreeWand(Settings settings) {
@@ -26,7 +27,7 @@ public class TreeWand extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.translatable("item.yunbeiuc.tree_wand.tooltip"));
+        tooltip.add(new TranslatableText("item.yunbeiuc.tree_wand.tooltip"));
         super.appendTooltip(stack, world, tooltip, context);
     }
 
@@ -69,7 +70,7 @@ public class TreeWand extends Item {
                         // 播放音效和显示消息
                         serverWorld.playSound(null, abovePos, SoundEvents.BLOCK_GRASS_PLACE,
                                 SoundCategory.BLOCKS, 1.0F, 1.0F);
-                        player.sendMessage(Text.translatable("item.yunbeiuc.tree_wand.success"), true);
+                        player.sendMessage(new TranslatableText("item.yunbeiuc.tree_wand.success"), true);
 
                         // 非创造模式消耗耐久
                         if (!player.getAbilities().creativeMode) {
@@ -86,14 +87,14 @@ public class TreeWand extends Item {
                             serverWorld.setBlockState(abovePos, originalAboveState);
                         }
 
-                        player.sendMessage(Text.translatable("item.yunbeiuc.tree_wand.failed"), true);
+                        player.sendMessage(new TranslatableText("item.yunbeiuc.tree_wand.failed"), true);
                         return ActionResult.FAIL;
                     }
                 } else {
-                    player.sendMessage(Text.translatable("item.yunbeiuc.tree_wand.no_space"), true);
+                    player.sendMessage(new TranslatableText("item.yunbeiuc.tree_wand.no_space"), true);
                 }
             } else {
-                player.sendMessage(Text.translatable("item.yunbeiuc.tree_wand.invalid_block"), true);
+                player.sendMessage(new TranslatableText("item.yunbeiuc.tree_wand.invalid_block"), true);
             }
         }
 

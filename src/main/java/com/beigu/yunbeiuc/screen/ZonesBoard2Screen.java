@@ -7,7 +7,8 @@ import com.beigu.yunbeiuc.network.ZonesBoard2UpdatePacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -15,6 +16,8 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -47,7 +50,7 @@ public class ZonesBoard2Screen extends Screen {
     private static final Identifier EXPRESSWAY_TEXTURE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_logo.png");
 
     public ZonesBoard2Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.zones_board_image.title"));
+        super(new TranslatableText("text.yunbeiuc.zones_board_image.title"));
         this.pos = pos;
         this.blockEntity = (ZonesBoard2Entity) MinecraftClient.getInstance().world.getBlockEntity(pos);
         this.andX = blockEntity.getAndX();
@@ -102,11 +105,10 @@ public class ZonesBoard2Screen extends Screen {
                 this.textRenderer,
                 panelX + 10, panelY + 40,
                 130, 24,
-                Text.translatable("text.yunbeiuc.zones_board_image.text1_content")
+                new TranslatableText("text.yunbeiuc.zones_board_image.text1_content")
         );
         this.text1TextField.setMaxLength(256);
         this.text1TextField.setText(existingText1);
-        this.text1TextField.setPlaceholder(Text.translatable("text.yunbeiuc.zones_board_image.text1_placeholder"));
         this.addSelectableChild(this.text1TextField);
 
         // X偏移按钮
@@ -165,23 +167,19 @@ public class ZonesBoard2Screen extends Screen {
 
         // 保存按钮
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.zones_board_image.save"), button -> saveAndClose())
-                        .dimensions(panelX + 80, panelY + 210, 50, 20)
-                        .build()
+                new ButtonWidget(panelX + 80, panelY + 210, 50, 20, new TranslatableText("text.yunbeiuc.zones_board_image.save"), button -> saveAndClose())
         );
 
         // 取消按钮
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.zones_board_image.cancel"), button -> this.close())
-                        .dimensions(panelX + 140, panelY + 210, 50, 20)
-                        .build()
+                new ButtonWidget(panelX + 140, panelY + 210, 50, 20, new TranslatableText("text.yunbeiuc.zones_board_image.cancel"), button -> this.close())
         );
 
         this.setFocused(this.text1TextField);
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
         int listAreaWidth = this.width / 3;
@@ -190,72 +188,80 @@ public class ZonesBoard2Screen extends Screen {
         int panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
         int panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.zones_board_image.title"),
+                new TranslatableText("text.yunbeiuc.zones_board_image.title"),
                 listAreaWidth / 2,
                 10,
                 0xFFFFFF
         );
 
         if (selectedOption != null) {
-            context.drawTextWithShadow(
+            DrawableHelper.drawTextWithShadow(
+                    context, 
                     this.textRenderer,
-                    Text.translatable("text.yunbeiuc.zones_board_image.current_selection",
-                            Text.translatable(selectedOption.getTranslationKey())),
+                    new TranslatableText("text.yunbeiuc.zones_board_image.current_selection",
+                            new TranslatableText(selectedOption.getTranslationKey())),
                     10,
                     this.height - 55,
                     0xFFFFFF
             );
         }
 
-        context.fill(panelX, panelY, panelX + RIGHT_PANEL_WIDTH, panelY + RIGHT_PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, RIGHT_PANEL_WIDTH, RIGHT_PANEL_HEIGHT, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, panelX + RIGHT_PANEL_WIDTH, panelY + RIGHT_PANEL_HEIGHT, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, RIGHT_PANEL_WIDTH, RIGHT_PANEL_HEIGHT, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.zones_board_image.settings_title"),
+                new TranslatableText("text.yunbeiuc.zones_board_image.settings_title"),
                 panelX + RIGHT_PANEL_WIDTH / 2,
                 panelY + 12,
                 0xFFCCCCCC
         );
 
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.zones_board_image.text1_label"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.zones_board_image.text1_label"),
                 panelX + 10, panelY + 28,
                 0xFFAAAAAA
         );
 
         // XY偏移标签 - 放在同一行
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.zones_board_image.offset_label"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.zones_board_image.offset_label"),
                 panelX + 10, panelY + 68,
                 0xFFAAAAAA
         );
 
         // XY偏移值 - 放在同一行显示
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.zones_board_image.offset_value",
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.zones_board_image.offset_value",
                         String.format("%.1f", andX), String.format("%.1f", andY)),
                 panelX + 10, panelY + 108,
                 0xFFFFFF00
         );
 
         // 缩放标签
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.zones_board_image.scale_label"),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.zones_board_image.scale_label"),
                 panelX + 100, panelY + 68,
                 0xFFAAAAAA
         );
 
         // 缩放值
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.zones_board_image.scale_value", String.format("%.1f", andScale)),
+        DrawableHelper.drawTextWithShadow(
+                context, 
+                textRenderer,
+                new TranslatableText("text.yunbeiuc.zones_board_image.scale_value", String.format("%.1f", andScale)),
                 panelX + 100, panelY + 108,
                 0xFFFFFF00
         );
@@ -267,24 +273,27 @@ public class ZonesBoard2Screen extends Screen {
             int previewX = panelX + 10;
             int previewY = panelY + 128;
 
-            context.fill(previewX - 2, previewY - 2, previewX + previewSize + 2, previewY + previewSize + 2, 0xFF000000);
-            context.drawBorder(previewX - 2, previewY - 2, previewSize + 4, previewSize + 4, 0xFFFFFFFF);
+            DrawableHelper.fill(context, previewX - 2, previewY - 2, previewX + previewSize + 2, previewY + previewSize + 2, 0xFF000000);
+            DrawableHelper.fill(context, previewX - 2, previewY - 2, previewSize + 4, previewSize + 4, 0xFFFFFFFF);
 
-            context.drawTexture(texture, previewX, previewY, previewSize, previewSize, 0, 0, 16, 16, 16, 16);
+            MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
+            DrawableHelper.drawTexture(context, previewX, previewY, previewSize, previewSize, 0, 0, 16, 16, 16, 16);
 
             // 图片名称
-            context.drawTextWithShadow(
+            DrawableHelper.drawTextWithShadow(
+                    context, 
                     this.textRenderer,
-                    Text.translatable(selectedOption.getTranslationKey()),
+                    new TranslatableText(selectedOption.getTranslationKey()),
                     previewX + previewSize + 8,
                     previewY + 10,
                     0xFFFFFF
             );
 
             // 当前值显示
-            context.drawTextWithShadow(
+            DrawableHelper.drawTextWithShadow(
+                    context, 
                     this.textRenderer,
-                    Text.translatable("text.yunbeiuc.zones_board_image.current_offset",
+                    new TranslatableText("text.yunbeiuc.zones_board_image.current_offset",
                             String.format("%.1f", andX), String.format("%.1f", andY)),
                     previewX + previewSize + 8,
                     previewY + 30,
@@ -427,23 +436,24 @@ public class ZonesBoard2Screen extends Screen {
             }
 
             @Override
-            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            public void render(MatrixStack context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
                 if (option == selectedOption) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
+                    DrawableHelper.fill(context, x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
                 } else if (hovered) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
+                    DrawableHelper.fill(context, x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
                 }
 
                 int colorSize = 16;
                 int colorX = x + 5;
                 int colorY = y + (entryHeight - colorSize) / 2;
-                context.fill(colorX, colorY, colorX + colorSize, colorY + colorSize, 0xFF000000 | option.getColor());
-                context.drawBorder(colorX, colorY, colorSize, colorSize, 0xFFCCCCCC);
+                DrawableHelper.fill(context, colorX, colorY, colorX + colorSize, colorY + colorSize, 0xFF000000 | option.getColor());
+                DrawableHelper.fill(context, colorX, colorY, colorSize, colorSize, 0xFFCCCCCC);
 
                 int textX = colorX + colorSize + 8;
-                context.drawTextWithShadow(
+                DrawableHelper.drawCenteredText(
+                        context, 
                         textRenderer,
-                        Text.translatable(option.getTranslationKey()),
+                        new TranslatableText(option.getTranslationKey()),
                         textX,
                         y + (entryHeight - 8) / 2,
                         0xFFFFFF

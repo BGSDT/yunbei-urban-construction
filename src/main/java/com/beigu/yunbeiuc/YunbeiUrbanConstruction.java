@@ -11,7 +11,7 @@ import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.network.ModMessages;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
@@ -45,9 +45,7 @@ public class YunbeiUrbanConstruction implements ModInitializer {
         ModItemGroups.registerGroups();
         ModItems.registerItems();
         ModEvents.register();
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            ChatCommandHandler.register(dispatcher);
-        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> ChatCommandHandler.register(dispatcher));
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
                 new SimpleSynchronousResourceReloadListener() {

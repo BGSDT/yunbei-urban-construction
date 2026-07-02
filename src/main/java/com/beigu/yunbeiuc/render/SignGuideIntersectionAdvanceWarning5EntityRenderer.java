@@ -11,8 +11,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Quaternion;
 
 public class SignGuideIntersectionAdvanceWarning5EntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning5Entity> {
     private final TextRenderer textRenderer;
@@ -50,11 +52,11 @@ public class SignGuideIntersectionAdvanceWarning5EntityRenderer implements Block
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
 
         float scaleValue = 0.03f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = new LiteralText(text).setStyle(Style.EMPTY.withBold(true));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -78,7 +80,7 @@ public class SignGuideIntersectionAdvanceWarning5EntityRenderer implements Block
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
+                false,
                 0,
                 light
         );

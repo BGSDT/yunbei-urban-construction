@@ -17,6 +17,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -43,7 +45,7 @@ public class RoadPoleTextDisplay extends BlockWithEntity implements BlockEntityP
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.road_pole_text_display.tooltip"));
+        tooltip.add(new TranslatableText("block.yunbeiuc.road_pole_text_display.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -81,7 +83,7 @@ public class RoadPoleTextDisplay extends BlockWithEntity implements BlockEntityP
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     @Override

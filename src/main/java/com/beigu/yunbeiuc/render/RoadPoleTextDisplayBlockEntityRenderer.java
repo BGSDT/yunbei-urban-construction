@@ -9,7 +9,9 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.Quaternion;
 
 public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRenderer<RoadPoleTextDisplayEntity> {
     private final TextRenderer textRenderer;
@@ -28,14 +30,14 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
         matrices.translate(0.5, 0.05, 0.5);
 
         float originalRotation = entity.getCachedState().get(RoadPoleTextDisplay.FACING).asRotation();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-originalRotation - 90));
+        matrices.multiply(new Quaternion(0, 1, 0, -originalRotation - 90));
 
         float baseScale = 0.01f;
         float sizeMultiplier = entity.getFontSize() / 12.0f;
         float scale = baseScale * sizeMultiplier;
 
         // 新的居中计算方式
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = new LiteralText(text).setStyle(Style.EMPTY.withBold(true));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
         float zOffset = 0.2f;
@@ -56,7 +58,7 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
+                false,
                 0,
                 light
         );

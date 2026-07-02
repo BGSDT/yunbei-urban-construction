@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version "${loom_version}"
+	id 'fabric-loom' version "1.6-SNAPSHOT"
 	id 'maven-publish'
 }
 
@@ -14,12 +14,6 @@ repositories {
 	maven {
 		name = "Terraformers"
 		url = "https://maven.terraformersmc.com/releases/"
-	}
-}
-
-fabricApi {
-	configureDataGeneration {
-		client = true
 	}
 }
 

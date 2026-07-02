@@ -7,12 +7,15 @@ import com.beigu.yunbeiuc.network.SignGuideIntersectionAdvanceWarning3UpdatePack
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
@@ -41,7 +44,7 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
     private Block currentBlock;
 
     public SignGuideIntersectionAdvanceWarning3Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.title"));
+        super(new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.title"));
         this.pos = pos;
     }
 
@@ -99,11 +102,10 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
                     this.textRenderer,
                     panelX + (PANEL_WIDTH - 310) / 2, panelY + 40,
                     310, INPUT_HEIGHT,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.content")
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.content")
             );
             this.text1TextField.setMaxLength(256);
             this.text1TextField.setText(existingText1);
-            this.text1TextField.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.placeholder"));
             this.addSelectableChild(this.text1TextField);
         }
 
@@ -129,15 +131,13 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
 
         int buttonY = panelY + 215;
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.save"), button -> this.saveAndClose())
-                        .dimensions(panelX + 100, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 100, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.save"), button -> this.saveAndClose())
+
         );
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cancel"), button -> this.close())
-                        .dimensions(panelX + 210, buttonY, 90, 24)
-                        .build()
+                new ButtonWidget(panelX + 210, buttonY, 90, 24, new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cancel"), button -> this.close())
+
         );
 
         if (this.cnText2TextField != null) {
@@ -150,11 +150,10 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
                 this.textRenderer,
                 x, y,
                 INPUT_WIDTH, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.content")
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.content")
         );
         field.setMaxLength(256);
         field.setText(existingText);
-        field.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.placeholder"));
         this.addSelectableChild(field);
         return field;
     }
@@ -165,11 +164,10 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
                 x, y,
                 NEW_INPUT_WIDTH,
                 INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.content")
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.content")
         );
         field.setMaxLength(256);
         field.setText(existingText);
-        field.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.placeholder"));
         this.addSelectableChild(field);
         return field;
     }
@@ -201,77 +199,85 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
+        DrawableHelper.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
+        DrawableHelper.fill(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        DrawableHelper.drawCenteredText(
+                context, 
                 this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.title"),
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.title"),
                 panelX + PANEL_WIDTH / 2, panelY + 12,
                 0xFFCCCCCC
         );
 
         if (currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4) {
-            context.drawCenteredTextWithShadow(
+            DrawableHelper.drawCenteredText(
+                    context, 
                     this.textRenderer,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.text_1_name"),
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.text_1_name"),
                     panelX + PANEL_WIDTH / 2, panelY + 31 - andInputY,
                     0xFFAAAAAA
             );
         }
 
         if (currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4) {
-            context.drawTextWithShadow(this.textRenderer,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_2_name"),
+            DrawableHelper.drawTextWithShadow(
+                    context, this.textRenderer,
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_2_name"),
                     panelX + 5, panelY + 76 - andInputY, 0xFFAAAAAA);
-            context.drawTextWithShadow(this.textRenderer,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_2_name"),
+            DrawableHelper.drawTextWithShadow(
+                    context, this.textRenderer,
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_2_name"),
                     panelX + 85, panelY + 76 - andInputY, 0xFFAAAAAA);
-            context.drawTextWithShadow(this.textRenderer,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_3_name"),
+            DrawableHelper.drawTextWithShadow(
+                    context, this.textRenderer,
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_3_name"),
                     panelX + 165, panelY + 76 - andInputY, 0xFFAAAAAA);
-            context.drawTextWithShadow(this.textRenderer,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_3_name"),
+            DrawableHelper.drawTextWithShadow(
+                    context, this.textRenderer,
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_3_name"),
                     panelX + 245, panelY + 76 - andInputY, 0xFFAAAAAA);
         } else {
-            context.drawTextWithShadow(this.textRenderer,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_2_name"),
+            DrawableHelper.drawTextWithShadow(
+                    context, this.textRenderer,
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_2_name"),
                     panelX + 5, panelY + 76 - andInputY, 0xFFAAAAAA);
-            context.drawTextWithShadow(this.textRenderer,
-                    Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_2_name"),
+            DrawableHelper.drawTextWithShadow(
+                    context, this.textRenderer,
+                    new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_2_name"),
                     panelX + 165, panelY + 76 - andInputY, 0xFFAAAAAA);
         }
 
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_4_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_4_name"),
                 panelX + 5, panelY + 121 - andInputY, 0xFFAAAAAA);
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_4_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_4_name"),
                 panelX + 85, panelY + 121 - andInputY, 0xFFAAAAAA);
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_5_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_5_name"),
                 panelX + 165, panelY + 121 - andInputY, 0xFFAAAAAA);
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_5_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_5_name"),
                 panelX + 245, panelY + 121 - andInputY, 0xFFAAAAAA);
 
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_6_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_6_name"),
                 panelX + 5, panelY + 166 - andInputY, 0xFFAAAAAA);
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_6_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_6_name"),
                 panelX + 85, panelY + 166 - andInputY, 0xFFAAAAAA);
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_7_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.cn_text_7_name"),
                 panelX + 165, panelY + 166 - andInputY, 0xFFAAAAAA);
-        context.drawTextWithShadow(this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_7_name"),
+        DrawableHelper.drawTextWithShadow(context, this.textRenderer,
+                new TranslatableText("text.yunbeiuc.sign_guide_intersection_advance_warning_3.en_text_7_name"),
                 panelX + 245, panelY + 166 - andInputY, 0xFFAAAAAA);
 
         if (this.text1TextField != null) {
