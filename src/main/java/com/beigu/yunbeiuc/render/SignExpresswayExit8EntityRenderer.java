@@ -2,7 +2,6 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayExit8;
-import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning3;
 import com.beigu.yunbeiuc.entity.SignExpresswayExit8Entity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.RenderLayer;
@@ -14,10 +13,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Matrix4f;
 
 public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<SignExpresswayExit8Entity> {
@@ -81,7 +80,7 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float arrowSize = 0.65f;
         float halfSize = arrowSize / 2f;
@@ -119,7 +118,7 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float arrowSize = 0.4f;
         float halfSize = arrowSize / 2f;
@@ -144,7 +143,7 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float scaleValue = 0.03f;
 
@@ -184,7 +183,7 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float scaleValue = 0.045f;
 

@@ -2,7 +2,6 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.custom.RoadNameSignBlock;
-import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1Wuhan;
 import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.client.font.TextRenderer;
@@ -15,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 import java.util.Map;
 
@@ -82,9 +82,9 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
         if (backTF) {
-            matrices.multiply(new Quaternion(0, 1, 0, 180));
+            matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, 180, true));
         }
 
         float scaleValue = isSmallScale ? 0.025f : 0.035f;
@@ -126,9 +126,9 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
         if (backTF) {
-            matrices.multiply(new Quaternion(0, 1, 0, 180));
+            matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, 180, true));
         }
         String directionText = DIRECTION_MAP.get(facing).get(directionKey);
         Text styledText = new LiteralText(directionText).setStyle(Style.EMPTY.withBold(true));

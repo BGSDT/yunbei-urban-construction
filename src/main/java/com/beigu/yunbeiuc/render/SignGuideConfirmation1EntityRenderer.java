@@ -17,6 +17,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.Matrix4f;
@@ -93,7 +94,7 @@ public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float scaleValue = 0.035f;
 
@@ -132,7 +133,7 @@ public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float scaleValue = isSmallScale ? 0.02f : 0.035f;
 

@@ -19,6 +19,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Matrix4f;
 
 public class SignGuideIntersectionAdvanceWarning6EntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning6Entity> {
@@ -78,7 +79,7 @@ public class SignGuideIntersectionAdvanceWarning6EntityRenderer implements Block
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float arrowSize = 0.4f;
         float halfSize = arrowSize / 2f;
@@ -116,7 +117,7 @@ public class SignGuideIntersectionAdvanceWarning6EntityRenderer implements Block
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float arrowSize = 0.4f;
         float halfSize = arrowSize / 2f;
@@ -141,7 +142,7 @@ public class SignGuideIntersectionAdvanceWarning6EntityRenderer implements Block
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float scaleValue = 0.035f;
 
@@ -182,7 +183,7 @@ public class SignGuideIntersectionAdvanceWarning6EntityRenderer implements Block
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float scaleValue = 0.035f;
 

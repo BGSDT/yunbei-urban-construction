@@ -10,8 +10,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRenderer<RoadPoleTextDisplayEntity> {
     private final TextRenderer textRenderer;
@@ -30,7 +30,7 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
         matrices.translate(0.5, 0.05, 0.5);
 
         float originalRotation = entity.getCachedState().get(RoadPoleTextDisplay.FACING).asRotation();
-        matrices.multiply(new Quaternion(0, 1, 0, -originalRotation - 90));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -originalRotation - 90, true));
 
         float baseScale = 0.01f;
         float sizeMultiplier = entity.getFontSize() / 12.0f;

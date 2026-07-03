@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 public class SignGuideIntersectionAdvanceWarning3EntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning3Entity> {
     private final TextRenderer textRenderer;
@@ -89,7 +90,7 @@ public class SignGuideIntersectionAdvanceWarning3EntityRenderer implements Block
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float scaleValue = isSmallScale ? 0.023f : 0.03f;
 

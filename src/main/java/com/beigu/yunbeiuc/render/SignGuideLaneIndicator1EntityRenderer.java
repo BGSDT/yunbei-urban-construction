@@ -18,6 +18,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Matrix4f;
 
 public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRenderer<SignGuideLaneIndicator1Entity> {
@@ -63,7 +64,7 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         };
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
 
         float arrowSize = 1f;
         float halfSize = arrowSize / 2f;

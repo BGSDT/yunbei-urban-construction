@@ -15,6 +15,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning1WuhanEntity> {
     private final TextRenderer textRenderer;
@@ -72,7 +73,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(new Quaternion(0, 1, 0, -facing.asRotation()));
+        matrices.multiply(new Quaternion(Vec3f.POSITIVE_Y, -facing.asRotation(), true));
         float scaleValue = isSmallScale ? 0.023f : 0.035f;
 
         Text styledText = new LiteralText(text).setStyle(Style.EMPTY.withBold(true));
