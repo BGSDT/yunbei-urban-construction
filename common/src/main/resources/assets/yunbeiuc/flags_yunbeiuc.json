@@ -1,0 +1,149 @@
+{
+  "custom_flags": {
+    "wuxi_1": {
+      "name": "践行“八礼四仪” 争做新时代好少年",
+      "image": "yunbeiuc:textures/block/flags/wuxi_1.png",
+      "color": "e74095"
+    },
+    "wuxi_2": {
+      "name": "弘扬志愿精神 凝聚文明力量",
+      "image": "yunbeiuc:textures/block/flags/wuxi_2.png",
+      "color": "e74095"
+    },
+    "wuxi_3": {
+      "name": "奋斗新征程 建功新时代",
+      "image": "yunbeiuc:textures/block/flags/wuxi_3.png",
+      "color": "e74095"
+    },
+    "wuxi_4": {
+      "name": "促进文化消费 提升文化品味",
+      "image": "yunbeiuc:textures/block/flags/wuxi_4.png",
+      "color": "e74095"
+    },
+    "wuxi_5": {
+      "name": "传播法治文明 建设法治城市",
+      "image": "yunbeiuc:textures/block/flags/wuxi_5.png",
+      "color": "e74095"
+    },
+    "wuxi_6": {
+      "name": "建设诚信无锡 弘扬社会新风",
+      "image": "yunbeiuc:textures/block/flags/wuxi_6.png",
+      "color": "e74095"
+    },
+    "wuxi_7": {
+      "name": "争做文明市民 共建文明城市",
+      "image": "yunbeiuc:textures/block/flags/wuxi_7.png",
+      "color": "e74095"
+    },
+    "wuxi_8": {
+      "name": "深化新时代文明实践 共筑美好精神家园",
+      "image": "yunbeiuc:textures/block/flags/wuxi_8.png",
+      "color": "e74095"
+    },
+    "wuxi_9": {
+      "name": "社会主义核心价值观",
+      "image": "yunbeiuc:textures/block/flags/wuxi_9.png",
+      "color": "e74095"
+    },
+    "wuxi_10": {
+      "name": "弘扬志愿精神 凝聚文明力量",
+      "image": "yunbeiuc:textures/block/flags/wuxi_10.png",
+      "color": "e74095"
+    },
+    "wuxi_11": {
+      "name": "奋斗新征程 建功新时代",
+      "image": "yunbeiuc:textures/block/flags/wuxi_11.png",
+      "color": "e74095"
+    },
+    "wuxi_12": {
+      "name": "促进文化消费 提升文化品味",
+      "image": "yunbeiuc:textures/block/flags/wuxi_12.png",
+      "color": "e74095"
+    },
+    "wuxi_13": {
+      "name": "传播法治文明 建设法治城市",
+      "image": "yunbeiuc:textures/block/flags/wuxi_13.png",
+      "color": "e74095"
+    },
+    "wuxi_14": {
+      "name": "建设诚信无锡 弘扬社会新风",
+      "image": "yunbeiuc:textures/block/flags/wuxi_14.png",
+      "color": "e74095"
+    },
+    "wuxi_15": {
+      "name": "争做文明市民 共建文明城市",
+      "image": "yunbeiuc:textures/block/flags/wuxi_15.png",
+      "color": "e74095"
+    },
+    "wuxi_16": {
+      "name": "深化新时代文明实践 共筑美好精神家园",
+      "image": "yunbeiuc:textures/block/flags/wuxi_16.png",
+      "color": "e74095"
+    },
+    "wuxi_17": {
+      "name": "社会主义核心价值观",
+      "image": "yunbeiuc:textures/block/flags/wuxi_17.png",
+      "color": "e74095"
+    },
+    "wuxi_18": {
+      "name": "践行“八礼四仪” 争做新时代好少年",
+      "image": "yunbeiuc:textures/block/flags/wuxi_18.png",
+      "color": "e74095"
+    },
+    "wuxi_19": {
+      "name": "文明无锡我有责 无锡文明我光荣",
+      "image": "yunbeiuc:textures/block/flags/wuxi_19.png",
+      "color": "e74095"
+    },
+    "wuxi_20": {
+      "name": "公筷公勺新时尚 一举一动见文明",
+      "image": "yunbeiuc:textures/block/flags/wuxi_20.png",
+      "color": "e74095"
+    },
+    "wuxi_21": {
+      "name": "学习道德模范 争做无锡好人",
+      "image": "yunbeiuc:textures/block/flags/wuxi_21.png",
+      "color": "e74095"
+    },
+    "wuxi_22": {
+      "name": "打造诚信无锡 共建美好家园",
+      "image": "yunbeiuc:textures/block/flags/wuxi_22.png",
+      "color": "e74095"
+    },
+    "wuxi_23": {
+      "name": "全社会共同呵护 未成年人健康成长",
+      "image": "yunbeiuc:textures/block/flags/wuxi_23.png",
+      "color": "e74095"
+    },
+    "wuxi_24": {
+      "name": "文明城市全民共建 美好生活全民共享",
+      "image": "yunbeiuc:textures/block/flags/wuxi_24.png",
+      "color": "e74095"
+    },
+    "wuxi_25": {
+      "name": "奉献 友爱 互助 进步",
+      "image": "yunbeiuc:textures/block/flags/wuxi_25.png",
+      "color": "e74095"
+    },
+    "wuxi_26": {
+      "name": "尚德 务实 和谐 奋进",
+      "image": "yunbeiuc:textures/block/flags/wuxi_26.png",
+      "color": "e74095"
+    },
+    "wuxi_27": {
+      "name": "人民对美好生活的向往 就是我们的奋斗目标",
+      "image": "yunbeiuc:textures/block/flags/wuxi_27.png",
+      "color": "e74095"
+    },
+    "wuxi_28": {
+      "name": "践行移风易俗 弘扬文明新风",
+      "image": "yunbeiuc:textures/block/flags/wuxi_28.png",
+      "color": "e74095"
+    },
+    "wuxi_29": {
+      "name": "幸福都是奋斗出来的",
+      "image": "yunbeiuc:textures/block/flags/wuxi_29.png",
+      "color": "e74095"
+    }
+  }
+}

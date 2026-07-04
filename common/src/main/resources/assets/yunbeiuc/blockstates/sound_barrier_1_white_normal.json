@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=north,part=foot,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_bottom_normal"},
+    "facing=east,part=foot,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_bottom_normal", "y": 90},
+    "facing=south,part=foot,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_bottom_normal", "y": 180},
+    "facing=west,part=foot,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_bottom_normal", "y": 270},
+    "facing=north,part=head,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_head_bottom_normal"},
+    "facing=east,part=head,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_head_bottom_normal", "y": 90},
+    "facing=south,part=head,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_head_bottom_normal", "y": 180},
+    "facing=west,part=head,layer=0": {"model": "yunbeiuc:block/sound_barrier_1_white_head_bottom_normal", "y": 270},
+    "facing=north,part=foot,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_middle"},
+    "facing=east,part=foot,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_middle", "y": 90},
+    "facing=south,part=foot,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_middle", "y": 180},
+    "facing=west,part=foot,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_middle", "y": 270},
+    "facing=north,part=head,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_head_middle"},
+    "facing=east,part=head,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_head_middle", "y": 90},
+    "facing=south,part=head,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_head_middle", "y": 180},
+    "facing=west,part=head,layer=1": {"model": "yunbeiuc:block/sound_barrier_1_white_head_middle", "y": 270},
+    "facing=north,part=foot,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_top"},
+    "facing=east,part=foot,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_top", "y": 90},
+    "facing=south,part=foot,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_top", "y": 180},
+    "facing=west,part=foot,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_foot_top", "y": 270},
+    "facing=north,part=head,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_head_top"},
+    "facing=east,part=head,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_head_top", "y": 90},
+    "facing=south,part=head,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_head_top", "y": 180},
+    "facing=west,part=head,layer=2": {"model": "yunbeiuc:block/sound_barrier_1_white_head_top", "y": 270}
+  }
+}

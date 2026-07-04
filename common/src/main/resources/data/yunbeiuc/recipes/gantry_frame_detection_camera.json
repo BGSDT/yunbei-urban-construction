@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "building",
+    "ingredients": [
+        {
+            "item": "yunbeiuc:instrument_camera"
+        },
+        {
+            "item": "minecraft:stick"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "item": "yunbeiuc:gantry_frame_detection_camera"
+    }
+}

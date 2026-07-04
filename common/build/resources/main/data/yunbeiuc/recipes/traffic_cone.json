@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:black_concrete"
+        },
+        "B": {
+            "item": "minecraft:red_concrete"
+        }
+    },
+    "pattern": [
+        "A  ",
+        "BB ",
+        "AAA"
+    ],
+    "result": {
+        "count": 6,
+        "item": "yunbeiuc:traffic_cone"
+    }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "yunbeiuc:item/zones_board_image"
+  }
+}

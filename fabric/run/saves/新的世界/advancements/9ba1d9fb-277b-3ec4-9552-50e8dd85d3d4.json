@@ -1,0 +1,9 @@
+{
+  "minecraft:recipes/food/honey_bottle": {
+    "criteria": {
+      "has_honey_block": "2025-10-25 21:13:22 +0800"
+    },
+    "done": true
+  },
+  "DataVersion": 3465
+}

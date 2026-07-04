@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,part=foot": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_foot"
+    },
+    "facing=south,part=foot": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_foot",
+      "y": 180
+    },
+    "facing=east,part=foot": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_foot",
+      "y": 90
+    },
+    "facing=west,part=foot": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_foot",
+      "y": 270
+    },
+    "facing=north,part=head": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_head"
+    },
+    "facing=south,part=head": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_head",
+      "y": 180
+    },
+    "facing=east,part=head": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_head",
+      "y": 90
+    },
+    "facing=west,part=head": {
+      "model": "yunbeiuc:block/road_closed_barricade_guardrail_4_head",
+      "y": 270
+    }
+  }
+}

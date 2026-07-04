@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "yunbeiuc",
+  "version": "1.0.0-26w28a",
+  "name": "Yunbei Urban Construction",
+  "description": "Let's use the mod to decorate your city!",
+  "authors": [
+    "北咕",
+    "jstxjf_",
+    "潇湘-迷蝎",
+    "Tizhengxie",
+    "NanGuaQWQ",
+    "CR400BF_G_5133",
+    "Yomi_307"
+  ],
+  "contact": {
+    "homepage": "https://bgsdt.github.io/",
+    "sources": "https://github.com/BGSDT/yunbei-urban-construction",
+    "issues": "https://github.com/BGSDT/yunbei-urban-construction/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/yunbeiuc/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.beigu.yunbeiuc.fabric.YunbeiUrbanConstructionFabric"
+    ],
+    "client": [
+      "com.beigu.yunbeiuc.fabric.client.YunbeiUrbanConstructionFabricClient"
+    ]
+  },
+  "mixins": [
+    "yunbeiuc.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "architectury": ">=9.2.14",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*",
+    "modmenu": ">=7.1.0"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.modrinth": "https://modrinth.com/mod/yunbeiuc"
+      },
+      "update_checker": true
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "building",
+    "ingredients": [
+        {
+            "item": "yunbeiuc:traffic_barrier_gray_slant"
+        },
+        {
+            "item": "yunbeiuc:reflective_sign_yellow_all_1"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "item": "yunbeiuc:traffic_barrier_gray_slant_yellow"
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/road_solar_panel",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/road_solar_panel"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/road_solar_panel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/road_solar_panel",
+      "y": 270
+    }
+  }
+}

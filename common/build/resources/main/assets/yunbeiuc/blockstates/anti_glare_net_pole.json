@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "facing=north,pole_type=anti_glare_net_pole": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 0
+    },
+    "facing=east,pole_type=anti_glare_net_pole": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 90
+    },
+    "facing=south,pole_type=anti_glare_net_pole": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 180
+    },
+    "facing=west,pole_type=anti_glare_net_pole": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 270
+    },
+    "facing=north,pole_type=anti_glare_net_pole_left": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_left",
+      "y": 0
+    },
+    "facing=east,pole_type=anti_glare_net_pole_left": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_left",
+      "y": 90
+    },
+    "facing=south,pole_type=anti_glare_net_pole_left": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_left",
+      "y": 180
+    },
+    "facing=west,pole_type=anti_glare_net_pole_left": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_left",
+      "y": 270
+    },
+    "facing=north,pole_type=anti_glare_net_pole_right": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_right",
+      "y": 0
+    },
+    "facing=east,pole_type=anti_glare_net_pole_right": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_right",
+      "y": 90
+    },
+    "facing=south,pole_type=anti_glare_net_pole_right": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_right",
+      "y": 180
+    },
+    "facing=west,pole_type=anti_glare_net_pole_right": {
+      "model": "yunbeiuc:block/anti_glare_net_pole_right",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "result": "yunbeiuc:road_with_yellow_cross_line",
+    "ingredient": {
+        "item": "yunbeiuc:road_full_of_yellow"
+    },
+    "count": 1
+}

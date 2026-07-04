@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/road_railings_iron_pole",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/road_railings_iron_pole"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/road_railings_iron_pole",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/road_railings_iron_pole",
+      "y": 270
+    }
+  }
+}

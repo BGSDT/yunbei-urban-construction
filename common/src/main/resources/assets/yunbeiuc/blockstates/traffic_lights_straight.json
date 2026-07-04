@@ -1,0 +1,65 @@
+{
+  "variants": {
+    "facing=east,light_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_red",
+      "y": 90
+    },
+    "facing=north,light_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_red"
+    },
+    "facing=south,light_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_red",
+      "y": 180
+    },
+    "facing=west,light_state=red": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_red",
+      "y": 270
+    },
+    "facing=east,light_state=yellow": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_yellow",
+      "y": 90
+    },
+    "facing=north,light_state=yellow": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_yellow"
+    },
+    "facing=south,light_state=yellow": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_yellow",
+      "y": 180
+    },
+    "facing=west,light_state=yellow": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_yellow",
+      "y": 270
+    },
+    "facing=east,light_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_green",
+      "y": 90
+    },
+    "facing=north,light_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_green"
+    },
+    "facing=south,light_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_green",
+      "y": 180
+    },
+    "facing=west,light_state=green": {
+      "model": "yunbeiuc:block/lights/traffic_lights_straight_green",
+      "y": 270
+    },
+    "facing=east,light_state=gray": {
+      "model": "yunbeiuc:block/lights/traffic_lights_gray",
+      "y": 90
+    },
+    "facing=north,light_state=gray": {
+      "model": "yunbeiuc:block/lights/traffic_lights_gray"
+    },
+    "facing=south,light_state=gray": {
+      "model": "yunbeiuc:block/lights/traffic_lights_gray",
+      "y": 180
+    },
+    "facing=west,light_state=gray": {
+      "model": "yunbeiuc:block/lights/traffic_lights_gray",
+      "y": 270
+    }
+  }
+}
+    

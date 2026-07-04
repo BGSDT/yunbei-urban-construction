@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/road_with_white_right_diamond_shape_line",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/road_with_white_right_diamond_shape_line"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/road_with_white_right_diamond_shape_line",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/road_with_white_right_diamond_shape_line",
+      "y": 270
+    }
+  }
+}

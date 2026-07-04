@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "result": "yunbeiuc:water_safety_barrier_red",
+    "ingredient": {
+        "item": "minecraft:red_concrete"
+    },
+    "count": 2
+}

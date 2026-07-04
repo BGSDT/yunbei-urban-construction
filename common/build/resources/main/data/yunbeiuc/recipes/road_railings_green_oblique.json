@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:green_concrete"
+    },
+    "result": "yunbeiuc:road_railings_green_oblique",
+    "count": 3
+}

@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:red_concrete"
+    },
+    "result": "yunbeiuc:warning_network_pole",
+    "count": 9
+}

@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "result": "yunbeiuc:traffic_barrier",
+    "ingredient": {
+        "item": "minecraft:white_concrete"
+    },
+    "count": 1
+}

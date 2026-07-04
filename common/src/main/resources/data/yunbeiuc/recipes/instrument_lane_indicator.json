@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:gray_concrete"
+        },
+        "B": {
+            "item": "minecraft:torch"
+        }
+    },
+    "pattern": [
+        "B",
+        "A"
+    ],
+    "result": {
+        "item": "yunbeiuc:instrument_lane_indicator",
+        "count": 3
+    }
+}
