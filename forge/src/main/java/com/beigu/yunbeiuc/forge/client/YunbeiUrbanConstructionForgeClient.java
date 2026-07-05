@@ -4,33 +4,8 @@ import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
-import com.beigu.yunbeiuc.render.FlagBlockEntityRenderer;
-import com.beigu.yunbeiuc.render.RoadNameSignBlockEntityRenderer;
-import com.beigu.yunbeiuc.render.RoadPoleTextDisplayBlockEntityRenderer;
-import com.beigu.yunbeiuc.render.SignExpresswayEntranceAdvance10EntityRenderer;
-import com.beigu.yunbeiuc.render.SignExpresswayEntranceAdvance13EntityRenderer;
-import com.beigu.yunbeiuc.render.SignExpresswayEntranceAdvance1EntityRenderer;
-import com.beigu.yunbeiuc.render.SignExpresswayEntranceAdvance4EntityRenderer;
-import com.beigu.yunbeiuc.render.SignExpresswayEntranceAdvance7EntityRenderer;
-import com.beigu.yunbeiuc.render.SignExpresswayExit8EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideConfirmation1EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionAdvanceWarning1EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionAdvanceWarning3EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionAdvanceWarning5EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionAdvanceWarning6EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionAdvanceWarning7EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionWarning1EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideIntersectionWarning4EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideLaneIndicator1EntityRenderer;
-import com.beigu.yunbeiuc.render.SignGuideRoadsideFacilityOverloadCheckpoint1EntityRenderer;
-import com.beigu.yunbeiuc.render.ZonesBoard1EntityRenderer;
-import com.beigu.yunbeiuc.render.ZonesBoardImageEntityRenderer;
-import com.beigu.yunbeiuc.render.ZonesBoardOverWeightEntityRenderer;
-import com.beigu.yunbeiuc.render.ZonesBoardTimeRange1EntityRenderer;
-import com.beigu.yunbeiuc.render.ZonesBoardTimeRange2EntityRenderer;
+import com.beigu.yunbeiuc.render.*;
 import com.beigu.yunbeiuc.render.json.FlagLoader;
-import com.beigu.yunbeiuc.render.fonts.CustomFontManager;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -462,6 +437,12 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get());
             RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14.get());
             RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15.get());
+            RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_DIRECTION_1.get());
+            RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2.get());
+            RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_DIRECTION_3.get());
+            RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4.get());
+            RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5.get());
+            RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get());
             RenderTypeRegistry.register(cutout, SignBlocks.SIGN_EXPRESSWAY_EXIT_8.get());
             RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_WHITE_NORMAL.get());
             RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_WHITE_TB.get());
@@ -495,6 +476,9 @@ public class YunbeiUrbanConstructionForgeClient {
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_7_ENTITY.get(), SignExpresswayEntranceAdvance7EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_10_ENTITY.get(), SignExpresswayEntranceAdvance10EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13_ENTITY.get(), SignExpresswayEntranceAdvance13EntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_1_ENTITY.get(), SignExpresswayDirection1EntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_3_ENTITY.get(), SignExpresswayDirection3EntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_5_ENTITY.get(), SignExpresswayDirection5EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_8_ENTITY.get(), SignExpresswayExit8EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_1_ENTITY.get(), ZonesBoard1EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_IMAGE_ENTITY.get(), ZonesBoardImageEntityRenderer::new);
@@ -503,7 +487,6 @@ public class YunbeiUrbanConstructionForgeClient {
             BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_OVER_WEIGHT_ENTITY.get(), ZonesBoardOverWeightEntityRenderer::new);
 
             FlagLoader.loadFlags(MinecraftClient.getInstance().getResourceManager());
-            CustomFontManager.getInstance().onResourceReload();
         });
     }
 }

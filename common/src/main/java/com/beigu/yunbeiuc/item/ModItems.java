@@ -23,7 +23,6 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(YunbeiUrbanConstruction.MOD_ID, RegistryKeys.ITEM);
 
-    // Registry keys for all block items, accessible from creative tab code
     public static final List<Supplier<? extends Item>> ALL_MUNICIPAL_ITEMS = new ArrayList<>();
     public static final List<Supplier<? extends Item>> ALL_ROAD_ITEMS = new ArrayList<>();
     public static final List<Supplier<? extends Item>> ALL_SIGN_ITEMS = new ArrayList<>();
@@ -686,6 +685,14 @@ public class ModItems {
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13, ALL_SIGN_ITEMS);
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14, ALL_SIGN_ITEMS);
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15, ALL_SIGN_ITEMS);
+
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_1 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_1, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_2 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_3 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_3, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_4 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_5 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_6 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6, ALL_SIGN_ITEMS);
+
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_8 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_EXIT_8, ALL_SIGN_ITEMS);
 
     public static void init() {

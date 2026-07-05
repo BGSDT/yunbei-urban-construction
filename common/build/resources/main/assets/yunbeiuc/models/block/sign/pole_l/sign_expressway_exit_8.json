@@ -4,7 +4,7 @@
 	"texture_size": [8, 8],
 	"textures": {
 		"1": "yunbeiuc:block/sign/sign_single_1",
-		"2": "yunbeiuc:block/sign/sign_indication_right_side_median_strip",
+		"2": "yunbeiuc:block/sign/sign_expressway_right_side_median_strip",
 		"3": "yunbeiuc:block/sign/sign_single_green_3",
 		"4": "yunbeiuc:block/color/ffffff",
 		"5": "yunbeiuc:block/sign/sign_expressway_exit_background_2",

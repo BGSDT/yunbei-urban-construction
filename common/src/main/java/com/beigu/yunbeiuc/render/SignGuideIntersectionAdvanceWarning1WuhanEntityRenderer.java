@@ -3,18 +3,22 @@ package com.beigu.yunbeiuc.render;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1Wuhan;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning1WuhanEntity;
-import com.beigu.yunbeiuc.render.fonts.CustomFontRenderer;
 import net.minecraft.block.Block;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 
 public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning1WuhanEntity> {
+    private final TextRenderer textRenderer;
 
     public SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.textRenderer = ctx.getTextRenderer();
     }
 
     @Override
@@ -70,6 +74,9 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        int textWidth = this.textRenderer.getWidth(styledText);
+        int textHeight = this.textRenderer.fontHeight;
         float scale = isSmallScale ? 0.023f : 0.035f;
 
         float zOffset = switch (type) {
@@ -83,15 +90,10 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         matrices.translate(andX / 16f, andY / 16f, zOffset);
         matrices.scale(scale, -scale, scale);
 
-        CustomFontRenderer.renderText(
-                matrices, vertexConsumers, text, textColor,
-                0, -3f, 0,
-                0.26f,
-                light,
-                true,
-                "heavy",
-                1,
-                1.4f
+        this.textRenderer.draw(
+                styledText, 0, -textHeight / 2.0f, textColor, false,
+                matrices.peek().getPositionMatrix(), vertexConsumers,
+                TextRenderer.TextLayerType.NORMAL, 0, light
         );
 
         matrices.pop();

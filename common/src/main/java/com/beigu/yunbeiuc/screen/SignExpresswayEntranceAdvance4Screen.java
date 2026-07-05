@@ -168,6 +168,9 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         renderStatus(context, panelX, panelY, 10, 111,
                 Text.translatable("text.yunbeiuc.expressway." + expressway1.getName()));
 
+        renderStatus(context, panelX, panelY, 80, 111,
+                Text.translatable("text.yunbeiuc.direction." + direction1.getName()));
+
         renderTextField(this.text1TextField, context, mouseX, mouseY, delta);
         renderTextField(this.expresswayNumber1TextField, context, mouseX, mouseY, delta);
 

@@ -26,6 +26,9 @@ public class  ModMessages {
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_7 = id("update_sign_expressway_entrance_advance_7");
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_10 = id("update_sign_expressway_entrance_advance_10");
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13 = id("update_sign_expressway_entrance_advance_13");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DIRECTION_1 = id("update_sign_expressway_direction_1");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DIRECTION_3 = id("update_sign_expressway_direction_3");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DIRECTION_5 = id("update_sign_expressway_direction_5");
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_EXIT_8 = id("update_sign_expressway_exit_8");
     public static final Identifier UPDATE_ZONES_BOARD_1 = id("update_zone_board_1");
     public static final Identifier UPDATE_ZONES_BOARD_IMAGE = id("update_zone_board_image");
@@ -130,6 +133,21 @@ public class  ModMessages {
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13, (buf, context) -> {
             SignExpresswayEntranceAdvance13UpdatePacket packet = new SignExpresswayEntranceAdvance13UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DIRECTION_1, (buf, context) -> {
+            SignExpresswayDirection1UpdatePacket packet = new SignExpresswayDirection1UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DIRECTION_3, (buf, context) -> {
+            SignExpresswayDirection3UpdatePacket packet = new SignExpresswayDirection3UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DIRECTION_5, (buf, context) -> {
+            SignExpresswayDirection5UpdatePacket packet = new SignExpresswayDirection5UpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
         });
 

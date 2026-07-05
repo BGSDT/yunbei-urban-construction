@@ -84,7 +84,7 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
                 existingEnText7 = entity.getEnText7();
 
                 currentBlock = entity.getCachedState().getBlock();
-                isWarning4 = (currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4);
+                isWarning4 = (currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4.get());
                 andInputY = isWarning4 ? 0 : 40;
             }
         }

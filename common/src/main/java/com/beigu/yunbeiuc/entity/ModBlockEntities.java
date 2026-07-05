@@ -134,6 +134,24 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.create(SignExpresswayEntranceAdvance13Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get()).build(null));
 
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection1Entity>> SIGN_EXPRESSWAY_DIRECTION_1_ENTITY =
+            BES.register("sign_expressway_direction_1_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDirection1Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_1.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection3Entity>> SIGN_EXPRESSWAY_DIRECTION_3_ENTITY =
+            BES.register("sign_expressway_direction_3_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDirection3Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_3.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection5Entity>> SIGN_EXPRESSWAY_DIRECTION_5_ENTITY =
+            BES.register("sign_expressway_direction_5_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDirection5Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get()).build(null));
+
     public static final RegistrySupplier<BlockEntityType<SignExpresswayExit8Entity>> SIGN_EXPRESSWAY_EXIT_8_ENTITY =
             BES.register("sign_expressway_exit_8_entity",
                     () -> BlockEntityType.Builder.create(SignExpresswayExit8Entity::new,

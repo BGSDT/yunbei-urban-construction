@@ -2,7 +2,6 @@ package com.beigu.yunbeiuc.fabric;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.network.ChatCommandHandler;
-import com.beigu.yunbeiuc.render.fonts.CustomFontManager;
 import com.beigu.yunbeiuc.render.json.FlagLoader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -32,7 +31,6 @@ public final class YunbeiUrbanConstructionFabric implements ModInitializer {
                     @Override
                     public void reload(ResourceManager manager) {
                         FlagLoader.loadFlags(manager);
-                        CustomFontManager.getInstance().onResourceReload();
                     }
                 }
         );

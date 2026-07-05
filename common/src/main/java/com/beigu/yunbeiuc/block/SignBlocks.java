@@ -433,6 +433,14 @@ public class SignBlocks {
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13 = BLOCKS.register("sign_expressway_entrance_advance_13", () -> new SignExpresswayEntranceAdvance13(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14 = BLOCKS.register("sign_expressway_entrance_advance_14", () -> new SignExpresswayEntranceAdvance13(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15 = BLOCKS.register("sign_expressway_entrance_advance_15", () -> new SignExpresswayEntranceAdvance13(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_1 = BLOCKS.register("sign_expressway_direction_1", () -> new SignExpresswayDirection1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_2 = BLOCKS.register("sign_expressway_direction_2", () -> new SignExpresswayDirection1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_3 = BLOCKS.register("sign_expressway_direction_3", () -> new SignExpresswayDirection3(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_4 = BLOCKS.register("sign_expressway_direction_4", () -> new SignExpresswayDirection3(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_5 = BLOCKS.register("sign_expressway_direction_5", () -> new SignExpresswayDirection5(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_6 = BLOCKS.register("sign_expressway_direction_6", () -> new SignExpresswayDirection5(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_EXIT_8 = BLOCKS.register("sign_expressway_exit_8", () -> new SignExpresswayExit8(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static void init() {

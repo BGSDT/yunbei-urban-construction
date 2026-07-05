@@ -452,6 +452,12 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get(),RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14.get(),RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15.get(),RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_1.get(),RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2.get(),RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_3.get(),RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4.get(),RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5.get(),RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get(),RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(SignBlocks.SIGN_EXPRESSWAY_EXIT_8.get(),RenderLayer.getCutout());
 
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayBlockEntityRenderer::new);
@@ -473,6 +479,9 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_7_ENTITY.get(), SignExpresswayEntranceAdvance7EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_10_ENTITY.get(), SignExpresswayEntranceAdvance10EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13_ENTITY.get(), SignExpresswayEntranceAdvance13EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_1_ENTITY.get(), SignExpresswayDirection1EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_3_ENTITY.get(), SignExpresswayDirection3EntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_5_ENTITY.get(), SignExpresswayDirection5EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_8_ENTITY.get(), SignExpresswayExit8EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_1_ENTITY.get(), ZonesBoard1EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_IMAGE_ENTITY.get(), ZonesBoardImageEntityRenderer::new);
