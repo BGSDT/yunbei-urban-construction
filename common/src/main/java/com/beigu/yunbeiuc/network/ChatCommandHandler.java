@@ -1,83 +1,156 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.custom.LinkWand;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.WorldChunk;
+
+import java.util.*;
 
 public class ChatCommandHandler {
+    private static final Map<UUID, GroupInfo> PLAYER_LAST_GROUP = new HashMap<>();
+
+    private static class GroupInfo {
+        final String groupId;
+        final List<BlockPos> positions;
+
+        GroupInfo(String groupId, List<BlockPos> positions) {
+            this.groupId = groupId;
+            this.positions = new ArrayList<>(positions);
+        }
+    }
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(
-                CommandManager.literal("yunbeiuc")
-                        .then(CommandManager.literal("lights")
-                                .then(CommandManager.argument("mode", IntegerArgumentType.integer(1, 2))
+        dispatcher.register(CommandManager.literal("yunbeiuc")
+                .then(CommandManager.literal("lights")
+                        .then(CommandManager.argument("phaseCount", IntegerArgumentType.integer(2, 16))
+                                .then(CommandManager.argument("timings", StringArgumentType.greedyString())
                                         .executes(context -> {
                                             ServerCommandSource source = context.getSource();
-                                            ServerPlayerEntity player = source.getPlayer();
-
-                                            if (player == null) {
-                                                source.sendError(Text.literal("该命令只能由玩家执行"));
-                                                return 0;
-                                            }
-
-                                            int mode = IntegerArgumentType.getInteger(context, "mode");
-
-                                            if (mode == 1) {
-                                                LinkWand.setPlayerMode(player, 1);
-                                                player.sendMessage(Text.literal("✓ 已选择十字路口模式，现在可以使用链接法杖点击红绿灯了！"), false);
-                                                player.sendMessage(Text.literal("需要选择8个红绿灯：每个方向各一个左转和一个直行"), false);
-                                                return 1;
-                                            } else if (mode == 2) {
-                                                LinkWand.setPlayerMode(player, 2);
-                                                player.sendMessage(Text.literal("✓ 已选择T字路口模式，现在可以使用链接法杖点击红绿灯了！"), false);
-                                                player.sendMessage(Text.literal("需要选择3个红绿灯：三个不同方向各一个直行红绿灯（北东南/北东西/北西南/东西南）"), false);
-                                                return 1;
-                                            }
-
-                                            return 0;
+                                            int phaseCount = IntegerArgumentType.getInteger(context, "phaseCount");
+                                            String timingsStr = StringArgumentType.getString(context, "timings");
+                                            return executeTiming(source, phaseCount, timingsStr);
                                         })
                                 )
                         )
-                        .then(CommandManager.literal("answer")
-                                .then(CommandManager.argument("action", StringArgumentType.word())
-                                        .suggests((context, builder) -> {
-                                            builder.suggest("confirm");
-                                            builder.suggest("reset");
-                                            builder.suggest("cancel");
-                                            return builder.buildFuture();
-                                        })
-                                        .executes(context -> {
-                                            ServerCommandSource source = context.getSource();
-                                            ServerPlayerEntity player = source.getPlayer();
-
-                                            if (player == null) {
-                                                source.sendError(Text.literal("该命令只能由玩家执行"));
-                                                return 0;
-                                            }
-
-                                            String action = StringArgumentType.getString(context, "action");
-
-                                            if (!action.equalsIgnoreCase("confirm") &&
-                                                    !action.equalsIgnoreCase("reset") &&
-                                                    !action.equalsIgnoreCase("cancel")) {
-                                                player.sendMessage(Text.literal("无效的操作！可用操作: confirm, reset, cancel"), false);
-                                                return 0;
-                                            }
-
-                                            boolean handled = LinkWand.handleAnswerInput(player, action.toLowerCase());
-                                            if (!handled) {
-                                                return 0;
-                                            }
-                                            return 1;
-                                        })
-                                )
-                        )
+                )
+                .executes(context -> {
+                    ServerCommandSource source = context.getSource();
+                    PlayerEntity player = source.getPlayer();
+                    if (player != null) {
+                        LinkWand.clearPlayerLinking(player);
+                        PLAYER_LAST_GROUP.remove(player.getUuid());
+                    }
+                    source.sendFeedback(() -> Text.literal("§e已取消链接操作"), false);
+                    return 1;
+                })
         );
+    }
+
+    public static void setPlayerLastGroup(PlayerEntity player, String groupId, List<BlockPos> positions) {
+        PLAYER_LAST_GROUP.put(player.getUuid(), new GroupInfo(groupId, positions));
+    }
+
+    private static int executeTiming(ServerCommandSource source, int phaseCount, String timingsStr) {
+        PlayerEntity player = source.getPlayer();
+        if (player == null) return 0;
+
+        String[] parts = timingsStr.trim().split("\\s+");
+
+        if (parts.length != phaseCount) {
+            final int count = phaseCount;
+            source.sendFeedback(() -> Text.literal("§c时间数量不匹配！需要 " + count + " 个时间值"), false);
+            StringBuilder example = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                example.append("40 ");
+            }
+            final String exampleStr = example.toString().trim();
+            source.sendFeedback(() -> Text.literal("§7示例：/yunbeiuc lights " + count + " " + exampleStr), false);
+            return 0;
+        }
+
+        int[] timings = new int[phaseCount];
+        try {
+            for (int i = 0; i < phaseCount; i++) {
+                timings[i] = Integer.parseInt(parts[i]);
+                if (timings[i] < 7) {
+                    final int pos = i + 1;
+                    source.sendFeedback(() -> Text.literal("§c时间至少需要7秒！(第" + pos + "个时间)"), false);
+                    return 0;
+                }
+                if (timings[i] > 300) {
+                    final int pos = i + 1;
+                    source.sendFeedback(() -> Text.literal("§c时间不能超过300秒！(第" + pos + "个时间)"), false);
+                    return 0;
+                }
+            }
+        } catch (NumberFormatException e) {
+            source.sendFeedback(() -> Text.literal("§c格式无效！请输入数字。"), false);
+            return 0;
+        }
+
+        GroupInfo groupInfo = PLAYER_LAST_GROUP.get(player.getUuid());
+        if (groupInfo == null) {
+            source.sendFeedback(() -> Text.literal("§c未找到已链接的红绿灯！请先用链接魔杖链接红绿灯。"), false);
+            return 0;
+        }
+
+        World world = player.getWorld();
+        List<TrafficLightsBlockEntity> linkedLights = new ArrayList<>();
+        boolean allValid = true;
+
+        for (BlockPos pos : groupInfo.positions) {
+            if (world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity tl) {
+                if (groupInfo.groupId.equals(tl.getGroupId())) {
+                    linkedLights.add(tl);
+                } else {
+                    allValid = false;
+                    break;
+                }
+            } else {
+                allValid = false;
+                break;
+            }
+        }
+
+        if (!allValid || linkedLights.isEmpty()) {
+            source.sendFeedback(() -> Text.literal("§c一些已链接的红绿灯已被破坏，链接组已失效！"), false);
+            source.sendFeedback(() -> Text.literal("§7请重新使用链接魔杖创建链接组。"), false);
+            PLAYER_LAST_GROUP.remove(player.getUuid());
+            return 0;
+        }
+
+        for (TrafficLightsBlockEntity tl : linkedLights) {
+            tl.setTimings(phaseCount, timings);
+        }
+
+        final int finalPhaseCount = phaseCount;
+        source.sendFeedback(() -> Text.literal(""), false);
+        source.sendFeedback(() -> Text.literal("§a§l========== 时间设置成功 =========="), false);
+        source.sendFeedback(() -> Text.literal("§e相位数量：§6§l" + finalPhaseCount), false);
+        source.sendFeedback(() -> Text.literal(""), false);
+        for (int i = 0; i < finalPhaseCount; i++) {
+            final int index = i;
+            source.sendFeedback(() -> Text.literal("§e相位" + (index + 1) + " §7: §6§l" + timings[index] + " §7秒"), false);
+        }
+        source.sendFeedback(() -> Text.literal(""), false);
+        source.sendFeedback(() -> Text.literal("§e使用§6魔杖§e右键红绿灯设置各红绿灯的相位"), false);
+        source.sendFeedback(() -> Text.literal("§7运行规则："), false);
+        source.sendFeedback(() -> Text.literal("§7  • 绿灯时间 = 设置时间 - 3秒"), false);
+        source.sendFeedback(() -> Text.literal("§7  • 倒数6-3秒闪烁"), false);
+        source.sendFeedback(() -> Text.literal("§7  • 最后3秒黄灯"), false);
+        source.sendFeedback(() -> Text.literal("§a========================================"), false);
+
+        return 1;
     }
 }

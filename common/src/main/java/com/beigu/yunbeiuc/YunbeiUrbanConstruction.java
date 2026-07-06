@@ -6,7 +6,6 @@ import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.network.ModEvents;
 import com.beigu.yunbeiuc.network.ModMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ YunbeiUrbanConstruction {
         ModBlockEntities.init();
         ModItemGroups.init();
         ModMessages.registerC2SPackets();
-        ModEvents.register();
 
         LOGGER.info("Yunbei Urban Construction has finished loading");
     }

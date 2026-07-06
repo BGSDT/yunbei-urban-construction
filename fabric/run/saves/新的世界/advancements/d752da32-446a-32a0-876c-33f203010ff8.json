@@ -221,5 +221,23 @@
     },
     "done": false
   },
+  "minecraft:recipes/redstone/sticky_piston": {
+    "criteria": {
+      "has_slime_ball": "2026-07-06 12:48:38 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/redstone/slime_block": {
+    "criteria": {
+      "has_slime_ball": "2026-07-06 12:48:38 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/tools/lead": {
+    "criteria": {
+      "has_slime_ball": "2026-07-06 12:48:38 +0800"
+    },
+    "done": true
+  },
   "DataVersion": 3465
 }

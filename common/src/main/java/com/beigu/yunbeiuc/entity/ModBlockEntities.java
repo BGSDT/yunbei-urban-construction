@@ -13,6 +13,13 @@ public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BES =
             DeferredRegister.create(YunbeiUrbanConstruction.MOD_ID, RegistryKeys.BLOCK_ENTITY_TYPE);
 
+    public static final RegistrySupplier<BlockEntityType<TrafficLightsBlockEntity>> TRAFFIC_LIGHTS_BLOCK_ENTITY =
+            BES.register("traffic_lights_block_entity",
+                    () -> BlockEntityType.Builder.create(TrafficLightsBlockEntity::new,
+                            MunicipalBlocks.TRAFFIC_LIGHTS_LEFT.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT.get()).build(null));
+
     public static final RegistrySupplier<BlockEntityType<RoadPoleTextDisplayEntity>> ROAD_POLE_TEXT_DISPLAY_ENTITY =
             BES.register("road_pole_text_display_entity",
                     () -> BlockEntityType.Builder.create(RoadPoleTextDisplayEntity::new,

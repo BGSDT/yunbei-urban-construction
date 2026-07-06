@@ -19,6 +19,7 @@ import com.beigu.yunbeiuc.block.custom.instrument.*;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandBlock;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandEdgeBlock;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandObliqueBlock;
+import com.beigu.yunbeiuc.block.custom.TrafficLightsBlock;
 import com.beigu.yunbeiuc.block.custom.pole.*;
 import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail1;
 import com.beigu.yunbeiuc.block.custom.railings.RoadRailings;
@@ -26,8 +27,6 @@ import com.beigu.yunbeiuc.block.custom.railings.RoadRailingsOblique;
 import com.beigu.yunbeiuc.block.custom.railings.RoadRailingsPole;
 import com.beigu.yunbeiuc.block.custom.rubbish.RubbishBinGrayGreen;
 import com.beigu.yunbeiuc.block.custom.rubbish.RubbishBinWhite;
-import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsBlock;
-import com.beigu.yunbeiuc.block.custom.lights.TrafficLightsPavement;
 import com.beigu.yunbeiuc.block.custom.sound.SoundBarrier1;
 import com.beigu.yunbeiuc.block.custom.sound.SoundBarrier2;
 import com.beigu.yunbeiuc.block.custom.waring.WarningNetwork;
@@ -66,7 +65,7 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
 
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_STRAIGHT = BLOCKS.register("traffic_lights_straight", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_LEFT = BLOCKS.register("traffic_lights_left", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
-    public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_PAVEMENT = BLOCKS.register("traffic_lights_pavement", () -> new TrafficLightsPavement(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_PAVEMENT = BLOCKS.register("traffic_lights_pavement", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
 
     public static final RegistrySupplier<Block> TRAFFIC_CONE = BLOCKS.register("traffic_cone", () -> new TrafficCone(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> ROAD_COLLISION_BARREL = BLOCKS.register("road_collision_barrel", () -> new RoadCollisionBarrel(AbstractBlock.Settings.create().strength(1.25F, 4.2F).requiresTool().nonOpaque()));
