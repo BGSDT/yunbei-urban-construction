@@ -71,15 +71,21 @@
     },
     "done": true
   },
+  "minecraft:recipes/tools/lead": {
+    "criteria": {
+      "has_slime_ball": "2025-11-22 10:18:37 +0800"
+    },
+    "done": true
+  },
   "minecraft:adventure/adventuring_time": {
     "criteria": {
       "minecraft:plains": "2025-11-22 10:19:45 +0800"
     },
     "done": false
   },
-  "minecraft:recipes/tools/lead": {
+  "minecraft:recipes/misc/bone_meal": {
     "criteria": {
-      "has_slime_ball": "2025-11-22 10:18:37 +0800"
+      "has_bone": "2026-07-08 12:45:39 +0800"
     },
     "done": true
   },

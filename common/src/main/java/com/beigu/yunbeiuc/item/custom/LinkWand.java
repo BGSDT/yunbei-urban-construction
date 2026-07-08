@@ -75,17 +75,13 @@ public class LinkWand extends Item {
             ChatCommandHandler.setPlayerLastGroup(player, groupId, finalPositions);
 
             player.sendMessage(Text.literal(""), false);
-            player.sendMessage(Text.literal("§a§l========== 红绿灯链接完成 =========="), false);
+            player.sendMessage(Text.literal("§c⚪§e⚪§a⚪§a§l云北成绩红绿灯控制面板 ===== 操作提示"), false);
             player.sendMessage(Text.literal("§e已成功链接 §6§l" + finalPositions.size() + " §e个红绿灯"), false);
             player.sendMessage(Text.literal(""), false);
             player.sendMessage(Text.literal("§e§l使用以下命令设置时间和相位数量："), false);
             player.sendMessage(Text.literal("§6  /yunbeiuc lights <相位数量> <时间1> <时间2> ..."), false);
-            player.sendMessage(Text.literal(""), false);
             player.sendMessage(Text.literal("§e示例（4个相位）："), false);
             player.sendMessage(Text.literal("§7  /yunbeiuc lights 4 40 40 40 40"), false);
-            player.sendMessage(Text.literal(""), false);
-            player.sendMessage(Text.literal("§e示例（5个相位）："), false);
-            player.sendMessage(Text.literal("§7  /yunbeiuc lights 5 30 35 40 35 30"), false);
             player.sendMessage(Text.literal(""), false);
             player.sendMessage(Text.literal("§e设置后使用§6魔杖§e右键红绿灯设置相位"), false);
             player.sendMessage(Text.literal("§a========================================"), false);
@@ -99,7 +95,7 @@ public class LinkWand extends Item {
             linkedLights.remove(pos);
             player.sendMessage(Text.literal("§c已从链接组移除 §7(剩余 §6" + linkedLights.size() + " §c个)"), true);
             if (linkedLights.isEmpty()) {
-                player.sendMessage(Text.literal("§7提示：右键红绿灯继续添加，§eShift+右键 §7完成链接"), true);
+                player.sendMessage(Text.literal("§7提示：右键红绿灯继续添加，直至所有红绿灯添加完后§eShift+右键 §7完成链接"), true);
             }
         } else {
             linkedLights.add(pos);

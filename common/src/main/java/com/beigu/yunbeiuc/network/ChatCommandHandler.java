@@ -136,19 +136,15 @@ public class ChatCommandHandler {
 
         final int finalPhaseCount = phaseCount;
         source.sendFeedback(() -> Text.literal(""), false);
-        source.sendFeedback(() -> Text.literal("§a§l========== 时间设置成功 =========="), false);
+        source.sendFeedback(() -> Text.literal("§c⚪§e⚪§a⚪§a§l云北成绩红绿灯控制面板 ===== 操作提示"), false);
         source.sendFeedback(() -> Text.literal("§e相位数量：§6§l" + finalPhaseCount), false);
-        source.sendFeedback(() -> Text.literal(""), false);
         for (int i = 0; i < finalPhaseCount; i++) {
             final int index = i;
             source.sendFeedback(() -> Text.literal("§e相位" + (index + 1) + " §7: §6§l" + timings[index] + " §7秒"), false);
         }
         source.sendFeedback(() -> Text.literal(""), false);
         source.sendFeedback(() -> Text.literal("§e使用§6魔杖§e右键红绿灯设置各红绿灯的相位"), false);
-        source.sendFeedback(() -> Text.literal("§7运行规则："), false);
-        source.sendFeedback(() -> Text.literal("§7  • 绿灯时间 = 设置时间 - 3秒"), false);
-        source.sendFeedback(() -> Text.literal("§7  • 倒数6-3秒闪烁"), false);
-        source.sendFeedback(() -> Text.literal("§7  • 最后3秒黄灯"), false);
+        source.sendFeedback(() -> Text.literal("§7运行规则：§a绿灯时间（相位时间 - 6s）+ §9闪烁时间（倒数 6s - 3s）+ §e黄灯时间（相位倒数 3s）"), false);
         source.sendFeedback(() -> Text.literal("§a========================================"), false);
 
         return 1;

@@ -33,12 +33,20 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     private static final int FLASH_DURATION = 3 * 20;
     private static final int FLASH_INTERVAL = 10;
 
+    private DirectionType directionType = DirectionType.STRAIGHT;
+
+    private int syncTimer = 0;
+
+    // 标记红灯是否处于过渡阶段
+    private boolean redTransition = false;
+
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
     }
 
+    // ==================== Tick 逻辑 ====================
+
     public void tick() {
-        // 安全检查：避免除以零
         if (world == null || world.isClient() || !cycleActive || groupId == null || phaseTimes == null || phaseCount <= 0) {
             return;
         }
@@ -51,6 +59,13 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             currentActivePhase = (currentActivePhase + 1) % phaseCount;
             currentTick = 0;
             updateGroupPhase();
+            markDirtyAndUpdate();
+        } else {
+            syncTimer++;
+            if (syncTimer >= 10) {
+                syncTimer = 0;
+                markDirtyAndUpdate();
+            }
         }
 
         updateLightState();
@@ -60,6 +75,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         if (world == null || world.isClient() || phaseTimes == null || phaseCount <= 0) return;
 
         BlockState currentState = getCachedState();
+        if (!currentState.contains(TrafficLightsBlock.LIGHT_STATE)) return;
+
         TrafficLightsBlock.LightState lightState;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
@@ -95,12 +112,136 @@ public class TrafficLightsBlockEntity extends BlockEntity {
                 tl.currentActivePhase = this.currentActivePhase;
                 tl.currentTick = this.currentTick;
                 tl.updateLightState();
+                tl.markDirtyAndUpdate();
             } else {
                 unloadGroup();
                 return;
             }
         }
     }
+
+    // ==================== 时间查询接口（秒数） ====================
+
+    /**
+     * 获取绿灯+闪烁的总剩余秒数
+     * 到0时返回黄灯总秒数(3)
+     */
+    public int getGreenRemainingSeconds() {
+        if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
+        if (phaseIndex != currentActivePhase) return -1;
+
+        int totalTicks = phaseTimes[currentActivePhase] * 20;
+        int yellowStartTick = totalTicks - YELLOW_DURATION;
+
+        if (currentTick < yellowStartTick) {
+            int remaining = (yellowStartTick - currentTick) / 20;
+            return remaining > 0 ? remaining : YELLOW_DURATION / 20;
+        }
+        return -1;
+    }
+
+    /**
+     * 获取黄灯剩余秒数
+     * 到0时返回下一个相位的总时间
+     */
+    public int getYellowRemainingSeconds() {
+        if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
+        if (phaseIndex != currentActivePhase) return -1;
+
+        int totalTicks = phaseTimes[currentActivePhase] * 20;
+        int yellowStartTick = totalTicks - YELLOW_DURATION;
+
+        if (currentTick >= yellowStartTick) {
+            int remaining = (totalTicks - currentTick) / 20;
+            if (remaining > 0) return remaining;
+            int nextPhase = (currentActivePhase + 1) % phaseCount;
+            return phaseTimes[nextPhase];
+        }
+        return -1;
+    }
+
+    /**
+     * 获取红灯剩余秒数
+     * 到0时返回自己相位的绿灯时间（设置时间 - 3）
+     */
+    public int getRedRemainingSeconds() {
+        redTransition = false;
+        if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
+        if (phaseIndex == currentActivePhase) return -1;
+
+        int totalTicks = phaseTimes[currentActivePhase] * 20;
+        int remaining = totalTicks - currentTick;
+        for (int i = 1; i < phaseCount; i++) {
+            int nextPhase = (currentActivePhase + i) % phaseCount;
+            if (nextPhase == phaseIndex) break;
+            remaining += phaseTimes[nextPhase] * 20;
+        }
+
+        int sec = remaining / 20;
+        if (sec > 0) return sec;
+        redTransition = true;
+        return phaseTimes[phaseIndex] - 3;
+    }
+
+    public boolean isRedTransition() {
+        return redTransition;
+    }
+
+    /**
+     * 获取完整的灯状态信息
+     */
+    public LightTimingInfo getLightTimingInfo() {
+        if (phaseTimes == null || phaseCount <= 0 || !cycleActive) {
+            return new LightTimingInfo("无", -1, -1, -1, -1, false, "white");
+        }
+
+        int greenSec = getGreenRemainingSeconds();
+        int yellowSec = getYellowRemainingSeconds();
+        int redSec = getRedRemainingSeconds();
+
+        String activeColor;
+        int activeRemaining;
+        boolean isTransition = false;
+        String transitionColor = "white";
+
+        if (greenSec >= 0) {
+            activeColor = "绿灯";
+            activeRemaining = greenSec;
+            // 只有绿灯的最后一个数字(显示3)才变色
+            // getGreenRemainingSeconds() 在 remaining<=0 时返回 3
+            // 此时 yellowStartTick - currentTick <= 0，即绿灯阶段已结束
+            int totalTicks = phaseTimes[currentActivePhase] * 20;
+            int yellowStartTick = totalTicks - YELLOW_DURATION;
+            if (currentTick >= yellowStartTick - 20 && currentTick < yellowStartTick) {
+                isTransition = true;
+                transitionColor = "yellow";
+            }
+        } else if (yellowSec >= 0) {
+            activeColor = "黄灯";
+            activeRemaining = yellowSec;
+            // 只有黄灯的最后一个数字(显示下一个相位总时间)才变色
+            int totalTicks = phaseTimes[currentActivePhase] * 20;
+            if (currentTick >= totalTicks - 20) {
+                isTransition = true;
+                transitionColor = "red";
+            }
+        } else if (redSec >= 0) {
+            activeColor = "红灯";
+            activeRemaining = redSec;
+            // 只有红灯的最后一个数字(显示自己绿灯时间)才变色
+            if (isRedTransition()) {
+                isTransition = true;
+                transitionColor = "green";
+            }
+        } else {
+            activeColor = "无";
+            activeRemaining = -1;
+        }
+
+        return new LightTimingInfo(activeColor, activeRemaining, redSec, yellowSec, greenSec, isTransition, transitionColor);
+    }
+
+    // ==================== 相位控制 ====================
 
     public boolean setPhaseIndex(int index, PlayerEntity player) {
         if (phaseTimes == null || phaseCount <= 0) {
@@ -158,6 +299,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
                     tl.phaseTimes = null;
                     tl.phaseCount = 0;
                     tl.phaseIndex = -1;
+                    tl.directionType = DirectionType.STRAIGHT;
                     tl.stopCycle();
                     tl.markDirtyAndUpdate();
                 }
@@ -169,8 +311,11 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         phaseTimes = null;
         phaseCount = 0;
         phaseIndex = -1;
+        directionType = DirectionType.STRAIGHT;
         markDirtyAndUpdate();
     }
+
+    // ==================== 设置器 ====================
 
     public void setTimings(int phaseCount, int[] timings) {
         this.phaseCount = phaseCount;
@@ -185,6 +330,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         this.groupPositions = new ArrayList<>(positions);
         markDirtyAndUpdate();
     }
+
+    // ==================== 获取器 ====================
 
     public boolean hasTimings() {
         return phaseTimes != null && phaseCount > 0;
@@ -210,12 +357,24 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         return groupId;
     }
 
+    public DirectionType getDirectionType() {
+        return directionType;
+    }
+
+    public void setDirectionType(DirectionType directionType) {
+        this.directionType = directionType;
+        markDirtyAndUpdate();
+    }
+
+    // ==================== NBT 读写 ====================
+
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         this.phaseIndex = nbt.getInt("phaseIndex");
         this.groupId = nbt.contains("groupId") ? nbt.getString("groupId") : null;
         this.phaseCount = nbt.getInt("phaseCount");
+        this.directionType = DirectionType.fromName(nbt.getString("directionType"));
 
         if (nbt.contains("phaseTimes")) {
             this.phaseTimes = nbt.getIntArray("phaseTimes");
@@ -242,6 +401,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         nbt.putInt("phaseIndex", this.phaseIndex);
+        nbt.putString("directionType", this.directionType.getName());
 
         if (groupId != null) {
             nbt.putString("groupId", groupId);
@@ -280,10 +440,71 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         return createNbt();
     }
 
-    private void markDirtyAndUpdate() {
+    public void markDirtyAndUpdate() {
         markDirty();
-        if (world != null) {
+        if (world != null && !world.isClient()) {
             world.updateListeners(pos, getCachedState(), getCachedState(), Block.NOTIFY_ALL);
         }
+    }
+
+    // ==================== 枚举类 ====================
+
+    public enum DirectionType {
+        STRAIGHT("straight"),
+        LEFT_TURN("left_turn"),
+        RIGHT_TURN("right_turn"),
+        TURN_AROUND("turn_around"),
+        NON_MOTOR_VEHICLES("non_motor_vehicles");
+
+        private final String name;
+
+        DirectionType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static DirectionType fromName(String name) {
+            for (DirectionType type : values()) {
+                if (type.name.equals(name)) {
+                    return type;
+                }
+            }
+            return STRAIGHT;
+        }
+    }
+
+    // ==================== 数据类 ====================
+
+    public static class LightTimingInfo {
+        private final String activeColor;
+        private final int activeRemaining;
+        private final int redRemaining;
+        private final int yellowRemaining;
+        private final int greenRemaining;
+        private final boolean isTransition;
+        private final String transitionColor;
+
+        public LightTimingInfo(String activeColor, int activeRemaining,
+                               int redRemaining, int yellowRemaining, int greenRemaining,
+                               boolean isTransition, String transitionColor) {
+            this.activeColor = activeColor;
+            this.activeRemaining = activeRemaining;
+            this.redRemaining = redRemaining;
+            this.yellowRemaining = yellowRemaining;
+            this.greenRemaining = greenRemaining;
+            this.isTransition = isTransition;
+            this.transitionColor = transitionColor;
+        }
+
+        public String getActiveColor() { return activeColor; }
+        public int getActiveRemaining() { return activeRemaining; }
+        public int getRedRemaining() { return redRemaining; }
+        public int getYellowRemaining() { return yellowRemaining; }
+        public int getGreenRemaining() { return greenRemaining; }
+        public boolean isTransition() { return isTransition; }
+        public String getTransitionColor() { return transitionColor; }
     }
 }

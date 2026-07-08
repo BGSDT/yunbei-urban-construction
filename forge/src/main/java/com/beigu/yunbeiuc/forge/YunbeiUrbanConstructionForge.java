@@ -11,6 +11,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(YunbeiUrbanConstruction.MOD_ID)
 public final class YunbeiUrbanConstructionForge {
+    @SuppressWarnings("removal")
     public YunbeiUrbanConstructionForge() {
         var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         EventBuses.registerModEventBus(YunbeiUrbanConstruction.MOD_ID, modEventBus);

@@ -5,11 +5,13 @@ import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
+import com.beigu.yunbeiuc.render.font.CustomFontManager;
 import com.beigu.yunbeiuc.render.json.FlagLoader;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class YunbeiUrbanConstructionForgeClient {
@@ -77,9 +79,6 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderTypeRegistry.register(cutout, MunicipalBlocks.ANTI_GLARE_NET_POLE.get());
             RenderTypeRegistry.register(cutout, MunicipalBlocks.WARNING_NETWORK.get());
             RenderTypeRegistry.register(cutout, MunicipalBlocks.WARNING_NETWORK_POLE.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_LEFT.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT.get());
             RenderTypeRegistry.register(cutout, SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10.get());
             RenderTypeRegistry.register(cutout, SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_20.get());
             RenderTypeRegistry.register(cutout, SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_30.get());
@@ -460,6 +459,7 @@ public class YunbeiUrbanConstructionForgeClient {
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayBlockEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), FlagBlockEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY.get(), RoadNameSignBlockEntityRenderer::new);
+            BlockEntityRendererFactories.register(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), TrafficLightsBlockEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY.get(), SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_ENTITY.get(), SignGuideIntersectionAdvanceWarning1EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY.get(), SignGuideIntersectionAdvanceWarning3EntityRenderer::new);
@@ -487,6 +487,7 @@ public class YunbeiUrbanConstructionForgeClient {
             BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_OVER_WEIGHT_ENTITY.get(), ZonesBoardOverWeightEntityRenderer::new);
 
             FlagLoader.loadFlags(MinecraftClient.getInstance().getResourceManager());
+            CustomFontManager.getInstance().onResourceReload();
         });
     }
 }

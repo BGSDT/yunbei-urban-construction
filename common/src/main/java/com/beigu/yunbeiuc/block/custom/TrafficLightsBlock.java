@@ -2,8 +2,10 @@ package com.beigu.yunbeiuc.block.custom;
 
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
+import com.beigu.yunbeiuc.screen.TrafficLightsScreen;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -26,12 +28,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TrafficLightsBlock extends BlockWithEntity implements BlockEntityProvider {
+public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityProvider {
 
-    private static final VoxelShape SHAPE_N = Block.createCuboidShape(4.25, -1.5, 12.25, 11.75, 17.5, 22);
-    private static final VoxelShape SHAPE_S = Block.createCuboidShape(4.25, -1.5, 0.25, 11.75, 17.5, 8.75);
-    private static final VoxelShape SHAPE_E = Block.createCuboidShape(0.25, -1.5, 4.25, 8.75, 17.5, 11.75);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(12.25, -1.5, 4.25, 22, 17.5, 11.75);
+    private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 4, 0, 16, 12, 8);
+    private static final VoxelShape SHAPE_E = Block.createCuboidShape(8, 4, 0, 16, 12, 16);
+    private static final VoxelShape SHAPE_S = Block.createCuboidShape(0, 4, 8, 16, 12, 16);
+    private static final VoxelShape SHAPE_W = Block.createCuboidShape(0, 4, 0, 8, 12, 16);
 
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.of("light_state", LightState.class);
@@ -95,11 +97,11 @@ public class TrafficLightsBlock extends BlockWithEntity implements BlockEntityPr
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getStackInHand(hand);
 
-        // 魔杖设置相位
+        // 魔杖打开设置界面
         if (heldItem.isOf(ModItems.WAND.get())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
-                if (!world.isClient()) {
+            if (world.isClient()) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
                     // 检查是否已设置时间和链接组
                     if (!trafficLightsBE.hasTimings()) {
                         player.sendMessage(Text.literal("§c请先使用命令设置时间！"), true);
@@ -109,21 +111,11 @@ public class TrafficLightsBlock extends BlockWithEntity implements BlockEntityPr
                         player.sendMessage(Text.literal("§c此红绿灯未链接到任何组！"), true);
                         return ActionResult.FAIL;
                     }
-
-                    // 循环切换相位：1 -> 2 -> 3 -> ... -> phaseCount -> 1
-                    int currentPhase = trafficLightsBE.getPhaseIndex();
-                    int nextPhase;
-                    if (currentPhase < 0 || currentPhase >= trafficLightsBE.getPhaseCount() - 1) {
-                        nextPhase = 0;
-                    } else {
-                        nextPhase = currentPhase + 1;
-                    }
-
-                    trafficLightsBE.setPhaseIndex(nextPhase, player);
+                    // 打开GUI
+                    MinecraftClient.getInstance().setScreen(new TrafficLightsScreen(pos));
                 }
-                world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
-                return ActionResult.success(world.isClient());
             }
+            return ActionResult.success(world.isClient());
         }
 
         return super.onUse(state, world, pos, player, hand, hit);

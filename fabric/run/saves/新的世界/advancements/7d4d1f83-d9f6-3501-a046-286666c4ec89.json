@@ -1,11 +1,23 @@
 {
-  "minecraft:recipes/transportation/mangrove_boat": {
+  "minecraft:recipes/redstone/sticky_piston": {
     "criteria": {
-      "in_water": "2026-06-02 21:12:41 +0800"
+      "has_slime_ball": "2026-06-02 20:51:31 +0800"
     },
     "done": true
   },
-  "minecraft:recipes/redstone/sticky_piston": {
+  "minecraft:recipes/decorations/chest": {
+    "criteria": {
+      "has_lots_of_items": "2026-06-02 20:51:31 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/redstone/slime_block": {
+    "criteria": {
+      "has_slime_ball": "2026-06-02 20:51:31 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/tools/lead": {
     "criteria": {
       "has_slime_ball": "2026-06-02 20:51:31 +0800"
     },
@@ -17,9 +29,15 @@
     },
     "done": true
   },
-  "minecraft:recipes/decorations/chest": {
+  "minecraft:adventure/adventuring_time": {
     "criteria": {
-      "has_lots_of_items": "2026-06-02 20:51:31 +0800"
+      "minecraft:plains": "2026-06-02 20:51:35 +0800"
+    },
+    "done": false
+  },
+  "minecraft:recipes/transportation/mangrove_boat": {
+    "criteria": {
+      "in_water": "2026-06-02 21:12:41 +0800"
     },
     "done": true
   },
@@ -34,18 +52,6 @@
       "in_water": "2026-06-02 21:12:41 +0800"
     },
     "done": true
-  },
-  "minecraft:recipes/redstone/slime_block": {
-    "criteria": {
-      "has_slime_ball": "2026-06-02 20:51:31 +0800"
-    },
-    "done": true
-  },
-  "minecraft:adventure/adventuring_time": {
-    "criteria": {
-      "minecraft:plains": "2026-06-02 20:51:35 +0800"
-    },
-    "done": false
   },
   "minecraft:recipes/transportation/bamboo_raft": {
     "criteria": {
@@ -71,12 +77,6 @@
     },
     "done": true
   },
-  "minecraft:recipes/tools/lead": {
-    "criteria": {
-      "has_slime_ball": "2026-06-02 20:51:31 +0800"
-    },
-    "done": true
-  },
   "minecraft:recipes/transportation/jungle_boat": {
     "criteria": {
       "in_water": "2026-06-02 21:12:41 +0800"
@@ -86,6 +86,12 @@
   "minecraft:recipes/transportation/dark_oak_boat": {
     "criteria": {
       "in_water": "2026-06-02 21:12:41 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/misc/bone_meal": {
+    "criteria": {
+      "has_bone": "2026-07-08 13:48:35 +0800"
     },
     "done": true
   },

@@ -10,6 +10,7 @@ public class  ModMessages {
     public static final Identifier UPDATE_ROAD_POLES_TEXT = id("update_road_poles_text");
     public static final Identifier UPDATE_FLAG = id("update_flag");
     public static final Identifier UPDATE_ROAD_NAME_SIGN = id("update_road_name_sign");
+    public static final Identifier UPDATE_TRAFFIC_LIGHTS = id("update_traffic_lights");
     public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN = id("update_sign_guide_intersection_advance_warning_1_wuhan");
     public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1 = id("update_sign_guide_intersection_advance_warning_1");
     public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3 = id("update_sign_guide_intersection_advance_warning_3");
@@ -53,6 +54,11 @@ public class  ModMessages {
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_ROAD_NAME_SIGN, (buf, context) -> {
             RoadNameSignBlockUpdatePacket packet = new RoadNameSignBlockUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_TRAFFIC_LIGHTS, (buf, context) -> {
+            TrafficLightsUpdatePacket packet = new TrafficLightsUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
         });
 

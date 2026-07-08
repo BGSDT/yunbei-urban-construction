@@ -76,9 +76,13 @@ public class ModItems {
     public static final RegistrySupplier<Item> ROAD_DETECTION_CAMERA = registerBlockItem(MunicipalBlocks.ROAD_DETECTION_CAMERA, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_LIGHTING_LAMP = registerBlockItem(MunicipalBlocks.ROAD_LIGHTING_LAMP, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_RADAR_SPEED_DETECTOR = registerBlockItem(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR, ALL_MUNICIPAL_ITEMS);
-    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_STRAIGHT = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_STRAIGHT, ALL_MUNICIPAL_ITEMS);
-    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_LEFT = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_LEFT, ALL_MUNICIPAL_ITEMS);
-    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_COUNTDOWN_TIMER = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_GRAY = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_BLACK = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_CONE = registerBlockItem(MunicipalBlocks.TRAFFIC_CONE, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_COLLISION_BARREL = registerBlockItem(MunicipalBlocks.ROAD_COLLISION_BARREL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> WATER_SAFETY_BARRIER_RED = registerBlockItem(MunicipalBlocks.WATER_SAFETY_BARRIER_RED, ALL_MUNICIPAL_ITEMS);
