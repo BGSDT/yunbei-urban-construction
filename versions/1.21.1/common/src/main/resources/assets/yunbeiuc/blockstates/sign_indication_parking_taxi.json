@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=north,type=normal": {
+      "model": "yunbeiuc:block/sign/normal/sign_indication_parking_taxi"
+    },
+    "facing=east,type=normal": {
+      "model": "yunbeiuc:block/sign/normal/sign_indication_parking_taxi",
+      "y": 90
+    },
+    "facing=south,type=normal": {
+      "model": "yunbeiuc:block/sign/normal/sign_indication_parking_taxi",
+      "y": 180
+    },
+    "facing=west,type=normal": {
+      "model": "yunbeiuc:block/sign/normal/sign_indication_parking_taxi",
+      "y": 270
+    },
+    "facing=north,type=pole_l": {
+      "model": "yunbeiuc:block/sign/pole_l/sign_indication_parking_taxi"
+    },
+    "facing=east,type=pole_l": {
+      "model": "yunbeiuc:block/sign/pole_l/sign_indication_parking_taxi",
+      "y": 90
+    },
+    "facing=south,type=pole_l": {
+      "model": "yunbeiuc:block/sign/pole_l/sign_indication_parking_taxi",
+      "y": 180
+    },
+    "facing=west,type=pole_l": {
+      "model": "yunbeiuc:block/sign/pole_l/sign_indication_parking_taxi",
+      "y": 270
+    },
+    "facing=north,type=pole_h": {
+      "model": "yunbeiuc:block/sign/pole_h/sign_indication_parking_taxi"
+    },
+    "facing=east,type=pole_h": {
+      "model": "yunbeiuc:block/sign/pole_h/sign_indication_parking_taxi",
+      "y": 90
+    },
+    "facing=south,type=pole_h": {
+      "model": "yunbeiuc:block/sign/pole_h/sign_indication_parking_taxi",
+      "y": 180
+    },
+    "facing=west,type=pole_h": {
+      "model": "yunbeiuc:block/sign/pole_h/sign_indication_parking_taxi",
+      "y": 270
+    }
+  }
+}

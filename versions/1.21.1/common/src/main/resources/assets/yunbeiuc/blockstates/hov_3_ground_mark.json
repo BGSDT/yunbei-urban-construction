@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/hov_3_ground_mark",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/hov_3_ground_mark"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/hov_3_ground_mark",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/hov_3_ground_mark",
+      "y": 270
+    }
+  }
+}

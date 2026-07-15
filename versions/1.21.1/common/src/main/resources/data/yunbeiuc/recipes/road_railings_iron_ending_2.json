@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:iron_block"
+    },
+    "result": "yunbeiuc:road_railings_iron_ending_2",
+    "count": 3
+}

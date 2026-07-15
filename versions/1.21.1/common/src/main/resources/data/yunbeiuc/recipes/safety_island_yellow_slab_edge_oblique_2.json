@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "building",
+    "ingredients": [
+        {
+            "item": "yunbeiuc:safety_island_gray_slab_edge_oblique"
+        },
+        {
+            "item": "yunbeiuc:reflective_sign_yellow_all_2"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "item": "yunbeiuc:safety_island_yellow_slab_edge_oblique_2"
+    }
+}

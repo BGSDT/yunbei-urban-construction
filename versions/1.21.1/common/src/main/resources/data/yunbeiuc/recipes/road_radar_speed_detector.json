@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "building",
+    "ingredients": [
+        {
+            "item": "minecraft:yellow_concrete"
+        },
+        {
+            "item": "minecraft:torch"
+        },
+        {
+            "item": "yunbeiuc:road_pole_horizontal"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "item": "yunbeiuc:road_radar_speed_detector"
+    }
+}

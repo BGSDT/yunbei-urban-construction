@@ -1,0 +1,68 @@
+{
+  "variants": {
+    "connection_type=gantry_frame_connection_1,facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_connection_1",
+      "y": 0
+    },
+    "connection_type=gantry_frame_connection_1,facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_connection_1",
+      "y": 90
+    },
+    "connection_type=gantry_frame_connection_1,facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_connection_1",
+      "y": 180
+    },
+    "connection_type=gantry_frame_connection_1,facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_connection_1",
+      "y": 270
+    },
+    "connection_type=gantry_frame_connection_2,facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_connection_2",
+      "y": 0
+    },
+    "connection_type=gantry_frame_connection_2,facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_connection_2",
+      "y": 90
+    },
+    "connection_type=gantry_frame_connection_2,facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_connection_2",
+      "y": 180
+    },
+    "connection_type=gantry_frame_connection_2,facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_connection_2",
+      "y": 270
+    },
+    "connection_type=gantry_frame_connection_3,facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_connection_3",
+      "y": 0
+    },
+    "connection_type=gantry_frame_connection_3,facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_connection_3",
+      "y": 90
+    },
+    "connection_type=gantry_frame_connection_3,facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_connection_3",
+      "y": 180
+    },
+    "connection_type=gantry_frame_connection_3,facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_connection_3",
+      "y": 270
+    },
+    "connection_type=gantry_frame_connection_4,facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_connection_4",
+      "y": 0
+    },
+    "connection_type=gantry_frame_connection_4,facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_connection_4",
+      "y": 90
+    },
+    "connection_type=gantry_frame_connection_4,facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_connection_4",
+      "y": 180
+    },
+    "connection_type=gantry_frame_connection_4,facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_connection_4",
+      "y": 270
+    }
+  }
+}

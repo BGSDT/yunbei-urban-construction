@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/anti_glare_version",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/anti_glare_version"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/anti_glare_version",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/anti_glare_version",
+      "y": 270
+    }
+  }
+}
