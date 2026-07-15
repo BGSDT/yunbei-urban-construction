@@ -8,9 +8,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
@@ -30,6 +32,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class RoadPoleTextDisplay extends BlockWithEntity implements BlockEntityProvider {
+    public static final MapCodec<RoadPoleTextDisplay> CODEC = createCodec(RoadPoleTextDisplay::new);
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
+    }
+
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     
     private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, -4, -8, 11, 6, 24), Block.createCuboidShape(6, 6, 0, 10, 10, 16), BooleanBiFunction.OR);
@@ -42,9 +51,9 @@ public class RoadPoleTextDisplay extends BlockWithEntity implements BlockEntityP
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         tooltip.add(Text.translatable("block.yunbeiuc.road_pole_text_display.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
+        super.appendTooltip(stack, context, tooltip, options);
     }
 
     @Override
@@ -54,8 +63,8 @@ public class RoadPoleTextDisplay extends BlockWithEntity implements BlockEntityP
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos,
-                              PlayerEntity player, Hand hand, BlockHitResult hit) {
-        Item item = player.getStackInHand(hand).getItem();
+                              PlayerEntity player, BlockHitResult hit) {
+        Item item = player.getMainHandStack().getItem();
         if (item == ModItems.WAND.get()) {
             if (world.isClient()) {
                 openTextDisplayScreen(pos);

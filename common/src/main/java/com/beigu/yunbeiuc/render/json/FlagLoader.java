@@ -23,7 +23,7 @@ public class FlagLoader {
         try {
             // 遍历所有命名空间，直接查找 flags_yunbeiuc.json
             for (String namespace : resourceManager.getAllNamespaces()) {
-                Identifier fileId = new Identifier(namespace, "flags_yunbeiuc.json");
+                Identifier fileId = Identifier.of(namespace, "flags_yunbeiuc.json");
 
                 resourceManager.getResource(fileId).ifPresent(resource -> {
                     try (InputStream stream = resource.getInputStream();
@@ -47,9 +47,9 @@ public class FlagLoader {
                             String[] imageParts = imagePath.split(":");
                             Identifier texture;
                             if (imageParts.length == 2) {
-                                texture = new Identifier(imageParts[0], imageParts[1]);
+                                texture = Identifier.of(imageParts[0], imageParts[1]);
                             } else {
-                                texture = new Identifier(namespace, imagePath);
+                                texture = Identifier.of(namespace, imagePath);
                             }
 
                             CustomFlag flag = new CustomFlag(flagId, name, texture, color);

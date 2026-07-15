@@ -24,10 +24,10 @@ public class ZonesBoardImageEntityRenderer implements BlockEntityRenderer<ZonesB
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private static final Identifier RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_red_number_logo.png");
-    private static final Identifier YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_yellow_number_logo.png");
-    private static final Identifier WHITE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_white_number_logo.png");
-    private static final Identifier EXPRESSWAY = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_logo.png");
+    private static final Identifier RED = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_red_number_logo.png");
+    private static final Identifier YELLOW = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_yellow_number_logo.png");
+    private static final Identifier WHITE = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_white_number_logo.png");
+    private static final Identifier EXPRESSWAY = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_logo.png");
 
     @Override
     public void render(ZonesBoardImageEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -81,10 +81,10 @@ public class ZonesBoardImageEntityRenderer implements BlockEntityRenderer<ZonesB
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }

@@ -4,9 +4,9 @@ import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -40,9 +40,9 @@ public class RoadLight extends Block {
     private static final VoxelShape SHAPE_W = Block.createCuboidShape(1.5, 2.5, 4.5, 13.5, 8.5, 11.5);
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         tooltip.add(Text.translatable("block.yunbeiuc.road_light.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
+        super.appendTooltip(stack, context, tooltip, options);
     }
 
     public RoadLight(Settings settings) {
@@ -83,8 +83,8 @@ public class RoadLight extends Block {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack heldItem = player.getStackInHand(hand);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        ItemStack heldItem = player.getMainHandStack();
         // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world.isClient()) {
             if (heldItem.isOf(ModItems.WAND.get())) {

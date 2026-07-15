@@ -9,7 +9,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -139,7 +139,7 @@ public class RoadPoleTextDisplayScreen extends Screen {
             }
 
             RoadPoleTextDisplayUpdatePacket packet = new RoadPoleTextDisplayUpdatePacket(pos, text, color);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_ROAD_POLES_TEXT, buf);
         }
@@ -148,7 +148,7 @@ public class RoadPoleTextDisplayScreen extends Screen {
 
     @Override
     public void render(net.minecraft.client.gui.DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;

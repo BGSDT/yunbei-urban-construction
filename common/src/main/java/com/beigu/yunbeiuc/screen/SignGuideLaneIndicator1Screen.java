@@ -8,7 +8,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -110,7 +110,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
         if (this.client != null && this.client.world != null) {
             SignGuideLaneIndicator1UpdatePacket packet =
                     new SignGuideLaneIndicator1UpdatePacket(pos, direction1, direction2, direction3, direction4);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_SIGN_GUIDE_LANE_INDICATOR_1, buf);
         }
@@ -119,7 +119,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;

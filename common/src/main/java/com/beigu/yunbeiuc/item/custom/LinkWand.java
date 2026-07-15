@@ -3,9 +3,9 @@ package com.beigu.yunbeiuc.item.custom;
 import com.beigu.yunbeiuc.network.ChatCommandHandler;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.text.Text;
@@ -24,9 +24,9 @@ public class LinkWand extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.yunbeiuc.link_wand.tooltip"));
-        super.appendTooltip(stack, world, tooltip, context);
+        super.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,8 +28,8 @@ public class SignExpresswayExit8Entity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.direction1 = Direction.fromName(nbt.getString("direction1"));
         this.direction2 = Direction.fromName(nbt.getString("direction2"));
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
@@ -40,7 +42,7 @@ public class SignExpresswayExit8Entity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putString("direction1", this.direction1.getName());
         nbt.putString("direction2", this.direction2.getName());
         nbt.putString("expressway1", this.expressway1.getName());
@@ -50,7 +52,7 @@ public class SignExpresswayExit8Entity extends BlockEntity {
         nbt.putString("expresswayNumber1", this.expresswayNumber1);
         nbt.putString("expresswayNumber2", this.expresswayNumber2);
         nbt.putString("exitNumber", this.exitNumber);
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -60,8 +62,8 @@ public class SignExpresswayExit8Entity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public Direction getDirection1() { return direction1; }

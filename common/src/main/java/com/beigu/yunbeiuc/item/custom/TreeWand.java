@@ -2,10 +2,10 @@ package com.beigu.yunbeiuc.item.custom;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.sapling.OakSaplingGenerator;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.SaplingGenerator;
 import net.minecraft.item.Item;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
@@ -25,9 +25,9 @@ public class TreeWand extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.yunbeiuc.tree_wand.tooltip"));
-        super.appendTooltip(stack, world, tooltip, context);
+        super.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class TreeWand extends Item {
                     boolean success = false;
 
                     // 尝试使用OakSaplingGenerator生成树木
-                    OakSaplingGenerator generator = new OakSaplingGenerator();
+                    SaplingGenerator generator = SaplingGenerator.OAK;
                     Random random = serverWorld.getRandom();
 
                     // 不直接放置树苗，使用生成器在上方位置生成完整的树
@@ -73,7 +73,7 @@ public class TreeWand extends Item {
 
                         // 非创造模式消耗耐久
                         if (!player.getAbilities().creativeMode) {
-                            context.getStack().damage(1, player, p -> p.sendToolBreakStatus(context.getHand()));
+                            context.getStack().damage(1, player, context.getHand() == net.minecraft.util.Hand.MAIN_HAND ? net.minecraft.entity.EquipmentSlot.MAINHAND : net.minecraft.entity.EquipmentSlot.OFFHAND);
                         }
 
                         return ActionResult.SUCCESS;

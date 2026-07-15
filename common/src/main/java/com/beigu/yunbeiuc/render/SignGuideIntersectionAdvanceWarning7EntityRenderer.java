@@ -24,9 +24,9 @@ public class SignGuideIntersectionAdvanceWarning7EntityRenderer implements Block
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private static final Identifier LEFT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_left.png");
-    private static final Identifier STRAIGHT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_straight.png");
-    private static final Identifier RIGHT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_right.png");
+    private static final Identifier LEFT = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_left.png");
+    private static final Identifier STRAIGHT = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_straight.png");
+    private static final Identifier RIGHT = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_right.png");
 
     @Override
     public void render(SignGuideIntersectionAdvanceWarning7Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -82,10 +82,10 @@ public class SignGuideIntersectionAdvanceWarning7EntityRenderer implements Block
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }

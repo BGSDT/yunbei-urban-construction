@@ -1,8 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation2Entity;
-import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation2Entity;
-import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation2Entity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.SignExpresswayDistanceFromLocation2UpdatePacket;
 import dev.architectury.networking.NetworkManager;
@@ -11,7 +9,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -143,7 +141,7 @@ public class SignExpresswayDistanceFromLocation2Screen extends Screen {
 
             SignExpresswayDistanceFromLocation2UpdatePacket packet =
                     new SignExpresswayDistanceFromLocation2UpdatePacket(pos, expressway1, text1, expresswayNumber, text3, length1, length2, length3);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
                 NetworkManager.sendToServer(ModMessages.UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2, buf);
         }
@@ -156,7 +154,7 @@ public class SignExpresswayDistanceFromLocation2Screen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;

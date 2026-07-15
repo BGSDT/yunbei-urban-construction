@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:stonecutting",
-    "ingredient": {
-        "item": "minecraft:white_concrete"
-    },
-    "result": "yunbeiuc:sign_min_speed_limit_010",
-    "count": 9
-}

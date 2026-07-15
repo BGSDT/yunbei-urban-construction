@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,17 +21,17 @@ public class RoadNameSignBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.chineseText = nbt.getString("chineseText");
         this.englishText = nbt.getString("englishText");
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putString("chineseText", this.chineseText);
         nbt.putString("englishText", this.englishText);
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -39,8 +41,8 @@ public class RoadNameSignBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public String getChineseText() {

@@ -4,7 +4,8 @@ import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.Item;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -26,9 +27,9 @@ import java.util.List;
 
 public class RubbishBinWhite extends Block {
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         tooltip.add(Text.translatable("block.yunbeiuc.rubbish_bin.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
+        super.appendTooltip(stack, context, tooltip, options);
     }
 
     private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 0, 4.25, 16, 16, 11.75);
@@ -78,8 +79,8 @@ public class RubbishBinWhite extends Block {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack heldItem = player.getStackInHand(hand);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        ItemStack heldItem = player.getMainHandStack();
         NumberState currentState = state.get(NUMBER_STATE);
         if (heldItem.isOf(ModItems.WAND.get())) {
             world.setBlockState(pos, state.with(NUMBER_STATE, NumberState.ZERO));
@@ -90,13 +91,13 @@ public class RubbishBinWhite extends Block {
                 return ActionResult.success(world.isClient());
             } else if (!heldItem.isEmpty()) {
                 // 移除手中的物品（设置为空栈）
-                player.setStackInHand(hand, ItemStack.EMPTY);
+                player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
                 NumberState nextState = state.get(NUMBER_STATE).next();
                 world.setBlockState(pos, state.with(NUMBER_STATE, nextState));
                 return ActionResult.success(world.isClient());
             }
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player, hit);
     }
 
     public enum NumberState implements StringIdentifiable {

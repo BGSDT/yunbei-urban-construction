@@ -88,8 +88,8 @@ public class GantryFrameConnection extends Block {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        Item item = player.getStackInHand(hand).getItem();
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        Item item = player.getMainHandStack().getItem();
 
         if (item == ModItems.WAND.get()) {
             if (!world.isClient) {

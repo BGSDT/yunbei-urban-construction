@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -25,8 +27,8 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends BlockEntity
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.cnText3 = nbt.getString("cnText3");
@@ -38,7 +40,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends BlockEntity
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("cnText3", this.cnText3);
@@ -47,7 +49,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends BlockEntity
         nbt.putString("enText4", this.enText4);
         nbt.putString("cnText5", this.cnText5);
         nbt.putString("enText5", this.enText5);
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -57,8 +59,8 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends BlockEntity
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public String getText1() {

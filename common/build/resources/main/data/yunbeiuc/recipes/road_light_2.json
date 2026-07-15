@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:stonecutting",
-    "ingredient": {
-        "item": "minecraft:white_concrete"
-    },
-    "result": "yunbeiuc:road_light_2",
-    "count": 6
-}

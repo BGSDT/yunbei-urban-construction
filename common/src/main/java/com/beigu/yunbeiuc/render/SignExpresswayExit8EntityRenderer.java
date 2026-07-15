@@ -24,14 +24,14 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private static final Identifier NATIONAL_1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_1.png");
-    private static final Identifier PROVINCIAL_1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_1.png");
-    private static final Identifier NATIONAL_2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_2.png");
-    private static final Identifier PROVINCIAL_2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_2.png");
-    private static final Identifier NORTH = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_north.png");
-    private static final Identifier EAST = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_east.png");
-    private static final Identifier SOUTH = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_south.png");
-    private static final Identifier WEST = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_west.png");
+    private static final Identifier NATIONAL_1 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_1.png");
+    private static final Identifier PROVINCIAL_1 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_1.png");
+    private static final Identifier NATIONAL_2 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_2.png");
+    private static final Identifier PROVINCIAL_2 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_2.png");
+    private static final Identifier NORTH = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_north.png");
+    private static final Identifier EAST = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_east.png");
+    private static final Identifier SOUTH = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_south.png");
+    private static final Identifier WEST = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_west.png");
 
     @Override
     public void render(SignExpresswayExit8Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -117,10 +117,10 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }
@@ -155,10 +155,10 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }

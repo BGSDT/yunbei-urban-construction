@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,8 +28,8 @@ public class SignGuideConfirmation1Entity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.unit1 = Unit.fromName(nbt.getString("unit1"));
         this.unit2 = Unit.fromName(nbt.getString("unit2"));
         this.unit3 = Unit.fromName(nbt.getString("unit3"));
@@ -40,7 +42,7 @@ public class SignGuideConfirmation1Entity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putString("unit1", this.unit1.getName());
         nbt.putString("unit2", this.unit2.getName());
         nbt.putString("unit3", this.unit3.getName());
@@ -50,7 +52,7 @@ public class SignGuideConfirmation1Entity extends BlockEntity {
         nbt.putString("length1", this.length1);
         nbt.putString("length2", this.length2);
         nbt.putString("length3", this.length3);
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -60,8 +62,8 @@ public class SignGuideConfirmation1Entity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public Unit getUnit1() {

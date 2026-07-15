@@ -9,7 +9,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -144,7 +144,7 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
 
             SignGuideIntersectionAdvanceWarning5UpdatePacket packet =
                     new SignGuideIntersectionAdvanceWarning5UpdatePacket(pos, text1, text2, text3, text4, text1AndY, text2AndY, text3AndY, text4AndY);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5, buf);
         }
@@ -157,7 +157,7 @@ public class SignGuideIntersectionAdvanceWarning5Screen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;

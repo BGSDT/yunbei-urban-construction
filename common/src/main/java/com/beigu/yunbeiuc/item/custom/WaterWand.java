@@ -1,9 +1,9 @@
 package com.beigu.yunbeiuc.item.custom;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.text.Text;
@@ -20,9 +20,9 @@ public class WaterWand extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.yunbeiuc.water_wand.tooltip"));
-        super.appendTooltip(stack, world, tooltip, context);
+        super.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class WaterWand extends Item {
         }
 
         if (player != null && !player.getAbilities().creativeMode) {
-            context.getStack().damage(1, player, p -> p.sendToolBreakStatus(context.getHand()));
+            context.getStack().damage(1, player, context.getHand() == net.minecraft.util.Hand.MAIN_HAND ? net.minecraft.entity.EquipmentSlot.MAINHAND : net.minecraft.entity.EquipmentSlot.OFFHAND);
         }
 
         int count = 0;

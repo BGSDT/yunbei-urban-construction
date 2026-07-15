@@ -9,7 +9,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -94,7 +94,7 @@ public class ZonesBoardTimeRange2Screen extends Screen {
             String time4 = this.time4TextField != null ? this.time4TextField.getText() : "";
 
             ZonesBoardTimeRange2UpdatePacket packet = new ZonesBoardTimeRange2UpdatePacket(pos, time1, time2, time3, time4);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_ZONES_BOARD_TIME_RANGE_2, buf);
         }
@@ -103,7 +103,7 @@ public class ZonesBoardTimeRange2Screen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;

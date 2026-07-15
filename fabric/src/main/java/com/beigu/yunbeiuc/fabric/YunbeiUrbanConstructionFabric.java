@@ -26,7 +26,7 @@ public final class YunbeiUrbanConstructionFabric implements ModInitializer {
                 new SimpleSynchronousResourceReloadListener() {
                     @Override
                     public Identifier getFabricId() {
-                        return new Identifier(YunbeiUrbanConstruction.MOD_ID, "flag_loader");
+                        return Identifier.of(YunbeiUrbanConstruction.MOD_ID, "flag_loader");
                     }
 
                     @Override

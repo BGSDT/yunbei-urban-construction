@@ -2,9 +2,6 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation5;
-import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation5;
-import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation5;
-import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation5Entity;
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation5Entity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.RenderLayer;
@@ -27,10 +24,10 @@ public class SignExpresswayDistanceFromLocation5EntityRenderer implements BlockE
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private static final Identifier NATIONAL_1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_1.png");
-    private static final Identifier PROVINCIAL_1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_1.png");
-    private static final Identifier NATIONAL_2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_2.png");
-    private static final Identifier PROVINCIAL_2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_2.png");
+    private static final Identifier NATIONAL_1 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_1.png");
+    private static final Identifier PROVINCIAL_1 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_1.png");
+    private static final Identifier NATIONAL_2 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_2.png");
+    private static final Identifier PROVINCIAL_2 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_2.png");
 
     @Override
     public void render(SignExpresswayDistanceFromLocation5Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -125,10 +122,10 @@ public class SignExpresswayDistanceFromLocation5EntityRenderer implements BlockE
         matrices.translate(x, y, zOffset);
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
         matrices.pop();
     }
 

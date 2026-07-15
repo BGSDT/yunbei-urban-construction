@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.guardrail;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.piston.PistonBehavior;
@@ -22,6 +24,13 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class RoadClosedBarricadeGuardrail3 extends HorizontalFacingBlock {
+    public static final MapCodec<RoadClosedBarricadeGuardrail3> CODEC = createCodec(RoadClosedBarricadeGuardrail3::new);
+
+    @Override
+    protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
+        return CODEC;
+    }
+
     public static final EnumProperty<BedPart> PART = Properties.BED_PART;
 
     private static final VoxelShape FOOT_SHAPE_NORTH = Block.createCuboidShape(5, 0, 0, 16, 18, 16);
@@ -76,7 +85,7 @@ public class RoadClosedBarricadeGuardrail3 extends HorizontalFacingBlock {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BedPart part = state.get(PART);
         Direction direction = state.get(FACING);
 
@@ -95,7 +104,7 @@ public class RoadClosedBarricadeGuardrail3 extends HorizontalFacingBlock {
                     Block.getRawIdFromState(otherState));
         }
 
-        super.onBreak(world, pos, state, player);
+        return super.onBreak(world, pos, state, player);
     }
 
     @Override

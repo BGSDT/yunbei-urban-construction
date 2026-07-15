@@ -17,21 +17,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomFontManager {
-    private static CustomFontManager instance;
+    private static final CustomFontManager INSTANCE = new CustomFontManager();
     private final Map<String, FontTexture> textureCache = new HashMap<>();
     private final Map<String, Font> fontCache = new HashMap<>();
     private boolean initialized = false;
 
     public static CustomFontManager getInstance() {
-        if (instance == null) {
-            instance = new CustomFontManager();
-        }
-        return instance;
+        return INSTANCE;
     }
 
     public synchronized void initialize() {
         if (initialized) return;
 
+        fontCache.put("default", new Font("SansSerif", Font.PLAIN, 72));
         try {
             loadFont("ds_digital", "assets/yunbeiuc/fonts/ds_digital.ttf", 144);
         } catch (Exception e) {
@@ -52,11 +50,10 @@ public class CustomFontManager {
                 }
 
                 if (fontStream != null) {
-                    font = createFontFromStream(fontStream, baseSize, fontPath);
-                    fontStream.close();
-
-                    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                    ge.registerFont(font);
+                    try (InputStream stream = fontStream) {
+                        font = createFontFromStream(stream, baseSize, fontPath);
+                    }
+                    GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
                 } else {
                     throw new RuntimeException("Font file not found: " + fontPath);
                 }
@@ -182,7 +179,7 @@ public class CustomFontManager {
         return nativeImage;
     }
 
-    public void clearCache() {
+    public synchronized void clearCache() {
         for (FontTexture texture : textureCache.values()) {
             if (texture != null) {
                 texture.close();
@@ -191,9 +188,13 @@ public class CustomFontManager {
         textureCache.clear();
     }
 
-    public void onResourceReload() {
-        clearCache();
+    public synchronized void onResourceReload() {
+        // 先注销 GPU 图集，再关闭其来源字形，避免资源重载时访问已关闭的 NativeImage。
         CustomFontRenderer.cleanupAll();
+        clearCache();
+        fontCache.clear();
+        initialized = false;
+        initialize();
     }
 
     public static class FontTexture {

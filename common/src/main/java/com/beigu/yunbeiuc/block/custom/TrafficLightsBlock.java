@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom;
 
+import com.mojang.serialization.MapCodec;
+
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.screen.TrafficLightsScreen;
@@ -9,7 +11,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.Item;
+
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -32,6 +36,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityProvider {
+    public static final MapCodec<TrafficLightsBlock> CODEC = createCodec(TrafficLightsBlock::new);
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() { return CODEC; }
+
 
     private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 4, 0, 16, 12, 8);
     private static final VoxelShape SHAPE_E = Block.createCuboidShape(8, 4, 0, 16, 12, 16);
@@ -51,9 +60,9 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
+        super.appendTooltip(stack, context, tooltip, options);
     }
 
     @Override
@@ -97,8 +106,8 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack heldItem = player.getStackInHand(hand);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        ItemStack heldItem = player.getMainHandStack();
 
         // 魔杖打开设置界面
         if (heldItem.isOf(ModItems.WAND.get())) {
@@ -121,7 +130,7 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
             return ActionResult.success(world.isClient());
         }
 
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player, hit);
     }
 
     @Environment(EnvType.CLIENT)

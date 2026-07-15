@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -23,8 +25,8 @@ public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
@@ -34,14 +36,14 @@ public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("text3", this.text3);
         nbt.putString("length1", this.length1);
         nbt.putString("length2", this.length2);
         nbt.putString("length3", this.length3);
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -51,8 +53,8 @@ public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public String getText1() { return text1; }

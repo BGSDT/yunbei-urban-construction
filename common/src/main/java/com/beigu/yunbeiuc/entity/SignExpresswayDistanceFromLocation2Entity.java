@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,8 +26,8 @@ public class SignExpresswayDistanceFromLocation2Entity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
         this.text1 = nbt.getString("text1");
         this.expresswayNumber = nbt.getString("expresswayNumber");
@@ -36,7 +38,7 @@ public class SignExpresswayDistanceFromLocation2Entity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("text1", this.text1);
         nbt.putString("expresswayNumber", this.expresswayNumber);
@@ -44,7 +46,7 @@ public class SignExpresswayDistanceFromLocation2Entity extends BlockEntity {
         nbt.putString("length1", this.length1);
         nbt.putString("length2", this.length2);
         nbt.putString("length3", this.length3);
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -54,8 +56,8 @@ public class SignExpresswayDistanceFromLocation2Entity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public Expressway getExpressway1() { return expressway1; }

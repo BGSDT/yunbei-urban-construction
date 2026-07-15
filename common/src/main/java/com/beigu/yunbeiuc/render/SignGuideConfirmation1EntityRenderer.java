@@ -2,8 +2,6 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideConfirmation1;
-import com.beigu.yunbeiuc.block.custom.sign.SignGuideConfirmation1;
-import com.beigu.yunbeiuc.entity.SignGuideConfirmation1Entity;
 import com.beigu.yunbeiuc.entity.SignGuideConfirmation1Entity;
 import net.minecraft.block.Block;
 import net.minecraft.client.font.TextRenderer;

@@ -2,8 +2,8 @@ package com.beigu.yunbeiuc.item.custom;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.state.property.Properties;
@@ -20,9 +20,9 @@ public class RotatedWand extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.yunbeiuc.rotated_wand.tooltip"));
-        super.appendTooltip(stack, world, tooltip, context);
+        super.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class RotatedWand extends Item {
 
             // 消耗耐久度
             if (!context.getPlayer().isCreative()) {
-                context.getStack().damage(1, context.getPlayer(), p -> p.sendToolBreakStatus(context.getHand()));
+                context.getStack().damage(1, context.getPlayer(), context.getHand() == net.minecraft.util.Hand.MAIN_HAND ? net.minecraft.entity.EquipmentSlot.MAINHAND : net.minecraft.entity.EquipmentSlot.OFFHAND);
             }
 
             return ActionResult.SUCCESS;
@@ -63,7 +63,7 @@ public class RotatedWand extends Item {
                 );
 
                 if (!context.getPlayer().isCreative()) {
-                    context.getStack().damage(1, context.getPlayer(), p -> p.sendToolBreakStatus(context.getHand()));
+                    context.getStack().damage(1, context.getPlayer(), context.getHand() == net.minecraft.util.Hand.MAIN_HAND ? net.minecraft.entity.EquipmentSlot.MAINHAND : net.minecraft.entity.EquipmentSlot.OFFHAND);
                 }
 
                 return ActionResult.SUCCESS;

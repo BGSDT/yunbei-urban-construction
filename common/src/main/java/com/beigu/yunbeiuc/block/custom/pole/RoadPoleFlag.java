@@ -9,9 +9,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
@@ -34,6 +36,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class RoadPoleFlag extends BlockWithEntity implements BlockEntityProvider {
+    public static final MapCodec<RoadPoleFlag> CODEC = createCodec(RoadPoleFlag::new);
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
+    }
+
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<PoleType> POLE_TYPE = EnumProperty.of("pole_type", PoleType.class);
 
@@ -43,9 +52,9 @@ public class RoadPoleFlag extends BlockWithEntity implements BlockEntityProvider
     private static final VoxelShape SHAPE_W = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, 0, 5, 11, 16, 11), Block.createCuboidShape(7.75, -5.25, -9.75, 8.25, 21.25, 25.75), BooleanBiFunction.OR);
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         tooltip.add(Text.translatable("block.yunbeiuc.road_pole_flag.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
+        super.appendTooltip(stack, context, tooltip, options);
     }
 
     public RoadPoleFlag(Settings settings) {
@@ -94,8 +103,8 @@ public class RoadPoleFlag extends BlockWithEntity implements BlockEntityProvider
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        Item item = player.getStackInHand(hand).getItem();
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        Item item = player.getMainHandStack().getItem();
         if (item == ModItems.WAND.get()) {
             if (world.isClient()) {
                 openFlagScreen(pos);

@@ -25,12 +25,12 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private static final Identifier ARROW_LEFT_TURN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_left_turn.png");
-    private static final Identifier ARROW_STRAIGHT = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight.png");
-    private static final Identifier ARROW_RIGHT_TURN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_right_turn.png");
-    private static final Identifier ARROW_STRAIGHT_LEFT_TURN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight_left_turn.png");
-    private static final Identifier ARROW_STRAIGHT_RIGHT_TURN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight_right_turn.png");
-    private static final Identifier ARROW_LEFT_TURN_AROUND = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight_left_turn_around.png");
+    private static final Identifier ARROW_LEFT_TURN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_left_turn.png");
+    private static final Identifier ARROW_STRAIGHT = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight.png");
+    private static final Identifier ARROW_RIGHT_TURN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_right_turn.png");
+    private static final Identifier ARROW_STRAIGHT_LEFT_TURN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight_left_turn.png");
+    private static final Identifier ARROW_STRAIGHT_RIGHT_TURN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight_right_turn.png");
+    private static final Identifier ARROW_LEFT_TURN_AROUND = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_lane_arrow_straight_left_turn_around.png");
 
     @Override
     public void render(SignGuideLaneIndicator1Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -80,10 +80,10 @@ public class SignGuideLaneIndicator1EntityRenderer implements BlockEntityRendere
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }

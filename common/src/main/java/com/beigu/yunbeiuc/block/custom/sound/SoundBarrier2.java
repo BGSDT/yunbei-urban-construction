@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sound;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.LivingEntity;
@@ -18,6 +20,13 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class SoundBarrier2 extends HorizontalFacingBlock {
+    public static final MapCodec<SoundBarrier2> CODEC = createCodec(SoundBarrier2::new);
+
+    @Override
+    protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
+        return CODEC;
+    }
+
     public static final IntProperty LAYER = IntProperty.of("layer", 0, 2); // 0=底, 1=中, 2=顶
 
     private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 0, 6.5, 16, 16, 9.5);
@@ -81,14 +90,14 @@ public class SoundBarrier2 extends HorizontalFacingBlock {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         int layer = state.get(LAYER);
 
         if (!world.isClient) {
             breakOtherLayers(world, pos, layer, player);
         }
 
-        super.onBreak(world, pos, state, player);
+        return super.onBreak(world, pos, state, player);
     }
 
     private void breakOtherLayers(World world, BlockPos pos, int currentLayer, PlayerEntity player) {

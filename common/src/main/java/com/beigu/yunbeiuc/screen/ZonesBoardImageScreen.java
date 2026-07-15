@@ -13,7 +13,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -41,10 +41,10 @@ public class ZonesBoardImageScreen extends Screen {
     private static final int RIGHT_PANEL_WIDTH = 200;
     private static final int RIGHT_PANEL_HEIGHT = 240;
 
-    private static final Identifier RED_TEXTURE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_red_number_logo.png");
-    private static final Identifier YELLOW_TEXTURE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_yellow_number_logo.png");
-    private static final Identifier WHITE_TEXTURE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_white_number_logo.png");
-    private static final Identifier EXPRESSWAY_TEXTURE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_logo.png");
+    private static final Identifier RED_TEXTURE = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_red_number_logo.png");
+    private static final Identifier YELLOW_TEXTURE = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_yellow_number_logo.png");
+    private static final Identifier WHITE_TEXTURE = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_white_number_logo.png");
+    private static final Identifier EXPRESSWAY_TEXTURE = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_logo.png");
 
     public ZonesBoardImageScreen(BlockPos pos) {
         super(Text.translatable("text.yunbeiuc.zones_board_image.title"));
@@ -182,7 +182,7 @@ public class ZonesBoardImageScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int listAreaWidth = this.width / 3;
         int rightAreaX = this.width / 3;
@@ -329,7 +329,7 @@ public class ZonesBoardImageScreen extends Screen {
 
             ZonesBoardImageUpdatePacket packet =
                     new ZonesBoardImageUpdatePacket(pos, text1, selectedImage, andX, andY, andScale);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_ZONES_BOARD_IMAGE, buf);
         }
@@ -391,7 +391,7 @@ public class ZonesBoardImageScreen extends Screen {
         private final int listWidth;
 
         public ImageListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, List<ImageOption> imageOptions) {
-            super(client, width, height, top, bottom, itemHeight);
+            super(client, width, bottom - top, top, itemHeight);
             this.listWidth = width;
 
             for (ImageOption option : imageOptions) {
@@ -405,13 +405,13 @@ public class ZonesBoardImageScreen extends Screen {
         }
 
         @Override
-        protected int getScrollbarPositionX() {
+        protected int getScrollbarX() {
             return this.getRowLeft() + this.getRowWidth() + 4;
         }
 
         @Override
         public int getRowLeft() {
-            return this.left + 5;
+            return this.getX() + 5;
         }
 
         @Override

@@ -2,7 +2,6 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation1;
-import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation1;
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation1Entity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.RenderLayer;

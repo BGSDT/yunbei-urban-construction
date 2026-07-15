@@ -32,23 +32,23 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private static final Identifier LEFT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
-    private static final Identifier LEFT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_yellow.png");
-    private static final Identifier LEFT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_green.png");
-    private static final Identifier STRAIGHT_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_red.png");
-    private static final Identifier STRAIGHT_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_yellow.png");
-    private static final Identifier STRAIGHT_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_green.png");
-    private static final Identifier RIGHT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_red.png");
-    private static final Identifier RIGHT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_yellow.png");
-    private static final Identifier RIGHT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_green.png");
-    private static final Identifier TURN_AROUND_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_red.png");
-    private static final Identifier TURN_AROUND_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_yellow.png");
-    private static final Identifier TURN_AROUND_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_green.png");
-    private static final Identifier NON_MOTOR_VEHICLES_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_red.png");
-    private static final Identifier NON_MOTOR_VEHICLES_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_yellow.png");
-    private static final Identifier NON_MOTOR_VEHICLES_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_green.png");
-    private static final Identifier PAVEMENT_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
-    private static final Identifier PAVEMENT_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
+    private static final Identifier LEFT_TURN_RED = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
+    private static final Identifier LEFT_TURN_YELLOW = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_yellow.png");
+    private static final Identifier LEFT_TURN_GREEN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_green.png");
+    private static final Identifier STRAIGHT_RED = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_red.png");
+    private static final Identifier STRAIGHT_YELLOW = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_yellow.png");
+    private static final Identifier STRAIGHT_GREEN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_green.png");
+    private static final Identifier RIGHT_TURN_RED = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_red.png");
+    private static final Identifier RIGHT_TURN_YELLOW = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_yellow.png");
+    private static final Identifier RIGHT_TURN_GREEN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_green.png");
+    private static final Identifier TURN_AROUND_RED = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_red.png");
+    private static final Identifier TURN_AROUND_YELLOW = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_yellow.png");
+    private static final Identifier TURN_AROUND_GREEN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_green.png");
+    private static final Identifier NON_MOTOR_VEHICLES_RED = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_red.png");
+    private static final Identifier NON_MOTOR_VEHICLES_YELLOW = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_yellow.png");
+    private static final Identifier NON_MOTOR_VEHICLES_GREEN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_green.png");
+    private static final Identifier PAVEMENT_RED = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
+    private static final Identifier PAVEMENT_GREEN = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
 
     @Override
     public void render(TrafficLightsBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -159,10 +159,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }
@@ -208,10 +208,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         VertexConsumer bgConsumer = vertexConsumers.getBuffer(RenderLayer.getTextBackground());
-        bgConsumer.vertex(matrix, bgX1, bgY1, 0).color(0, 0, 0, 128).light(light).next();
-        bgConsumer.vertex(matrix, bgX1, bgY2, 0).color(0, 0, 0, 128).light(light).next();
-        bgConsumer.vertex(matrix, bgX2, bgY2, 0).color(0, 0, 0, 128).light(light).next();
-        bgConsumer.vertex(matrix, bgX2, bgY1, 0).color(0, 0, 0, 128).light(light).next();
+        bgConsumer.vertex(matrix, bgX1, bgY1, 0).color(0, 0, 0, 128).light(light);
+        bgConsumer.vertex(matrix, bgX1, bgY2, 0).color(0, 0, 0, 128).light(light);
+        bgConsumer.vertex(matrix, bgX2, bgY2, 0).color(0, 0, 0, 128).light(light);
+        bgConsumer.vertex(matrix, bgX2, bgY1, 0).color(0, 0, 0, 128).light(light);
 
         textRenderer.draw(
                 Text.literal(directionText),

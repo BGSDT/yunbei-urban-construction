@@ -3,10 +3,7 @@ package com.beigu.yunbeiuc.render;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionWarning4;
-import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionWarning4;
 import com.beigu.yunbeiuc.entity.*;
-import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
-import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
 import net.minecraft.block.Block;
 import net.minecraft.block.SignBlock;
@@ -29,12 +26,12 @@ import java.util.Map;
 public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityRenderer<SignGuideIntersectionWarning4Entity> {
     private final TextRenderer textRenderer;
 
-    private static final Identifier LEFT1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_left.png");
-    private static final Identifier STRAIGHT1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_straight.png");
-    private static final Identifier RIGHT1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_right.png");
-    private static final Identifier LEFT2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_intersection_warning_5_left.png");
-    private static final Identifier STRAIGHT2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_intersection_warning_5_straight.png");
-    private static final Identifier RIGHT2 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_intersection_warning_5_right.png");
+    private static final Identifier LEFT1 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_left.png");
+    private static final Identifier STRAIGHT1 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_straight.png");
+    private static final Identifier RIGHT1 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_indication_right.png");
+    private static final Identifier LEFT2 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_intersection_warning_5_left.png");
+    private static final Identifier STRAIGHT2 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_intersection_warning_5_straight.png");
+    private static final Identifier RIGHT2 = Identifier.of(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_guide_intersection_warning_5_right.png");
 
     public SignGuideIntersectionWarning4EntityRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
@@ -112,10 +109,10 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }
@@ -150,10 +147,10 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
+        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1);
 
         matrices.pop();
     }

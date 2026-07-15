@@ -46,7 +46,7 @@ public class  ModMessages {
     public static final Identifier UPDATE_ZONES_BOARD_OVER_WEIGHT = id("update_zone_board_over_weight");
 
     private static Identifier id(String path) {
-        return new Identifier(YunbeiUrbanConstruction.MOD_ID, path);
+        return Identifier.of(YunbeiUrbanConstruction.MOD_ID, path);
     }
 
     public static void registerC2SPackets() {

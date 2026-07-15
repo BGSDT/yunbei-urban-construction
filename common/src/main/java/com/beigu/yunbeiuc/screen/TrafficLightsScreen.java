@@ -15,7 +15,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -135,7 +135,7 @@ public class TrafficLightsScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int panelX, panelY;
 
@@ -267,7 +267,7 @@ public class TrafficLightsScreen extends Screen {
 
             TrafficLightsUpdatePacket packet =
                     new TrafficLightsUpdatePacket(pos, phaseIndex, selectedDirection);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS, buf);
         }
@@ -358,7 +358,7 @@ public class TrafficLightsScreen extends Screen {
         private final int listWidth;
 
         public DirectionListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, List<DirectionOption> directionOptions) {
-            super(client, width, height, top, bottom, itemHeight);
+            super(client, width, bottom - top, top, itemHeight);
             this.listWidth = width;
 
             for (DirectionOption option : directionOptions) {
@@ -372,13 +372,13 @@ public class TrafficLightsScreen extends Screen {
         }
 
         @Override
-        protected int getScrollbarPositionX() {
+        protected int getScrollbarX() {
             return this.getRowLeft() + this.getRowWidth() + 4;
         }
 
         @Override
         public int getRowLeft() {
-            return this.left + 5;
+            return this.getX() + 5;
         }
 
         @Override

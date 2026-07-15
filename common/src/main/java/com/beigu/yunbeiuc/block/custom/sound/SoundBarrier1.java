@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sound;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.*;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.piston.PistonBehavior;
@@ -23,6 +25,13 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class SoundBarrier1 extends HorizontalFacingBlock {
+    public static final MapCodec<SoundBarrier1> CODEC = createCodec(SoundBarrier1::new);
+
+    @Override
+    protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
+        return CODEC;
+    }
+
     public static final EnumProperty<BedPart> PART = Properties.BED_PART;
     public static final IntProperty LAYER = IntProperty.of("layer", 0, 2); // 0=底, 1=中, 2=顶
 
@@ -99,7 +108,7 @@ public class SoundBarrier1 extends HorizontalFacingBlock {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BedPart part = state.get(PART);
         Direction direction = state.get(FACING);
         int layer = state.get(LAYER);
@@ -109,7 +118,7 @@ public class SoundBarrier1 extends HorizontalFacingBlock {
             breakOtherParts(world, pos, part, direction, layer, player);
         }
 
-        super.onBreak(world, pos, state, player);
+        return super.onBreak(world, pos, state, player);
     }
 
     private void breakOtherParts(World world, BlockPos pos, BedPart part,

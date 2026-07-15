@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -9,7 +11,6 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
-import com.beigu.yunbeiuc.entity.SignExpresswayEntranceAdvance10Entity.Expressway;
 import com.beigu.yunbeiuc.entity.SignExpresswayEntranceAdvance10Entity.Expressway;
 
 public class SignExpresswayEntranceAdvance10Entity extends BlockEntity {
@@ -25,8 +26,8 @@ public class SignExpresswayEntranceAdvance10Entity extends BlockEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
         this.expressway2 = Expressway.fromName(nbt.getString("expressway2"));
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
@@ -36,14 +37,14 @@ public class SignExpresswayEntranceAdvance10Entity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("expressway2", this.expressway2.getName());
         nbt.putString("expresswayNumber1", this.expresswayNumber1);
         nbt.putString("expresswayNumber2", this.expresswayNumber2);
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -53,8 +54,8 @@ public class SignExpresswayEntranceAdvance10Entity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public Expressway getExpressway1() { return expressway1; }

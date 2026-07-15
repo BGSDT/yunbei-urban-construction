@@ -40,7 +40,7 @@ public class CustomFontRenderer {
         this.fontName = fontName;
     }
 
-    public static CustomFontRenderer getInstance(String fontName) {
+    public static synchronized CustomFontRenderer getInstance(String fontName) {
         return INSTANCES.computeIfAbsent(fontName, CustomFontRenderer::new);
     }
 
@@ -70,7 +70,7 @@ public class CustomFontRenderer {
         }
     }
 
-    private void rebuildAtlas() {
+    private synchronized void rebuildAtlas() {
         if (fontAtlas != null) {
             MinecraftClient.getInstance().getTextureManager().destroyTexture(fontAtlas);
         }
@@ -129,8 +129,9 @@ public class CustomFontRenderer {
             maxRowHeight = Math.max(maxRowHeight, glyphH);
         }
 
-        Identifier id = new Identifier(YunbeiUrbanConstruction.MOD_ID,
-                "font_atlas_" + fontName + "_" + System.currentTimeMillis());
+        // 使用稳定 ID，防止每次增加字形或资源重载都遗留一个动态纹理键。
+        Identifier id = Identifier.of(YunbeiUrbanConstruction.MOD_ID,
+                "font_atlas/" + fontName.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_"));
         MinecraftClient.getInstance().getTextureManager()
                 .registerTexture(id, new NativeImageBackedTexture(atlasImage));
         fontAtlas = id;
@@ -259,16 +260,16 @@ public class CustomFontRenderer {
 
             vertexConsumer.vertex(positionMatrix, currentX, y + charHeight, z)
                     .color(red, green, blue, alpha).texture(info.u1, info.v2)
-                    .overlay(0).light(light).next();
+                    .overlay(0).light(light);
             vertexConsumer.vertex(positionMatrix, currentX + charWidth, y + charHeight, z)
                     .color(red, green, blue, alpha).texture(info.u2, info.v2)
-                    .overlay(0).light(light).next();
+                    .overlay(0).light(light);
             vertexConsumer.vertex(positionMatrix, currentX + charWidth, y, z)
                     .color(red, green, blue, alpha).texture(info.u2, info.v1)
-                    .overlay(0).light(light).next();
+                    .overlay(0).light(light);
             vertexConsumer.vertex(positionMatrix, currentX, y, z)
                     .color(red, green, blue, alpha).texture(info.u1, info.v1)
-                    .overlay(0).light(light).next();
+                    .overlay(0).light(light);
 
             currentX += charWidth * spacingFactor;
             if (i < text.length() - 1) {
@@ -287,7 +288,7 @@ public class CustomFontRenderer {
         }
     }
 
-    public void cleanup() {
+    public synchronized void cleanup() {
         if (fontAtlas != null) {
             MinecraftClient.getInstance().getTextureManager().destroyTexture(fontAtlas);
             fontAtlas = null;
@@ -298,7 +299,7 @@ public class CustomFontRenderer {
         initialized = false;
     }
 
-    public static void cleanupAll() {
+    public static synchronized void cleanupAll() {
         for (CustomFontRenderer renderer : INSTANCES.values()) {
             renderer.cleanup();
         }

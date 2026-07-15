@@ -98,63 +98,63 @@ public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEnt
                                  float minX, float minY, float maxX, float maxY, float z, int light, int overlay) {
         consumer.vertex(entry.getPositionMatrix(), minX, minY, z)
                 .color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, -1).next();
+                .normal(entry, 0, 0, -1);
         consumer.vertex(entry.getPositionMatrix(), maxX, minY, z)
                 .color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, -1).next();
+                .normal(entry, 0, 0, -1);
         consumer.vertex(entry.getPositionMatrix(), maxX, maxY, z)
                 .color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, -1).next();
+                .normal(entry, 0, 0, -1);
         consumer.vertex(entry.getPositionMatrix(), minX, maxY, z)
                 .color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, -1).next();
+                .normal(entry, 0, 0, -1);
     }
 
     private void renderSouthFace(MatrixStack.Entry entry, VertexConsumer consumer,
                                  float minX, float minY, float maxX, float maxY, float z, int light, int overlay) {
         consumer.vertex(entry.getPositionMatrix(), maxX, minY, z)
                 .color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, 1).next();
+                .normal(entry, 0, 0, 1);
         consumer.vertex(entry.getPositionMatrix(), minX, minY, z)
                 .color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, 1).next();
+                .normal(entry, 0, 0, 1);
         consumer.vertex(entry.getPositionMatrix(), minX, maxY, z)
                 .color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, 1).next();
+                .normal(entry, 0, 0, 1);
         consumer.vertex(entry.getPositionMatrix(), maxX, maxY, z)
                 .color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 0, 0, 1).next();
+                .normal(entry, 0, 0, 1);
     }
 
     private void renderWestFace(MatrixStack.Entry entry, VertexConsumer consumer,
                                 float minX, float minY, float maxX, float maxY, float x, int light, int overlay) {
         consumer.vertex(entry.getPositionMatrix(), x, minY, minX)
                 .color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), -1, 0, 0).next();
+                .normal(entry, -1, 0, 0);
         consumer.vertex(entry.getPositionMatrix(), x, minY, maxX)
                 .color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), -1, 0, 0).next();
+                .normal(entry, -1, 0, 0);
         consumer.vertex(entry.getPositionMatrix(), x, maxY, maxX)
                 .color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), -1, 0, 0).next();
+                .normal(entry, -1, 0, 0);
         consumer.vertex(entry.getPositionMatrix(), x, maxY, minX)
                 .color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), -1, 0, 0).next();
+                .normal(entry, -1, 0, 0);
     }
 
     private void renderEastFace(MatrixStack.Entry entry, VertexConsumer consumer,
                                 float minX, float minY, float maxX, float maxY, float x, int light, int overlay) {
         consumer.vertex(entry.getPositionMatrix(), x, minY, maxX)
                 .color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 1, 0, 0).next();
+                .normal(entry, 1, 0, 0);
         consumer.vertex(entry.getPositionMatrix(), x, minY, minX)
                 .color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 1, 0, 0).next();
+                .normal(entry, 1, 0, 0);
         consumer.vertex(entry.getPositionMatrix(), x, maxY, minX)
                 .color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 1, 0, 0).next();
+                .normal(entry, 1, 0, 0);
         consumer.vertex(entry.getPositionMatrix(), x, maxY, maxX)
                 .color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light)
-                .normal(entry.getNormalMatrix(), 1, 0, 0).next();
+                .normal(entry, 1, 0, 0);
     }
 }

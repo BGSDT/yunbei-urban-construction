@@ -11,7 +11,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -57,7 +57,7 @@ public class FlagSelectionScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         // 绘制背景
-        super.renderBackground(context);
+        super.renderBackground(context, mouseX, mouseY, delta);
 
         // 渲染所有子部件
         super.render(context, mouseX, mouseY, delta);
@@ -265,7 +265,7 @@ public class FlagSelectionScreen extends Screen {
 
             // 发送网络数据包到服务器
             if (client != null && client.getNetworkHandler() != null) {
-                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
                 new FlagUpdatePacket(blockPos, selectedFlag.getId()).write(buf);
                 NetworkManager.sendToServer(ModMessages.UPDATE_FLAG, buf);
             }
@@ -316,7 +316,7 @@ public class FlagSelectionScreen extends Screen {
         private final int listWidth;
 
         public FlagListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, List<FlagOption> flagOptions) {
-            super(client, width, height, top, bottom, itemHeight);
+            super(client, width, bottom - top, top, itemHeight);
             this.listWidth = width;
 
             for (FlagOption option : flagOptions) {
@@ -330,13 +330,13 @@ public class FlagSelectionScreen extends Screen {
         }
 
         @Override
-        protected int getScrollbarPositionX() {
+        protected int getScrollbarX() {
             return this.getRowLeft() + this.getRowWidth() + 4;
         }
 
         @Override
         public int getRowLeft() {
-            return this.left + 5;
+            return this.getX() + 5;
         }
 
         @Override

@@ -4,7 +4,8 @@ import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.Item;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -41,9 +42,9 @@ public class BarrierGate1MainSlab extends Block {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         tooltip.add(Text.translatable("block.yunbeiuc.barrier_gate_1_main.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
+        super.appendTooltip(stack, context, tooltip, options);
     }
 
     private static final VoxelShape SHAPE = Block.createCuboidShape(4, -8, 4, 12, 14, 12);
@@ -74,8 +75,8 @@ public class BarrierGate1MainSlab extends Block {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!world.isClient && player.getStackInHand(hand).isOf(ModItems.WAND.get())) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (!world.isClient && player.getMainHandStack().isOf(ModItems.WAND.get())) {
             PoleType next = state.get(POLE_TYPE) == PoleType.LONGITUDINAL ? PoleType.HORIZONTAL : PoleType.LONGITUDINAL;
             world.setBlockState(pos, state.with(POLE_TYPE, next), Block.NOTIFY_ALL);
         }

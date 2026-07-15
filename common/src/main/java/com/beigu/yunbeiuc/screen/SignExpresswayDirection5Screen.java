@@ -1,9 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.entity.SignExpresswayDirection5Entity;
-import com.beigu.yunbeiuc.entity.SignExpresswayDirection5Entity;
-import com.beigu.yunbeiuc.entity.SignExpresswayDirection5Entity;
-import com.beigu.yunbeiuc.entity.SignExpresswayDirection5Entity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.SignExpresswayDirection5UpdatePacket;
 import dev.architectury.networking.NetworkManager;
@@ -12,7 +9,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -135,7 +132,7 @@ public class SignExpresswayDirection5Screen extends Screen {
 
             SignExpresswayDirection5UpdatePacket packet =
                     new SignExpresswayDirection5UpdatePacket(pos, expressway1, text1, expresswayNumber1, direction1);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), this.client.getNetworkHandler().getRegistryManager());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_SIGN_EXPRESSWAY_DIRECTION_5, buf);
         }
@@ -148,7 +145,7 @@ public class SignExpresswayDirection5Screen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;

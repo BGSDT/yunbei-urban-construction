@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import net.minecraft.registry.RegistryWrapper;
+
 import com.beigu.yunbeiuc.block.custom.TrafficLightsBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -369,8 +371,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     // ==================== NBT 读写 ====================
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.phaseIndex = nbt.getInt("phaseIndex");
         this.groupId = nbt.contains("groupId") ? nbt.getString("groupId") : null;
         this.phaseCount = nbt.getInt("phaseCount");
@@ -392,14 +394,14 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             int size = positionsTag.getInt("size");
             groupPositions.clear();
             for (int i = 0; i < size; i++) {
-                BlockPos pos = NbtHelper.toBlockPos(positionsTag.getCompound("pos" + i));
+                BlockPos pos = NbtHelper.toBlockPos(positionsTag, "pos" + i).orElse(BlockPos.ORIGIN);
                 groupPositions.add(pos);
             }
         }
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putInt("phaseIndex", this.phaseIndex);
         nbt.putString("directionType", this.directionType.getName());
 
@@ -426,7 +428,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             nbt.put("groupPositions", positionsTag);
         }
 
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, lookup);
     }
 
     @Nullable
@@ -436,8 +438,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
     public void markDirtyAndUpdate() {
