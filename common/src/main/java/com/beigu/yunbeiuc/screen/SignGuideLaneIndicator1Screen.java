@@ -22,7 +22,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
 
     private static final int PANEL_WIDTH = 400;
     private static final int PANEL_HEIGHT = 280;
-    private static final int DIRECTION_BUTTON_WIDTH = 60;
+    private static final int DIRECTION_BUTTON_WIDTH = 55;
     private static final int DIRECTION_BUTTON_HEIGHT = 20;
     private static final int DIRECTION_COUNT = 4;
 
@@ -52,7 +52,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        // Direction buttons
+        // Direction buttons - 一行6个
         createDirectionButtons(panelX + 10, panelY + 40, direction -> this.direction1 = direction);
         createDirectionButtons(panelX + 10, panelY + 85, direction -> this.direction2 = direction);
         createDirectionButtons(panelX + 10, panelY + 130, direction -> this.direction3 = direction);
@@ -73,7 +73,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
     }
 
     private void createDirectionButtons(int x, int y, DirectionConsumer directionConsumer) {
-        // 第一行：LEFT_TURN, STRAIGHT, RIGHT_TURN
+        // 一行6个方向按钮
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left_turn"), button -> {
                     directionConsumer.accept(SignGuideLaneIndicator1Entity.Direction.LEFT_TURN);
@@ -82,29 +82,27 @@ public class SignGuideLaneIndicator1Screen extends Screen {
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.straight"), button -> {
                     directionConsumer.accept(SignGuideLaneIndicator1Entity.Direction.STRAIGHT);
-                }).dimensions(x + 65, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
+                }).dimensions(x + 60, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.right_turn"), button -> {
                     directionConsumer.accept(SignGuideLaneIndicator1Entity.Direction.RIGHT_TURN);
-                }).dimensions(x + 130, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
+                }).dimensions(x + 120, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );
-
-        // 第二行：STRAIGHT_LEFT_TURN, STRAIGHT_RIGHT_TURN, LEFT_TURN_AROUND
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.straight_left_turn"), button -> {
                     directionConsumer.accept(SignGuideLaneIndicator1Entity.Direction.STRAIGHT_LEFT_TURN);
-                }).dimensions(x, y + 25, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
+                }).dimensions(x + 180, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.straight_right_turn"), button -> {
                     directionConsumer.accept(SignGuideLaneIndicator1Entity.Direction.STRAIGHT_RIGHT_TURN);
-                }).dimensions(x + 65, y + 25, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
+                }).dimensions(x + 240, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left_turn_around"), button -> {
                     directionConsumer.accept(SignGuideLaneIndicator1Entity.Direction.LEFT_TURN_AROUND);
-                }).dimensions(x + 130, y + 25, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
+                }).dimensions(x + 300, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );
     }
 
@@ -162,11 +160,11 @@ public class SignGuideLaneIndicator1Screen extends Screen {
 
     private void renderDirectionStatus(DrawContext context, int panelX, int panelY, int index,
                                        SignGuideLaneIndicator1Entity.Direction direction) {
-        int yOffset = 46 + (index - 1) * 45;
+        int yOffset = 61 + (index - 1) * 45;
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.direction." + direction.getName()),
-                panelX + 230, panelY + yOffset,
+                panelX + 10, panelY + yOffset,
                 0xFFFFFF00
         );
     }

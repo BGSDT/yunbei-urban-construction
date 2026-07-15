@@ -20,6 +20,8 @@ public class ModBlockEntities {
                             MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()).build(null));
@@ -162,6 +164,47 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.create(SignExpresswayDirection5Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5.get(),
                             SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayNamingNumberEntity>> SIGN_EXPRESSWAY_NAMING_NUMBER_ENTITY =
+            BES.register("sign_expressway_naming_number_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayNamingNumberEntity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_NAMING_NUMBER_1.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_NAMING_NUMBER_2.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayRoadNameEntity>> SIGN_EXPRESSWAY_ROAD_NAME_ENTITY =
+            BES.register("sign_expressway_road_name_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayRoadNameEntity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_ROAD_NAME.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation1Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1_ENTITY =
+            BES.register("sign_expressway_distance_from_location_1_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDistanceFromLocation1Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation2Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2_ENTITY =
+            BES.register("sign_expressway_distance_from_location_2_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDistanceFromLocation2Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation3Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3_ENTITY =
+            BES.register("sign_expressway_distance_from_location_3_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDistanceFromLocation3Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation4Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4_ENTITY =
+            BES.register("sign_expressway_distance_from_location_4_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDistanceFromLocation4Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation5Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5_ENTITY =
+            BES.register("sign_expressway_distance_from_location_5_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDistanceFromLocation5Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation6Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6_ENTITY =
+            BES.register("sign_expressway_distance_from_location_6_entity",
+                    () -> BlockEntityType.Builder.create(SignExpresswayDistanceFromLocation6Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6.get()).build(null));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayExit8Entity>> SIGN_EXPRESSWAY_EXIT_8_ENTITY =
             BES.register("sign_expressway_exit_8_entity",

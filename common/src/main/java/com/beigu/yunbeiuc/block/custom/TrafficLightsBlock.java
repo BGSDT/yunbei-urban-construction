@@ -3,6 +3,9 @@ package com.beigu.yunbeiuc.block.custom;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.screen.TrafficLightsScreen;
+import com.beigu.yunbeiuc.screen.ZonesBoardOverWeightScreen;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -112,13 +115,18 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
                         return ActionResult.FAIL;
                     }
                     // 打开GUI
-                    MinecraftClient.getInstance().setScreen(new TrafficLightsScreen(pos));
+                    openDisplayScreen(pos);
                 }
             }
             return ActionResult.success(world.isClient());
         }
 
         return super.onUse(state, world, pos, player, hand, hit);
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openDisplayScreen(BlockPos pos) {
+        MinecraftClient.getInstance().setScreen(new TrafficLightsScreen(pos));
     }
 
     @Override

@@ -201,9 +201,9 @@ public class SignExpresswayExit8Screen extends Screen {
                 Text.translatable("text.yunbeiuc.direction." + direction1.getName()));
         renderStatus(context, panelX, panelY, 80, 196,
                 Text.translatable("text.yunbeiuc.expressway." + expressway1.getName()));
-        renderStatus(context, panelX, panelY, 170, 196,
+        renderStatus(context, panelX, panelY, 150, 196,
                 Text.translatable("text.yunbeiuc.direction." + direction2.getName()));
-        renderStatus(context, panelX, panelY, 240, 196,
+        renderStatus(context, panelX, panelY, 220, 196,
                 Text.translatable("text.yunbeiuc.expressway." + expressway2.getName()));
 
         // 渲染所有文本框

@@ -72,18 +72,18 @@ public class SignGuideConfirmation1Screen extends Screen {
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
         // 第一行：text1输入框 + length1输入框 + 单位1选择
-        this.text1TextField = createTextInputField(panelX + 10, panelY + 40, existingText1, 1);
-        this.length1TextField = createLengthInputField(panelX + 150, panelY + 40, existingLength1, 1);
+        this.text1TextField = createTextInputField(panelX + 10, panelY + 40, existingText1);
+        this.length1TextField = createLengthInputField(panelX + 150, panelY + 40, existingLength1);
         createUnitButtons(panelX + 230, panelY + 40, unit -> this.unit1 = unit);
 
         // 第二行：text2输入框 + length2输入框 + 单位2选择
-        this.text2TextField = createTextInputField(panelX + 10, panelY + 80, existingText2, 2);
-        this.length2TextField = createLengthInputField(panelX + 150, panelY + 80, existingLength2, 2);
+        this.text2TextField = createTextInputField(panelX + 10, panelY + 80, existingText2);
+        this.length2TextField = createLengthInputField(panelX + 150, panelY + 80, existingLength2);
         createUnitButtons(panelX + 230, panelY + 80, unit -> this.unit2 = unit);
 
         // 第三行：text3输入框 + length3输入框 + 单位3选择
-        this.text3TextField = createTextInputField(panelX + 10, panelY + 120, existingText3, 3);
-        this.length3TextField = createLengthInputField(panelX + 150, panelY + 120, existingLength3, 3);
+        this.text3TextField = createTextInputField(panelX + 10, panelY + 120, existingText3);
+        this.length3TextField = createLengthInputField(panelX + 150, panelY + 120, existingLength3);
         createUnitButtons(panelX + 230, panelY + 120, unit -> this.unit3 = unit);
 
         // 保存和取消按钮
@@ -101,12 +101,12 @@ public class SignGuideConfirmation1Screen extends Screen {
         );
     }
 
-    private TextFieldWidget createTextInputField(int x, int y, String existingText, int index) {
+    private TextFieldWidget createTextInputField(int x, int y, String existingText) {
         TextFieldWidget field = new TextFieldWidget(
                 this.textRenderer,
                 x, y,
                 TEXT_INPUT_WIDTH, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.text_" + index)
+                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.content")
         );
         field.setMaxLength(256);
         field.setText(existingText);
@@ -115,12 +115,12 @@ public class SignGuideConfirmation1Screen extends Screen {
         return field;
     }
 
-    private TextFieldWidget createLengthInputField(int x, int y, String existingText, int index) {
+    private TextFieldWidget createLengthInputField(int x, int y, String existingText) {
         TextFieldWidget field = new TextFieldWidget(
                 this.textRenderer,
                 x, y,
                 LENGTH_INPUT_WIDTH, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.length_" + index)
+                Text.translatable("text.yunbeiuc.sign_guide_confirmation_1.content")
         );
         field.setMaxLength(256);
         field.setText(existingText);

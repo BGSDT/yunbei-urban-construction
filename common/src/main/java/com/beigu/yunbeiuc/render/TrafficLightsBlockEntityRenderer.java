@@ -61,6 +61,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()){
             renderText(entity, matrices, vertexConsumers, light, facing, type);
             return;
+        } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
+            renderTimeText(entity, matrices, vertexConsumers, light, facing, type);
         }
         renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock);
     }
@@ -140,7 +143,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             };
             z = -0.53f;
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL.get() ||
-                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get()) {
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
             y = switch (lightState) {
                 case RED -> 7.75f / 16f;
                 case GREEN -> -7.75f / 16f;
@@ -268,7 +273,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
         CustomFontRenderer.renderText(
-                matrices, vertexConsumers, "88", 0X474747,
+                matrices, vertexConsumers, "88", 0X2e3134,
                 0, -6f, 0,
                 0.07f,
                 light,
@@ -291,6 +296,74 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 matrices, vertexConsumers, text, color,
                 0, -6f, 0,
                 0.07f,
+                light,
+                CustomFontRenderer.TextAlignment.RIGHT,
+                "ds_digital",
+                1,
+                1.4f
+        );
+
+        matrices.pop();
+    }
+
+    private void renderTimeText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState) {
+        TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+        int remaining = info.getActiveRemaining();
+
+        int color;
+        if (info.isTransition()) {
+            color = switch (info.getTransitionColor()) {
+                case "red" -> 0xFF0000;
+                case "yellow" -> 0xFFF000;
+                case "green" -> 0x39FF00;
+                default -> 0xFFFFFF;
+            };
+        } else {
+            color = switch (lightState) {
+                case RED -> 0xFF0000;
+                case YELLOW -> 0xFFF000;
+                case GREEN -> 0x39FF00;
+                default -> 0xFFFFFF;
+            };
+        }
+
+        matrices.push();
+
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+
+        float scaleValue = 0.085f;
+        matrices.translate(0.25f, 0.0f, -0.53f);
+        matrices.scale(scaleValue, -scaleValue, scaleValue);
+
+        if (lightState == TrafficLightsBlock.LightState.YELLOW){
+            matrices.pop();
+            return;
+        }
+
+        CustomFontRenderer.renderText(
+                matrices, vertexConsumers, "88", 0X2e3134,
+                0, -2.5f, 0,
+                0.035f,
+                light,
+                CustomFontRenderer.TextAlignment.RIGHT,
+                "ds_digital",
+                1,
+                1.4f
+        );
+
+        if (lightState == TrafficLightsBlock.LightState.GRAY || remaining >= 15 || (color == 0xFFF000 && remaining == 3)){
+            matrices.pop();
+            return;
+        }
+
+        matrices.translate(0f, 0.0f, 0.01f);
+
+        String text = String.valueOf(remaining);
+        CustomFontRenderer.renderText(
+                matrices, vertexConsumers, text, color,
+                0, -2.5f, 0,
+                0.035f,
                 light,
                 CustomFontRenderer.TextAlignment.RIGHT,
                 "ds_digital",

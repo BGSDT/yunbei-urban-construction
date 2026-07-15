@@ -441,6 +441,18 @@ public class SignBlocks {
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_5 = BLOCKS.register("sign_expressway_direction_5", () -> new SignExpresswayDirection5(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DIRECTION_6 = BLOCKS.register("sign_expressway_direction_6", () -> new SignExpresswayDirection5(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_GEOGRAPHICAL_DIRECTION = BLOCKS.register("sign_expressway_geographical_direction", () -> new SignSimpleBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_NAMING_NUMBER_1 = BLOCKS.register("sign_expressway_naming_number_1", () -> new SignExpresswayNamingNumber(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_NAMING_NUMBER_2 = BLOCKS.register("sign_expressway_naming_number_2", () -> new SignExpresswayNamingNumber(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_ROAD_NAME = BLOCKS.register("sign_expressway_road_name", () -> new SignExpresswayRoadName(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1 = BLOCKS.register("sign_expressway_distance_from_location_1", () -> new SignExpresswayDistanceFromLocation1(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2 = BLOCKS.register("sign_expressway_distance_from_location_2", () -> new SignExpresswayDistanceFromLocation2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3 = BLOCKS.register("sign_expressway_distance_from_location_3", () -> new SignExpresswayDistanceFromLocation3(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4 = BLOCKS.register("sign_expressway_distance_from_location_4", () -> new SignExpresswayDistanceFromLocation4(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5 = BLOCKS.register("sign_expressway_distance_from_location_5", () -> new SignExpresswayDistanceFromLocation5(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6 = BLOCKS.register("sign_expressway_distance_from_location_6", () -> new SignExpresswayDistanceFromLocation6(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_EXIT_8 = BLOCKS.register("sign_expressway_exit_8", () -> new SignExpresswayExit8(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static void init() {

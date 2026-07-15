@@ -65,25 +65,25 @@ public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer
         Block currentBlock = entity.getCachedState().getBlock();
 
         if(currentBlock == SignBlocks.SIGN_GUIDE_CONFIRMATION_1.get()){
-            renderLeftText(matrices, vertexConsumers, light, facing, text1, type, -16f, 11f);
-            renderLeftText(matrices, vertexConsumers, light, facing, text2, type, -16f, 0f);
-            renderLeftText(matrices, vertexConsumers, light, facing, text3, type, -16f, -11f);
-            renderRightText(matrices, vertexConsumers, light, facing, length1, type, 13f, 11f, false);
+            renderLeftText(matrices, vertexConsumers, light, facing, text1, type, -17f, 9f);
+            renderLeftText(matrices, vertexConsumers, light, facing, text2, type, -17f, 0f);
+            renderLeftText(matrices, vertexConsumers, light, facing, text3, type, -17f, -9f);
+            renderRightText(matrices, vertexConsumers, light, facing, length1, type, 13f, 9f, false);
             renderRightText(matrices, vertexConsumers, light, facing, length2, type, 13f, 0f, false);
-            renderRightText(matrices, vertexConsumers, light, facing, length3, type, 13f, -11f, false);
-            renderRightText(matrices, vertexConsumers, light, facing, unit1_number, type, 16f, 10.5f, true);
-            renderRightText(matrices, vertexConsumers, light, facing, unit2_number, type, 16f, -0.5f, true);
-            renderRightText(matrices, vertexConsumers, light, facing, unit3_number, type, 16f, -11.5f, true);
+            renderRightText(matrices, vertexConsumers, light, facing, length3, type, 13f, -9f, false);
+            renderRightText(matrices, vertexConsumers, light, facing, unit1_number, type, 17f, 8.5f, true);
+            renderRightText(matrices, vertexConsumers, light, facing, unit2_number, type, 17f, -0.5f, true);
+            renderRightText(matrices, vertexConsumers, light, facing, unit3_number, type, 17f, -9.5f, true);
         }else{
-            renderLeftText(matrices, vertexConsumers, light, facing, text1, type, -12f, 11f);
-            renderLeftText(matrices, vertexConsumers, light, facing, text2, type, -12f, 0f);
-            renderLeftText(matrices, vertexConsumers, light, facing, text3, type, -12f, -11f);
-            renderRightText(matrices, vertexConsumers, light, facing, length1, type, 9f, 11f, false);
-            renderRightText(matrices, vertexConsumers, light, facing, length2, type, 9f, 0f, false);
-            renderRightText(matrices, vertexConsumers, light, facing, length3, type, 9f, -11f, false);
-            renderRightText(matrices, vertexConsumers, light, facing, unit1_number, type, 12f, 11f, true);
-            renderRightText(matrices, vertexConsumers, light, facing, unit2_number, type, 12f, 0f, true);
-            renderRightText(matrices, vertexConsumers, light, facing, unit3_number, type, 12f, -11f, true);
+            renderLeftText(matrices, vertexConsumers, light, facing, text1, type, -15f, 9f);
+            renderLeftText(matrices, vertexConsumers, light, facing, text2, type, -15f, 0f);
+            renderLeftText(matrices, vertexConsumers, light, facing, text3, type, -15f, -9f);
+            renderRightText(matrices, vertexConsumers, light, facing, length1, type, 11f, 9f, false);
+            renderRightText(matrices, vertexConsumers, light, facing, length2, type, 11f, 0f, false);
+            renderRightText(matrices, vertexConsumers, light, facing, length3, type, 11f, -9f, false);
+            renderRightText(matrices, vertexConsumers, light, facing, unit1_number, type, 15f, 8.5f, true);
+            renderRightText(matrices, vertexConsumers, light, facing, unit2_number, type, 15f, -0.5f, true);
+            renderRightText(matrices, vertexConsumers, light, facing, unit3_number, type, 15f, -9.5f, true);
         }
     }
 
@@ -93,7 +93,7 @@ public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
-        float scaleValue = 0.035f;
+        float scaleValue = 0.04f;
 
         Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
         int textHeight = this.textRenderer.fontHeight;
@@ -132,7 +132,7 @@ public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
-        float scaleValue = isSmallScale ? 0.02f : 0.035f;
+        float scaleValue = isSmallScale ? 0.025f : 0.04f;
 
         Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
         int textWidth = this.textRenderer.getWidth(styledText);

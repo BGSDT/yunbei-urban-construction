@@ -5,12 +5,6 @@
     },
     "done": true
   },
-  "minecraft:recipes/decorations/crafting_table": {
-    "criteria": {
-      "unlock_right_away": "2026-07-03 09:49:24 +0800"
-    },
-    "done": true
-  },
   "minecraft:recipes/decorations/chest": {
     "criteria": {
       "has_lots_of_items": "2026-07-03 09:49:21 +0800"
@@ -29,17 +23,23 @@
     },
     "done": true
   },
-  "minecraft:adventure/adventuring_time": {
-    "criteria": {
-      "minecraft:plains": "2026-07-03 09:49:25 +0800"
-    },
-    "done": false
-  },
   "minecraft:recipes/tools/lead": {
     "criteria": {
       "has_slime_ball": "2026-07-03 09:49:21 +0800"
     },
     "done": true
+  },
+  "minecraft:recipes/decorations/crafting_table": {
+    "criteria": {
+      "unlock_right_away": "2026-07-03 09:49:24 +0800"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "minecraft:plains": "2026-07-03 09:49:25 +0800"
+    },
+    "done": false
   },
   "DataVersion": 3465
 }

@@ -30,6 +30,14 @@ public class  ModMessages {
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_DIRECTION_1 = id("update_sign_expressway_direction_1");
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_DIRECTION_3 = id("update_sign_expressway_direction_3");
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_DIRECTION_5 = id("update_sign_expressway_direction_5");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_NAMING_NUMBER = id("update_sign_expressway_naming_number");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_ROAD_NAME = id("update_sign_expressway_road_name");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1 = id("update_sign_expressway_distance_from_location_1");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2 = id("update_sign_expressway_distance_from_location_2");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3 = id("update_sign_expressway_distance_from_location_3");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4 = id("update_sign_expressway_distance_from_location_4");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5 = id("update_sign_expressway_distance_from_location_5");
+    public static final Identifier UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6 = id("update_sign_expressway_distance_from_location_6");
     public static final Identifier UPDATE_SIGN_EXPRESSWAY_EXIT_8 = id("update_sign_expressway_exit_8");
     public static final Identifier UPDATE_ZONES_BOARD_1 = id("update_zone_board_1");
     public static final Identifier UPDATE_ZONES_BOARD_IMAGE = id("update_zone_board_image");
@@ -154,6 +162,46 @@ public class  ModMessages {
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DIRECTION_5, (buf, context) -> {
             SignExpresswayDirection5UpdatePacket packet = new SignExpresswayDirection5UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_NAMING_NUMBER, (buf, context) -> {
+            SignExpresswayNamingNumberUpdatePacket packet = new SignExpresswayNamingNumberUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_ROAD_NAME, (buf, context) -> {
+            SignExpresswayRoadNameUpdatePacket packet = new SignExpresswayRoadNameUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1, (buf, context) -> {
+            SignExpresswayDistanceFromLocation1UpdatePacket packet = new SignExpresswayDistanceFromLocation1UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2, (buf, context) -> {
+            SignExpresswayDistanceFromLocation2UpdatePacket packet = new SignExpresswayDistanceFromLocation2UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3, (buf, context) -> {
+            SignExpresswayDistanceFromLocation3UpdatePacket packet = new SignExpresswayDistanceFromLocation3UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4, (buf, context) -> {
+            SignExpresswayDistanceFromLocation4UpdatePacket packet = new SignExpresswayDistanceFromLocation4UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5, (buf, context) -> {
+            SignExpresswayDistanceFromLocation5UpdatePacket packet = new SignExpresswayDistanceFromLocation5UpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6, (buf, context) -> {
+            SignExpresswayDistanceFromLocation6UpdatePacket packet = new SignExpresswayDistanceFromLocation6UpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
         });
 

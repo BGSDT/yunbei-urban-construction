@@ -1,77 +1,29 @@
-[21:49:31] [main/INFO] (Launcher) ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 1.20.1-5, --assetsDir, C:\Users\Beigu\.gradle\caches\fabric-loom\assets, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, -mixin.config, yunbeiuc.mixins.json]
-[21:49:31] [main/INFO] (Launcher) ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 21.0.8 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
-[21:49:32] [main/INFO] (unprotect) Initializing Unprotect using ModLauncher backend, target: Minecraft and loader classes (minecraft+forge)
-[21:49:32] [main/INFO] (ImmediateWindowHandler) Loading ImmediateWindowProvider fmlearlywindow
-[21:49:33] [main/INFO] (EARLYDISPLAY) Trying GL version 4.6
-[21:49:36] [main/INFO] (EARLYDISPLAY) Requested GL version 4.6 got version 4.6
-[21:49:37] [main/INFO] (mixin) SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/Beigu/.gradle/caches/modules-2/files-2.1/dev.architectury/mixin-patched/0.8.5.12/cf1f787f58d3b08b0cb53ecbba7928c09a1893c8/mixin-patched-0.8.5.12.jar%23130!/ Service=ModLauncher Env=CLIENT
-[21:49:38] [pool-5-thread-1/INFO] (EARLYDISPLAY) GL info: Intel(R) Graphics GL version 4.6.0 - Build 32.0.101.5542, Intel
-[21:49:38] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.10\ccc533c7dd67e0983217197d7549c8b49e7ab453\javafmllanguage-1.20.1-47.4.10.jar is missing mods.toml file
-[21:49:38] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.10\e9a2879fe3612ea34b9728ec2633304a1e67d480\lowcodelanguage-1.20.1-47.4.10.jar is missing mods.toml file
-[21:49:38] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.10\ec5cefbbc65c67302b8fac317010faab85fa14b9\mclanguage-1.20.1-47.4.10.jar is missing mods.toml file
-[21:49:38] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.10\94dae566be650566ea9115a1414ab76bfcf5a804\fmlcore-1.20.1-47.4.10.jar is missing mods.toml file
-[21:49:38] [main/INFO] (ModDiscoverer) Found mod file javafmllanguage-1.20.1-47.4.10.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@3209eb
-[21:49:38] [main/INFO] (ModDiscoverer) Found mod file lowcodelanguage-1.20.1-47.4.10.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@3209eb
-[21:49:38] [main/INFO] (ModDiscoverer) Found mod file mclanguage-1.20.1-47.4.10.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@3209eb
-[21:49:38] [main/INFO] (ModDiscoverer) Found mod file fmlcore-1.20.1-47.4.10.jar of type LIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@3209eb
-[21:49:38] [main/INFO] (ModDiscoverer) Found mod file forge-1.20.1-47.4.10-minecraft-merged-1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.4.10.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@3209eb
-[21:49:38] [main/INFO] (ModDiscoverer) Found mod file main of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@3209eb
-[21:49:38] [main/INFO] (ModDiscoverer) Found mod file  of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@3209eb
-[21:49:39] [main/INFO] (ModDiscoverer) Found mod file architectury-forge-291042f6-9.2.14.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@158f30b5
-[21:49:39] [main/INFO] (ModDiscoverer) Found mod file 3795963081773023710.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@158f30b5
-[21:49:39] [main/INFO] (ModDiscoverer) Found mod file architectury-forge-291042f6-9.2.14.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@158f30b5
-[21:49:39] [main/INFO] (ModDiscoverer) Found mod file 3795963081773023710.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@158f30b5
-[21:49:39] [main/INFO] (JarInJarDependencyLocator) No dependencies to load found. Skipping!
-[21:49:47] [main/INFO] (mixin) Compatibility level set to JAVA_17
-[21:49:47] [main/ERROR] (mixin) Mixin config yunbeiuc.mixins.json does not specify "minVersion" property
-[21:49:47] [main/INFO] (LaunchServiceHandler) Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, C:\Users\Beigu\.gradle\caches\fabric-loom\assets, --assetIndex, 1.20.1-5]
-[21:49:48] [main/INFO] (unprotect) Found 7431 Minecraft classes
-[21:49:48] [main/INFO] (mixin) Remapping refMap architectury-forge-refmap.json using RemapperChain (Architectury Patched)
-[21:49:48] [main/INFO] (mixin) Remapping refMap architectury-common-refmap.json using RemapperChain (Architectury Patched)
-[087月2026 21:50:13.349] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 188 Datafixer optimizations took 1460 milliseconds
-[087月2026 21:50:21.263] [Render thread/WARN] [net.minecraft.resource.DefaultResourcePackBuilder/]: Assets URL 'union:/C:/Users/Beigu/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/forge-1.20.1-47.4.10-minecraft-merged/1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.4.10/forge-1.20.1-47.4.10-minecraft-merged-1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.4.10.jar%23201!/assets/.mcassetsroot' uses unexpected schema
-[087月2026 21:50:21.270] [Render thread/WARN] [net.minecraft.resource.DefaultResourcePackBuilder/]: Assets URL 'union:/C:/Users/Beigu/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/forge-1.20.1-47.4.10-minecraft-merged/1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.4.10/forge-1.20.1-47.4.10-minecraft-merged-1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.4.10.jar%23201!/data/.mcassetsroot' uses unexpected schema
-[087月2026 21:50:21.385] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[087月2026 21:50:21.419] [Render thread/INFO] [net.minecraft.client.MinecraftClient/]: Setting user: Dev
-[087月2026 21:50:21.958] [Render thread/INFO] [net.minecraft.client.MinecraftClient/]: Backend library: LWJGL version 3.3.2+13
-[087月2026 21:50:23.437] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.10, for MC 1.20.1 with MCP 20230612.114412
-[087月2026 21:50:23.440] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.10 Initialized
-[087月2026 21:50:24.752] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering S2C receiver with id architectury:sync_ids
-[087月2026 21:50:24.760] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id architectury:sync_ids
-[087月2026 21:50:37.238] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_road_poles_text
-[087月2026 21:50:37.240] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_flag
-[087月2026 21:50:37.242] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_road_name_sign
-[087月2026 21:50:37.244] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_traffic_lights
-[087月2026 21:50:37.248] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_advance_warning_1_wuhan
-[087月2026 21:50:37.251] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_advance_warning_1
-[087月2026 21:50:37.253] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_advance_warning_3
-[087月2026 21:50:37.255] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_advance_warning_5
-[087月2026 21:50:37.257] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_advance_warning_6
-[087月2026 21:50:37.258] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_advance_warning_7
-[087月2026 21:50:37.260] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_warning_1
-[087月2026 21:50:37.262] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_intersection_warning_4
-[087月2026 21:50:37.267] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_confirmation_1
-[087月2026 21:50:37.268] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_lane_indicator_1
-[087月2026 21:50:37.271] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_guide_roadsid_facility_overload_checkpoint_1
-[087月2026 21:50:37.274] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_entrance_advance_1
-[087月2026 21:50:37.275] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_entrance_advance_4
-[087月2026 21:50:37.277] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_entrance_advance_7
-[087月2026 21:50:37.279] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_entrance_advance_10
-[087月2026 21:50:37.282] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_entrance_advance_13
-[087月2026 21:50:37.285] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_direction_1
-[087月2026 21:50:37.288] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_direction_3
-[087月2026 21:50:37.289] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_direction_5
-[087月2026 21:50:37.292] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_sign_expressway_exit_8
-[087月2026 21:50:37.294] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_zone_board_1
-[087月2026 21:50:37.297] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_zone_board_image
-[087月2026 21:50:37.299] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_zone_board_time_range_1
-[087月2026 21:50:37.301] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_zone_board_time_range_2
-[087月2026 21:50:37.304] [modloading-worker-0/INFO] [dev.architectury.networking.forge.NetworkManagerImpl/]: Registering C2S receiver with id yunbeiuc:update_zone_board_over_weight
-[087月2026 21:50:37.304] [modloading-worker-0/INFO] [yunbeiuc/]: Yunbei Urban Construction has finished loading
-[087月2026 21:50:51.138] [Render thread/INFO] [net.minecraftforge.gametest.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
-[087月2026 21:50:52.172] [Render thread/INFO] [net.minecraft.resource.ReloadableResourceManagerImpl/]: Reloading ResourceManager: vanilla, mod_resources
-[087月2026 21:50:52.934] [Worker-Main-14/INFO] [net.minecraft.client.font.UnihexFont/]: Found unifont_all_no_pua-15.0.06.hex, loading
-[087月2026 21:50:53.060] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
-[087月2026 21:50:55.402] [Render thread/WARN] [net.minecraftforge.fml.DeferredWorkQueue/LOADING]: Mod 'yunbeiuc' took 1.739 s to run a deferred task.
-[087月2026 21:50:55.887] [Worker-Main-11/WARN] [net.minecraft.client.texture.SpriteLoader/]: Texture yunbeiuc:block/flags/wuxi_12 with size 375x1000 limits mip level from 4 to 0
-[087月2026 21:50:57.702] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: UP_TO_DATE Current: 47.4.10 Target: null
+[21:10:04] [main/INFO] (Launcher) ModLauncher running: args [--launchTarget, forgeserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, -mixin.config, yunbeiuc.mixins.json, nogui]
+[21:10:04] [main/INFO] (Launcher) ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 21.0.8 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
+[21:10:04] [main/INFO] (unprotect) Initializing Unprotect using ModLauncher backend, target: Minecraft and loader classes (minecraft+forge)
+[21:10:04] [main/INFO] (ImmediateWindowHandler) ImmediateWindowProvider not loading because launch target is forgeserveruserdev
+[21:10:04] [main/INFO] (mixin) SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/Beigu/.gradle/caches/modules-2/files-2.1/dev.architectury/mixin-patched/0.8.5.12/cf1f787f58d3b08b0cb53ecbba7928c09a1893c8/mixin-patched-0.8.5.12.jar%23130!/ Service=ModLauncher Env=SERVER
+[21:10:05] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.10\ccc533c7dd67e0983217197d7549c8b49e7ab453\javafmllanguage-1.20.1-47.4.10.jar is missing mods.toml file
+[21:10:05] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.10\e9a2879fe3612ea34b9728ec2633304a1e67d480\lowcodelanguage-1.20.1-47.4.10.jar is missing mods.toml file
+[21:10:05] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.10\ec5cefbbc65c67302b8fac317010faab85fa14b9\mclanguage-1.20.1-47.4.10.jar is missing mods.toml file
+[21:10:05] [main/WARN] (ModFileParser) Mod file C:\Users\Beigu\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.10\94dae566be650566ea9115a1414ab76bfcf5a804\fmlcore-1.20.1-47.4.10.jar is missing mods.toml file
+[21:10:05] [main/INFO] (ModDiscoverer) Found mod file javafmllanguage-1.20.1-47.4.10.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@2a930ec6
+[21:10:05] [main/INFO] (ModDiscoverer) Found mod file lowcodelanguage-1.20.1-47.4.10.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@2a930ec6
+[21:10:05] [main/INFO] (ModDiscoverer) Found mod file mclanguage-1.20.1-47.4.10.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@2a930ec6
+[21:10:05] [main/INFO] (ModDiscoverer) Found mod file fmlcore-1.20.1-47.4.10.jar of type LIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@2a930ec6
+[21:10:05] [main/INFO] (ModDiscoverer) Found mod file forge-1.20.1-47.4.10-minecraft-merged-1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.4.10.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@2a930ec6
+[21:10:05] [main/INFO] (ModDiscoverer) Found mod file main of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@2a930ec6
+[21:10:05] [main/INFO] (ModDiscoverer) Found mod file  of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@2a930ec6
+[21:10:06] [main/INFO] (ModDiscoverer) Found mod file architectury-forge-291042f6-9.2.14.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@129e58fa
+[21:10:06] [main/INFO] (ModDiscoverer) Found mod file 12520778210514399683.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@129e58fa
+[21:10:06] [main/INFO] (ModDiscoverer) Found mod file architectury-forge-291042f6-9.2.14.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@129e58fa
+[21:10:06] [main/INFO] (ModDiscoverer) Found mod file 12520778210514399683.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator@129e58fa
+[21:10:06] [main/INFO] (JarInJarDependencyLocator) No dependencies to load found. Skipping!
+[21:10:11] [main/INFO] (mixin) Compatibility level set to JAVA_17
+[21:10:11] [main/ERROR] (mixin) Mixin config yunbeiuc.mixins.json does not specify "minVersion" property
+[21:10:11] [main/INFO] (LaunchServiceHandler) Launching target 'forgeserveruserdev' with arguments [--gameDir, ., nogui]
+[21:10:11] [main/INFO] (unprotect) Found 7431 Minecraft classes
+[21:10:11] [main/INFO] (mixin) Remapping refMap architectury-forge-refmap.json using RemapperChain (Architectury Patched)
+[21:10:11] [main/INFO] (mixin) Remapping refMap architectury-common-refmap.json using RemapperChain (Architectury Patched)
+[097月2026 21:10:14.334] [main/WARN] [net.minecraft.server.dedicated.EulaReader/]: Failed to load eula.txt
+[097月2026 21:10:14.395] [main/INFO] [net.minecraft.server.Main/]: You need to agree to the EULA in order to run the server. Go to eula.txt for more info.

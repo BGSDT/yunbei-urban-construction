@@ -80,6 +80,8 @@ public class ModItems {
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_SHANGHAI = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_SHANGHAI = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_COUNTDOWN_TIMER = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_GRAY = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_BLACK = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK, ALL_MUNICIPAL_ITEMS);
@@ -697,18 +699,21 @@ public class ModItems {
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_5 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5, ALL_SIGN_ITEMS);
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DIRECTION_6 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6, ALL_SIGN_ITEMS);
 
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_GEOGRAPHICAL_DIRECTION = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_GEOGRAPHICAL_DIRECTION, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_NAMING_NUMBER_1 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_NAMING_NUMBER_1, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_NAMING_NUMBER_2 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_NAMING_NUMBER_2, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_ROAD_NAME = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_ROAD_NAME, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6, ALL_SIGN_ITEMS);
+
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_8 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_EXIT_8, ALL_SIGN_ITEMS);
 
     public static void init() {
         ITEMS.register();
-    }
-
-    public static void registerItems() {
-        // Kept for backward compatibility — registration happens via DeferredRegister in init()
-    }
-
-    public static void registerModItems() {
-        // Kept for backward compatibility — registration happens via DeferredRegister in init()
     }
 }
 
