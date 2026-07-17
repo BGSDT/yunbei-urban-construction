@@ -60,8 +60,7 @@ public class GantryFrameMain extends Block {
     // ==================== 核心修复：邻接更新 ====================
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        // 东西方向变化才更新，防止无限递归
-        if (direction == Direction.EAST || direction == Direction.WEST) {
+        if (direction.getAxis().isHorizontal()) {
             return updateMainType(state, world, pos);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

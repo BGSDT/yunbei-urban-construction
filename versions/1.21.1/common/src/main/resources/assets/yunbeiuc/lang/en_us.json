@@ -746,7 +746,7 @@
   "text.yunbeiuc.direction.right_turn": "Right Turn",
   "text.yunbeiuc.direction.straight_left_turn": "Straight & Left Turn",
   "text.yunbeiuc.direction.straight_right_turn": "Straight & Right Turn",
-  "text.yunbeiuc.direction.left_turn_around": "Left Turn & U-Turn"
+  "text.yunbeiuc.direction.left_turn_around": "Left Turn & U-Turn",
   "text.yunbeiuc.sign_guide_lane_indicator_1.save": "Save",
   "text.yunbeiuc.sign_guide_lane_indicator_1.cancel": "Cancel",
   "block.yunbeiuc.sign_guide_intersection_advance_warning_6": "Intersection Advance Warning Sign 6",
