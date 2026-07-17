@@ -135,7 +135,7 @@ public class TrafficLightsScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        ScreenRenderUtils.renderBackground(context, this.width, this.height);
 
         int panelX, panelY;
 

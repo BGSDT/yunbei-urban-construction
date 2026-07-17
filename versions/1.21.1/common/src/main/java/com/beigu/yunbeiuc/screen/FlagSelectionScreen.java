@@ -57,7 +57,7 @@ public class FlagSelectionScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         // 绘制背景
-        super.renderBackground(context, mouseX, mouseY, delta);
+        ScreenRenderUtils.renderBackground(context, this.width, this.height);
 
         // 渲染所有子部件
         super.render(context, mouseX, mouseY, delta);
