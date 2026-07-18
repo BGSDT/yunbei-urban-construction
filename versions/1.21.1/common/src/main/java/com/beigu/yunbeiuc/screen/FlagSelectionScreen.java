@@ -8,6 +8,8 @@ import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
@@ -57,10 +59,14 @@ public class FlagSelectionScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         // 绘制背景
-        super.renderBackground(context, mouseX, mouseY, delta);
+        ScreenRenderUtils.renderBackground(context, this.width, this.height);
 
         // 渲染所有子部件
-        super.render(context, mouseX, mouseY, delta);
+        for (Element element : this.children()) {
+            if (element instanceof Drawable drawable) {
+                drawable.render(context, mouseX, mouseY, delta);
+            }
+        }
 
         // 列表区域宽度（屏幕的1/2）
         int listAreaWidth = this.width / 2;

@@ -11,6 +11,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
 
 public class SignGuideLaneIndicator1Screen extends Screen {
     private final BlockPos pos;
@@ -119,7 +121,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        ScreenRenderUtils.renderBackground(context, this.width, this.height);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
@@ -145,7 +147,11 @@ public class SignGuideLaneIndicator1Screen extends Screen {
         renderDirectionStatus(context, panelX, panelY, 3, direction3);
         renderDirectionStatus(context, panelX, panelY, 4, direction4);
 
-        super.render(context, mouseX, mouseY, delta);
+        for (Element element : this.children()) {
+            if (element instanceof Drawable drawable) {
+                drawable.render(context, mouseX, mouseY, delta);
+            }
+        }
     }
 
     private void renderDirectionLabel(DrawContext context, int panelX, int panelY, int index) {

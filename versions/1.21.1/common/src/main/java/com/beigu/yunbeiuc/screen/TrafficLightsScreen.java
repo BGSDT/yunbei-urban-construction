@@ -10,6 +10,8 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -135,7 +137,7 @@ public class TrafficLightsScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        ScreenRenderUtils.renderBackground(context, this.width, this.height);
 
         int panelX, panelY;
 
@@ -245,7 +247,11 @@ public class TrafficLightsScreen extends Screen {
             );
         }
 
-        super.render(context, mouseX, mouseY, delta);
+        for (Element element : this.children()) {
+            if (element instanceof Drawable drawable) {
+                drawable.render(context, mouseX, mouseY, delta);
+            }
+        }
     }
 
     @Override

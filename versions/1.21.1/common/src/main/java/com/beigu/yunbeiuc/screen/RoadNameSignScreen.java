@@ -6,6 +6,8 @@ import com.beigu.yunbeiuc.network.RoadNameSignBlockUpdatePacket;
 import io.netty.buffer.Unpooled;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -96,7 +98,7 @@ public class RoadNameSignScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        ScreenRenderUtils.renderBackground(context, this.width, this.height);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
@@ -128,7 +130,11 @@ public class RoadNameSignScreen extends Screen {
         this.chineseNameTextField.render(context, mouseX, mouseY, delta);
         this.englishNameTextField.render(context, mouseX, mouseY, delta);
 
-        super.render(context, mouseX, mouseY, delta);
+        for (Element element : this.children()) {
+            if (element instanceof Drawable drawable) {
+                drawable.render(context, mouseX, mouseY, delta);
+            }
+        }
     }
 
     @Override
