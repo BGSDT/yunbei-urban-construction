@@ -133,6 +133,7 @@ public class YunbeiUrbanConstructionForgeClient {
             BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_TIME_RANGE_1_ENTITY.get(), ZonesBoardTimeRange1EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_TIME_RANGE_2_ENTITY.get(), ZonesBoardTimeRange2EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_OVER_WEIGHT_ENTITY.get(), ZonesBoardOverWeightEntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), CustomSignBlockEntityRenderer::new);
 
             FlagLoader.loadFlags(MinecraftClient.getInstance().getResourceManager());
             CustomFontManager.getInstance().onResourceReload();

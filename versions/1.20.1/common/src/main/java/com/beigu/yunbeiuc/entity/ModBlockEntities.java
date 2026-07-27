@@ -145,7 +145,9 @@ public class ModBlockEntities {
     public static final RegistrySupplier<BlockEntityType<SignExpresswayEntranceAdvance13Entity>> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13_ENTITY =
             BES.register("sign_expressway_entrance_advance_13_entity",
                     () -> BlockEntityType.Builder.create(SignExpresswayEntranceAdvance13Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15.get()).build(null));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection1Entity>> SIGN_EXPRESSWAY_DIRECTION_1_ENTITY =
             BES.register("sign_expressway_direction_1_entity",
@@ -243,6 +245,11 @@ public class ModBlockEntities {
                             SignBlocks.ZONES_BOARD_DISTANCE_LENGTH.get(),
                             SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_LEFT.get(),
                             SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_RIGHT.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<CustomSignBlockEntity>> CUSTOM_SIGN_BLOCK_ENTITY =
+            BES.register("custom_sign_block_entity",
+                    () -> BlockEntityType.Builder.create(CustomSignBlockEntity::new,
+                            SignBlocks.SIGN_CUSTOM_EXPRESSWAY.get()).build(null));
 
     public static void init() {
         BES.register();

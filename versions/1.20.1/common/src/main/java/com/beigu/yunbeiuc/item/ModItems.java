@@ -712,6 +712,7 @@ public class ModItems {
 
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_8 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_EXIT_8, ALL_SIGN_ITEMS);
 
+    public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY = registerBlockItem(SignBlocks.SIGN_CUSTOM_EXPRESSWAY, ALL_SIGN_ITEMS);
     public static void init() {
         ITEMS.register();
     }

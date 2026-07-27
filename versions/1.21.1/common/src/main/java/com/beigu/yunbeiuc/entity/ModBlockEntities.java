@@ -145,7 +145,9 @@ public class ModBlockEntities {
     public static final RegistrySupplier<BlockEntityType<SignExpresswayEntranceAdvance13Entity>> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13_ENTITY =
             BES.register("sign_expressway_entrance_advance_13_entity",
                     () -> BlockEntityType.Builder.create(SignExpresswayEntranceAdvance13Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15.get()).build(null));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection1Entity>> SIGN_EXPRESSWAY_DIRECTION_1_ENTITY =
             BES.register("sign_expressway_direction_1_entity",

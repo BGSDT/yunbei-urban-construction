@@ -455,6 +455,8 @@ public class SignBlocks {
 
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_EXIT_8 = BLOCKS.register("sign_expressway_exit_8", () -> new SignExpresswayExit8(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
+    public static final RegistrySupplier<Block> SIGN_CUSTOM_EXPRESSWAY = BLOCKS.register("sign_custom_expressway", () -> new CustomSignBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
     public static void init() {
         BLOCKS.register();
     }
