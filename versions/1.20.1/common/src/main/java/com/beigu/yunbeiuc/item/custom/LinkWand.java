@@ -75,7 +75,7 @@ public class LinkWand extends Item {
             ChatCommandHandler.setPlayerLastGroup(player, groupId, finalPositions);
 
             player.sendMessage(Text.literal(""), false);
-            player.sendMessage(Text.literal("§c⚪§e⚪§a⚪§a§l云北成绩红绿灯控制面板 ===== 操作提示"), false);
+            player.sendMessage(Text.literal("§c⚪§e⚪§a⚪§a§l云北城建红绿灯控制面板 ===== 操作提示"), false);
             player.sendMessage(Text.literal("§e已成功链接 §6§l" + finalPositions.size() + " §e个红绿灯"), false);
             player.sendMessage(Text.literal(""), false);
             player.sendMessage(Text.literal("§e§l使用以下命令设置时间和相位数量："), false);

@@ -136,7 +136,7 @@ public class ChatCommandHandler {
 
         final int finalPhaseCount = phaseCount;
         source.sendFeedback(() -> Text.literal(""), false);
-        source.sendFeedback(() -> Text.literal("§c⚪§e⚪§a⚪§a§l云北成绩红绿灯控制面板 ===== 操作提示"), false);
+        source.sendFeedback(() -> Text.literal("§c⚪§e⚪§a⚪§a§l云北城建红绿灯控制面板 ===== 操作提示"), false);
         source.sendFeedback(() -> Text.literal("§e相位数量：§6§l" + finalPhaseCount), false);
         for (int i = 0; i < finalPhaseCount; i++) {
             final int index = i;
