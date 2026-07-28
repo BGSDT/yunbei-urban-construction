@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.entity;
 
-import com.beigu.yunbeiuc.block.custom.sign.CustomSignBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -86,6 +85,7 @@ public class CustomSignBlockEntity extends BlockEntity {
         private String text;
         private float xOffset;
         private float yOffset;
+        private float zOffset;
         private int color;
         private TextAlignment alignment;
         private boolean bold;
@@ -98,8 +98,9 @@ public class CustomSignBlockEntity extends BlockEntity {
             this.text = text != null ? text : "";
             this.xOffset = 0;
             this.yOffset = 0;
+            this.zOffset = 0;
             this.color = 0xFFFFFF;
-            this.alignment = TextAlignment.CENTER;
+            this.alignment = TextAlignment.CENTER_CENTER;
             this.bold = false;
             this.italic = false;
             this.underline = false;
@@ -112,6 +113,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             nbt.putString("text", text);
             nbt.putFloat("xOffset", xOffset);
             nbt.putFloat("yOffset", yOffset);
+            nbt.putFloat("zOffset", zOffset);
             nbt.putInt("color", color);
             nbt.putString("alignment", alignment.name());
             nbt.putBoolean("bold", bold);
@@ -126,8 +128,13 @@ public class CustomSignBlockEntity extends BlockEntity {
             TextLineData data = new TextLineData(nbt.getString("text"));
             data.xOffset = nbt.getFloat("xOffset");
             data.yOffset = nbt.getFloat("yOffset");
+            data.zOffset = nbt.getFloat("zOffset");
             data.color = nbt.getInt("color");
-            data.alignment = TextAlignment.valueOf(nbt.getString("alignment"));
+            try {
+                data.alignment = TextAlignment.valueOf(nbt.getString("alignment"));
+            } catch (IllegalArgumentException e) {
+                data.alignment = TextAlignment.CENTER_CENTER;
+            }
             data.bold = nbt.getBoolean("bold");
             data.italic = nbt.getBoolean("italic");
             data.underline = nbt.getBoolean("underline");
@@ -142,6 +149,8 @@ public class CustomSignBlockEntity extends BlockEntity {
         public void setXOffset(float xOffset) { this.xOffset = xOffset; }
         public float getYOffset() { return yOffset; }
         public void setYOffset(float yOffset) { this.yOffset = yOffset; }
+        public float getZOffset() { return zOffset; }
+        public void setZOffset(float zOffset) { this.zOffset = zOffset; }
         public int getColor() { return color; }
         public void setColor(int color) { this.color = color; }
         public TextAlignment getAlignment() { return alignment; }
@@ -159,6 +168,22 @@ public class CustomSignBlockEntity extends BlockEntity {
     }
 
     public enum TextAlignment {
-        LEFT, CENTER, RIGHT
+        LEFT_TOP(0, 0),
+        LEFT_CENTER(0, 1),
+        LEFT_BOTTOM(0, 2),
+        CENTER_TOP(1, 0),
+        CENTER_CENTER(1, 1),
+        CENTER_BOTTOM(1, 2),
+        RIGHT_TOP(2, 0),
+        RIGHT_CENTER(2, 1),
+        RIGHT_BOTTOM(2, 2);
+
+        public final int hAlign;
+        public final int vAlign;
+
+        TextAlignment(int hAlign, int vAlign) {
+            this.hAlign = hAlign;
+            this.vAlign = vAlign;
+        }
     }
 }

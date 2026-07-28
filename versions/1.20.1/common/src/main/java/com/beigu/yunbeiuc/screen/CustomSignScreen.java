@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.client.screen;
+package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.network.CustomSignUpdatePacket;
@@ -37,13 +37,15 @@ public class CustomSignScreen extends Screen {
     private TextFieldWidget textField;
     private ButtonWidget xButton;
     private ButtonWidget yButton;
+    private ButtonWidget zButton;
     private ButtonWidget fontSizeButton;
     private ButtonWidget colorButton;
     private ButtonWidget boldButton;
     private ButtonWidget italicButton;
     private ButtonWidget underlineButton;
     private ButtonWidget shadowButton;
-    private ButtonWidget alignButton;
+    private ButtonWidget hAlignButton;
+    private ButtonWidget vAlignButton;
     private ButtonWidget clearFormatButton;
 
     private boolean preciseInputMode = false;
@@ -99,6 +101,7 @@ public class CustomSignScreen extends Screen {
 
     private void createBottomPanelWidgets() {
         textField = new TextFieldWidget(this.textRenderer, 0, 0, panelBottomWidth - 10, 16, Text.literal("Text"));
+        textField.setMaxLength(Integer.MAX_VALUE);
         textField.setChangedListener(text -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 textLineWidgets.get(selectedIndex).data.setText(text);
@@ -128,6 +131,19 @@ public class CustomSignScreen extends Screen {
                     CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
                     float step = hasAltDown() ? 0.5f : 1.0f;
                     data.setYOffset(data.getYOffset() + step);
+                    sendUpdateToServer();
+                }
+            }
+        }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
+
+        zButton = ButtonWidget.builder(Text.literal("Z"), button -> {
+            if (hasControlDown()) {
+                enterPreciseMode(4);
+            } else {
+                if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                    CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
+                    float step = hasAltDown() ? 0.5f : 1.0f;
+                    data.setZOffset(data.getZOffset() + step);
                     sendUpdateToServer();
                 }
             }
@@ -214,19 +230,35 @@ public class CustomSignScreen extends Screen {
                 }
         ).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
 
-        alignButton = ButtonWidget.builder(
-                Text.literal("居中"),
+        hAlignButton = ButtonWidget.builder(
+                Text.literal("水平居中"),
                 button -> {
                     if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                         CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
-                        CustomSignBlockEntity.TextAlignment[] alignments = CustomSignBlockEntity.TextAlignment.values();
-                        int currentOrdinal = data.getAlignment().ordinal();
-                        data.setAlignment(alignments[(currentOrdinal + 1) % alignments.length]);
-                        alignButton.setMessage(Text.literal(getAlignText(data.getAlignment())));
+                        int currentH = data.getAlignment().hAlign;
+                        int currentV = data.getAlignment().vAlign;
+                        int newH = (currentH + 1) % 3;
+                        data.setAlignment(getAlignment(newH, currentV));
+                        hAlignButton.setMessage(Text.literal(getHAlignText(newH)));
                         sendUpdateToServer();
                     }
                 }
-        ).dimensions(0, 0, BTN_SIZE + 24, BTN_SIZE).build();
+        ).dimensions(0, 0, BTN_SIZE + 40, BTN_SIZE).build();
+
+        vAlignButton = ButtonWidget.builder(
+                Text.literal("垂直居中"),
+                button -> {
+                    if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                        CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
+                        int currentH = data.getAlignment().hAlign;
+                        int currentV = data.getAlignment().vAlign;
+                        int newV = (currentV + 1) % 3;
+                        data.setAlignment(getAlignment(currentH, newV));
+                        vAlignButton.setMessage(Text.literal(getVAlignText(newV)));
+                        sendUpdateToServer();
+                    }
+                }
+        ).dimensions(0, 0, BTN_SIZE + 40, BTN_SIZE).build();
 
         clearFormatButton = ButtonWidget.builder(Text.literal("✕"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
@@ -237,11 +269,38 @@ public class CustomSignScreen extends Screen {
                 data.setShadow(false);
                 data.setColor(0xFFFFFF);
                 data.setFontSize(1.0f);
+                data.setAlignment(CustomSignBlockEntity.TextAlignment.CENTER_CENTER);
                 colorButton.setMessage(Text.literal("■").styled(style -> style.withColor(0xFFFFFF)));
-                alignButton.setMessage(Text.literal("居中"));
+                hAlignButton.setMessage(Text.literal("水平居中"));
+                vAlignButton.setMessage(Text.literal("垂直居中"));
                 sendUpdateToServer();
             }
         }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
+    }
+
+    private CustomSignBlockEntity.TextAlignment getAlignment(int h, int v) {
+        for (CustomSignBlockEntity.TextAlignment a : CustomSignBlockEntity.TextAlignment.values()) {
+            if (a.hAlign == h && a.vAlign == v) return a;
+        }
+        return CustomSignBlockEntity.TextAlignment.CENTER_CENTER;
+    }
+
+    private String getHAlignText(int h) {
+        return switch (h) {
+            case 0 -> "左对齐";
+            case 1 -> "水平居中";
+            case 2 -> "右对齐";
+            default -> "水平居中";
+        };
+    }
+
+    private String getVAlignText(int v) {
+        return switch (v) {
+            case 0 -> "顶部对齐";
+            case 1 -> "垂直居中";
+            case 2 -> "底部对齐";
+            default -> "垂直居中";
+        };
     }
 
     private void enterPreciseMode(int type) {
@@ -261,10 +320,12 @@ public class CustomSignScreen extends Screen {
             case 1 -> "Y";
             case 2 -> "S";
             case 3 -> "Color";
+            case 4 -> "Z";
             default -> "";
         };
 
         preciseInputField = new TextFieldWidget(this.textRenderer, 0, 0, panelBottomWidth - 60, 16, Text.literal(label));
+        preciseInputField.setMaxLength(Integer.MAX_VALUE);
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
             String currentValue = switch (preciseInputType) {
@@ -272,6 +333,7 @@ public class CustomSignScreen extends Screen {
                 case 1 -> String.format("%.1f", data.getYOffset());
                 case 2 -> String.format("%.2f", data.getFontSize());
                 case 3 -> String.format("#%06X", data.getColor());
+                case 4 -> String.format("%.1f", data.getZOffset());
                 default -> "0";
             };
             preciseInputField.setText(currentValue);
@@ -281,19 +343,13 @@ public class CustomSignScreen extends Screen {
                 CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
                 switch (preciseInputType) {
                     case 0 -> {
-                        try {
-                            data.setXOffset(Float.parseFloat(text));
-                        } catch (NumberFormatException ignored) {}
+                        try { data.setXOffset(Float.parseFloat(text)); } catch (NumberFormatException ignored) {}
                     }
                     case 1 -> {
-                        try {
-                            data.setYOffset(Float.parseFloat(text));
-                        } catch (NumberFormatException ignored) {}
+                        try { data.setYOffset(Float.parseFloat(text)); } catch (NumberFormatException ignored) {}
                     }
                     case 2 -> {
-                        try {
-                            data.setFontSize(Math.max(0.5f, Math.min(3.0f, Float.parseFloat(text))));
-                        } catch (NumberFormatException ignored) {}
+                        try { data.setFontSize(Math.max(0.5f, Math.min(3.0f, Float.parseFloat(text)))); } catch (NumberFormatException ignored) {}
                     }
                     case 3 -> {
                         try {
@@ -304,20 +360,20 @@ public class CustomSignScreen extends Screen {
                             }
                         } catch (NumberFormatException ignored) {}
                     }
+                    case 4 -> {
+                        try { data.setZOffset(Float.parseFloat(text)); } catch (NumberFormatException ignored) {}
+                    }
                 }
                 sendUpdateToServer();
             }
         });
 
-        backButton = ButtonWidget.builder(Text.literal("←"), button -> {
-            exitPreciseMode();
-        }).dimensions(0, 0, 20, 20).build();
+        backButton = ButtonWidget.builder(Text.literal("←"), button -> exitPreciseMode()).dimensions(0, 0, 20, 20).build();
     }
 
     private void initializeTextLines() {
         textLineWidgets.clear();
-        List<CustomSignBlockEntity.TextLineData> dataList = blockEntity.getTextLines();
-        for (CustomSignBlockEntity.TextLineData data : dataList) {
+        for (CustomSignBlockEntity.TextLineData data : blockEntity.getTextLines()) {
             textLineWidgets.add(new TextLineWidget(data));
         }
         if (!textLineWidgets.isEmpty()) {
@@ -327,9 +383,7 @@ public class CustomSignScreen extends Screen {
     }
 
     private void refreshTopPanel() {
-        for (ButtonWidget btn : textButtons) {
-            this.remove(btn);
-        }
+        for (ButtonWidget btn : textButtons) this.remove(btn);
         textButtons.clear();
 
         if (textLineWidgets.isEmpty()) {
@@ -337,60 +391,44 @@ public class CustomSignScreen extends Screen {
         } else {
             int count = textLineWidgets.size();
             int spacing = 5;
-            int totalSpacing = (count + 1) * spacing;
-            int btnWidth = (panelTopWidth - totalSpacing) / count;
+            int btnWidth = (panelTopWidth - (count + 1) * spacing) / count;
             int btnHeight = panelTopHeight - 10;
 
             for (int i = 0; i < count; i++) {
                 final int idx = i;
-                TextLineWidget widget = textLineWidgets.get(i);
-                String displayText = widget.data.getText().isEmpty() ? "(empty)" : widget.data.getText();
-                if (displayText.length() > 10) {
-                    displayText = displayText.substring(0, 10) + "...";
-                }
+                String displayText = textLineWidgets.get(i).data.getText();
+                if (displayText.isEmpty()) displayText = "(empty)";
+                if (displayText.length() > 10) displayText = displayText.substring(0, 10) + "...";
 
-                ButtonWidget btn = ButtonWidget.builder(
-                        Text.literal(displayText),
-                        button -> {
-                            selectedIndex = idx;
-                            preciseInputMode = false;
-                            refreshBottomPanel();
-                        }
-                ).dimensions(
-                        panelTopX + spacing + idx * (btnWidth + spacing),
-                        panelTopY + 5,
-                        btnWidth,
-                        btnHeight
-                ).build();
+                ButtonWidget btn = ButtonWidget.builder(Text.literal(displayText), button -> {
+                    selectedIndex = idx;
+                    preciseInputMode = false;
+                    refreshBottomPanel();
+                }).dimensions(panelTopX + spacing + idx * (btnWidth + spacing), panelTopY + 5, btnWidth, btnHeight).build();
 
                 textButtons.add(btn);
                 this.addDrawableChild(btn);
             }
         }
-
-        if (selectedIndex >= textLineWidgets.size()) {
-            selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
-        }
+        if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
     }
 
     private void refreshBottomPanel() {
         this.remove(textField);
         this.remove(xButton);
         this.remove(yButton);
+        this.remove(zButton);
         this.remove(fontSizeButton);
         this.remove(colorButton);
         this.remove(boldButton);
         this.remove(italicButton);
         this.remove(underlineButton);
         this.remove(shadowButton);
-        this.remove(alignButton);
+        this.remove(hAlignButton);
+        this.remove(vAlignButton);
         this.remove(clearFormatButton);
-        if (preciseInputField != null) {
-            this.remove(preciseInputField);
-        }
-        if (backButton != null) {
-            this.remove(backButton);
-        }
+        if (preciseInputField != null) this.remove(preciseInputField);
+        if (backButton != null) this.remove(backButton);
 
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             if (preciseInputMode) {
@@ -405,18 +443,10 @@ public class CustomSignScreen extends Screen {
     private void updateBottomPanelDisplay() {
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
         CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
-
         textField.setText(data.getText());
         colorButton.setMessage(Text.literal("■").styled(style -> style.withColor(data.getColor())));
-        alignButton.setMessage(Text.literal(getAlignText(data.getAlignment())));
-    }
-
-    private String getAlignText(CustomSignBlockEntity.TextAlignment alignment) {
-        return switch (alignment) {
-            case LEFT -> "左对齐";
-            case CENTER -> "居中";
-            case RIGHT -> "右对齐";
-        };
+        hAlignButton.setMessage(Text.literal(getHAlignText(data.getAlignment().hAlign)));
+        vAlignButton.setMessage(Text.literal(getVAlignText(data.getAlignment().vAlign)));
     }
 
     private void addBottomWidgets() {
@@ -430,64 +460,32 @@ public class CustomSignScreen extends Screen {
         int yRow2 = panelBottomY + 5 + lineHeight;
         int curX = panelBottomX + 5;
 
-        xButton.setPosition(curX, yRow2);
-        this.addDrawableChild(xButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        yButton.setPosition(curX, yRow2);
-        this.addDrawableChild(yButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        fontSizeButton.setPosition(curX, yRow2);
-        this.addDrawableChild(fontSizeButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        colorButton.setPosition(curX, yRow2);
-        this.addDrawableChild(colorButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        boldButton.setPosition(curX, yRow2);
-        this.addDrawableChild(boldButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        italicButton.setPosition(curX, yRow2);
-        this.addDrawableChild(italicButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        underlineButton.setPosition(curX, yRow2);
-        this.addDrawableChild(underlineButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        shadowButton.setPosition(curX, yRow2);
-        this.addDrawableChild(shadowButton);
-        curX += BTN_SIZE + BTN_GAP;
-
-        alignButton.setPosition(curX, yRow2);
-        this.addDrawableChild(alignButton);
-        curX += BTN_SIZE + 24 + BTN_GAP;
-
-        clearFormatButton.setPosition(curX, yRow2);
-        this.addDrawableChild(clearFormatButton);
+        xButton.setPosition(curX, yRow2); this.addDrawableChild(xButton); curX += BTN_SIZE + BTN_GAP;
+        yButton.setPosition(curX, yRow2); this.addDrawableChild(yButton); curX += BTN_SIZE + BTN_GAP;
+        zButton.setPosition(curX, yRow2); this.addDrawableChild(zButton); curX += BTN_SIZE + BTN_GAP;
+        fontSizeButton.setPosition(curX, yRow2); this.addDrawableChild(fontSizeButton); curX += BTN_SIZE + BTN_GAP;
+        colorButton.setPosition(curX, yRow2); this.addDrawableChild(colorButton); curX += BTN_SIZE + BTN_GAP;
+        boldButton.setPosition(curX, yRow2); this.addDrawableChild(boldButton); curX += BTN_SIZE + BTN_GAP;
+        italicButton.setPosition(curX, yRow2); this.addDrawableChild(italicButton); curX += BTN_SIZE + BTN_GAP;
+        underlineButton.setPosition(curX, yRow2); this.addDrawableChild(underlineButton); curX += BTN_SIZE + BTN_GAP;
+        shadowButton.setPosition(curX, yRow2); this.addDrawableChild(shadowButton); curX += BTN_SIZE + BTN_GAP;
+        hAlignButton.setPosition(curX, yRow2); this.addDrawableChild(hAlignButton); curX += BTN_SIZE + 40 + BTN_GAP;
+        vAlignButton.setPosition(curX, yRow2); this.addDrawableChild(vAlignButton); curX += BTN_SIZE + 40 + BTN_GAP;
+        clearFormatButton.setPosition(curX, yRow2); this.addDrawableChild(clearFormatButton);
     }
 
     private void addPreciseInputWidgets() {
         createPreciseInputWidgets();
-
         int yRow1 = panelBottomY + (panelBottomHeight - 20) / 2;
         preciseInputField.setPosition(panelBottomX + 30, yRow1);
         this.addDrawableChild(preciseInputField);
-
         backButton.setPosition(panelBottomX + 5, yRow1);
         this.addDrawableChild(backButton);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (preciseInputMode && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            exitPreciseMode();
-            return true;
-        }
-        if (preciseInputMode && keyCode == GLFW.GLFW_KEY_ENTER) {
+        if (preciseInputMode && (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_ENTER)) {
             exitPreciseMode();
             return true;
         }
@@ -508,8 +506,7 @@ public class CustomSignScreen extends Screen {
             if (xButton != null && xButton.isMouseOver(mouseX, mouseY)) {
                 if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                     CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
-                    float step = hasAltDown() ? 0.5f : 1.0f;
-                    data.setXOffset(data.getXOffset() - step);
+                    data.setXOffset(data.getXOffset() - (hasAltDown() ? 0.5f : 1.0f));
                     sendUpdateToServer();
                     return true;
                 }
@@ -517,8 +514,15 @@ public class CustomSignScreen extends Screen {
             if (yButton != null && yButton.isMouseOver(mouseX, mouseY)) {
                 if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                     CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
-                    float step = hasAltDown() ? 0.5f : 1.0f;
-                    data.setYOffset(data.getYOffset() - step);
+                    data.setYOffset(data.getYOffset() - (hasAltDown() ? 0.5f : 1.0f));
+                    sendUpdateToServer();
+                    return true;
+                }
+            }
+            if (zButton != null && zButton.isMouseOver(mouseX, mouseY)) {
+                if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                    CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
+                    data.setZOffset(data.getZOffset() - (hasAltDown() ? 0.5f : 1.0f));
                     sendUpdateToServer();
                     return true;
                 }
@@ -538,9 +542,8 @@ public class CustomSignScreen extends Screen {
                         && mouseY >= btn.getY() && mouseY < btn.getY() + btn.getHeight()) {
                     blockEntity.getTextLines().remove(i);
                     textLineWidgets.remove(i);
-                    if (selectedIndex >= textLineWidgets.size()) {
+                    if (selectedIndex >= textLineWidgets.size())
                         selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
-                    }
                     preciseInputMode = false;
                     refreshTopPanel();
                     refreshBottomPanel();
@@ -549,7 +552,6 @@ public class CustomSignScreen extends Screen {
                 }
             }
         }
-
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -557,10 +559,8 @@ public class CustomSignScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         context.fill(panelTopX, panelTopY, panelTopX + panelTopWidth, panelTopY + panelTopHeight, 0xAA333333);
         context.drawBorder(panelTopX, panelTopY, panelTopWidth, panelTopHeight, 0xFF888888);
-
         context.fill(panelTopX + panelTopWidth, panelTopY, panelTopX + panelTopWidth + ADD_BUTTON_WIDTH, panelTopY + panelTopHeight, 0xAA444444);
         context.drawBorder(panelTopX + panelTopWidth, panelTopY, ADD_BUTTON_WIDTH, panelTopHeight, 0xFF888888);
-
         context.fill(panelBottomX, panelBottomY, panelBottomX + panelBottomWidth, panelBottomY + panelBottomHeight, 0xAA333333);
         context.drawBorder(panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight, 0xFF888888);
 
@@ -569,55 +569,27 @@ public class CustomSignScreen extends Screen {
                 CustomSignBlockEntity.TextLineData data = textLineWidgets.get(selectedIndex).data;
                 int lineHeight = (panelBottomHeight - 10) / 2;
                 int yRow2 = panelBottomY + 5 + lineHeight;
-
-                int curX = panelBottomX + 5 + (BTN_SIZE + BTN_GAP) * 4;
-
-                drawToggleBg(context, curX, yRow2, BTN_SIZE, data.isBold());
-                curX += BTN_SIZE + BTN_GAP;
-
-                drawToggleBg(context, curX, yRow2, BTN_SIZE, data.isItalic());
-                curX += BTN_SIZE + BTN_GAP;
-
-                drawToggleBg(context, curX, yRow2, BTN_SIZE, data.isUnderline());
-                curX += BTN_SIZE + BTN_GAP;
-
+                int curX = panelBottomX + 5 + (BTN_SIZE + BTN_GAP) * 5;
+                drawToggleBg(context, curX, yRow2, BTN_SIZE, data.isBold()); curX += BTN_SIZE + BTN_GAP;
+                drawToggleBg(context, curX, yRow2, BTN_SIZE, data.isItalic()); curX += BTN_SIZE + BTN_GAP;
+                drawToggleBg(context, curX, yRow2, BTN_SIZE, data.isUnderline()); curX += BTN_SIZE + BTN_GAP;
                 drawToggleBg(context, curX, yRow2, BTN_SIZE, data.isShadow());
 
-                String infoText = String.format("X:%.1f Y:%.1f S:%.2f C:#%06X", data.getXOffset(), data.getYOffset(), data.getFontSize(), data.getColor());
-                context.drawText(
-                        this.textRenderer,
-                        Text.literal(infoText),
-                        panelBottomX + panelBottomWidth - this.textRenderer.getWidth(infoText) - 5,
-                        yRow2 + 2,
-                        0xFFAAAAAA,
-                        false
-                );
+                String infoText = String.format("X:%.1f Y:%.1f Z:%.1f S:%.2f C:#%06X", data.getXOffset(), data.getYOffset(), data.getZOffset(), data.getFontSize(), data.getColor());
+                context.drawText(this.textRenderer, Text.literal(infoText),
+                        panelBottomX + panelBottomWidth - this.textRenderer.getWidth(infoText) - 5, yRow2 + 2, 0xFFAAAAAA, false);
             }
-
             if (textLineWidgets.isEmpty()) {
                 String hint = "点击 + 添加文本";
-                int textWidth = this.textRenderer.getWidth(hint);
-                context.drawText(
-                        this.textRenderer,
-                        Text.literal(hint),
-                        panelTopX + (panelTopWidth - textWidth) / 2,
-                        panelTopY + (panelTopHeight - this.textRenderer.fontHeight) / 2,
-                        0xFFAAAAAA,
-                        false
-                );
+                context.drawText(this.textRenderer, Text.literal(hint),
+                        panelTopX + (panelTopWidth - this.textRenderer.getWidth(hint)) / 2,
+                        panelTopY + (panelTopHeight - this.textRenderer.fontHeight) / 2, 0xFFAAAAAA, false);
             }
-
             if (selectedIndex < 0 && !textLineWidgets.isEmpty()) {
                 String hint = "选择一个文本";
-                int textWidth = this.textRenderer.getWidth(hint);
-                context.drawText(
-                        this.textRenderer,
-                        Text.literal(hint),
-                        panelBottomX + (panelBottomWidth - textWidth) / 2,
-                        panelBottomY + (panelBottomHeight - this.textRenderer.fontHeight) / 2,
-                        0xFFAAAAAA,
-                        false
-                );
+                context.drawText(this.textRenderer, Text.literal(hint),
+                        panelBottomX + (panelBottomWidth - this.textRenderer.getWidth(hint)) / 2,
+                        panelBottomY + (panelBottomHeight - this.textRenderer.fontHeight) / 2, 0xFFAAAAAA, false);
             }
         } else {
             String label = switch (preciseInputType) {
@@ -625,70 +597,49 @@ public class CustomSignScreen extends Screen {
                 case 1 -> "输入 Y 坐标";
                 case 2 -> "输入字号";
                 case 3 -> "输入颜色 (#RRGGBB)";
+                case 4 -> "输入 Z 坐标";
                 default -> "";
             };
-            context.drawText(
-                    this.textRenderer,
-                    Text.literal(label),
-                    panelBottomX + 5,
-                    panelBottomY + 5,
-                    0xFFAAAAAA,
-                    false
-            );
+            context.drawText(this.textRenderer, Text.literal(label), panelBottomX + 5, panelBottomY + 5, 0xFFAAAAAA, false);
         }
 
         super.render(context, mouseX, mouseY, delta);
 
         if (!preciseInputMode) {
             List<TooltipEntry> tooltips = new ArrayList<>();
-            if (xButton != null && xButton.isMouseOver(mouseX, mouseY)) {
+            if (xButton != null && xButton.isMouseOver(mouseX, mouseY))
                 tooltips.add(new TooltipEntry("X 坐标", "左键 +1 | 右键 -1", "Alt + 左键 +0.5 | Alt + 右键 -0.5", "Ctrl + 点击精准输入"));
-            }
-            if (yButton != null && yButton.isMouseOver(mouseX, mouseY)) {
+            if (yButton != null && yButton.isMouseOver(mouseX, mouseY))
                 tooltips.add(new TooltipEntry("Y 坐标", "左键 +1 | 右键 -1", "Alt + 左键 +0.5 | Alt + 右键 -0.5", "Ctrl + 点击精准输入"));
-            }
-            if (fontSizeButton != null && fontSizeButton.isMouseOver(mouseX, mouseY)) {
+            if (zButton != null && zButton.isMouseOver(mouseX, mouseY))
+                tooltips.add(new TooltipEntry("Z 坐标", "左键 +1 | 右键 -1", "Alt + 左键 +0.5 | Alt + 右键 -0.5", "Ctrl + 点击精准输入"));
+            if (fontSizeButton != null && fontSizeButton.isMouseOver(mouseX, mouseY))
                 tooltips.add(new TooltipEntry("字号", "左键 +1/16 | 右键 -1/16", "Alt + 左键 +1/32 | Alt + 右键 -1/32", "Ctrl + 点击精准输入"));
-            }
-            if (colorButton != null && colorButton.isMouseOver(mouseX, mouseY)) {
+            if (colorButton != null && colorButton.isMouseOver(mouseX, mouseY))
                 tooltips.add(new TooltipEntry("颜色", "点击切换颜色", "Ctrl + 点击精准输入"));
-            }
-            if (boldButton != null && boldButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                boolean active = textLineWidgets.get(selectedIndex).data.isBold();
-                tooltips.add(new TooltipEntry("加粗", "点击切换", active ? "当前：开启" : "当前：关闭"));
-            }
-            if (italicButton != null && italicButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                boolean active = textLineWidgets.get(selectedIndex).data.isItalic();
-                tooltips.add(new TooltipEntry("斜体", "点击切换", active ? "当前：开启" : "当前：关闭"));
-            }
-            if (underlineButton != null && underlineButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                boolean active = textLineWidgets.get(selectedIndex).data.isUnderline();
-                tooltips.add(new TooltipEntry("下划线", "点击切换", active ? "当前：开启" : "当前：关闭"));
-            }
-            if (shadowButton != null && shadowButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                boolean active = textLineWidgets.get(selectedIndex).data.isShadow();
-                tooltips.add(new TooltipEntry("阴影", "点击切换", active ? "当前：开启" : "当前：关闭"));
-            }
-            if (alignButton != null && alignButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                String currentAlign = getAlignText(textLineWidgets.get(selectedIndex).data.getAlignment());
-                tooltips.add(new TooltipEntry("对齐方式", "点击切换", "当前：" + currentAlign));
-            }
-            if (clearFormatButton != null && clearFormatButton.isMouseOver(mouseX, mouseY)) {
+            if (boldButton != null && boldButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
+                tooltips.add(new TooltipEntry("加粗", "点击切换", textLineWidgets.get(selectedIndex).data.isBold() ? "当前：开启" : "当前：关闭"));
+            if (italicButton != null && italicButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
+                tooltips.add(new TooltipEntry("斜体", "点击切换", textLineWidgets.get(selectedIndex).data.isItalic() ? "当前：开启" : "当前：关闭"));
+            if (underlineButton != null && underlineButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
+                tooltips.add(new TooltipEntry("下划线", "点击切换", textLineWidgets.get(selectedIndex).data.isUnderline() ? "当前：开启" : "当前：关闭"));
+            if (shadowButton != null && shadowButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
+                tooltips.add(new TooltipEntry("阴影", "点击切换", textLineWidgets.get(selectedIndex).data.isShadow() ? "当前：开启" : "当前：关闭"));
+            if (hAlignButton != null && hAlignButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
+                tooltips.add(new TooltipEntry("水平对齐", "点击切换", "当前：" + getHAlignText(textLineWidgets.get(selectedIndex).data.getAlignment().hAlign)));
+            if (vAlignButton != null && vAlignButton.isMouseOver(mouseX, mouseY) && selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
+                tooltips.add(new TooltipEntry("垂直对齐", "点击切换", "当前：" + getVAlignText(textLineWidgets.get(selectedIndex).data.getAlignment().vAlign)));
+            if (clearFormatButton != null && clearFormatButton.isMouseOver(mouseX, mouseY))
                 tooltips.add(new TooltipEntry("清除格式", "保留文本和对齐方式"));
-            }
-            if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) {
+            if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY))
                 tooltips.add(new TooltipEntry("添加文本行", "最多 " + MAX_TEXT_LINES + " 行"));
-            }
             for (ButtonWidget btn : textButtons) {
                 if (btn.isMouseOver(mouseX, mouseY)) {
                     tooltips.add(new TooltipEntry("文本标签", "左键选择", "右键删除"));
                     break;
                 }
             }
-
-            if (!tooltips.isEmpty()) {
-                drawTooltip(context, mouseX, mouseY, tooltips);
-            }
+            if (!tooltips.isEmpty()) drawTooltip(context, mouseX, mouseY, tooltips);
         }
     }
 
@@ -702,42 +653,28 @@ public class CustomSignScreen extends Screen {
     private void drawTooltip(DrawContext context, int mouseX, int mouseY, List<TooltipEntry> entries) {
         int lineHeight = this.textRenderer.fontHeight + 2;
         int maxWidth = 0;
-        int totalHeight = 4;
-
         List<String> lines = new ArrayList<>();
-        for (TooltipEntry entry : entries) {
-            if (!entry.title.isEmpty()) {
-                lines.add(entry.title);
-                maxWidth = Math.max(maxWidth, this.textRenderer.getWidth(entry.title));
-            }
-            for (String desc : entry.descriptions) {
-                lines.add("  " + desc);
-                maxWidth = Math.max(maxWidth, this.textRenderer.getWidth("  " + desc));
-            }
+        for (TooltipEntry e : entries) {
+            if (!e.title.isEmpty()) { lines.add(e.title); maxWidth = Math.max(maxWidth, this.textRenderer.getWidth(e.title)); }
+            for (String d : e.descriptions) { lines.add("  " + d); maxWidth = Math.max(maxWidth, this.textRenderer.getWidth("  " + d)); }
         }
-        totalHeight += lines.size() * lineHeight;
+        int totalHeight = 4 + lines.size() * lineHeight;
+        int tx = Math.min(mouseX + 12, this.width - maxWidth - 10);
+        int ty = Math.min(mouseY - totalHeight - 4, this.height - totalHeight - 4);
+        if (ty < 4) ty = mouseY + 12;
 
-        int tooltipX = Math.min(mouseX + 12, this.width - maxWidth - 10);
-        int tooltipY = Math.min(mouseY - totalHeight - 4, this.height - totalHeight - 4);
-        if (tooltipY < 4) tooltipY = mouseY + 12;
-
-        context.fill(tooltipX, tooltipY, tooltipX + maxWidth + 8, tooltipY + totalHeight, 0xCC1E1E2E);
-        context.drawBorder(tooltipX, tooltipY, maxWidth + 8, totalHeight, 0xFF6B6B8A);
-
-        int textY = tooltipY + 2;
+        context.fill(tx, ty, tx + maxWidth + 8, ty + totalHeight, 0xCC1E1E2E);
+        context.drawBorder(tx, ty, maxWidth + 8, totalHeight, 0xFF6B6B8A);
+        int textY = ty + 2;
         for (String line : lines) {
-            int color = line.startsWith("  ") ? 0xFFAAAAAA : 0xFFFFFFFF;
-            context.drawText(this.textRenderer, Text.literal(line), tooltipX + 4, textY, color, false);
+            context.drawText(this.textRenderer, Text.literal(line), tx + 4, textY, line.startsWith("  ") ? 0xFFAAAAAA : 0xFFFFFFFF, false);
             textY += lineHeight;
         }
     }
 
     public void sendUpdateToServer() {
         List<CustomSignBlockEntity.TextLineData> dataList = new ArrayList<>();
-        for (TextLineWidget widget : textLineWidgets) {
-            dataList.add(widget.data);
-        }
-
+        for (TextLineWidget w : textLineWidgets) dataList.add(w.data);
         CustomSignUpdatePacket packet = new CustomSignUpdatePacket(blockPos, dataList);
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         packet.write(buf);
@@ -745,22 +682,13 @@ public class CustomSignScreen extends Screen {
     }
 
     @Override
-    public void close() {
-        sendUpdateToServer();
-        super.close();
-    }
-
+    public void close() { sendUpdateToServer(); super.close(); }
     @Override
-    public boolean shouldPause() {
-        return false;
-    }
+    public boolean shouldPause() { return false; }
 
     private static class TextLineWidget {
-        private final CustomSignBlockEntity.TextLineData data;
-
-        public TextLineWidget(CustomSignBlockEntity.TextLineData data) {
-            this.data = data;
-        }
+        final CustomSignBlockEntity.TextLineData data;
+        TextLineWidget(CustomSignBlockEntity.TextLineData data) { this.data = data; }
     }
 
     private record TooltipEntry(String title, String... descriptions) {}
