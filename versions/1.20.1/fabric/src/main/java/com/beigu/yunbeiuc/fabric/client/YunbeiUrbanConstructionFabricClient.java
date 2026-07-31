@@ -5,6 +5,7 @@ import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
+import com.beigu.yunbeiuc.util.PresetManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.client.render.RenderLayer;
@@ -130,5 +131,7 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_TIME_RANGE_2_ENTITY.get(), ZonesBoardTimeRange2EntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ZONES_BOARD_OVER_WEIGHT_ENTITY.get(), ZonesBoardOverWeightEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), CustomSignBlockEntityRenderer::new);
+
+        PresetManager.load();
     }
 }

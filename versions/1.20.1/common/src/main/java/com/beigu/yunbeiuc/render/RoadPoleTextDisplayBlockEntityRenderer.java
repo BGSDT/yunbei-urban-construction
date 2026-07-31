@@ -9,6 +9,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRenderer<RoadPoleTextDisplayEntity> {
@@ -35,7 +36,7 @@ public class RoadPoleTextDisplayBlockEntityRenderer implements BlockEntityRender
         float scale = baseScale * sizeMultiplier;
 
         // 新的居中计算方式
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
         float zOffset = 0.2f;

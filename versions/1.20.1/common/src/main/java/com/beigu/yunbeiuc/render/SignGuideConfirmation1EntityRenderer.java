@@ -19,6 +19,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import org.joml.Matrix4f;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Identifier;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 
 public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer<SignGuideConfirmation1Entity> {
@@ -95,7 +96,7 @@ public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer
 
         float scaleValue = 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textHeight = this.textRenderer.fontHeight;
 
         float zOffset = switch (type) {
@@ -134,7 +135,7 @@ public class SignGuideConfirmation1EntityRenderer implements BlockEntityRenderer
 
         float scaleValue = isSmallScale ? 0.025f : 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 

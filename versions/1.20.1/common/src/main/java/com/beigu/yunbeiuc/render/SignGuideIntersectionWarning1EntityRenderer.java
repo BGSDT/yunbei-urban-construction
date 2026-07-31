@@ -7,6 +7,7 @@ import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionWarning4;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideRoadsideFacilityOverloadCheckpoint1;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning1Entity;
 import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -61,7 +62,7 @@ public class SignGuideIntersectionWarning1EntityRenderer implements BlockEntityR
 
         float scaleValue = isSmallScale ? 0.03f : 0.045f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -101,7 +102,7 @@ public class SignGuideIntersectionWarning1EntityRenderer implements BlockEntityR
 
         float scaleValue = isSmallScale ? 0.035f : 0.055f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 

@@ -6,6 +6,7 @@ import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionWarning4;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionWarning4;
 import com.beigu.yunbeiuc.entity.*;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
+import net.minecraft.util.Identifier;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
 import net.minecraft.block.Block;
@@ -166,7 +167,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
 
         float scaleValue = 0.035f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -204,7 +205,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
         String directionText = DIRECTION_MAP.get(facing).get(directionKey);
-        Text styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
         float zOffset = switch (type) {
@@ -244,7 +245,7 @@ public class SignGuideIntersectionWarning4EntityRenderer implements BlockEntityR
 
         float scaleValue = 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 

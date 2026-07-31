@@ -7,6 +7,7 @@ import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
 import com.beigu.yunbeiuc.render.font.CustomFontManager;
 import com.beigu.yunbeiuc.render.json.FlagLoader;
+import com.beigu.yunbeiuc.util.PresetManager;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -137,6 +138,7 @@ public class YunbeiUrbanConstructionForgeClient {
 
             FlagLoader.loadFlags(MinecraftClient.getInstance().getResourceManager());
             CustomFontManager.getInstance().onResourceReload();
+            PresetManager.load();
         });
     }
 }

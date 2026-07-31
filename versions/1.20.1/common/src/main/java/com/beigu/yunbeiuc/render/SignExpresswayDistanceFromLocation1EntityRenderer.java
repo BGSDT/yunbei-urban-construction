@@ -6,6 +6,7 @@ import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation1;
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation1Entity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -64,7 +65,7 @@ public class SignExpresswayDistanceFromLocation1EntityRenderer implements BlockE
 
         float scaleValue = 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textHeight = this.textRenderer.fontHeight;
 
         float zOffset = switch (type) {
@@ -103,7 +104,7 @@ public class SignExpresswayDistanceFromLocation1EntityRenderer implements BlockE
 
         float scaleValue = isSmallScale ? 0.025f : 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 

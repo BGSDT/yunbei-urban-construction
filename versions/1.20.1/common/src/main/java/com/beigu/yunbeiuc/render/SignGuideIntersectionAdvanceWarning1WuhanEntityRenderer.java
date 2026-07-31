@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
@@ -46,22 +47,22 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         SignGuideIntersectionAdvanceWarning1Wuhan.Type type = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1Wuhan.TYPE);
 
         if(currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get()){
-            renderText(matrices, vertexConsumers, light, facing, text1, type, true, 16.5f, 12f, false);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, true, 16.5f, -12f, false);
-            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, -6f, 12f, true);
+            renderText(matrices, vertexConsumers, light, facing, text1, type, true, 16.5f, 12f, true);
+            renderText(matrices, vertexConsumers, light, facing, text2, type, true, 16.5f, -12f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, -6f, 12f, false);
             renderText(matrices, vertexConsumers, light, facing, enText3, type, false, -6f, 8f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, -6f, 1f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, -6f, 1f, false);
             renderText(matrices, vertexConsumers, light, facing, enText4, type, false, -6f, -3f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, -6f, -10f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, -6f, -10f, false);
             renderText(matrices, vertexConsumers, light, facing, enText5, type, false, -6f, -14f, true);
         }else {
-            renderText(matrices, vertexConsumers, light, facing, text1, type, true, -16.5f, 12f, false);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, true, -16.5f, -12f, false);
-            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, 6f, 12f, true);
+            renderText(matrices, vertexConsumers, light, facing, text1, type, true, -16.5f, 12f, true);
+            renderText(matrices, vertexConsumers, light, facing, text2, type, true, -16.5f, -12f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, 6f, 12f, false);
             renderText(matrices, vertexConsumers, light, facing, enText3, type, false, 6f, 8f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, 6f, 1f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, 6f, 1f, false);
             renderText(matrices, vertexConsumers, light, facing, enText4, type, false, 6f, -3f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, 6f, -10f, true);
+            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, 6f, -10f, false);
             renderText(matrices, vertexConsumers, light, facing, enText5, type, false, 6f, -14f, true);
         }
     }
@@ -74,10 +75,10 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
-        float scale = isSmallScale ? 0.023f : 0.035f;
+        float scale = isSmallScale ? 0.023f : 0.03f;
 
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
@@ -87,7 +88,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
 
         int textColor = isBlue ? 0X275aa8 : 0xFFFFFF;
 
-        matrices.translate(andX / 16f, andY / 16f, zOffset);
+        matrices.translate(andX / 16f - (textWidth * scale) / 2f, andY / 16f, zOffset);
         matrices.scale(scale, -scale, scale);
 
         this.textRenderer.draw(

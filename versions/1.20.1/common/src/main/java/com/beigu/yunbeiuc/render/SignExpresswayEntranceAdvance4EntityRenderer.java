@@ -4,6 +4,7 @@ import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayEntranceAdvance4;
 import com.beigu.yunbeiuc.entity.SignExpresswayEntranceAdvance4Entity;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -158,7 +159,7 @@ public class SignExpresswayEntranceAdvance4EntityRenderer implements BlockEntity
 
         float scaleValue = 0.035f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -198,7 +199,7 @@ public class SignExpresswayEntranceAdvance4EntityRenderer implements BlockEntity
 
         float scaleValue = 0.045f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 

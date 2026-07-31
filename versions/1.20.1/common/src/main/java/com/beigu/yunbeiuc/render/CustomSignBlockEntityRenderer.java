@@ -53,7 +53,7 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
         }
 
         if (text.startsWith("-texture")) {
-            String[] parts = text.split("\\s+");
+            String[] parts = text.split("\\s+", 2);
             if (parts.length >= 2) {
                 Identifier textureId = Identifier.tryParse(parts[1]);
                 if (textureId != null) {
@@ -63,13 +63,65 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
             }
         }
 
+        if (text.startsWith("-json")) {
+            String[] parts = text.split("\\s+", 2);
+            if (parts.length >= 2) {
+                try {
+                    Text jsonText = Text.Serializer.fromLenientJson(parts[1]);
+                    if (jsonText != null) {
+                        renderJsonText(matrices, vertexConsumers, light, lineData, jsonText);
+                        return;
+                    }
+                } catch (Exception ignored) {}
+            }
+        }
+
         renderText(matrices, vertexConsumers, light, lineData);
+    }
+
+    private void renderJsonText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CustomSignBlockEntity.TextLineData lineData, Text jsonText) {
+        matrices.push();
+
+        float baseScale = 0.05f * lineData.getFontSize();
+        float xPos = lineData.getXOffset() / 16f;
+        float yPos = lineData.getYOffset() / 16f;
+        float zPos = lineData.getZOffset() / 16f - 0.43f;
+
+        matrices.translate(xPos, yPos, zPos);
+        matrices.scale(baseScale, -baseScale, baseScale);
+
+        Text renderText = jsonText.copy();
+        if (renderText.getStyle().getFont() == null) {
+            renderText = renderText.copy().styled(s -> s.withFont(new Identifier("minecraft", "uniform")));
+        }
+        if (lineData.isBold()) renderText = renderText.copy().styled(s -> s.withBold(true));
+        if (lineData.isItalic()) renderText = renderText.copy().styled(s -> s.withItalic(true));
+        if (lineData.isUnderline()) renderText = renderText.copy().styled(s -> s.withUnderline(true));
+
+        int textWidth = this.textRenderer.getWidth(renderText);
+        int textHeight = this.textRenderer.fontHeight;
+
+        float renderX = switch (lineData.getAlignment().hAlign) {
+            case 0 -> 0;
+            case 2 -> -textWidth;
+            default -> -textWidth / 2.0f;
+        };
+        float renderY = switch (lineData.getAlignment().vAlign) {
+            case 0 -> 0;
+            case 2 -> -textHeight;
+            default -> -textHeight / 2.0f;
+        };
+
+        this.textRenderer.draw(renderText, renderX, renderY, lineData.getColor(), lineData.isShadow(),
+                matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+
+        matrices.pop();
     }
 
     private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CustomSignBlockEntity.TextLineData lineData) {
         matrices.push();
 
-        float baseScale = 0.04f * lineData.getFontSize();
+        float baseScale = 0.05f * lineData.getFontSize();
         float xPos = lineData.getXOffset() / 16f;
         float yPos = lineData.getYOffset() / 16f;
         float zPos = lineData.getZOffset() / 16f - 0.43f;
@@ -80,7 +132,8 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
         Style style = Style.EMPTY
                 .withBold(lineData.isBold())
                 .withItalic(lineData.isItalic())
-                .withUnderline(lineData.isUnderline());
+                .withUnderline(lineData.isUnderline())
+                .withFont(new Identifier("minecraft", "uniform"));
 
         Text renderText = Text.literal(lineData.getText()).setStyle(style);
         int textWidth = this.textRenderer.getWidth(renderText);
@@ -108,8 +161,10 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
         float zPos = lineData.getZOffset() / 16f - 0.43f;
-        float halfW = width / 16f / 2f;
-        float halfH = height / 16f / 2f;
+        // 矩形大小乘以 fontSize
+        float scale = lineData.getFontSize();
+        float halfW = width / 16f / 2f * scale;
+        float halfH = height / 16f / 2f * scale;
 
         float offsetX = switch (lineData.getAlignment().hAlign) {
             case 0 -> halfW;

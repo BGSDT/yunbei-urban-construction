@@ -7,6 +7,7 @@ import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation5;
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation5Entity;
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation5Entity;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -140,7 +141,7 @@ public class SignExpresswayDistanceFromLocation5EntityRenderer implements BlockE
 
         float scaleValue = 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textHeight = this.textRenderer.fontHeight;
 
         float zOffset = switch (type) {
@@ -179,7 +180,7 @@ public class SignExpresswayDistanceFromLocation5EntityRenderer implements BlockE
 
         float scaleValue = isSmallScale ? 0.025f : 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -216,7 +217,7 @@ public class SignExpresswayDistanceFromLocation5EntityRenderer implements BlockE
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
         float scaleValue = 0.045f;
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
         float zOffset = switch (type) {

@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
+import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.screen.CustomSignScreen;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.mojang.serialization.MapCodec;
@@ -9,6 +10,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -83,8 +85,11 @@ public class CustomSignBlock extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (world.isClient) {
-            openScreen(world, pos);
+        Item item = player.getStackInHand(hand).getItem();
+        if (item == ModItems.WAND.get()) {
+            if (world.isClient) {
+                openScreen(world, pos);
+            }
         }
         return ActionResult.SUCCESS;
     }

@@ -6,6 +6,7 @@ import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning1Entity;
 import net.minecraft.block.Block;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
@@ -50,7 +51,7 @@ public class SignGuideIntersectionAdvanceWarning1EntityRenderer implements Block
 
         float scaleValue = 0.035f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textHeight = this.textRenderer.fontHeight;
 
         float zOffset = switch (type) {

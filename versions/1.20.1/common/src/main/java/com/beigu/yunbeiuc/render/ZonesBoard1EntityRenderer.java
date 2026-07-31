@@ -4,6 +4,7 @@ import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.block.custom.sign.ZonesBoard1;
 import com.beigu.yunbeiuc.entity.ZonesBoard1Entity;
 import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -42,7 +43,7 @@ public class ZonesBoard1EntityRenderer implements BlockEntityRenderer<ZonesBoard
 
         float scaleValue = 0.04f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
