@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.forge;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -30,6 +31,7 @@ public class ModCreativeTabEntries {
             event.accept(ModItems.WATER_WAND);
             event.accept(ModItems.ROTATED_WAND);
             event.accept(ModItems.LINK_WAND);
+            event.accept(ModItems.TEXT_COPY_WAND);
         }
     }
 }

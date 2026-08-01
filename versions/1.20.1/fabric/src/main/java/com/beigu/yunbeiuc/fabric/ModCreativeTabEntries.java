@@ -48,6 +48,7 @@ public class ModCreativeTabEntries {
             entries.add(new ItemStack(ModItems.WATER_WAND.get()));
             entries.add(new ItemStack(ModItems.ROTATED_WAND.get()));
             entries.add(new ItemStack(ModItems.LINK_WAND.get()));
+            entries.add(new ItemStack(ModItems.TEXT_COPY_WAND.get()));
         });
     }
 }
