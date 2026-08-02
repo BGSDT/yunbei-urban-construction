@@ -12,10 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -30,21 +27,13 @@ public class TextCopyWand extends Item {
         super(settings);
     }
 
-    @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        BlockEntity be = world.getBlockEntity(pos);
-        return be instanceof CustomSignBlockEntity;
-    }
-
-    @Override
-    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-        return 0.0F;
-    }
-
-    public static boolean copySignText(ItemStack stack, PlayerEntity player, World world, BlockPos pos) {
+    private static boolean copySignText(ItemStack stack, PlayerEntity player, World world, BlockPos pos) {
         if (world.isClient || player == null) return false;
         BlockEntity be = world.getBlockEntity(pos);
-        if (!(be instanceof CustomSignBlockEntity sign)) return false;
+        if (!(be instanceof CustomSignBlockEntity sign)) {
+            player.sendMessage(Text.translatable("item.yunbeiuc.text_copy_wand.not_supported"), true);
+            return false;
+        }
 
         List<CustomSignBlockEntity.TextLineData> textLines = sign.getTextLines();
         NbtList list = new NbtList();
@@ -56,53 +45,71 @@ public class TextCopyWand extends Item {
         return true;
     }
 
+    private static boolean pasteSignText(ItemStack stack, PlayerEntity player, World world, BlockPos pos) {
+        NbtCompound tag = stack.getNbt();
+        if (tag == null || !tag.contains(COPIED_DATA_KEY)) {
+            player.sendMessage(Text.translatable("item.yunbeiuc.text_copy_wand.no_data"), true);
+            return false;
+        }
+        BlockEntity be = world.getBlockEntity(pos);
+        if (!(be instanceof CustomSignBlockEntity sign)) {
+            player.sendMessage(Text.translatable("item.yunbeiuc.text_copy_wand.not_supported"), true);
+            return false;
+        }
+
+        NbtList list = tag.getList(COPIED_DATA_KEY, 10);
+        List<CustomSignBlockEntity.TextLineData> lines = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            lines.add(CustomSignBlockEntity.TextLineData.fromNbt(list.getCompound(i)));
+        }
+        sign.getTextLines().addAll(lines);
+        sign.markDirty();
+        world.updateListeners(pos, sign.getCachedState(), sign.getCachedState(), 3);
+        player.sendMessage(Text.translatable("item.yunbeiuc.text_copy_wand.pasted", lines.size()), true);
+        return true;
+    }
+
+    @Override
+    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+        BlockEntity be = world.getBlockEntity(pos);
+        // 对自定义路牌不能破坏（留给 onUseOnBlock 处理）
+        if (be instanceof CustomSignBlockEntity) return false;
+        // 其他方块正常左键破坏
+        return true;
+    }
+
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
+        PlayerEntity player = context.getPlayer();
+        if (player == null) return ActionResult.PASS;
+        World world = context.getWorld();
+        if (world.isClient) return ActionResult.SUCCESS;
+
+        ItemStack stack = context.getStack();
+        BlockPos pos = context.getBlockPos();
+        BlockEntity be = world.getBlockEntity(pos);
+
+        if (be instanceof CustomSignBlockEntity) {
+            boolean success = player.isSneaking()
+                    ? copySignText(stack, player, world, pos)
+                    : pasteSignText(stack, player, world, pos);
+            return success ? ActionResult.SUCCESS : ActionResult.FAIL;
+        }
         return ActionResult.PASS;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        if (world.isClient) return TypedActionResult.pass(stack);
-
-        HitResult hit = user.raycast(10, 0, false);
-        if (hit.getType() == HitResult.Type.BLOCK) {
-            BlockPos pos = ((BlockHitResult) hit).getBlockPos();
-            BlockEntity be = world.getBlockEntity(pos);
-            if (be instanceof CustomSignBlockEntity sign) {
-                NbtCompound tag = stack.getOrCreateNbt();
-                if (tag.contains(COPIED_DATA_KEY)) {
-                    NbtList list = tag.getList(COPIED_DATA_KEY, 10);
-                    List<CustomSignBlockEntity.TextLineData> lines = new ArrayList<>();
-                    for (int i = 0; i < list.size(); i++) {
-                        lines.add(CustomSignBlockEntity.TextLineData.fromNbt(list.getCompound(i)));
-                    }
-                    sign.getTextLines().addAll(lines);
-                    sign.markDirty();
-                    world.updateListeners(pos, sign.getCachedState(), sign.getCachedState(), 3);
-                    user.sendMessage(Text.translatable("item.yunbeiuc.text_copy_wand.pasted", lines.size()), true);
-                    return TypedActionResult.success(stack);
-                } else {
-                    user.sendMessage(Text.translatable("item.yunbeiuc.text_copy_wand.no_data"), true);
-                    return TypedActionResult.fail(stack);
-                }
-            } else {
-                user.sendMessage(Text.translatable("item.yunbeiuc.text_copy_wand.not_supported"), true);
-                return TypedActionResult.fail(stack);
-            }
-        }
-        return TypedActionResult.pass(stack);
-    }
-
-    @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.left_click"));
-        tooltip.add(Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.right_click"));
+        tooltip.add(Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.copy"));
+        tooltip.add(Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.paste"));
         NbtCompound tag = stack.getNbt();
         if (tag != null && tag.contains(COPIED_DATA_KEY)) {
-            int count = tag.getList(COPIED_DATA_KEY, 10).size();
-            tooltip.add(Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.stored", count));
+            NbtList list = tag.getList(COPIED_DATA_KEY, 10);
+            tooltip.add(Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.stored", list.size()));
+            for (int i = 0; i < list.size() && i < 4; i++) {
+                CustomSignBlockEntity.TextLineData line = CustomSignBlockEntity.TextLineData.fromNbt(list.getCompound(i));
+                tooltip.add(Text.literal("  " + line.getText()).formatted(Formatting.GRAY));
+            }
         }
     }
 }

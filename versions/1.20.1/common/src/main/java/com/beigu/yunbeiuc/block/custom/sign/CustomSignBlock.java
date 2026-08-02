@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.item.custom.TextCopyWand;
 import com.beigu.yunbeiuc.screen.CustomSignScreen;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.mojang.serialization.MapCodec;
@@ -11,9 +10,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -87,13 +84,13 @@ public class CustomSignBlock extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        Item item = player.getStackInHand(hand).getItem();
-        if (item == ModItems.WAND.get()) {
+        if (player.getStackInHand(hand).getItem() == ModItems.WAND.get()) {
             if (world.isClient) {
                 openScreen(world, pos);
             }
+            return ActionResult.SUCCESS;
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
 
     @Environment(EnvType.CLIENT)
@@ -102,17 +99,5 @@ public class CustomSignBlock extends BlockWithEntity {
         if (blockEntity instanceof CustomSignBlockEntity signEntity) {
             MinecraftClient.getInstance().setScreen(new CustomSignScreen(signEntity));
         }
-    }
-
-    @Override
-    public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        // 左键点击路牌时，若手持文本复制魔杖则复制文本；方块本身不会被破坏（TextCopyWand 的 canMine 恒为 false）
-        if (!world.isClient) {
-            ItemStack stack = player.getMainHandStack();
-            if (stack.getItem() instanceof TextCopyWand) {
-                TextCopyWand.copySignText(stack, player, world, pos);
-            }
-        }
-        super.onBlockBreakStart(state, world, pos, player);
     }
 }
