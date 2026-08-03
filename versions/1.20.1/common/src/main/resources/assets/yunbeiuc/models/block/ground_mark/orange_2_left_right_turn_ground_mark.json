@@ -19,23 +19,23 @@
       "to": [
         16,
         0.1,
-        32
+        16
       ],
       "rotation": {
         "angle": 0,
         "axis": "y",
         "origin": [
-          -8,
+          8,
           0,
-          0
+          8
         ]
       },
       "faces": {
         "up": {
           "uv": [
-            13.5,
             16,
-            3,
+            16,
+            0,
             0
           ],
           "texture": "#0"
@@ -43,6 +43,7 @@
       }
     }
   ],
+  "gui_light": "front",
   "display": {
     "thirdperson_righthand": {
       "rotation": [
@@ -131,14 +132,14 @@
         0
       ],
       "translation": [
-        -2,
-        -0.25,
+        -3.5,
+        4,
         0
       ],
       "scale": [
-        0.3,
-        0.3,
-        0.3
+        0.5,
+        0.5,
+        0.5
       ]
     },
     "fixed": {
@@ -148,6 +149,5 @@
         0.5
       ]
     }
-  },
-  "gui_light": "front"
+  }
 }
