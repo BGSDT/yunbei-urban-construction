@@ -1,18 +1,18 @@
 {
   "variants": {
+    "facing=north": {
+      "model": "yunbeiuc:block/road/road_with_yellow_rightangle_line_offset_out"
+    },
     "facing=east": {
-      "model": "yunbeiuc:block/road_with_yellow_rightangle_line_offset_out",
+      "model": "yunbeiuc:block/road/road_with_yellow_rightangle_line_offset_out",
       "y": 90
     },
-    "facing=north": {
-      "model": "yunbeiuc:block/road_with_yellow_rightangle_line_offset_out"
-    },
     "facing=south": {
-      "model": "yunbeiuc:block/road_with_yellow_rightangle_line_offset_out",
+      "model": "yunbeiuc:block/road/road_with_yellow_rightangle_line_offset_out",
       "y": 180
     },
     "facing=west": {
-      "model": "yunbeiuc:block/road_with_yellow_rightangle_line_offset_out",
+      "model": "yunbeiuc:block/road/road_with_yellow_rightangle_line_offset_out",
       "y": 270
     }
   }

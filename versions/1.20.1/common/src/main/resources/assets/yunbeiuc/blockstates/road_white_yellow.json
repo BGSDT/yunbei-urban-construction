@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "yunbeiuc:block/road_white_yellow"
+      "model": "yunbeiuc:block/road/road_white_yellow"
     }
   }
 }

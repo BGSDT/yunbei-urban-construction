@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=north,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow"
+    },
+    "facing=north,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow_top"
+    },
+    "facing=north,type=double": {
+      "model": "yunbeiuc:block/road/road_white_yellow"
+    },
+    "facing=east,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow",
+      "y": 90
+    },
+    "facing=east,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow_top",
+      "y": 90
+    },
+    "facing=east,type=double": {
+      "model": "yunbeiuc:block/road/road_white_yellow",
+      "y": 90
+    },
+    "facing=south,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow",
+      "y": 180
+    },
+    "facing=south,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow_top",
+      "y": 180
+    },
+    "facing=south,type=double": {
+      "model": "yunbeiuc:block/road/road_white_yellow",
+      "y": 180
+    },
+    "facing=west,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow",
+      "y": 270
+    },
+    "facing=west,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_white_yellow_top",
+      "y": 270
+    },
+    "facing=west,type=double": {
+      "model": "yunbeiuc:block/road/road_white_yellow",
+      "y": 270
+    }
+  }
+}
