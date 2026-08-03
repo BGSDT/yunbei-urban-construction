@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.render.json;
+package com.beigu.yunbeiuc.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.util.Identifier;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.Resource;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

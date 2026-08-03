@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.render.font;
+package com.beigu.yunbeiuc.util;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import net.minecraft.client.texture.NativeImage;

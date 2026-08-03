@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.render.font;
+package com.beigu.yunbeiuc.util;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import net.minecraft.client.MinecraftClient;
@@ -71,8 +71,10 @@ public class CustomFontRenderer {
     }
 
     private void rebuildAtlas() {
+        // 如果已存在纹理，先销毁
         if (fontAtlas != null) {
             MinecraftClient.getInstance().getTextureManager().destroyTexture(fontAtlas);
+            fontAtlas = null;
         }
 
         Set<Character> allChars = new HashSet<>(charMap.keySet());
@@ -129,8 +131,10 @@ public class CustomFontRenderer {
             maxRowHeight = Math.max(maxRowHeight, glyphH);
         }
 
+        // 使用固定名称，不加时间戳
         Identifier id = new Identifier(YunbeiUrbanConstruction.MOD_ID,
-                "font_atlas_" + fontName + "_" + System.currentTimeMillis());
+                "font_atlas_" + fontName);
+
         MinecraftClient.getInstance().getTextureManager()
                 .registerTexture(id, new NativeImageBackedTexture(atlasImage));
         fontAtlas = id;

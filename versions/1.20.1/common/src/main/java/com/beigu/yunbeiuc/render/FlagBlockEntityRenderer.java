@@ -2,8 +2,8 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleFlag;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
-import com.beigu.yunbeiuc.render.json.CustomFlag;
-import com.beigu.yunbeiuc.render.json.FlagLoader;
+import com.beigu.yunbeiuc.util.CustomFlag;
+import com.beigu.yunbeiuc.util.FlagLoader;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;

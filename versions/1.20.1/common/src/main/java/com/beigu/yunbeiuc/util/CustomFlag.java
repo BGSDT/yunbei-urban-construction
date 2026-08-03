@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.render.json;
+package com.beigu.yunbeiuc.util;
 
 import net.minecraft.util.Identifier;
 
