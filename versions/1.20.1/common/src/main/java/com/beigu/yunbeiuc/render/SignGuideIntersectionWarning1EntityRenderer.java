@@ -68,8 +68,8 @@ public class SignGuideIntersectionWarning1EntityRenderer implements BlockEntityR
 
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
-            case POLE_H -> -0.79f;
-            case NORMAL -> -0.43f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.46f;
         };
 
         float centeredX = andX / 16f;
@@ -108,8 +108,8 @@ public class SignGuideIntersectionWarning1EntityRenderer implements BlockEntityR
 
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
-            case POLE_H -> -0.79f;
-            case NORMAL -> -0.43f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.46f;
         };
 
         float centeredX = andX / 16f - (textWidth * scaleValue) / 2f;

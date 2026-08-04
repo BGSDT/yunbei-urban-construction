@@ -105,8 +105,8 @@ public class SignExpresswayDistanceFromLocation6EntityRenderer implements BlockE
         matrices.push();
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
-            case POLE_H -> -0.79f;
-            case NORMAL -> -0.43f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.46f;
         };
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
@@ -138,8 +138,8 @@ public class SignExpresswayDistanceFromLocation6EntityRenderer implements BlockE
 
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
-            case POLE_H -> -0.79f;
-            case NORMAL -> -0.43f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.46f;
         };
 
         float centeredX = andX / 16f;
@@ -178,8 +178,8 @@ public class SignExpresswayDistanceFromLocation6EntityRenderer implements BlockE
 
         float zOffset = switch (type) {
             case POLE_L -> -0.75f;
-            case POLE_H -> -0.79f;
-            case NORMAL -> -0.43f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.46f;
         };
 
         float centeredX = andX / 16f;
@@ -213,9 +213,9 @@ public class SignExpresswayDistanceFromLocation6EntityRenderer implements BlockE
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
         float zOffset = switch (type) {
-            case POLE_L -> -0.74f;
-            case POLE_H -> -0.78f;
-            case NORMAL -> -0.42f;
+            case POLE_L -> -0.75f;
+            case POLE_H -> -0.80f;
+            case NORMAL -> -0.45f;
         };
         float centeredX = andX / 16f - (textWidth * scaleValue) / 2f;
         String digits = text.replaceAll("[^0-9]", "");

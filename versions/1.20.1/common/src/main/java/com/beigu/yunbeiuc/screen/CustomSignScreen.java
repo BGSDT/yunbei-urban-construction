@@ -30,6 +30,7 @@ public class CustomSignScreen extends Screen {
     private static final int MAX_VISIBLE_TABS = 8;
     private static final int SCROLL_BTN_WIDTH = 14;
     private static final int SAVE_BTN_ROW_HEIGHT = 22;
+    private static final int INFO_PANEL_WIDTH = 100;
 
     private final CustomSignBlockEntity blockEntity;
     private final BlockPos blockPos;
@@ -115,7 +116,7 @@ public class CustomSignScreen extends Screen {
     }
 
     private void createBottomPanelWidgets() {
-        textField = new TextFieldWidget(this.textRenderer, 0, 0, panelBottomWidth - 10, 16, Text.literal("Text"));
+        textField = new TextFieldWidget(this.textRenderer, 0, 0, panelBottomWidth - 10 - INFO_PANEL_WIDTH, 16, Text.literal("Text"));
         textField.setMaxLength(Integer.MAX_VALUE);
         textField.setChangedListener(text -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
@@ -374,7 +375,10 @@ public class CustomSignScreen extends Screen {
     private void addBottomWidgets() {
         int lh = (panelBottomHeight - 10) / 2;
         int y1 = panelBottomY + 5, y2 = panelBottomY + 5 + lh, cx = panelBottomX + 5;
-        textField.setWidth(panelBottomWidth - 10); textField.setPosition(cx, y1); this.addDrawableChild(textField);
+        // 缩短输入框，为右侧XYZSC信息留出空间
+        textField.setWidth(panelBottomWidth - 10 - INFO_PANEL_WIDTH);
+        textField.setPosition(cx, y1);
+        this.addDrawableChild(textField);
         cx = panelBottomX + 5;
         xButton.setPosition(cx, y2); this.addDrawableChild(xButton); cx += BTN_SIZE + BTN_GAP;
         yButton.setPosition(cx, y2); this.addDrawableChild(yButton); cx += BTN_SIZE + BTN_GAP;
@@ -572,11 +576,15 @@ public class CustomSignScreen extends Screen {
                 drawToggleBg(context, cx, y2, BTN_SIZE, d.isUnderline()); cx += BTN_SIZE + BTN_GAP;
                 drawToggleBg(context, cx, y2, BTN_SIZE, d.isShadow());
 
-                String line1 = String.format("X:%.1f Y:%.1f Z:%.1f", d.getXOffset(), d.getYOffset(), d.getZOffset());
-                String line2 = String.format("S:%.2f C:#%06X", d.getFontSize(), d.getColor());
-                int infoX = panelBottomX + panelBottomWidth - Math.max(textRenderer.getWidth(line1), textRenderer.getWidth(line2)) - 5;
-                context.drawText(textRenderer, Text.literal(line1), infoX, y2 + 2, 0xFFAAAAAA, false);
-                context.drawText(textRenderer, Text.literal(line2), infoX, y2 + 2 + textRenderer.fontHeight + 3, 0xFFAAAAAA, false);
+                // 在输入框右侧显示XYZSC信息
+                int infoX = panelBottomX + 5 + textField.getWidth() + 5;
+                int infoY = panelBottomY + 5;
+
+                String line1 = String.format("X:%.1f  Y:%.1f  Z:%.1f", d.getXOffset(), d.getYOffset(), d.getZOffset());
+                String line2 = String.format("S:%.2f  C:#%06X", d.getFontSize(), d.getColor());
+
+                context.drawText(textRenderer, Text.literal(line1), infoX, infoY + 2, 0xFFAAAAAA, false);
+                context.drawText(textRenderer, Text.literal(line2), infoX, infoY + 2 + textRenderer.fontHeight + 3, 0xFFAAAAAA, false);
             }
             if (textLineWidgets.isEmpty()) {
                 String h = "点击 + 添加文本, 按P加载预设";
@@ -630,7 +638,8 @@ public class CustomSignScreen extends Screen {
         }
         int th = 4 + lines.size() * lh, tx = Math.min(mx + 12, width - mw - 10), ty = Math.min(my - th - 4, height - th - 4);
         if (ty < 4) ty = my + 12;
-        context.fill(tx, ty, tx + mw + 8, ty + th, 0xCC1E1E2E); context.drawBorder(tx, ty, mw + 8, th, 0xFF6B6B8A);
+        context.fill(tx, ty, tx + mw + 8, ty + th, 0xFF1E1E2E);
+        context.drawBorder(tx, ty, mw + 8, th, 0xFF6B6B8A);
         int ty2 = ty + 2;
         for (String line : lines) { context.drawText(textRenderer, Text.literal(line), tx + 4, ty2, line.startsWith("  ") ? 0xFFAAAAAA : 0xFFFFFFFF, false); ty2 += lh; }
     }
