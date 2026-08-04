@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.block.custom.sign.CustomSignTypeBlock;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.font.TextRenderer;
@@ -24,19 +25,21 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
     @Override
     public void render(CustomSignBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         Direction facing = entity.getCachedState().get(net.minecraft.state.property.Properties.HORIZONTAL_FACING);
+        
+        CustomSignTypeBlock.Type type = entity.getCachedState().get(CustomSignTypeBlock.TYPE);
 
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
         for (CustomSignBlockEntity.TextLineData lineData : entity.getTextLines()) {
-            renderTextLine(matrices, vertexConsumers, light, overlay, lineData);
+            renderTextLine(matrices, vertexConsumers, light, overlay, lineData, type);
         }
 
         matrices.pop();
     }
 
-    private void renderTextLine(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CustomSignBlockEntity.TextLineData lineData) {
+    private void renderTextLine(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CustomSignBlockEntity.TextLineData lineData, CustomSignTypeBlock.Type type) {
         if (lineData.getText().isEmpty()) return;
         String text = lineData.getText().trim();
 
@@ -46,7 +49,7 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
                 try {
                     float w = Float.parseFloat(parts[1]);
                     float h = Float.parseFloat(parts[2]);
-                    renderRect(matrices, lineData, w, h);
+                    renderRect(matrices, lineData, w, h, type);
                     return;
                 } catch (NumberFormatException ignored) {}
             }
@@ -57,7 +60,7 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
             if (parts.length >= 2) {
                 Identifier textureId = Identifier.tryParse(parts[1]);
                 if (textureId != null) {
-                    renderTexture(matrices, vertexConsumers, light, overlay, lineData, textureId);
+                    renderTexture(matrices, vertexConsumers, light, overlay, lineData, textureId, type);
                     return;
                 }
             }
@@ -69,23 +72,32 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
                 try {
                     Text jsonText = Text.Serializer.fromLenientJson(parts[1]);
                     if (jsonText != null) {
-                        renderJsonText(matrices, vertexConsumers, light, lineData, jsonText);
+                        renderJsonText(matrices, vertexConsumers, light, lineData, jsonText, type);
                         return;
                     }
                 } catch (Exception ignored) {}
             }
         }
 
-        renderText(matrices, vertexConsumers, light, lineData);
+        renderText(matrices, vertexConsumers, light, lineData, type);
     }
 
-    private void renderJsonText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CustomSignBlockEntity.TextLineData lineData, Text jsonText) {
+    private float getZOffset(CustomSignTypeBlock.Type type) {
+        return switch (type) {
+            case POLE_L -> -0.75f;
+            case POLE_H -> -0.79f;
+            case NORMAL -> -0.43f;
+        };
+    }
+
+    private void renderJsonText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CustomSignBlockEntity.TextLineData lineData, Text jsonText, CustomSignTypeBlock.Type type) {
         matrices.push();
 
         float baseScale = 0.05f * lineData.getFontSize();
         float xPos = lineData.getXOffset() / 16f;
         float yPos = lineData.getYOffset() / 16f;
-        float zPos = lineData.getZOffset() / 16f - 0.43f;
+        float zOffset = getZOffset(type);
+        float zPos = lineData.getZOffset() / 16f + zOffset;
 
         matrices.translate(xPos, yPos, zPos);
         matrices.scale(baseScale, -baseScale, baseScale);
@@ -118,13 +130,14 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
         matrices.pop();
     }
 
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CustomSignBlockEntity.TextLineData lineData) {
+    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CustomSignBlockEntity.TextLineData lineData, CustomSignTypeBlock.Type type) {
         matrices.push();
 
         float baseScale = 0.05f * lineData.getFontSize();
         float xPos = lineData.getXOffset() / 16f;
         float yPos = lineData.getYOffset() / 16f;
-        float zPos = lineData.getZOffset() / 16f - 0.43f;
+        float zOffset = getZOffset(type);
+        float zPos = lineData.getZOffset() / 16f + zOffset;
 
         matrices.translate(xPos, yPos, zPos);
         matrices.scale(baseScale, -baseScale, baseScale);
@@ -156,11 +169,12 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
         matrices.pop();
     }
 
-    private void renderRect(MatrixStack matrices, CustomSignBlockEntity.TextLineData lineData, float width, float height) {
+    private void renderRect(MatrixStack matrices, CustomSignBlockEntity.TextLineData lineData, float width, float height, CustomSignTypeBlock.Type type) {
         matrices.push();
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
-        float zPos = lineData.getZOffset() / 16f - 0.43f;
+        float zOffset = getZOffset(type);
+        float zPos = lineData.getZOffset() / 16f + zOffset;
         // 矩形大小乘以 fontSize
         float scale = lineData.getFontSize();
         float halfW = width / 16f / 2f * scale;
@@ -209,12 +223,13 @@ public class CustomSignBlockEntityRenderer implements BlockEntityRenderer<Custom
         matrices.pop();
     }
 
-    private void renderTexture(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CustomSignBlockEntity.TextLineData lineData, Identifier textureId) {
+    private void renderTexture(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CustomSignBlockEntity.TextLineData lineData, Identifier textureId, CustomSignTypeBlock.Type type) {
         matrices.push();
 
         float xPos = lineData.getXOffset() / 16f;
         float yPos = lineData.getYOffset() / 16f;
-        float zPos = lineData.getZOffset() / 16f - 0.43f;
+        float zOffset = getZOffset(type);
+        float zPos = lineData.getZOffset() / 16f + zOffset;
 
         matrices.translate(xPos, yPos, zPos);
 
