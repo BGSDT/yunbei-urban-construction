@@ -44,7 +44,7 @@ public class InstrumentLaneIndicator extends Block {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.instrument_lane_indicator"));
+        tooltip.add(Text.translatable("block.yunbeiuc.instrument_lane_indicator.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 

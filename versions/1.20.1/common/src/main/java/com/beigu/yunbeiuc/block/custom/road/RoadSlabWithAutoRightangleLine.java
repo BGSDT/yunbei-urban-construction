@@ -8,6 +8,6 @@ package com.beigu.yunbeiuc.block.custom.road;
 public class RoadSlabWithAutoRightangleLine extends RoadSlabWithAutoLine {
 
     public RoadSlabWithAutoRightangleLine(Settings settings) {
-        super(settings, RoadAutoLineType.RIGHT_ANGLE);
+        super(settings, RoadWithAutoLine.RoadAutoLineType.RIGHT_ANGLE);
     }
 }

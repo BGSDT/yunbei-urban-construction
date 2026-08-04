@@ -8,6 +8,6 @@ package com.beigu.yunbeiuc.block.custom.road;
 public class RoadSlabWithAutoBevelLine extends RoadSlabWithAutoLine {
 
     public RoadSlabWithAutoBevelLine(Settings settings) {
-        super(settings, RoadAutoLineType.BEVEL);
+        super(settings, RoadWithAutoLine.RoadAutoLineType.BEVEL);
     }
 }

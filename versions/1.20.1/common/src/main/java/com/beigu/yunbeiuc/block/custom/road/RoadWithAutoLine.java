@@ -10,7 +10,11 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * 具有自动连接功能的道路方块（无 FACING 版本）。
+ * 具有自动连接功能的道路方块。
  * <p>
  * 在放置、右键点击或邻近方块更新时，检测四周道路的连接状态（颜色、类型、偏移），并将方块状态自动转换为
  * 对应的直线 / 直角 / 斜线 / T 形 / 十字等标线道路方块。
@@ -42,6 +46,8 @@ import java.util.Optional;
 public abstract class RoadWithAutoLine extends Block {
     private static final Logger LOGGER = LoggerFactory.getLogger(RoadWithAutoLine.class);
 
+    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+
     private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 16);
 
     /** 自动连接的类型，分为直角和 45° 斜线。 */
@@ -50,6 +56,7 @@ public abstract class RoadWithAutoLine extends Block {
     protected RoadWithAutoLine(Settings settings, RoadAutoLineType type) {
         super(settings);
         this.type = type;
+        this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -59,12 +66,22 @@ public abstract class RoadWithAutoLine extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        // 无属性需要添加
+        builder.add(FACING);
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState();
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     // ============================================================
@@ -80,12 +97,12 @@ public abstract class RoadWithAutoLine extends Block {
         }
         final Item item = player.getStackInHand(hand).getItem();
         if (item instanceof BlockItem blockItem
-                && blockItem.getBlock() instanceof RoadWithAutoLine
-                && !Direction.Type.VERTICAL.test(hit.getSide())) {
+            && (blockItem.getBlock() instanceof RoadWithAutoLine || blockItem.getBlock() instanceof RoadSlabWithAutoLine)
+            && !Direction.Type.VERTICAL.test(hit.getSide())) {
             // 手持自动标线方块时放行，允许继续放置。
             return ActionResult.PASS;
         }
-        world.setBlockState(pos, tryMakeState(getConnectionStateMap(world, pos), pos), 2);
+        world.setBlockState(pos, tryMakeState(this.type, getConnectionStateMap(world, pos), state, pos), 2);
         return ActionResult.SUCCESS;
     }
 
@@ -95,9 +112,9 @@ public abstract class RoadWithAutoLine extends Block {
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
         // 屏蔽上下方的更新与因方块消失（变空气）产生的更新。
         if (!sourcePos.equals(pos.up())
-                && !sourcePos.equals(pos.down())
-                && !(world.getBlockState(sourcePos).getBlock() instanceof AirBlock)) {
-            world.setBlockState(pos, tryMakeState(getConnectionStateMap(world, pos), pos), 2);
+            && !sourcePos.equals(pos.down())
+            && !(world.getBlockState(sourcePos).getBlock() instanceof AirBlock)) {
+            world.setBlockState(pos, tryMakeState(this.type, getConnectionStateMap(world, pos), state, pos), 2);
         }
     }
 
@@ -107,8 +124,9 @@ public abstract class RoadWithAutoLine extends Block {
 
     /**
      * 根据附近的连接状态自动产生一个新的方块状态。
+     * <p>本方法以普通道路方块作为目标方块；slab 子类可在外部把返回的方块替换为对应的 slab 方块。
      */
-    private BlockState makeState(EnumMap<Direction, RoadConnectionState> connectionStateMap) {
+    static BlockState makeState(RoadAutoLineType type, EnumMap<Direction, RoadConnectionState> connectionStateMap, BlockState defaultState) {
         int connected = 0;
         for (Map.Entry<Direction, RoadConnectionState> e : connectionStateMap.entrySet()) {
             if (e.getValue().mayConnect()) {
@@ -128,9 +146,9 @@ public abstract class RoadWithAutoLine extends Block {
                     final EightHorizontalDirection direction1 = connectionStateMap.get(direction.rotateYClockwise()).direction();
                     final EightHorizontalDirection direction2 = connectionStateMap.get(direction.rotateYCounterclockwise()).direction();
                     if (direction1.right().map(cornerDirection -> cornerDirection.hasDirection(direction)).orElse(false)
-                            && direction2.right().map(cornerDirection -> cornerDirection.hasDirection(direction)).orElse(false)) {
+                        && direction2.right().map(cornerDirection -> cornerDirection.hasDirection(direction)).orElse(false)) {
                         return (yellow ? RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE : RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE).get()
-                                .getDefaultState();
+                            .getDefaultState().with(FACING, direction);
                     }
                 }
                 return (yellow ? RoadBlocks.ROAD_WITH_YELLOW_CROSS_LINE : RoadBlocks.ROAD_WITH_WHITE_CROSS_LINE).get().getDefaultState();
@@ -197,14 +215,14 @@ public abstract class RoadWithAutoLine extends Block {
                                 case THICK -> RoadBlocks.ROAD_WITH_WHITE_THICK_LINE;
                                 default -> RoadBlocks.ROAD_WITH_WHITE_LINE;
                             };
-                        }).get().getDefaultState();
+                        }).get().getDefaultState().with(FACING, direction);
                     } else {
                         // 两个相邻方向都连接了标线，连接成直角或斜线。
                         if (type == RoadAutoLineType.RIGHT_ANGLE) {
                             // 考虑带有偏移的直角的情况。
                             if (connectionState.lineColor() == adjacentState.lineColor() || adjacentState.lineColor() == LineColor.UNKNOWN) {
                                 if (connectionState.offsetLevel() == 2
-                                        && (connectionState.offsetLevel() == adjacentState.offsetLevel() && (connectionState.offsetDirection() == adjacentDirection) == (adjacentState.offsetDirection() == direction) || !adjacentState.sureConnect())) {
+                                    && (connectionState.offsetLevel() == adjacentState.offsetLevel() && (connectionState.offsetDirection() == adjacentDirection) == (adjacentState.offsetDirection() == direction) || !adjacentState.sureConnect())) {
                                     return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), HorizontalCornerDirection.fromDirections(direction, adjacentDirection), connectionState.offsetDirection() == adjacentDirection, type);
                                 } else if (connectionState.offsetLevel() == 2 && adjacentState.offsetLevel() != 2) {
                                     return composeAngleLineWithOnePartOffset(connectionState.lineColor(), HorizontalCornerDirection.fromDirections(direction, adjacentDirection), adjacentDirection.getAxis(), connectionState.offsetDirection() == adjacentDirection);
@@ -226,14 +244,14 @@ public abstract class RoadWithAutoLine extends Block {
                                 } else {
                                     block = RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE.get();
                                 }
-                                return block.getDefaultState();
+                                return block.getDefaultState().with(FACING, adjacentDirection);
                             } else if (connectionState.lineColor() == LineColor.WHITE && adjacentState.lineColor() == LineColor.WHITE) {
                                 if (connectionState.lineType() == LineType.THICK && adjacentState.lineType() == LineType.NORMAL) {
-                                    return RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get().getDefaultState();
+                                    return RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get().getDefaultState().with(FACING, adjacentDirection);
                                 } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.THICK) {
-                                    return RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get().getDefaultState();
+                                    return RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get().getDefaultState().with(FACING, direction);
                                 } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.NORMAL) {
-                                    return RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get().getDefaultState();
+                                    return RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get().getDefaultState().with(FACING, cornerToFacing(HorizontalCornerDirection.fromDirections(direction, adjacentDirection)));
                                 }
                             }
                         }
@@ -245,8 +263,8 @@ public abstract class RoadWithAutoLine extends Block {
                             if (connectionState.offsetLevel() == 2) {
                                 boolean isInwards = connectionState.offsetDirection() == adjacentDirection;
                                 if ((adjacentState.offsetLevel() == 2 &&
-                                        (adjacentState.offsetDirection() == direction) == isInwards
-                                        || !adjacentState.sureConnect())) {
+                                    (adjacentState.offsetDirection() == direction) == isInwards
+                                    || !adjacentState.sureConnect())) {
                                     return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), HorizontalCornerDirection.fromDirections(direction, adjacentDirection), isInwards, type);
                                 }
                             }
@@ -268,7 +286,7 @@ public abstract class RoadWithAutoLine extends Block {
                                     };
                                     case RIGHT_ANGLE -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
                                 };
-                            }).get().getDefaultState();
+                            }).get().getDefaultState().with(FACING, cornerToFacing(HorizontalCornerDirection.fromDirections(direction, adjacentDirection)));
                         } else if (connectionState.lineColor() == LineColor.UNKNOWN) {
                             continue;
                         }
@@ -277,10 +295,10 @@ public abstract class RoadWithAutoLine extends Block {
                         return (switch (type) {
                             case BEVEL -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE;
                             case RIGHT_ANGLE -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
-                        }).get().getDefaultState();
+                        }).get().getDefaultState().with(FACING, cornerToFacing(HorizontalCornerDirection.fromDirections(direction, adjacentDirection)));
                     }
                 }
-                return RoadBlocks.ROAD_BLOCK.get().getDefaultState();
+                return defaultState;
             case 1:
                 // 只有一个方向连接，为直线。
                 for (Map.Entry<Direction, RoadConnectionState> entry : connectionStateMap.entrySet()) {
@@ -300,10 +318,10 @@ public abstract class RoadWithAutoLine extends Block {
                                 case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE;
                                 default -> RoadBlocks.ROAD_WITH_WHITE_LINE;
                             };
-                        }).get().getDefaultState();
+                        }).get().getDefaultState().with(FACING, entry.getKey());
                     }
                 }
-                return RoadBlocks.ROAD_BLOCK.get().getDefaultState();
+                return defaultState;
             case 3:
                 for (Map.Entry<Direction, RoadConnectionState> entry : connectionStateMap.entrySet()) {
                     final RoadConnectionState unconnectedState = entry.getValue();
@@ -316,20 +334,20 @@ public abstract class RoadWithAutoLine extends Block {
                     final Direction facingDirection = unconnectedDirection.getOpposite();
                     final RoadConnectionState facingState = connectionStateMap.get(facingDirection);
                     if (facingState.direction() == null
-                            || facingState.direction().left().isPresent()
-                            || type != RoadAutoLineType.BEVEL) {
+                        || facingState.direction().left().isPresent()
+                        || type != RoadAutoLineType.BEVEL) {
                         // 朝向的方向是正对方向而非角落方向，通常应连接 T 形线。
                         final RoadConnectionState stateLeft = connectionStateMap.get(facingDirection.rotateYCounterclockwise());
                         final RoadConnectionState stateRight = connectionStateMap.get(facingDirection.rotateYClockwise());
 
                         // 考虑双斜线的情况。
                         if (type == RoadAutoLineType.BEVEL
-                                && stateLeft.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)
-                                && stateRight.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)) {
+                            && stateLeft.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)
+                            && stateRight.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)) {
                             if (facingState.lineColor() == LineColor.YELLOW && (stateLeft.lineColor() == LineColor.YELLOW || stateRight.lineColor() == LineColor.YELLOW)) {
-                                return RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get().getDefaultState();
+                                return RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get().getDefaultState().with(FACING, facingDirection);
                             } else {
-                                return RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get().getDefaultState();
+                                return RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get().getDefaultState().with(FACING, facingDirection);
                             }
                         }
 
@@ -342,17 +360,17 @@ public abstract class RoadWithAutoLine extends Block {
                                         case THICK -> (facingState.lineType() == LineType.DOUBLE ? RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE.get());
                                         default -> (facingState.lineType() == LineType.DOUBLE ? RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE.get());
                                     };
-                                    return composeJointLine(block, facingOffset);
+                                    return composeJointLine(block, facingDirection, facingOffset);
                                 }
                                 if (stateLeft.lineColor() == LineColor.YELLOW && facingState.lineColor() == LineColor.WHITE) {
-                                    return composeJointLine(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), facingOffset);
+                                    return composeJointLine(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), facingDirection, facingOffset);
                                 } else {
-                                    return composeJointLine(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), facingOffset);
+                                    return composeJointLine(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), facingDirection, facingOffset);
                                 }
                             } else {
                                 // 然后考虑同色。
                                 if (facingState.lineColor() == LineColor.YELLOW || (facingState.lineColor() == LineColor.UNKNOWN && stateLeft.lineColor() == LineColor.YELLOW)) {
-                                    return composeJointLine(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), facingOffset);
+                                    return composeJointLine(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), facingDirection, facingOffset);
                                 } else {
                                     final Block block = switch (facingState.lineType()) {
                                         case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE.get();
@@ -363,7 +381,7 @@ public abstract class RoadWithAutoLine extends Block {
                                             default -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get();
                                         };
                                     };
-                                    return composeJointLine(block, facingOffset);
+                                    return composeJointLine(block, facingDirection, facingOffset);
                                 }
                             }
                         } else {
@@ -372,7 +390,7 @@ public abstract class RoadWithAutoLine extends Block {
                                 case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get();
                                 case WHITE, UNKNOWN, NONE -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get();
                             };
-                            return composeJointLine(block, facingOffset);
+                            return composeJointLine(block, facingDirection, facingOffset);
                         }
                     } else if (facingState.direction().right().isPresent()) {
                         // 考虑连接直斜混线。
@@ -385,8 +403,8 @@ public abstract class RoadWithAutoLine extends Block {
                         final Block block;
                         if (facingState.lineColor() == LineColor.YELLOW) {
                             if (bevelNonState.lineColor() == LineColor.WHITE && bevelNonState.lineType() == LineType.THICK
-                                    && (bevelConState.lineColor() == LineColor.WHITE && bevelConState.lineType() == LineType.THICK
-                                    || bevelConState.lineColor() == LineColor.YELLOW)) {
+                                && (bevelConState.lineColor() == LineColor.WHITE && bevelConState.lineType() == LineType.THICK
+                                || bevelConState.lineColor() == LineColor.YELLOW)) {
                                 block = RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE.get();
                             } else if (bevelNonState.lineColor() == LineColor.YELLOW && bevelNonState.lineType() == LineType.THICK && bevelConState.lineColor() == LineColor.YELLOW) {
                                 block = RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE.get();
@@ -397,7 +415,7 @@ public abstract class RoadWithAutoLine extends Block {
                             }
                         } else {
                             if (bevelNonState.lineColor() == LineColor.YELLOW && bevelNonState.lineType() == LineType.THICK
-                                    && (bevelConState.lineColor() != LineColor.YELLOW || bevelConState.lineType() == LineType.THICK)) {
+                                && (bevelConState.lineColor() != LineColor.YELLOW || bevelConState.lineType() == LineType.THICK)) {
                                 block = RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE.get();
                             } else if (bevelNonState.lineType() == LineType.THICK && bevelConState.lineColor() != LineColor.YELLOW) {
                                 block = RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE.get();
@@ -407,33 +425,36 @@ public abstract class RoadWithAutoLine extends Block {
                                 block = RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE.get();
                             }
                         }
-                        return block.getDefaultState();
+                        return block.getDefaultState().with(FACING, bevelConDirection);
                     }
                 }
-                return RoadBlocks.ROAD_BLOCK.get().getDefaultState();
+                return defaultState;
             default:
                 throw new IllegalStateException("Illegal connected number: " + connected);
         }
     }
 
-    private BlockState tryMakeState(EnumMap<Direction, RoadConnectionState> connectionStateMap, BlockPos pos) {
+    static BlockState tryMakeState(RoadAutoLineType type, EnumMap<Direction, RoadConnectionState> connectionStateMap, BlockState defaultState, BlockPos pos) {
         try {
-            return makeState(connectionStateMap);
+            return makeState(type, connectionStateMap, defaultState);
         } catch (Throwable throwable) {
             LOGGER.error("An error was found when converting road block at {}:", pos, throwable);
-            return RoadBlocks.ROAD_BLOCK.get().getDefaultState();
+            return defaultState;
         }
     }
 
     /**
      * 返回一个 T 形线方块状态，并且如果存在对应的偏移，则转化为相应的带偏移的线路。
      */
-    private BlockState composeJointLine(Block block, LineOffset facingOffset) {
+    private static BlockState composeJointLine(Block block, Direction facingDirection, LineOffset facingOffset) {
         if (facingOffset != null && facingOffset.level() == 2 && getOffsetTRoads().containsKey(block)) {
             final Block offsetSide = getOffsetTRoads().get(block);
-            return offsetSide.getDefaultState();
+            // 用户的偏移 T 形方块：FACING=f 时，侧线在 f 面，偏移方向为 f 顺时针旋转 90°。
+            // 要使返回方块的偏移方向与输入偏移方向 facingOffset.offsetDirection() 一致，
+            // 应令 FACING = 偏移方向逆时针旋转 90°。
+            return offsetSide.getDefaultState().with(FACING, facingOffset.offsetDirection().rotateYCounterclockwise());
         } else {
-            return block.getDefaultState();
+            return block.getDefaultState().with(FACING, facingDirection);
         }
     }
 
@@ -444,26 +465,26 @@ public abstract class RoadWithAutoLine extends Block {
 
     private static final class OffsetTRoadsHolder {
         static final Map<Block, Block> ROADS = Map.of(
-                RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_LINE.get(),
-                RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_LINE.get(),
-                RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE.get(),
-                RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_LINE.get(),
-                RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE.get(), RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_YELLOW_LINE.get(),
-                RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE.get(),
-                RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE.get(), RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE.get()
+            RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_LINE.get(),
+            RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_LINE.get(),
+            RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE.get(),
+            RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE.get(), RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_LINE.get(),
+            RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE.get(), RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_YELLOW_LINE.get(),
+            RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE.get(),
+            RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE.get(), RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE.get()
         );
     }
 
-    private BlockState composeAngleLineWithOnePartOffset(LineColor lineColor, HorizontalCornerDirection facing, Direction.Axis axis, boolean isInwards) {
+    private static BlockState composeAngleLineWithOnePartOffset(LineColor lineColor, HorizontalCornerDirection facing, Direction.Axis axis, boolean isInwards) {
         final Block block;
         block = switch (lineColor) {
             case YELLOW -> (isInwards ? RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_OUT.get());
             default -> (isInwards ? RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_OUT.get());
         };
-        return block.getDefaultState();
+        return block.getDefaultState().with(FACING, facing.getDirectionInAxis(axis));
     }
 
-    private BlockState composeAngleLineWithTwoPartsOffset(LineColor lineColor, HorizontalCornerDirection facing, boolean isInwards, RoadAutoLineType type) {
+    private static BlockState composeAngleLineWithTwoPartsOffset(LineColor lineColor, HorizontalCornerDirection facing, boolean isInwards, RoadAutoLineType type) {
         final Block block;
         if (type == RoadAutoLineType.RIGHT_ANGLE) {
             block = switch (lineColor) {
@@ -476,32 +497,32 @@ public abstract class RoadWithAutoLine extends Block {
                 default -> (isInwards ? RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get());
             };
         }
-        return block.getDefaultState();
+        return block.getDefaultState().with(FACING, cornerToFacing(facing));
     }
 
     private static BlockState composeOffsetStraightLine(Direction offsetDirection, int offsetLevel, LineColor color) {
         return switch (offsetLevel) {
-            case 114514 -> RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get().getDefaultState();
+            case 114514 -> RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get().getDefaultState().with(FACING, offsetDirection.rotateYClockwise());
             case 2 -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_OFFSET_LINE.get();
                 };
-                yield block.getDefaultState();
+                yield block.getDefaultState().with(FACING, offsetDirection.rotateYClockwise());
             }
             case 1 -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE.get();
                 };
-                yield block.getDefaultState();
+                yield block.getDefaultState().with(FACING, offsetDirection.rotateYClockwise());
             }
             default -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_LINE.get();
                 };
-                yield block.getDefaultState();
+                yield block.getDefaultState().with(FACING, dirForAxis(offsetDirection.rotateYClockwise().getAxis()));
             }
         };
     }
@@ -513,7 +534,7 @@ public abstract class RoadWithAutoLine extends Block {
     /**
      * 获取附近各水平方向的连接状态。
      */
-    private EnumMap<Direction, RoadConnectionState> getConnectionStateMap(WorldAccess world, BlockPos pos0) {
+    static EnumMap<Direction, RoadConnectionState> getConnectionStateMap(WorldAccess world, BlockPos pos0) {
         final EnumMap<Direction, RoadConnectionState> connectionStateMap = new EnumMap<>(Direction.class);
         for (Direction direction : Direction.Type.HORIZONTAL) {
             RoadConnectionState state = null;
@@ -533,11 +554,11 @@ public abstract class RoadWithAutoLine extends Block {
 
     /** 根据某个方块的连接状态描述（函数式接口）。 */
     @FunctionalInterface
-    private interface RoadLineInfo {
+    interface RoadLineInfo {
         RoadConnectionState get(BlockState state, Direction direction);
     }
 
-    private static Map<Block, RoadLineInfo> getBlockInfo() {
+    static Map<Block, RoadLineInfo> getBlockInfo() {
         return BlockInfoHolder.INFO;
     }
 
@@ -554,6 +575,8 @@ public abstract class RoadWithAutoLine extends Block {
         // 自动标线方块本身：不确定的连接。
         put(info, RoadBlocks.ROAD_WITH_AUTO_BEVEL_LINE.get(), auto());
         put(info, RoadBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE.get(), auto());
+        put(info, RoadBlocks.ROAD_SLAB_WITH_AUTO_BEVEL_LINE.get(), auto());
+        put(info, RoadBlocks.ROAD_SLAB_WITH_AUTO_RIGHTANGLE_LINE.get(), auto());
         // 直线。
         put(info, RoadBlocks.ROAD_WITH_WHITE_LINE.get(), straight(LineColor.WHITE, LineType.NORMAL));
         put(info, RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE.get(), straight(LineColor.WHITE, LineType.DOUBLE));
@@ -639,68 +662,109 @@ public abstract class RoadWithAutoLine extends Block {
     /** 自动标线方块：不确定地连接，颜色与类型未知。 */
     private static RoadLineInfo auto() {
         return (state, direction) ->
-                new RoadConnectionState(WhetherConnected.MAY_CONNECT, LineColor.UNKNOWN, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
+            new RoadConnectionState(WhetherConnected.MAY_CONNECT, LineColor.UNKNOWN, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
     }
 
-    /** 直线：沿轴连接（无 FACING，只能通过相邻方块的方向来判断）。 */
+    /** 直线：沿 FACING 的轴连接。 */
     private static RoadLineInfo straight(LineColor color, LineType type) {
-        return (state, direction) -> conn(color, EightHorizontalDirection.of(direction), type, null);
+        return (state, direction) -> direction.getAxis() == state.get(FACING).getAxis()
+            ? conn(color, EightHorizontalDirection.of(direction), type, null)
+            : RoadConnectionState.empty();
     }
 
-    /** 偏移直线：沿轴连接，偏移方向固定。 */
+    /** 偏移直线：沿 FACING 的轴连接，偏移方向为 FACING 逆时针旋转 90°。 */
     private static RoadLineInfo offsetStraight(LineColor color, LineType type, int level) {
-        return (state, direction) -> conn(color, EightHorizontalDirection.of(direction), type,
-                new LineOffset(direction.rotateYCounterclockwise(), level));
+        return (state, direction) -> {
+            if (direction.getAxis() != state.get(FACING).getAxis()) {
+                return RoadConnectionState.empty();
+            }
+            return conn(color, EightHorizontalDirection.of(direction), type,
+                new LineOffset(state.get(FACING).rotateYCounterclockwise(), level));
+        };
     }
 
-    /** 直角 / 斜线：连接两个方向。 */
+    /** 直角 / 斜线：连接 FACING 与 FACING 顺时针旋转 90° 两个方向。 */
     private static RoadLineInfo corner(LineColor color, LineType type, boolean isBevel) {
-        return (state, direction) -> conn(color,
-                isBevel ? EightHorizontalDirection.of(HorizontalCornerDirection.fromDirections(direction, direction.rotateYCounterclockwise())) : EightHorizontalDirection.of(direction),
+        return (state, direction) -> {
+            final Direction facing = state.get(FACING);
+            final HorizontalCornerDirection corner = facingToCorner(facing);
+            if (!corner.hasDirection(direction)) {
+                return RoadConnectionState.empty();
+            }
+            return conn(color,
+                isBevel ? EightHorizontalDirection.of(corner.mirror(direction)) : EightHorizontalDirection.of(direction),
                 type, null);
+        };
     }
 
-    /** 直角（两侧不同）。 */
+    /** 直角（两侧不同）：FACING 一侧为第二颜色/类型，另一侧为第一颜色/类型。 */
     private static RoadLineInfo diffAngle(LineColor color1, LineType type1, LineColor color2, LineType type2) {
-        return (state, direction) -> conn(
-                direction.getAxis() == Direction.Axis.Z ? color1 : color2,
-                EightHorizontalDirection.of(direction),
-                direction.getAxis() == Direction.Axis.Z ? type1 : type2,
-                null);
+        return (state, direction) -> {
+            final Direction facing = state.get(FACING);
+            if (direction == facing) {
+                return conn(color2, EightHorizontalDirection.of(direction), type2, null);
+            }
+            if (direction == facing.rotateYClockwise()) {
+                return conn(color1, EightHorizontalDirection.of(direction), type1, null);
+            }
+            return RoadConnectionState.empty();
+        };
     }
 
-    /** 直角（一侧偏移）。 */
+    /** 直角（一侧偏移）：FACING 一侧居中，FACING 顺时针旋转 90° 一侧偏移。 */
     private static RoadLineInfo angleLineOnePartOffset(LineColor color, int offsetOutwards) {
-        return (state, direction) -> conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL,
-                direction.getAxis() == Direction.Axis.X ? LineOffset.of(direction.rotateYCounterclockwise(), offsetOutwards) : null);
+        return (state, direction) -> {
+            final Direction facing = state.get(FACING);
+            if (direction == facing) {
+                return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
+            }
+            if (direction == facing.rotateYClockwise()) {
+                return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL,
+                    LineOffset.of(facing.getOpposite(), offsetOutwards));
+            }
+            return RoadConnectionState.empty();
+        };
     }
 
-    /** 直角 / 斜线（两侧偏移）。 */
+    /** 直角 / 斜线（两侧偏移）：两个方向均偏移。 */
     private static RoadLineInfo angleLineTwoPartsOffset(LineColor color, int offsetOutwards) {
         return (state, direction) -> {
-            final Direction offsetDir = direction.rotateYClockwise();
+            final Direction facing = state.get(FACING);
+            final HorizontalCornerDirection corner = facingToCorner(facing);
+            if (!corner.hasDirection(direction)) {
+                return RoadConnectionState.empty();
+            }
+            final Direction offsetDir = corner.getDirectionInAxis(direction.rotateYClockwise().getAxis()).getOpposite();
             return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, LineOffset.of(offsetDir, offsetOutwards));
         };
     }
 
-    /** T 形线：连接三个方向，一侧为侧线。 */
+    /** T 形线：连接除 FACING 反方向以外的三个方向，FACING 一侧为侧线。 */
     private static RoadLineInfo joint(LineColor mainColor, LineType mainType, LineColor sideColor, LineType sideType) {
         return (state, direction) -> {
-            if (direction.getAxis() == Direction.Axis.X) {
-                return conn(mainColor, EightHorizontalDirection.of(direction), mainType, null);
+            final Direction facing = state.get(FACING);
+            if (direction == facing.getOpposite()) {
+                return RoadConnectionState.empty();
             }
-            return conn(sideColor, EightHorizontalDirection.of(direction), sideType, null);
+            if (direction == facing) {
+                return conn(sideColor, EightHorizontalDirection.of(direction), sideType, null);
+            }
+            return conn(mainColor, EightHorizontalDirection.of(direction), mainType, null);
         };
     }
 
-    /** T 形线（一侧偏移）。 */
+    /** T 形线（一侧偏移）：侧线带偏移。偏移方向按用户模型为 FACING 顺时针旋转 90°。 */
     private static RoadLineInfo jointOffsetSide(LineColor mainColor, LineType mainType, LineColor sideColor, LineType sideType, int level) {
         return (state, direction) -> {
-            if (direction.getAxis() == Direction.Axis.X) {
-                return conn(mainColor, EightHorizontalDirection.of(direction), mainType, null);
+            final Direction facing = state.get(FACING);
+            if (direction == facing.getOpposite()) {
+                return RoadConnectionState.empty();
             }
-            return conn(sideColor, EightHorizontalDirection.of(direction), sideType,
-                    new LineOffset(direction.rotateYClockwise(), level));
+            if (direction == facing) {
+                return conn(sideColor, EightHorizontalDirection.of(direction), sideType,
+                    new LineOffset(facing.rotateYClockwise(), level));
+            }
+            return conn(mainColor, EightHorizontalDirection.of(direction), mainType, null);
         };
     }
 
@@ -709,34 +773,36 @@ public abstract class RoadWithAutoLine extends Block {
         return (state, direction) -> conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
     }
 
-    /** 双斜线。 */
+    /** 双斜线：FACING 为直线，两侧为斜线。 */
     private static RoadLineInfo biBevel(LineColor color, boolean threeLayer) {
         return (state, direction) -> {
+            final Direction facing = state.get(FACING);
             if (threeLayer) {
-                if (direction.getAxis() == Direction.Axis.Z) {
+                if (facing == direction || facing == direction.getOpposite()) {
                     return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
                 }
-                return conn(color, EightHorizontalDirection.of(HorizontalCornerDirection.fromDirections(Direction.NORTH, direction.getOpposite())), LineType.NORMAL, null);
+                return conn(color, EightHorizontalDirection.of(HorizontalCornerDirection.fromDirections(facing, direction.getOpposite())), LineType.NORMAL, null);
             } else {
-                if (direction == Direction.NORTH) {
+                if (facing == direction) {
                     return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
                 }
-                if (direction != Direction.SOUTH) {
-                    return conn(color, EightHorizontalDirection.of(HorizontalCornerDirection.fromDirections(Direction.NORTH, direction.getOpposite())), LineType.NORMAL, null);
+                if (facing != direction.getOpposite()) {
+                    return conn(color, EightHorizontalDirection.of(HorizontalCornerDirection.fromDirections(facing, direction.getOpposite())), LineType.NORMAL, null);
                 }
                 return RoadConnectionState.empty();
             }
         };
     }
 
-    /** 直线 + 斜线。 */
+    /** 直线 + 斜线：FACING 及其反方向为直线，FACING 顺时针旋转 90° 为斜线。 */
     private static RoadLineInfo straightAndAngle(LineColor straightColor, LineType straightType, LineColor bevelColor, LineType bevelType) {
         return (state, direction) -> {
-            if (direction.getAxis() == Direction.Axis.Z) {
+            final Direction facing = state.get(FACING);
+            if (direction == facing || direction == facing.getOpposite()) {
                 return conn(straightColor, EightHorizontalDirection.of(direction), straightType, null);
             }
-            if (direction == Direction.EAST) {
-                return conn(bevelColor, EightHorizontalDirection.of(HorizontalCornerDirection.NORTH_EAST), bevelType, null);
+            if (direction == facing.rotateYClockwise()) {
+                return conn(bevelColor, EightHorizontalDirection.of(facingToCorner(facing).mirror(direction)), bevelType, null);
             }
             return RoadConnectionState.empty();
         };
@@ -749,6 +815,23 @@ public abstract class RoadWithAutoLine extends Block {
     // ============================================================
     // 方向转换辅助
     // ============================================================
+
+    /** 将角落方向转换为用户方块模型中的 FACING（连接 FACING 与 FACING 顺时针旋转 90° 两个方向）。 */
+    private static Direction cornerToFacing(HorizontalCornerDirection corner) {
+        if (corner.dir1.rotateYClockwise() == corner.dir2) {
+            return corner.dir1;
+        }
+        return corner.dir2;
+    }
+
+    /** 将 FACING 转换为它对应的角落方向。 */
+    private static HorizontalCornerDirection facingToCorner(Direction facing) {
+        return HorizontalCornerDirection.fromDirections(facing, facing.rotateYClockwise());
+    }
+
+    private static Direction dirForAxis(Direction.Axis axis) {
+        return axis == Direction.Axis.X ? Direction.EAST : Direction.NORTH;
+    }
 
     private static <E extends Enum<E>> E maxEnum(E a, E b) {
         return a.compareTo(b) >= 0 ? a : b;
@@ -763,7 +846,7 @@ public abstract class RoadWithAutoLine extends Block {
     // ============================================================
 
     /** 道路自动连接的类型。 */
-    protected enum RoadAutoLineType {
+    enum RoadAutoLineType {
         /** 直角。 */
         RIGHT_ANGLE,
         /** 45° 斜线。 */
@@ -771,7 +854,7 @@ public abstract class RoadWithAutoLine extends Block {
     }
 
     /** 道路标线颜色。 */
-    private enum LineColor {
+    enum LineColor {
         WHITE,
         YELLOW,
         UNKNOWN,
@@ -779,14 +862,14 @@ public abstract class RoadWithAutoLine extends Block {
     }
 
     /** 道路标线类型。 */
-    private enum LineType {
+    enum LineType {
         NORMAL,
         DOUBLE,
         THICK
     }
 
     /** 偏移直线记录。 */
-    private record LineOffset(Direction offsetDirection, int level) {
+    record LineOffset(Direction offsetDirection, int level) {
         LineOffset {
             if (level < 0) {
                 throw new IllegalArgumentException();
@@ -805,7 +888,7 @@ public abstract class RoadWithAutoLine extends Block {
     }
 
     /** 水平角落方向（偏 45° 的方向）。 */
-    private enum HorizontalCornerDirection {
+    enum HorizontalCornerDirection {
         SOUTH_WEST(Direction.SOUTH, Direction.WEST),
         NORTH_WEST(Direction.NORTH, Direction.WEST),
         NORTH_EAST(Direction.NORTH, Direction.EAST),
@@ -841,10 +924,19 @@ public abstract class RoadWithAutoLine extends Block {
         boolean hasDirection(Direction direction) {
             return direction == dir1 || direction == dir2;
         }
+
+        HorizontalCornerDirection mirror(Direction direction) {
+            final BlockMirror mirror = switch (direction.getAxis()) {
+                case X -> BlockMirror.LEFT_RIGHT;
+                case Z -> BlockMirror.FRONT_BACK;
+                default -> BlockMirror.NONE;
+            };
+            return fromDirections(mirror.apply(dir1), mirror.apply(dir2));
+        }
     }
 
     /** 八方向（四正方向 + 四角落方向）。 */
-    private enum EightHorizontalDirection {
+    enum EightHorizontalDirection {
         SOUTH(Direction.SOUTH),
         SOUTH_WEST(HorizontalCornerDirection.SOUTH_WEST),
         WEST(Direction.WEST),
@@ -897,14 +989,14 @@ public abstract class RoadWithAutoLine extends Block {
         }
     }
 
-    private enum WhetherConnected {
+    enum WhetherConnected {
         NOT_CONNECTED,
         MAY_CONNECT,
         CONNECTED
     }
 
     /** 表示一个道路在一个方向上的连接状态。 */
-    private record RoadConnectionState(WhetherConnected whetherConnected, LineColor lineColor, EightHorizontalDirection direction, LineType lineType, LineOffset lineOffset) {
+    record RoadConnectionState(WhetherConnected whetherConnected, LineColor lineColor, EightHorizontalDirection direction, LineType lineType, LineOffset lineOffset) {
         static RoadConnectionState empty() {
             return new RoadConnectionState(WhetherConnected.NOT_CONNECTED, LineColor.NONE, null, LineType.NORMAL, null);
         }
