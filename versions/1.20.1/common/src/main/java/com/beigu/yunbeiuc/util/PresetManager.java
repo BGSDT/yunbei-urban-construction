@@ -2,7 +2,7 @@ package com.beigu.yunbeiuc.util;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.google.gson.*;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.architectury.platform.Platform;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 
 import java.io.*;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class PresetManager {
-    private static final Path PRESET_FILE = FabricLoader.getInstance().getGameDir().resolve("yunbeiuc_presets.json");
+    private static final Path PRESET_FILE = Platform.getGameFolder().resolve("yunbeiuc_presets.json");
     private static Map<String, List<TextLineData>> presets = new LinkedHashMap<>();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
