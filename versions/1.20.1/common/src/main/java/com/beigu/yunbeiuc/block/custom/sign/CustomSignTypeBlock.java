@@ -5,10 +5,13 @@ import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
@@ -20,6 +23,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class CustomSignTypeBlock extends CustomSignBlock {
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
@@ -33,6 +38,12 @@ public class CustomSignTypeBlock extends CustomSignBlock {
         Type(String name) { this.name = name; }
         @Override
         public String asString() { return this.name; }
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        tooltip.add(Text.translatable("block.yunbeiuc.sign_text.tooltip"));
+        super.appendTooltip(stack, world, tooltip, options);
     }
 
     private static final VoxelShape SHAPE_POLE_L_N = Block.createCuboidShape(0, 0, 19.1, 16, 16, 20);

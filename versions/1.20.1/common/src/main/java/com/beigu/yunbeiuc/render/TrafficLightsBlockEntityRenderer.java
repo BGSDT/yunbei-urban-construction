@@ -243,22 +243,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
         int remaining = info.getActiveRemaining();
 
-        int color;
-        if (info.isTransition()) {
-            color = switch (info.getTransitionColor()) {
-                case "red" -> 0xFF0000;
-                case "yellow" -> 0xFFF000;
-                case "green" -> 0x39FF00;
-                default -> 0xFFFFFF;
-            };
-        } else {
-            color = switch (lightState) {
-                case RED -> 0xFF0000;
-                case YELLOW -> 0xFFF000;
-                case GREEN -> 0x39FF00;
-                default -> 0xFFFFFF;
-            };
-        }
+        // 颜色直接由方块状态中的 LIGHT_STATE 决定，与灯模型同步
+        int color = switch (lightState) {
+            case RED -> 0xFF0000;
+            case YELLOW -> 0xFFF000;
+            case GREEN -> 0x39FF00;
+            default -> 0xFFFFFF;
+        };
 
         matrices.push();
 
@@ -307,22 +298,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
         int remaining = info.getActiveRemaining();
 
-        int color;
-        if (info.isTransition()) {
-            color = switch (info.getTransitionColor()) {
-                case "red" -> 0xFF0000;
-                case "yellow" -> 0xFFF000;
-                case "green" -> 0x39FF00;
-                default -> 0xFFFFFF;
-            };
-        } else {
-            color = switch (lightState) {
-                case RED -> 0xFF0000;
-                case YELLOW -> 0xFFF000;
-                case GREEN -> 0x39FF00;
-                default -> 0xFFFFFF;
-            };
-        }
+        // 颜色直接由方块状态中的 LIGHT_STATE 决定，与灯模型同步
+        int color = switch (lightState) {
+            case RED -> 0xFF0000;
+            case YELLOW -> 0xFFF000;
+            case GREEN -> 0x39FF00;
+            default -> 0xFFFFFF;
+        };
 
         matrices.push();
 

@@ -37,9 +37,6 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
     private int syncTimer = 0;
 
-    // 标记红灯是否处于过渡阶段
-    private boolean redTransition = false;
-
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
     }
@@ -123,8 +120,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     // ==================== 时间查询接口（秒数） ====================
 
     /**
-     * 获取绿灯+闪烁的总剩余秒数
-     * 到0时返回黄灯总秒数(3)
+     * 获取绿灯+闪烁的总剩余秒数。
+     * 向上取整计算，始终显示 1 到绿灯总秒数的完整序列，不会出现 0。
      */
     public int getGreenRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
@@ -134,15 +131,15 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         int yellowStartTick = totalTicks - YELLOW_DURATION;
 
         if (currentTick < yellowStartTick) {
-            int remaining = (yellowStartTick - currentTick) / 20;
-            return remaining > 0 ? remaining : YELLOW_DURATION / 20;
+            int remainingTicks = yellowStartTick - currentTick;
+            return (remainingTicks + 19) / 20;
         }
         return -1;
     }
 
     /**
-     * 获取黄灯剩余秒数
-     * 到0时返回下一个相位的总时间
+     * 获取黄灯剩余秒数。
+     * 向上取整计算，始终显示 1、2、3 的完整序列，不会出现 0。
      */
     public int getYellowRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
@@ -152,93 +149,74 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         int yellowStartTick = totalTicks - YELLOW_DURATION;
 
         if (currentTick >= yellowStartTick) {
-            int remaining = (totalTicks - currentTick) / 20;
-            if (remaining > 0) return remaining;
-            int nextPhase = (currentActivePhase + 1) % phaseCount;
-            return phaseTimes[nextPhase];
+            int remainingTicks = totalTicks - currentTick;
+            return (remainingTicks + 19) / 20;
         }
         return -1;
     }
 
     /**
-     * 获取红灯剩余秒数
-     * 到0时返回自己相位的绿灯时间（设置时间 - 3）
+     * 获取红灯剩余秒数。
+     * 向上取整计算，始终显示 1 到红灯总秒数的完整序列，不会出现 0。
      */
     public int getRedRemainingSeconds() {
-        redTransition = false;
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
         if (phaseIndex == currentActivePhase) return -1;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
-        int remaining = totalTicks - currentTick;
+        int remainingTicks = totalTicks - currentTick;
         for (int i = 1; i < phaseCount; i++) {
             int nextPhase = (currentActivePhase + i) % phaseCount;
             if (nextPhase == phaseIndex) break;
-            remaining += phaseTimes[nextPhase] * 20;
+            remainingTicks += phaseTimes[nextPhase] * 20;
         }
 
-        int sec = remaining / 20;
-        if (sec > 0) return sec;
-        redTransition = true;
-        return phaseTimes[phaseIndex] - 3;
-    }
-
-    public boolean isRedTransition() {
-        return redTransition;
+        return (remainingTicks + 19) / 20;
     }
 
     /**
-     * 获取完整的灯状态信息
+     * 获取完整的灯状态信息。
+     * 活动阶段与颜色完全由方块状态中的 LIGHT_STATE 决定，
+     * 与灯模型（renderLogo）共用同一个权威状态，保证变色与灯状态同 tick 同步。
      */
     public LightTimingInfo getLightTimingInfo() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) {
-            return new LightTimingInfo("无", -1, -1, -1, -1, false, "white");
+            return new LightTimingInfo("无", -1, -1, -1, -1);
         }
 
-        int greenSec = getGreenRemainingSeconds();
-        int yellowSec = getYellowRemainingSeconds();
-        int redSec = getRedRemainingSeconds();
+        BlockState currentState = getCachedState();
+        if (!currentState.contains(TrafficLightsBlock.LIGHT_STATE)) {
+            return new LightTimingInfo("无", -1, -1, -1, -1);
+        }
+
+        TrafficLightsBlock.LightState lightState = currentState.get(TrafficLightsBlock.LIGHT_STATE);
 
         String activeColor;
         int activeRemaining;
-        boolean isTransition = false;
-        String transitionColor = "white";
+        int redSec = -1;
+        int yellowSec = -1;
+        int greenSec = -1;
 
-        if (greenSec >= 0) {
-            activeColor = "绿灯";
-            activeRemaining = greenSec;
-            // 只有绿灯的最后一个数字(显示3)才变色
-            // getGreenRemainingSeconds() 在 remaining<=0 时返回 3
-            // 此时 yellowStartTick - currentTick <= 0，即绿灯阶段已结束
-            int totalTicks = phaseTimes[currentActivePhase] * 20;
-            int yellowStartTick = totalTicks - YELLOW_DURATION;
-            if (currentTick >= yellowStartTick - 20 && currentTick < yellowStartTick) {
-                isTransition = true;
-                transitionColor = "yellow";
+        switch (lightState) {
+            case RED -> {
+                redSec = getRedRemainingSeconds();
+                activeColor = "红灯";
+                activeRemaining = redSec;
             }
-        } else if (yellowSec >= 0) {
-            activeColor = "黄灯";
-            activeRemaining = yellowSec;
-            // 只有黄灯的最后一个数字(显示下一个相位总时间)才变色
-            int totalTicks = phaseTimes[currentActivePhase] * 20;
-            if (currentTick >= totalTicks - 20) {
-                isTransition = true;
-                transitionColor = "red";
+            case YELLOW -> {
+                yellowSec = getYellowRemainingSeconds();
+                activeColor = "黄灯";
+                activeRemaining = yellowSec;
             }
-        } else if (redSec >= 0) {
-            activeColor = "红灯";
-            activeRemaining = redSec;
-            // 只有红灯的最后一个数字(显示自己绿灯时间)才变色
-            if (isRedTransition()) {
-                isTransition = true;
-                transitionColor = "green";
+            // GREEN 与 GRAY（闪烁）阶段统一按绿灯剩余处理
+            default -> {
+                greenSec = getGreenRemainingSeconds();
+                activeColor = "绿灯";
+                activeRemaining = greenSec;
             }
-        } else {
-            activeColor = "无";
-            activeRemaining = -1;
         }
 
-        return new LightTimingInfo(activeColor, activeRemaining, redSec, yellowSec, greenSec, isTransition, transitionColor);
+        return new LightTimingInfo(activeColor, activeRemaining, redSec, yellowSec, greenSec);
     }
 
     // ==================== 相位控制 ====================
@@ -484,19 +462,14 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         private final int redRemaining;
         private final int yellowRemaining;
         private final int greenRemaining;
-        private final boolean isTransition;
-        private final String transitionColor;
 
         public LightTimingInfo(String activeColor, int activeRemaining,
-                               int redRemaining, int yellowRemaining, int greenRemaining,
-                               boolean isTransition, String transitionColor) {
+                               int redRemaining, int yellowRemaining, int greenRemaining) {
             this.activeColor = activeColor;
             this.activeRemaining = activeRemaining;
             this.redRemaining = redRemaining;
             this.yellowRemaining = yellowRemaining;
             this.greenRemaining = greenRemaining;
-            this.isTransition = isTransition;
-            this.transitionColor = transitionColor;
         }
 
         public String getActiveColor() { return activeColor; }
@@ -504,7 +477,5 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         public int getRedRemaining() { return redRemaining; }
         public int getYellowRemaining() { return yellowRemaining; }
         public int getGreenRemaining() { return greenRemaining; }
-        public boolean isTransition() { return isTransition; }
-        public String getTransitionColor() { return transitionColor; }
     }
 }

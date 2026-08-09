@@ -62,12 +62,6 @@ public class CustomSignBlock extends BlockWithEntity {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.sign_text.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
-    }
-
-    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
