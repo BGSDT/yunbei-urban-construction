@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.forge.client;
 
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
+import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
@@ -21,7 +22,7 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderLayer cutout = RenderLayer.getCutoutMipped();
             RenderLayer translucent = RenderLayer.getTranslucent();
 
-            SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> {
+            RoadBlocks.BLOCKS.forEach(blockRegistrySupplier -> {
                 RenderTypeRegistry.register(cutout, blockRegistrySupplier.get());
             });
             
