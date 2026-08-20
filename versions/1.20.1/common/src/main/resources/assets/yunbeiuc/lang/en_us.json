@@ -180,6 +180,8 @@
   "block.yunbeiuc.road_closed_barricade_guardrail_2": "Construction Barricade Type 2",
   "block.yunbeiuc.road_closed_barricade_guardrail_3": "Construction Barricade Type 3",
   "block.yunbeiuc.road_closed_barricade_guardrail_4": "Construction Barricade Type 4",
+  "block.yunbeiuc.caltrop_red": "Caltrop (Red)",
+  "block.yunbeiuc.caltrop_yellow": "Caltrop (Yellow)",
   "block.yunbeiuc.road_warning_pole_red": "Warning Pole (Red)",
   "block.yunbeiuc.road_warning_pole_yellow": "Warning Pole (Yellow)",
   "block.yunbeiuc.road_warning_pole_green": "Warning Pole (Green)",

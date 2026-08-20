@@ -53,6 +53,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             return;
         }
 
+        normalizePhaseData();
+
         currentTick++;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
@@ -73,8 +75,33 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         updateLightState();
     }
 
+    /**
+     * 校正相位数据的一致性，防止 phaseTimes 数组长度与 phaseCount 不一致时发生数组越界崩溃。
+     * 以 phaseTimes.length 为唯一依据；并钳制 currentActivePhase / phaseIndex 到合法范围。
+     */
+    private void normalizePhaseData() {
+        if (phaseTimes != null && phaseTimes.length > 0) {
+            phaseCount = phaseTimes.length;
+        } else {
+            phaseTimes = null;
+            phaseCount = 0;
+            phaseIndex = -1;
+            currentActivePhase = 0;
+            cycleActive = false;
+            return;
+        }
+        if (currentActivePhase < 0 || currentActivePhase >= phaseCount) {
+            currentActivePhase = 0;
+        }
+        if (phaseIndex < -1 || phaseIndex >= phaseCount) {
+            phaseIndex = -1;
+        }
+    }
+
     private void updateLightState() {
         if (world == null || world.isClient() || phaseTimes == null || phaseCount <= 0) return;
+
+        normalizePhaseData();
 
         BlockState currentState = getCachedState();
         if (!currentState.contains(TrafficLightsBlock.LIGHT_STATE)) return;
@@ -132,6 +159,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
         if (phaseIndex != currentActivePhase) return -1;
 
+        normalizePhaseData();
+
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int yellowStartTick = totalTicks - YELLOW_DURATION;
 
@@ -149,6 +178,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     public int getYellowRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
         if (phaseIndex != currentActivePhase) return -1;
+
+        normalizePhaseData();
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int yellowStartTick = totalTicks - YELLOW_DURATION;
@@ -170,6 +201,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         redTransition = false;
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
         if (phaseIndex == currentActivePhase) return -1;
+
+        normalizePhaseData();
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int remaining = totalTicks - currentTick;
@@ -320,8 +353,9 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     // ==================== 设置器 ====================
 
     public void setTimings(int phaseCount, int[] timings) {
-        this.phaseCount = phaseCount;
+        // phaseCount 以 timings.length 为准，防止两者不一致导致后续数组越界
         this.phaseTimes = timings;
+        this.phaseCount = timings != null ? timings.length : 0;
         this.phaseIndex = -1;
         startCycle();
         markDirtyAndUpdate();
@@ -398,6 +432,9 @@ public class TrafficLightsBlockEntity extends BlockEntity {
                 groupPositions.add(pos);
             }
         }
+
+        // 兼容旧存档：校正 phaseCount 与 phaseTimes 长度，并钳制相位索引
+        normalizePhaseData();
     }
 
     @Override

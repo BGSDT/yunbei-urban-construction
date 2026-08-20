@@ -186,6 +186,9 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
     public static final RegistrySupplier<Block> ROAD_CLOSED_BARRICADE_GUARDRAIL_3 = BLOCKS.register("road_closed_barricade_guardrail_3", () -> new RoadClosedBarricadeGuardrail3(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_CLOSED_BARRICADE_GUARDRAIL_4 = BLOCKS.register("road_closed_barricade_guardrail_4", () -> new RoadClosedBarricadeGuardrail4(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
+    public static final RegistrySupplier<Block> CALTROP_RED = BLOCKS.register("caltrop_red", () -> new CaltropBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> CALTROP_YELLOW = BLOCKS.register("caltrop_yellow", () -> new CaltropBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
     public static final RegistrySupplier<Block> ROAD_WARNING_POLE_RED = BLOCKS.register("road_warning_pole_red", () -> new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> ROAD_WARNING_POLE_YELLOW = BLOCKS.register("road_warning_pole_yellow", () -> new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> ROAD_WARNING_POLE_GREEN = BLOCKS.register("road_warning_pole_green", () -> new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));

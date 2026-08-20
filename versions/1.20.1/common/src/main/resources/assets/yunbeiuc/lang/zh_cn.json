@@ -180,6 +180,8 @@
   "block.yunbeiuc.road_closed_barricade_guardrail_2": "施工路障2型",
   "block.yunbeiuc.road_closed_barricade_guardrail_3": "施工路障3型",
   "block.yunbeiuc.road_closed_barricade_guardrail_4": "施工路障4型",
+  "block.yunbeiuc.caltrop_red": "拒马（红色）",
+  "block.yunbeiuc.caltrop_yellow": "拒马（黄色）",
   "block.yunbeiuc.road_warning_pole_red": "警示柱（红色）",
   "block.yunbeiuc.road_warning_pole_yellow": "警示柱（黄色）",
   "block.yunbeiuc.road_warning_pole_green": "警示柱（绿色）",
