@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier;
 
 public class  ModMessages {
 
-    public static final Identifier UPDATE_ROAD_POLES_TEXT = id("update_road_poles_text");
     public static final Identifier UPDATE_FLAG = id("update_flag");
     public static final Identifier UPDATE_ROAD_NAME_SIGN = id("update_road_name_sign");
     public static final Identifier UPDATE_TRAFFIC_LIGHTS = id("update_traffic_lights");
@@ -50,11 +49,6 @@ public class  ModMessages {
     }
 
     public static void registerC2SPackets() {
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_ROAD_POLES_TEXT, (buf, context) -> {
-            RoadPoleTextDisplayUpdatePacket packet = new RoadPoleTextDisplayUpdatePacket(buf);
-            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
-        });
-
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_FLAG, (buf, context) -> {
             FlagUpdatePacket packet = new FlagUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));

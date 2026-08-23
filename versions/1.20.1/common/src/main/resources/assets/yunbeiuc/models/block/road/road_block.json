@@ -1,7 +1,8 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "yunbeiuc:block/road_block"
+    "all": "yunbeiuc:block/road_block",
+    "particle": "yunbeiuc:block/road_block"
   },
   "display": {
     "gui": {

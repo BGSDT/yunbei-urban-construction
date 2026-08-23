@@ -218,7 +218,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.SEE_THROUGH,
+                TextRenderer.TextLayerType.NORMAL,
                 0,
                 light
         );
@@ -231,7 +231,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.SEE_THROUGH,
+                TextRenderer.TextLayerType.NORMAL,
                 0,
                 light
         );

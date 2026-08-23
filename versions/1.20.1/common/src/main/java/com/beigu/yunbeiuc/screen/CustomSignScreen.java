@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.beigu.yunbeiuc.network.CustomSignUpdatePacket;
@@ -26,11 +25,13 @@ public class CustomSignScreen extends Screen {
     private static final int PANEL_BOTTOM_HEIGHT_RATIO = 5;
     private static final int ADD_BUTTON_WIDTH = 20;
     private static final int BTN_SIZE = 20;
+    private static final int ROT_BTN_WIDTH = 24;
     private static final int BTN_GAP = 5;
     private static final int MAX_VISIBLE_TABS = 8;
     private static final int SCROLL_BTN_WIDTH = 14;
     private static final int SAVE_BTN_ROW_HEIGHT = 22;
     private static final int INFO_PANEL_WIDTH = 100;
+    private static final float SCALE_DISPLAY_FACTOR = 16f;
 
     private final CustomSignBlockEntity blockEntity;
     private final BlockPos blockPos;
@@ -42,6 +43,8 @@ public class CustomSignScreen extends Screen {
 
     private TextFieldWidget textField;
     private ButtonWidget xButton, yButton, zButton, fontSizeButton, colorButton;
+    private ButtonWidget rxButton, ryButton, rzButton;
+    private ButtonWidget sxButton, syButton, szButton;
     private ButtonWidget boldButton, italicButton, underlineButton, shadowButton;
     private ButtonWidget hAlignButton, vAlignButton, clearFormatButton;
 
@@ -55,6 +58,12 @@ public class CustomSignScreen extends Screen {
     private boolean presetLoadMode = false;
     private final Set<Integer> selectedPresetIndices = new HashSet<>();
     private ButtonWidget savePresetButton;
+
+    private int lineActionIndex = -1;
+    private TextLineData clipboardData = null;
+    private boolean formatPainterMode = false;
+    private int formatPainterSourceIndex = -1;
+    private ButtonWidget copyLineButton, pasteLineButton, deleteLineButton, formatPainterButton;
     private TextFieldWidget presetNameField;
     private ButtonWidget confirmSaveButton, cancelPresetButton, cancelLoadButton;
     private final List<ButtonWidget> presetButtons = new ArrayList<>();
@@ -96,6 +105,48 @@ public class CustomSignScreen extends Screen {
         }).dimensions(sw / 2 - 40, panelTopY + panelTopHeight + 1, 80, 20).build();
         savePresetButton.visible = false;
 
+        int lineActionBtnW = 45, lineActionGap = 4;
+        int lineActionTotalW = lineActionBtnW * 4 + lineActionGap * 3;
+        int lineActionStartX = sw / 2 - lineActionTotalW / 2;
+        int lineActionY = panelTopY + panelTopHeight + 1;
+
+        copyLineButton = ButtonWidget.builder(Text.literal("复制"), btn -> {
+            if (lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
+                clipboardData = textLineWidgets.get(lineActionIndex).data.copy();
+                refreshTopPanel();
+            }
+        }).dimensions(lineActionStartX, lineActionY, lineActionBtnW, 20).build();
+        copyLineButton.visible = false;
+
+        pasteLineButton = ButtonWidget.builder(Text.literal("粘贴"), btn -> {
+            if (clipboardData != null && lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
+                textLineWidgets.get(lineActionIndex).data.applyFrom(clipboardData);
+                if (selectedIndex == lineActionIndex) updateBottomPanelDisplay();
+                lineActionIndex = -1;
+                refreshTopPanel(); refreshBottomPanel();
+                syncAndUpdateClient();
+                sendUpdateToServer();
+            }
+        }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap), lineActionY, lineActionBtnW, 20).build();
+        pasteLineButton.visible = false;
+
+        deleteLineButton = ButtonWidget.builder(Text.literal("删除"), btn -> {
+            if (lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
+                deleteTextLine(lineActionIndex);
+            }
+        }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap) * 2, lineActionY, lineActionBtnW, 20).build();
+        deleteLineButton.visible = false;
+
+        formatPainterButton = ButtonWidget.builder(Text.literal("格式刷"), btn -> {
+            if (lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
+                formatPainterMode = true;
+                formatPainterSourceIndex = lineActionIndex;
+                lineActionIndex = -1;
+                refreshTopPanel();
+            }
+        }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap) * 3, lineActionY, lineActionBtnW, 20).build();
+        formatPainterButton.visible = false;
+
         addLineButton = ButtonWidget.builder(Text.literal("+"), button -> {
             if (presetSelectMode || presetSaveMode || presetLoadMode) return;
             TextLineData newData = new TextLineData("Text");
@@ -113,6 +164,10 @@ public class CustomSignScreen extends Screen {
         refreshTopPanel(); refreshBottomPanel();
         this.addDrawableChild(addLineButton);
         this.addDrawableChild(savePresetButton);
+        this.addDrawableChild(copyLineButton);
+        this.addDrawableChild(pasteLineButton);
+        this.addDrawableChild(deleteLineButton);
+        this.addDrawableChild(formatPainterButton);
     }
 
     private void createBottomPanelWidgets() {
@@ -128,11 +183,13 @@ public class CustomSignScreen extends Screen {
         });
 
         xButton = makeXYZButton("X", 0); yButton = makeXYZButton("Y", 1); zButton = makeXYZButton("Z", 4);
+        rxButton = makeRotButton("RX", 5); ryButton = makeRotButton("RY", 6); rzButton = makeRotButton("RZ", 7);
+        sxButton = makeScaleButton("SX", 8); syButton = makeScaleButton("SY", 9); szButton = makeScaleButton("SZ", 10);
         fontSizeButton = ButtonWidget.builder(Text.literal("S"), button -> {
             if (hasControlDown()) enterPreciseMode(2);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
-                d.setFontSize(Math.max(0.1f, d.getFontSize() + (hasAltDown() ? 1f/32f : 1f/16f)));
+                d.setFontSize(Math.max(0.1f, d.getFontSize() + stepFor(1f/16f, 1f/32f)));
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
@@ -196,8 +253,38 @@ public class CustomSignScreen extends Screen {
             if (hasControlDown()) enterPreciseMode(type);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
-                float step = hasAltDown() ? 0.5f : 1.0f;
+                float step = stepFor(1.0f, 0.5f);
                 switch (type) { case 0 -> d.setXOffset(d.getXOffset() + step); case 1 -> d.setYOffset(d.getYOffset() + step); case 4 -> d.setZOffset(d.getZOffset() + step); }
+                syncAndUpdateClient();
+                sendUpdateToServer();
+            }
+        }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
+    }
+
+    private ButtonWidget makeRotButton(String label, int type) {
+        return ButtonWidget.builder(Text.literal(label), button -> {
+            if (hasControlDown()) enterPreciseMode(type);
+            else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
+                var d = textLineWidgets.get(selectedIndex).data;
+                float step = stepFor(15.0f, 5.0f);
+                switch (type) { case 5 -> d.setRotX(d.getRotX() + step); case 6 -> d.setRotY(d.getRotY() + step); case 7 -> d.setRotZ(d.getRotZ() + step); }
+                syncAndUpdateClient();
+                sendUpdateToServer();
+            }
+        }).dimensions(0, 0, ROT_BTN_WIDTH, BTN_SIZE).build();
+    }
+
+    private ButtonWidget makeScaleButton(String label, int type) {
+        return ButtonWidget.builder(Text.literal(label), button -> {
+            if (hasControlDown()) enterPreciseMode(type);
+            else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
+                var d = textLineWidgets.get(selectedIndex).data;
+                float step = stepFor(1f/16f, 1f/32f);
+                switch (type) {
+                    case 8 -> d.setScaleX(Math.max(0.1f, d.getScaleX() + step));
+                    case 9 -> d.setScaleY(Math.max(0.1f, d.getScaleY() + step));
+                    case 10 -> d.setScaleZ(Math.max(0.1f, d.getScaleZ() + step));
+                }
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
@@ -220,6 +307,8 @@ public class CustomSignScreen extends Screen {
     private String getHAlignText(int h) { return switch (h) { case 0 -> "左对齐"; case 1 -> "水平居中"; case 2 -> "右对齐"; default -> "水平居中"; }; }
     private String getVAlignText(int v) { return switch (v) { case 0 -> "顶部对齐"; case 1 -> "垂直居中"; case 2 -> "底部对齐"; default -> "垂直居中"; }; }
 
+    private float stepFor(float base, float altStep) { return hasShiftDown() ? base * 4f : (hasAltDown() ? altStep : base); }
+
     private void enterPreciseMode(int type) { preciseInputMode = true; preciseInputType = type; refreshBottomPanel(); }
     private void exitPreciseMode() { preciseInputMode = false; refreshBottomPanel(); }
 
@@ -230,8 +319,12 @@ public class CustomSignScreen extends Screen {
             var d = textLineWidgets.get(selectedIndex).data;
             preciseInputField.setText(switch (preciseInputType) {
                 case 0 -> String.format("%.1f", d.getXOffset()); case 1 -> String.format("%.1f", d.getYOffset());
-                case 2 -> String.format("%.2f", d.getFontSize()); case 3 -> String.format("#%06X", d.getColor());
-                case 4 -> String.format("%.1f", d.getZOffset()); default -> "0";
+                case 2 -> String.format("%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR); case 3 -> String.format("#%06X", d.getColor());
+                case 4 -> String.format("%.1f", d.getZOffset());
+                case 5 -> String.format("%.1f", d.getRotX()); case 6 -> String.format("%.1f", d.getRotY());
+                case 7 -> String.format("%.1f", d.getRotZ());
+                case 8 -> String.format("%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR); case 9 -> String.format("%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR);
+                case 10 -> String.format("%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR); default -> "0";
             });
         }
         preciseInputField.setChangedListener(text -> {
@@ -240,9 +333,14 @@ public class CustomSignScreen extends Screen {
                 try {
                     switch (preciseInputType) {
                         case 0 -> d.setXOffset(Float.parseFloat(text)); case 1 -> d.setYOffset(Float.parseFloat(text));
-                        case 2 -> d.setFontSize(Math.max(0.1f, Float.parseFloat(text)));
+                        case 2 -> d.setFontSize(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
                         case 3 -> { String hex = text.replace("#", "").trim(); if (hex.length() == 6) { d.setColor(Integer.parseInt(hex, 16)); colorButton.setMessage(Text.literal("■").styled(s -> s.withColor(d.getColor()))); } }
                         case 4 -> d.setZOffset(Float.parseFloat(text));
+                        case 5 -> d.setRotX(Float.parseFloat(text)); case 6 -> d.setRotY(Float.parseFloat(text));
+                        case 7 -> d.setRotZ(Float.parseFloat(text));
+                        case 8 -> d.setScaleX(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
+                        case 9 -> d.setScaleY(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
+                        case 10 -> d.setScaleZ(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
                     }
                 } catch (NumberFormatException ignored) {}
                 syncAndUpdateClient();
@@ -324,12 +422,15 @@ public class CustomSignScreen extends Screen {
                 if (displayText.isEmpty()) displayText = "(empty)";
 
                 ButtonWidget btn = ButtonWidget.builder(Text.literal(displayText), button -> {
-                    if (presetSelectMode && !presetSaveMode && !presetLoadMode) {
+                    if (formatPainterMode) {
+                        applyFormatPainter(idx);
+                    } else if (presetSelectMode && !presetSaveMode && !presetLoadMode) {
                         if (selectedPresetIndices.contains(idx)) selectedPresetIndices.remove(idx);
                         else selectedPresetIndices.add(idx);
                         refreshTopPanel();
                     } else if (!presetSaveMode && !presetLoadMode) {
-                        selectedIndex = idx; preciseInputMode = false; refreshBottomPanel();
+                        selectedIndex = idx; preciseInputMode = false; lineActionIndex = -1;
+                        refreshBottomPanel(); refreshTopPanel();
                     }
                 }).dimensions(startX + i * (btnWidth + spacing), panelTopY + 2, btnWidth, btnHeight).build();
                 textButtons.add(btn); this.addDrawableChild(btn);
@@ -337,10 +438,17 @@ public class CustomSignScreen extends Screen {
         }
         if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
         savePresetButton.visible = presetSelectMode && !selectedPresetIndices.isEmpty() && !presetSaveMode && !presetLoadMode;
+        boolean showLineActions = lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size() && !presetSelectMode && !presetSaveMode && !presetLoadMode;
+        copyLineButton.visible = showLineActions;
+        pasteLineButton.visible = showLineActions && clipboardData != null;
+        deleteLineButton.visible = showLineActions;
+        formatPainterButton.visible = showLineActions;
     }
 
     private void refreshBottomPanel() {
         this.remove(textField); this.remove(xButton); this.remove(yButton); this.remove(zButton);
+        this.remove(rxButton); this.remove(ryButton); this.remove(rzButton);
+        this.remove(sxButton); this.remove(syButton); this.remove(szButton);
         this.remove(fontSizeButton); this.remove(colorButton); this.remove(boldButton); this.remove(italicButton);
         this.remove(underlineButton); this.remove(shadowButton); this.remove(hAlignButton); this.remove(vAlignButton);
         this.remove(clearFormatButton);
@@ -383,6 +491,12 @@ public class CustomSignScreen extends Screen {
         xButton.setPosition(cx, y2); this.addDrawableChild(xButton); cx += BTN_SIZE + BTN_GAP;
         yButton.setPosition(cx, y2); this.addDrawableChild(yButton); cx += BTN_SIZE + BTN_GAP;
         zButton.setPosition(cx, y2); this.addDrawableChild(zButton); cx += BTN_SIZE + BTN_GAP;
+        rxButton.setPosition(cx, y2); this.addDrawableChild(rxButton); cx += ROT_BTN_WIDTH + BTN_GAP;
+        ryButton.setPosition(cx, y2); this.addDrawableChild(ryButton); cx += ROT_BTN_WIDTH + BTN_GAP;
+        rzButton.setPosition(cx, y2); this.addDrawableChild(rzButton); cx += ROT_BTN_WIDTH + BTN_GAP;
+        sxButton.setPosition(cx, y2); this.addDrawableChild(sxButton); cx += BTN_SIZE + BTN_GAP;
+        syButton.setPosition(cx, y2); this.addDrawableChild(syButton); cx += BTN_SIZE + BTN_GAP;
+        szButton.setPosition(cx, y2); this.addDrawableChild(szButton); cx += BTN_SIZE + BTN_GAP;
         fontSizeButton.setPosition(cx, y2); this.addDrawableChild(fontSizeButton); cx += BTN_SIZE + BTN_GAP;
         colorButton.setPosition(cx, y2); this.addDrawableChild(colorButton); cx += BTN_SIZE + BTN_GAP;
         boldButton.setPosition(cx, y2); this.addDrawableChild(boldButton); cx += BTN_SIZE + BTN_GAP;
@@ -430,14 +544,17 @@ public class CustomSignScreen extends Screen {
             return;
         }
         List<String> names = new ArrayList<>(presets.keySet());
-        int perPage = 4;
-        int btnW = (panelBottomWidth - 10) / Math.min(perPage, names.size());
-        int btnH = panelBottomHeight - 30;
+        int columns = 4, rows = 2;
+        int perPage = columns * rows;
+        int btnW = (panelBottomWidth - 10) / Math.min(columns, names.size());
+        int rowGap = 2;
+        int btnH = ((panelBottomHeight - 30) - rowGap) / rows;
         int maxOffset = Math.max(0, names.size() - perPage);
         if (presetScrollOffset > maxOffset) presetScrollOffset = maxOffset;
 
         for (int i = 0; i < Math.min(perPage, names.size() - presetScrollOffset); i++) {
             String name = names.get(presetScrollOffset + i);
+            int col = i % columns, row = i / columns;
             ButtonWidget btn = ButtonWidget.builder(Text.literal(name), b -> {
                 List<TextLineData> loaded = new ArrayList<>();
                 for (var d : presets.get(name)) loaded.add(d.copy());
@@ -449,7 +566,7 @@ public class CustomSignScreen extends Screen {
                 refreshTopPanel(); refreshBottomPanel();
                 syncAndUpdateClient();
                 sendUpdateToServer();
-            }).dimensions(panelBottomX + 5 + i * btnW, panelBottomY + 5, btnW - 2, btnH).build();
+            }).dimensions(panelBottomX + 5 + col * btnW, panelBottomY + 5 + row * (btnH + rowGap), btnW - 2, btnH).build();
             presetButtons.add(btn); this.addDrawableChild(btn);
         }
 
@@ -478,6 +595,8 @@ public class CustomSignScreen extends Screen {
         if (presetSaveMode || presetLoadMode) return super.keyPressed(keyCode, scanCode, modifiers);
         if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
             presetSelectMode = true;
+            lineActionIndex = -1;
+            formatPainterMode = false; formatPainterSourceIndex = -1;
             refreshTopPanel();
             return true;
         }
@@ -510,21 +629,21 @@ public class CustomSignScreen extends Screen {
             if (xButton != null && xButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(0); return true; }
             if (yButton != null && yButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(1); return true; }
             if (zButton != null && zButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(4); return true; }
+            if (rxButton != null && rxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(5); return true; }
+            if (ryButton != null && ryButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(6); return true; }
+            if (rzButton != null && rzButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(7); return true; }
+            if (sxButton != null && sxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(8); return true; }
+            if (syButton != null && syButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(9); return true; }
+            if (szButton != null && szButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(10); return true; }
             if (fontSizeButton != null && fontSizeButton.isMouseOver(mouseX, mouseY)) { adjustFontSize(); return true; }
             for (int i = 0; i < textButtons.size(); i++) {
                 var btn = textButtons.get(i);
                 if (mouseX >= btn.getX() && mouseX < btn.getX() + btn.getWidth() && mouseY >= btn.getY() && mouseY < btn.getY() + btn.getHeight()) {
                     int actualIdx = topScrollOffset + i;
                     if (actualIdx < textLineWidgets.size()) {
-                        blockEntity.getTextLines().remove(actualIdx); textLineWidgets.remove(actualIdx);
-                        selectedPresetIndices.remove(actualIdx);
-                        Set<Integer> newSet = new HashSet<>();
-                        for (int idx : selectedPresetIndices) newSet.add(idx > actualIdx ? idx - 1 : idx);
-                        selectedPresetIndices.clear(); selectedPresetIndices.addAll(newSet);
-                        if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
-                        preciseInputMode = false; refreshTopPanel(); refreshBottomPanel();
-                        syncAndUpdateClient();
-                        sendUpdateToServer();
+                        formatPainterMode = false; formatPainterSourceIndex = -1;
+                        lineActionIndex = actualIdx;
+                        refreshTopPanel();
                     }
                     return true;
                 }
@@ -533,11 +652,56 @@ public class CustomSignScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    private void deleteTextLine(int actualIdx) {
+        blockEntity.getTextLines().remove(actualIdx); textLineWidgets.remove(actualIdx);
+        selectedPresetIndices.remove(actualIdx);
+        Set<Integer> newSet = new HashSet<>();
+        for (int idx : selectedPresetIndices) newSet.add(idx > actualIdx ? idx - 1 : idx);
+        selectedPresetIndices.clear(); selectedPresetIndices.addAll(newSet);
+        if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
+        if (lineActionIndex == actualIdx) lineActionIndex = -1;
+        else if (lineActionIndex > actualIdx) lineActionIndex--;
+        if (formatPainterSourceIndex == actualIdx) { formatPainterMode = false; formatPainterSourceIndex = -1; }
+        else if (formatPainterSourceIndex > actualIdx) formatPainterSourceIndex--;
+        preciseInputMode = false; refreshTopPanel(); refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
+    private void applyFormatPainter(int targetIdx) {
+        if (formatPainterSourceIndex < 0 || formatPainterSourceIndex >= textLineWidgets.size()
+                || targetIdx < 0 || targetIdx >= textLineWidgets.size()) {
+            formatPainterMode = false; formatPainterSourceIndex = -1;
+            refreshTopPanel();
+            return;
+        }
+        var src = textLineWidgets.get(formatPainterSourceIndex).data;
+        var target = textLineWidgets.get(targetIdx).data;
+        target.applyFormatFrom(src);
+        formatPainterMode = false; formatPainterSourceIndex = -1;
+        if (selectedIndex == targetIdx) updateBottomPanelDisplay();
+        refreshTopPanel(); refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
     private void adjustXYZ(int type) {
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             var d = textLineWidgets.get(selectedIndex).data;
-            float step = -(hasAltDown() ? 0.5f : 1.0f);
-            switch (type) { case 0 -> d.setXOffset(d.getXOffset() + step); case 1 -> d.setYOffset(d.getYOffset() + step); case 4 -> d.setZOffset(d.getZOffset() + step); }
+            if (type == 5 || type == 6 || type == 7) {
+                float rotStep = -stepFor(15.0f, 5.0f);
+                switch (type) { case 5 -> d.setRotX(d.getRotX() + rotStep); case 6 -> d.setRotY(d.getRotY() + rotStep); case 7 -> d.setRotZ(d.getRotZ() + rotStep); }
+            } else if (type == 8 || type == 9 || type == 10) {
+                float scaleStep = -stepFor(1f/16f, 1f/32f);
+                switch (type) {
+                    case 8 -> d.setScaleX(Math.max(0.1f, d.getScaleX() + scaleStep));
+                    case 9 -> d.setScaleY(Math.max(0.1f, d.getScaleY() + scaleStep));
+                    case 10 -> d.setScaleZ(Math.max(0.1f, d.getScaleZ() + scaleStep));
+                }
+            } else {
+                float step = -stepFor(1.0f, 0.5f);
+                switch (type) { case 0 -> d.setXOffset(d.getXOffset() + step); case 1 -> d.setYOffset(d.getYOffset() + step); case 4 -> d.setZOffset(d.getZOffset() + step); }
+            }
             syncAndUpdateClient();
             sendUpdateToServer();
         }
@@ -545,7 +709,7 @@ public class CustomSignScreen extends Screen {
     private void adjustFontSize() {
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             var d = textLineWidgets.get(selectedIndex).data;
-            d.setFontSize(Math.max(0.1f, d.getFontSize() - (hasAltDown() ? 1f/32f : 1f/16f)));
+            d.setFontSize(Math.max(0.1f, d.getFontSize() - stepFor(1f/16f, 1f/32f)));
             syncAndUpdateClient();
             sendUpdateToServer();
         }
@@ -561,6 +725,11 @@ public class CustomSignScreen extends Screen {
 
         // 保存按钮行（全宽）
         context.fill(0, panelTopY + panelTopHeight, width, panelTopY + panelTopHeight + SAVE_BTN_ROW_HEIGHT, 0xAA222233);
+        if (formatPainterMode) {
+            String h = "格式刷模式：点击目标文本行标签应用格式（不含文字、位置/旋转）";
+            context.drawText(textRenderer, Text.literal(h), (width - textRenderer.getWidth(h)) / 2,
+                    panelTopY + panelTopHeight + (SAVE_BTN_ROW_HEIGHT - textRenderer.fontHeight) / 2, 0xFFFFDD55, false);
+        }
 
         // 底部面板
         context.fill(panelBottomX, panelBottomY, panelBottomX + panelBottomWidth, panelBottomY + panelBottomHeight, 0xAA333333);
@@ -570,21 +739,11 @@ public class CustomSignScreen extends Screen {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 var d = textLineWidgets.get(selectedIndex).data;
                 int lh = (panelBottomHeight - 10) / 2, y2 = panelBottomY + 5 + lh;
-                int cx = panelBottomX + 5 + (BTN_SIZE + BTN_GAP) * 5;
+                int cx = panelBottomX + 5 + (BTN_SIZE + BTN_GAP) * 8 + (ROT_BTN_WIDTH + BTN_GAP) * 3;
                 drawToggleBg(context, cx, y2, BTN_SIZE, d.isBold()); cx += BTN_SIZE + BTN_GAP;
                 drawToggleBg(context, cx, y2, BTN_SIZE, d.isItalic()); cx += BTN_SIZE + BTN_GAP;
                 drawToggleBg(context, cx, y2, BTN_SIZE, d.isUnderline()); cx += BTN_SIZE + BTN_GAP;
                 drawToggleBg(context, cx, y2, BTN_SIZE, d.isShadow());
-
-                // 在输入框右侧显示XYZSC信息
-                int infoX = panelBottomX + 5 + textField.getWidth() + 5;
-                int infoY = panelBottomY + 5;
-
-                String line1 = String.format("X:%.1f  Y:%.1f  Z:%.1f", d.getXOffset(), d.getYOffset(), d.getZOffset());
-                String line2 = String.format("S:%.2f  C:#%06X", d.getFontSize(), d.getColor());
-
-                context.drawText(textRenderer, Text.literal(line1), infoX, infoY + 2, 0xFFAAAAAA, false);
-                context.drawText(textRenderer, Text.literal(line2), infoX, infoY + 2 + textRenderer.fontHeight + 3, 0xFFAAAAAA, false);
             }
             if (textLineWidgets.isEmpty()) {
                 String h = "点击 + 添加文本, 按P加载预设";
@@ -599,7 +758,7 @@ public class CustomSignScreen extends Screen {
             String h = "暂无预设，请先保存预设";
             context.drawText(textRenderer, Text.literal(h), panelBottomX + (panelBottomWidth - textRenderer.getWidth(h))/2, panelBottomY + (panelBottomHeight - textRenderer.fontHeight)/2 - 10, 0xFFAAAAAA, false);
         } else if (preciseInputMode) {
-            String l = switch (preciseInputType) { case 0 -> "输入 X 坐标"; case 1 -> "输入 Y 坐标"; case 2 -> "输入字号"; case 3 -> "输入颜色 (#RRGGBB)"; case 4 -> "输入 Z 坐标"; default -> ""; };
+            String l = switch (preciseInputType) { case 0 -> "输入 X 坐标"; case 1 -> "输入 Y 坐标"; case 2 -> "输入字号"; case 3 -> "输入颜色 (#RRGGBB)"; case 4 -> "输入 Z 坐标"; case 5 -> "输入 X 轴旋转角度"; case 6 -> "输入 Y 轴旋转角度"; case 7 -> "输入 Z 轴旋转角度"; case 8 -> "输入 X 轴缩放"; case 9 -> "输入 Y 轴缩放"; case 10 -> "输入 Z 轴缩放"; default -> ""; };
             context.drawText(textRenderer, Text.literal(l), panelBottomX + 5, panelBottomY + 5, 0xFFAAAAAA, false);
         }
 
@@ -614,13 +773,24 @@ public class CustomSignScreen extends Screen {
         }
 
         if (!presetSaveMode && !presetLoadMode && !preciseInputMode) {
+            var d = (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) ? textLineWidgets.get(selectedIndex).data : null;
             List<TooltipEntry> tips = new ArrayList<>();
-            if (xButton != null && xButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 坐标", "左键 +1 | 右键 -1", "Alt ±0.5 | Ctrl+点击精准输入"));
-            if (yButton != null && yButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 坐标", "左键 +1 | 右键 -1", "Alt ±0.5 | Ctrl+点击精准输入"));
-            if (zButton != null && zButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 坐标", "左键 +1 | 右键 -1", "Alt ±0.5 | Ctrl+点击精准输入"));
-            if (fontSizeButton != null && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", "左键 +1/16 | 右键 -1/16", "Alt ±1/32 | Ctrl+点击精准输入"));
-            if (colorButton != null && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", "点击切换 | Ctrl+点击精准输入"));
-            if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("添加文本行", "按P加载预设"));
+            if (xButton != null && xButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 坐标", d != null ? String.format("当前值 %.1f", d.getXOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (yButton != null && yButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 坐标", d != null ? String.format("当前值 %.1f", d.getYOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (zButton != null && zButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 坐标", d != null ? String.format("当前值 %.1f", d.getZOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (rxButton != null && rxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotX()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (ryButton != null && ryButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotY()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (rzButton != null && rzButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotZ()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (sxButton != null && sxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (syButton != null && syButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (szButton != null && szButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (fontSizeButton != null && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (colorButton != null && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击精准输入"));
+            if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
+            if (copyLineButton != null && copyLineButton.visible && copyLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("复制", "复制该文本行的全部属性"));
+            if (pasteLineButton != null && pasteLineButton.visible && pasteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("粘贴", "将复制的属性覆盖到该文本行"));
+            if (deleteLineButton != null && deleteLineButton.visible && deleteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("删除", "删除该文本行"));
+            if (formatPainterButton != null && formatPainterButton.visible && formatPainterButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("格式刷", "将颜色/对齐/加粗/斜体/下划线/阴影/字号", "复制到另一文本行（不含文字、位置、旋转）"));
             if (!tips.isEmpty()) drawTooltip(context, mouseX, mouseY, tips);
         }
     }
@@ -631,17 +801,21 @@ public class CustomSignScreen extends Screen {
 
     private void drawTooltip(DrawContext context, int mx, int my, List<TooltipEntry> entries) {
         int lh = textRenderer.fontHeight + 2, mw = 0;
-        List<String> lines = new ArrayList<>();
+        List<TooltipLine> lines = new ArrayList<>();
         for (var e : entries) {
-            if (!e.title.isEmpty()) { lines.add(e.title); mw = Math.max(mw, textRenderer.getWidth(e.title)); }
-            for (String d : e.descriptions) { lines.add("  " + d); mw = Math.max(mw, textRenderer.getWidth("  " + d)); }
+            if (!e.title.isEmpty()) { lines.add(new TooltipLine(e.title, 0xFFFFFFFF)); mw = Math.max(mw, textRenderer.getWidth(e.title)); }
+            if (e.value != null) { String v = "  " + e.value; lines.add(new TooltipLine(v, 0xFFFFD966)); mw = Math.max(mw, textRenderer.getWidth(v)); }
+            for (String d : e.descriptions) { lines.add(new TooltipLine("  " + d, 0xFFAAAAAA)); mw = Math.max(mw, textRenderer.getWidth("  " + d)); }
         }
         int th = 4 + lines.size() * lh, tx = Math.min(mx + 12, width - mw - 10), ty = Math.min(my - th - 4, height - th - 4);
         if (ty < 4) ty = my + 12;
+        context.getMatrices().push();
+        context.getMatrices().translate(0, 0, 400);
         context.fill(tx, ty, tx + mw + 8, ty + th, 0xFF1E1E2E);
         context.drawBorder(tx, ty, mw + 8, th, 0xFF6B6B8A);
         int ty2 = ty + 2;
-        for (String line : lines) { context.drawText(textRenderer, Text.literal(line), tx + 4, ty2, line.startsWith("  ") ? 0xFFAAAAAA : 0xFFFFFFFF, false); ty2 += lh; }
+        for (TooltipLine line : lines) { context.drawText(textRenderer, Text.literal(line.text), tx + 4, ty2, line.color, false); ty2 += lh; }
+        context.getMatrices().pop();
     }
 
     public void sendUpdateToServer() {
@@ -679,5 +853,8 @@ public class CustomSignScreen extends Screen {
         }
     }
 
-    private record TooltipEntry(String title, String... descriptions) {}
+    private record TooltipEntry(String title, String value, String... descriptions) {
+        static TooltipEntry of(String title, String... descriptions) { return new TooltipEntry(title, null, descriptions); }
+    }
+    private record TooltipLine(String text, int color) {}
 }

@@ -1,8 +1,12 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
+import com.beigu.yunbeiuc.block.custom.sign.CustomSignBlock;
+import com.beigu.yunbeiuc.entity.GantryFrameLedEntity;
+import com.beigu.yunbeiuc.entity.RoadPoleTextDisplayEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -19,7 +23,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
-public class GantryFrameLed extends Block {
+public class GantryFrameLed extends CustomSignBlock {
     public GantryFrameLed(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(TYPE, Type.SINGLE));
@@ -28,7 +32,7 @@ public class GantryFrameLed extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_N = Block.createCuboidShape(0, 0, 2, 16, 16, 7);
-    private static final VoxelShape SHAPE_W = Block.createCuboidShape(2, 0, 0, 7, 16, 16);
+    private static  final VoxelShape SHAPE_W = Block.createCuboidShape(2, 0, 0, 7, 16, 16);
     private static final VoxelShape SHAPE_S = Block.createCuboidShape(0, 0, 2, 16, 16, 7);
     private static final VoxelShape SHAPE_E = Block.createCuboidShape(9, 0, 0, 14, 16, 16);
 
@@ -94,6 +98,11 @@ public class GantryFrameLed extends Block {
             return direction1.equals(direction);
         }
         return false;
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new GantryFrameLedEntity(pos, state);
     }
 
     public enum Type implements StringIdentifiable {

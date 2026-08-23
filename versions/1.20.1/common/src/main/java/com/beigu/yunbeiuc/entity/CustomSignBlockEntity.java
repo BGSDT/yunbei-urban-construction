@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -15,9 +16,14 @@ import java.util.List;
 
 public class CustomSignBlockEntity extends BlockEntity {
     private List<TextLineData> textLines = new ArrayList<>();
+    private boolean glowingText = false;
 
     public CustomSignBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), pos, state);
+        this(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    protected CustomSignBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public List<TextLineData> getTextLines() { return textLines; }
@@ -28,12 +34,21 @@ public class CustomSignBlockEntity extends BlockEntity {
         if (world != null) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
     }
 
+    public boolean isGlowingText() { return glowingText; }
+
+    public void setGlowingText(boolean glowingText) {
+        this.glowingText = glowingText;
+        markDirty();
+        if (world != null) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+    }
+
     @Override
     public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         NbtList list = new NbtList();
         for (TextLineData data : textLines) list.add(data.toNbt());
         nbt.put("TextLines", list);
+        nbt.putBoolean("GlowingText", glowingText);
     }
 
     @Override
@@ -42,6 +57,7 @@ public class CustomSignBlockEntity extends BlockEntity {
         textLines.clear();
         NbtList list = nbt.getList("TextLines", 10);
         for (int i = 0; i < list.size(); i++) textLines.add(TextLineData.fromNbt(list.getCompound(i)));
+        glowingText = nbt.getBoolean("GlowingText");
     }
 
     @Nullable @Override public Packet<ClientPlayPacketListener> toUpdatePacket() { return BlockEntityUpdateS2CPacket.create(this); }
@@ -50,36 +66,60 @@ public class CustomSignBlockEntity extends BlockEntity {
     public static class TextLineData {
         private String text;
         private float xOffset, yOffset, zOffset;
+        private float rotX, rotY, rotZ;
         private int color;
         private TextAlignment alignment;
         private boolean bold, italic, underline, shadow;
         private float fontSize;
+        private float scaleX, scaleY, scaleZ;
 
         public TextLineData(String text) {
             this.text = text != null ? text : "";
             this.xOffset = 0; this.yOffset = 0; this.zOffset = 0;
+            this.rotX = 0; this.rotY = 0; this.rotZ = 0;
             this.color = 0xFFFFFF; this.alignment = TextAlignment.CENTER_CENTER;
             this.bold = false; this.italic = false; this.underline = false; this.shadow = false;
             this.fontSize = 1.0f;
+            this.scaleX = 1.0f; this.scaleY = 1.0f; this.scaleZ = 1.0f;
         }
 
         public TextLineData copy() {
             TextLineData c = new TextLineData(text);
             c.xOffset = xOffset; c.yOffset = yOffset; c.zOffset = zOffset;
+            c.rotX = rotX; c.rotY = rotY; c.rotZ = rotZ;
             c.color = color; c.alignment = alignment;
             c.bold = bold; c.italic = italic; c.underline = underline; c.shadow = shadow;
             c.fontSize = fontSize;
+            c.scaleX = scaleX; c.scaleY = scaleY; c.scaleZ = scaleZ;
             return c;
+        }
+
+        public void applyFrom(TextLineData other) {
+            this.text = other.text;
+            this.xOffset = other.xOffset; this.yOffset = other.yOffset; this.zOffset = other.zOffset;
+            this.rotX = other.rotX; this.rotY = other.rotY; this.rotZ = other.rotZ;
+            this.color = other.color; this.alignment = other.alignment;
+            this.bold = other.bold; this.italic = other.italic; this.underline = other.underline; this.shadow = other.shadow;
+            this.fontSize = other.fontSize;
+            this.scaleX = other.scaleX; this.scaleY = other.scaleY; this.scaleZ = other.scaleZ;
+        }
+
+        public void applyFormatFrom(TextLineData other) {
+            this.color = other.color; this.alignment = other.alignment;
+            this.bold = other.bold; this.italic = other.italic; this.underline = other.underline; this.shadow = other.shadow;
+            this.fontSize = other.fontSize;
         }
 
         public NbtCompound toNbt() {
             NbtCompound nbt = new NbtCompound();
             nbt.putString("text", text);
             nbt.putFloat("xOffset", xOffset); nbt.putFloat("yOffset", yOffset); nbt.putFloat("zOffset", zOffset);
+            nbt.putFloat("rotX", rotX); nbt.putFloat("rotY", rotY); nbt.putFloat("rotZ", rotZ);
             nbt.putInt("color", color); nbt.putString("alignment", alignment.name());
             nbt.putBoolean("bold", bold); nbt.putBoolean("italic", italic);
             nbt.putBoolean("underline", underline); nbt.putBoolean("shadow", shadow);
             nbt.putFloat("fontSize", fontSize);
+            nbt.putFloat("scaleX", scaleX); nbt.putFloat("scaleY", scaleY); nbt.putFloat("scaleZ", scaleZ);
             return nbt;
         }
 
@@ -87,11 +127,15 @@ public class CustomSignBlockEntity extends BlockEntity {
             TextLineData data = new TextLineData(nbt.getString("text"));
             data.xOffset = nbt.getFloat("xOffset"); data.yOffset = nbt.getFloat("yOffset");
             data.zOffset = nbt.getFloat("zOffset"); data.color = nbt.getInt("color");
+            data.rotX = nbt.getFloat("rotX"); data.rotY = nbt.getFloat("rotY"); data.rotZ = nbt.getFloat("rotZ");
             try { data.alignment = TextAlignment.valueOf(nbt.getString("alignment")); }
             catch (IllegalArgumentException e) { data.alignment = TextAlignment.CENTER_CENTER; }
             data.bold = nbt.getBoolean("bold"); data.italic = nbt.getBoolean("italic");
             data.underline = nbt.getBoolean("underline"); data.shadow = nbt.getBoolean("shadow");
             data.fontSize = nbt.contains("fontSize") ? nbt.getFloat("fontSize") : 1.0f;
+            data.scaleX = nbt.contains("scaleX") ? nbt.getFloat("scaleX") : 1.0f;
+            data.scaleY = nbt.contains("scaleY") ? nbt.getFloat("scaleY") : 1.0f;
+            data.scaleZ = nbt.contains("scaleZ") ? nbt.getFloat("scaleZ") : 1.0f;
             return data;
         }
 
@@ -99,6 +143,9 @@ public class CustomSignBlockEntity extends BlockEntity {
         public float getXOffset() { return xOffset; } public void setXOffset(float x) { this.xOffset = x; }
         public float getYOffset() { return yOffset; } public void setYOffset(float y) { this.yOffset = y; }
         public float getZOffset() { return zOffset; } public void setZOffset(float z) { this.zOffset = z; }
+        public float getRotX() { return rotX; } public void setRotX(float r) { this.rotX = r; }
+        public float getRotY() { return rotY; } public void setRotY(float r) { this.rotY = r; }
+        public float getRotZ() { return rotZ; } public void setRotZ(float r) { this.rotZ = r; }
         public int getColor() { return color; } public void setColor(int c) { this.color = c; }
         public TextAlignment getAlignment() { return alignment; } public void setAlignment(TextAlignment a) { this.alignment = a; }
         public boolean isBold() { return bold; } public void setBold(boolean b) { this.bold = b; }
@@ -106,6 +153,9 @@ public class CustomSignBlockEntity extends BlockEntity {
         public boolean isUnderline() { return underline; } public void setUnderline(boolean u) { this.underline = u; }
         public boolean isShadow() { return shadow; } public void setShadow(boolean s) { this.shadow = s; }
         public float getFontSize() { return fontSize; } public void setFontSize(float s) { this.fontSize = s; }
+        public float getScaleX() { return scaleX; } public void setScaleX(float s) { this.scaleX = s; }
+        public float getScaleY() { return scaleY; } public void setScaleY(float s) { this.scaleY = s; }
+        public float getScaleZ() { return scaleZ; } public void setScaleZ(float s) { this.scaleZ = s; }
     }
 
     public enum TextAlignment {

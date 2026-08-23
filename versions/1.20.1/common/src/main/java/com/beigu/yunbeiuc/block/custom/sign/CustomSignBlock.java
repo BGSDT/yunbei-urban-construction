@@ -3,7 +3,6 @@ package com.beigu.yunbeiuc.block.custom.sign;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.screen.CustomSignScreen;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
-import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -13,6 +12,9 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -42,6 +44,13 @@ public class CustomSignBlock extends BlockWithEntity {
     public CustomSignBlock(Settings settings) {
         super(settings);
         setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        tooltip.add(Text.translatable("block.yunbeiuc.sign_text.tooltip"));
+        tooltip.add(Text.translatable("block.yunbeiuc.sign_text_light.tooltip"));
+        super.appendTooltip(stack, world, tooltip, options);
     }
 
     @Override
@@ -89,11 +98,25 @@ public class CustomSignBlock extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (player.getStackInHand(hand).getItem() == ModItems.WAND.get()) {
+        ItemStack stack = player.getStackInHand(hand);
+        if (stack.getItem() == ModItems.WAND.get()) {
             if (world.isClient) {
                 openScreen(world, pos);
             }
             return ActionResult.SUCCESS;
+        }
+        if (stack.getItem() == Items.GLOW_INK_SAC) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof CustomSignBlockEntity signEntity && !signEntity.isGlowingText()) {
+                if (!world.isClient) {
+                    signEntity.setGlowingText(true);
+                    if (!player.getAbilities().creativeMode) {
+                        stack.decrement(1);
+                    }
+                }
+                world.playSound(player, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                return ActionResult.SUCCESS;
+            }
         }
         return ActionResult.PASS;
     }

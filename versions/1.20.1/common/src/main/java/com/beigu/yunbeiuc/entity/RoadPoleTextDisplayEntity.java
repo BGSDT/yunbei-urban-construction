@@ -1,103 +1,115 @@
 package com.beigu.yunbeiuc.entity;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 
-public class RoadPoleTextDisplayEntity extends BlockEntity {
-    private String text = "";
-    private int color = 0x000000; // 默认黑色
-    private int fontSize = 25; // 默认字体大小
+public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
+    // 旧数据字段（仅用于兼容读取）
+    private String legacyText = "";
+    private int legacyColor = 0x000000;
+    private int legacyFontSize = 25;
+    private static final float DEFAULT_FONT_SIZE = 1f;
 
     public RoadPoleTextDisplayEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), pos, state);
+        // 初始化默认文本行
+        if (getTextLines().isEmpty()) {
+            TextLineData defaultLine = new TextLineData("");
+            defaultLine.setColor(0xFFFFFF);
+            defaultLine.setFontSize(DEFAULT_FONT_SIZE);
+            getTextLines().add(defaultLine);
+        }
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
+        // 先调用父类读取新格式数据
         super.readNbt(nbt);
-        this.text = nbt.getString("text");
-        this.color = nbt.getInt("color");
-        this.fontSize = nbt.getInt("fontSize");
-    }
 
-    @Override
-    protected void writeNbt(NbtCompound nbt) {
-        nbt.putString("text", this.text);
-        nbt.putInt("color", this.color);
-        nbt.putInt("fontSize", this.fontSize);
-        super.writeNbt(nbt);
-    }
+        // 如果父类没有读取到数据，尝试读取旧格式
+        if (getTextLines().isEmpty() && nbt.contains("text")) {
+            // 读取旧数据
+            legacyText = nbt.getString("text");
+            legacyColor = nbt.getInt("color");
+            legacyFontSize = nbt.getInt("fontSize");
 
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
-    }
-
-    // 文本相关方法
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-        markDirtyAndUpdate();
-    }
-
-    // 颜色相关方法
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-        markDirtyAndUpdate();
-    }
-
-    // 字体大小相关方法
-    public int getFontSize() {
-        return fontSize;
-    }
-
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
-        markDirtyAndUpdate();
-    }
-
-    // 辅助方法：标记脏数据并更新客户端
-    private void markDirtyAndUpdate() {
-        markDirty();
-        if (world != null) {
-            world.updateListeners(pos, getCachedState(), getCachedState(), Block.NOTIFY_ALL);
+            // 转换为新格式
+            TextLineData line = new TextLineData(legacyText);
+            line.setColor(legacyColor);
+            // 将旧的 fontSize (int) 转换为新的 fontSize (float)
+            line.setFontSize(legacyFontSize / 100.0f); // 假设25对应0.25f
+            line.setAlignment(TextAlignment.CENTER_CENTER);
+            getTextLines().add(line);
         }
     }
 
-    // 获取RGB颜色分量
+    // 兼容旧 API 的方法
+    public String getText() {
+        return getTextLines().isEmpty() ? "" : getTextLines().get(0).getText();
+    }
+
+    public void setText(String text) {
+        if (getTextLines().isEmpty()) {
+            TextLineData line = new TextLineData(text);
+            line.setFontSize(DEFAULT_FONT_SIZE);
+            getTextLines().add(line);
+        } else {
+            getTextLines().get(0).setText(text);
+        }
+        setTextLines(getTextLines()); // 触发更新
+    }
+
+    public int getColor() {
+        return getTextLines().isEmpty() ? 0x000000 : getTextLines().get(0).getColor();
+    }
+
+    public void setColor(int color) {
+        if (getTextLines().isEmpty()) {
+            TextLineData line = new TextLineData("");
+            line.setColor(color);
+            line.setFontSize(DEFAULT_FONT_SIZE);
+            getTextLines().add(line);
+        } else {
+            getTextLines().get(0).setColor(color);
+        }
+        setTextLines(getTextLines()); // 触发更新
+    }
+
+    public int getFontSize() {
+        if (getTextLines().isEmpty()) return 25;
+        // 将新的 float fontSize 转换回旧的 int fontSize
+        return Math.round(getTextLines().get(0).getFontSize() * 100.0f);
+    }
+
+    public void setFontSize(int fontSize) {
+        if (getTextLines().isEmpty()) {
+            TextLineData line = new TextLineData("");
+            line.setFontSize(fontSize / 100.0f);
+            getTextLines().add(line);
+        } else {
+            getTextLines().get(0).setFontSize(fontSize / 100.0f);
+        }
+        setTextLines(getTextLines()); // 触发更新
+    }
+
+    // 获取RGB颜色分量（保持兼容）
     public float getRed() {
+        int color = getColor();
         return ((color >> 16) & 0xFF) / 255.0f;
     }
 
     public float getGreen() {
+        int color = getColor();
         return ((color >> 8) & 0xFF) / 255.0f;
     }
 
     public float getBlue() {
+        int color = getColor();
         return (color & 0xFF) / 255.0f;
     }
 
     public float getAlpha() {
-        return 1.0f; // 固定不透明度
+        return 1.0f;
     }
 }

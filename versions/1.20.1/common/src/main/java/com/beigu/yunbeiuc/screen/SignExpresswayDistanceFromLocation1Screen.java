@@ -6,16 +6,13 @@ import com.beigu.yunbeiuc.network.SignExpresswayDistanceFromLocation1UpdatePacke
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-public class SignExpresswayDistanceFromLocation1Screen extends Screen {
-    private final BlockPos pos;
-
+public class SignExpresswayDistanceFromLocation1Screen extends AbstractSignFormScreen {
     private TextFieldWidget text1TextField;
     private TextFieldWidget text2TextField;
     private TextFieldWidget text3TextField;
@@ -31,8 +28,7 @@ public class SignExpresswayDistanceFromLocation1Screen extends Screen {
 
 
     public SignExpresswayDistanceFromLocation1Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_expressway_distance_from_location_1.title"));
-        this.pos = pos;
+        super(pos, "text.yunbeiuc.sign_expressway_distance_from_location_1");
     }
 
     @Override
@@ -61,16 +57,16 @@ public class SignExpresswayDistanceFromLocation1Screen extends Screen {
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
         // 第一行：text1输入框 + length1输入框
-        this.text1TextField = createTextInputField(panelX + 10, panelY + 40, existingText1);
-        this.length1TextField = createLengthInputField(panelX + 205, panelY + 40, existingLength1);
+        this.text1TextField = createTextField(panelX + 10, panelY + 40, TEXT_INPUT_WIDTH, INPUT_HEIGHT, existingText1);
+        this.length1TextField = createTextField(panelX + 205, panelY + 40, LENGTH_INPUT_WIDTH, INPUT_HEIGHT, existingLength1);
 
         // 第二行：text2输入框 + length2输入框
-        this.text2TextField = createTextInputField(panelX + 10, panelY + 70, existingText2);
-        this.length2TextField = createLengthInputField(panelX + 205, panelY + 70, existingLength2);
+        this.text2TextField = createTextField(panelX + 10, panelY + 70, TEXT_INPUT_WIDTH, INPUT_HEIGHT, existingText2);
+        this.length2TextField = createTextField(panelX + 205, panelY + 70, LENGTH_INPUT_WIDTH, INPUT_HEIGHT, existingLength2);
 
         // 第三行：text3输入框 + length3输入框
-        this.text3TextField = createTextInputField(panelX + 10, panelY + 100, existingText3);
-        this.length3TextField = createLengthInputField(panelX + 205, panelY + 100, existingLength3);
+        this.text3TextField = createTextField(panelX + 10, panelY + 100, TEXT_INPUT_WIDTH, INPUT_HEIGHT, existingText3);
+        this.length3TextField = createTextField(panelX + 205, panelY + 100, LENGTH_INPUT_WIDTH, INPUT_HEIGHT, existingLength3);
 
         // 保存和取消按钮
         int buttonY = panelY + 215;
@@ -87,35 +83,8 @@ public class SignExpresswayDistanceFromLocation1Screen extends Screen {
         );
     }
 
-    private TextFieldWidget createTextInputField(int x, int y, String existingText) {
-        TextFieldWidget field = new TextFieldWidget(
-                this.textRenderer,
-                x, y,
-                TEXT_INPUT_WIDTH, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_expressway_distance_from_location_1.content")
-        );
-        field.setMaxLength(256);
-        field.setText(existingText);
-        field.setPlaceholder(Text.translatable("text.yunbeiuc.sign_expressway_distance_from_location_1.placeholder"));
-        this.addSelectableChild(field);
-        return field;
-    }
-
-    private TextFieldWidget createLengthInputField(int x, int y, String existingText) {
-        TextFieldWidget field = new TextFieldWidget(
-                this.textRenderer,
-                x, y,
-                LENGTH_INPUT_WIDTH, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_expressway_distance_from_location_1.content")
-        );
-        field.setMaxLength(256);
-        field.setText(existingText);
-        field.setPlaceholder(Text.translatable("text.yunbeiuc.sign_expressway_distance_from_location_1.placeholder"));
-        this.addSelectableChild(field);
-        return field;
-    }
-
-    private void saveAndClose() {
+    @Override
+    protected void saveAndClose() {
         if (this.client != null && this.client.world != null) {
             String text1 = getTextSafely(this.text1TextField);
             String text2 = getTextSafely(this.text2TextField);
@@ -133,10 +102,6 @@ public class SignExpresswayDistanceFromLocation1Screen extends Screen {
         this.close();
     }
 
-    private String getTextSafely(TextFieldWidget textField) {
-        return textField != null ? textField.getText() : "";
-    }
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
@@ -144,15 +109,7 @@ public class SignExpresswayDistanceFromLocation1Screen extends Screen {
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
-
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_expressway_distance_from_location_1.title"),
-                panelX + PANEL_WIDTH / 2, panelY + 12,
-                0xFFCCCCCC
-        );
+        renderPanelBackground(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT);
 
         renderLabel(context, panelX, panelY, "1_name", 31);
         renderLabel(context, panelX, panelY, "2_name", 61);
@@ -167,41 +124,5 @@ public class SignExpresswayDistanceFromLocation1Screen extends Screen {
         renderTextField(this.length3TextField, context, mouseX, mouseY, delta);
 
         super.render(context, mouseX, mouseY, delta);
-    }
-
-    private void renderLabel(DrawContext context, int panelX, int panelY, String suffix, int yOffset) {
-        renderLabel(context, panelX, panelY, suffix, yOffset, 10);
-    }
-
-    private void renderLabel(DrawContext context, int panelX, int panelY, String suffix, int yOffset, int xOffset) {
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_expressway_distance_from_location_1." + suffix),
-                panelX + xOffset, panelY + yOffset,
-                0xFFAAAAAA
-        );
-    }
-
-    private void renderTextField(TextFieldWidget textField, DrawContext context, int mouseX, int mouseY, float delta) {
-        if (textField != null) {
-            textField.render(context, mouseX, mouseY, delta);
-        }
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
-            this.close();
-            return true;
-        } else if (keyCode == 257 || keyCode == 335) {
-            this.saveAndClose();
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean shouldPause() {
-        return false;
     }
 }

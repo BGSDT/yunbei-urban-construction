@@ -6,15 +6,13 @@ import com.beigu.yunbeiuc.network.SignGuideIntersectionAdvanceWarning1WuhanUpdat
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-public class SignGuideIntersectionAdvanceWarning1WuhanScreen extends Screen {
-    private final BlockPos pos;
+public class SignGuideIntersectionAdvanceWarning1WuhanScreen extends AbstractSignFormScreen {
     private TextFieldWidget text1TextField;
     private TextFieldWidget text2TextField;
     private TextFieldWidget cnText3TextField;
@@ -30,8 +28,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanScreen extends Screen {
     private static final int INPUT_HEIGHT = 24;
 
     public SignGuideIntersectionAdvanceWarning1WuhanScreen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.title"));
-        this.pos = pos;
+        super(pos, "text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan");
     }
 
     @Override
@@ -63,14 +60,14 @@ public class SignGuideIntersectionAdvanceWarning1WuhanScreen extends Screen {
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        this.text1TextField = createTextField(panelX + 10, panelY + 40, existingText1);
-        this.text2TextField = createTextField(panelX + 170, panelY + 40, existingText2);
-        this.cnText3TextField = createTextField(panelX + 10, panelY + 85, existingCnText3);
-        this.enText3TextField = createTextField(panelX + 170, panelY + 85, existingEnText3);
-        this.cnText4TextField = createTextField(panelX + 10, panelY + 130, existingCnText4);
-        this.enText4TextField = createTextField(panelX + 170, panelY + 130, existingEnText4);
-        this.cnText5TextField = createTextField(panelX + 10, panelY + 175, existingCnText5);
-        this.enText5TextField = createTextField(panelX + 170, panelY + 175, existingEnText5);
+        this.text1TextField = createTextField(panelX + 10, panelY + 40, INPUT_WIDTH, INPUT_HEIGHT, existingText1);
+        this.text2TextField = createTextField(panelX + 170, panelY + 40, INPUT_WIDTH, INPUT_HEIGHT, existingText2);
+        this.cnText3TextField = createTextField(panelX + 10, panelY + 85, INPUT_WIDTH, INPUT_HEIGHT, existingCnText3);
+        this.enText3TextField = createTextField(panelX + 170, panelY + 85, INPUT_WIDTH, INPUT_HEIGHT, existingEnText3);
+        this.cnText4TextField = createTextField(panelX + 10, panelY + 130, INPUT_WIDTH, INPUT_HEIGHT, existingCnText4);
+        this.enText4TextField = createTextField(panelX + 170, panelY + 130, INPUT_WIDTH, INPUT_HEIGHT, existingEnText4);
+        this.cnText5TextField = createTextField(panelX + 10, panelY + 175, INPUT_WIDTH, INPUT_HEIGHT, existingCnText5);
+        this.enText5TextField = createTextField(panelX + 170, panelY + 175, INPUT_WIDTH, INPUT_HEIGHT, existingEnText5);
 
         int buttonY = panelY + 215;
         this.addDrawableChild(
@@ -88,21 +85,8 @@ public class SignGuideIntersectionAdvanceWarning1WuhanScreen extends Screen {
         this.setFocused(this.text1TextField);
     }
 
-    private TextFieldWidget createTextField(int x, int y, String existingText) {
-        TextFieldWidget field = new TextFieldWidget(
-                this.textRenderer,
-                x, y,
-                INPUT_WIDTH, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.content")
-        );
-        field.setMaxLength(256);
-        field.setText(existingText);
-        field.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.placeholder"));
-        this.addSelectableChild(field);
-        return field;
-    }
-
-    private void saveAndClose() {
+    @Override
+    protected void saveAndClose() {
         if (this.client != null && this.client.world != null) {
             String text1 = this.text1TextField != null ? this.text1TextField.getText() : "";
             String text2 = this.text2TextField != null ? this.text2TextField.getText() : "";
@@ -128,15 +112,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanScreen extends Screen {
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
-
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_1_wuhan.title"),
-                panelX + PANEL_WIDTH / 2, panelY + 12,
-                0xFFCCCCCC
-        );
+        renderPanelBackground(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT);
 
         context.drawTextWithShadow(
                 this.textRenderer,
@@ -204,28 +180,5 @@ public class SignGuideIntersectionAdvanceWarning1WuhanScreen extends Screen {
         renderTextField(this.enText5TextField, context, mouseX, mouseY, delta);
 
         super.render(context, mouseX, mouseY, delta);
-    }
-
-    private void renderTextField(TextFieldWidget textField, DrawContext context, int mouseX, int mouseY, float delta) {
-        if (textField != null) {
-            textField.render(context, mouseX, mouseY, delta);
-        }
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) { // ESC键
-            this.close();
-            return true;
-        } else if (keyCode == 257 || keyCode == 335) { // 回车键或小键盘回车
-            this.saveAndClose();
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean shouldPause() {
-        return false;
     }
 }

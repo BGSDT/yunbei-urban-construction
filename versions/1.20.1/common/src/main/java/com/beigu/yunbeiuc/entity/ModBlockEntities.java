@@ -5,6 +5,7 @@ import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
+import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.RegistryKeys;
 
@@ -31,6 +32,11 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.create(RoadPoleTextDisplayEntity::new,
                             MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY.get()).build(null));
 
+    public static final RegistrySupplier<BlockEntityType<RoadPoleLedEntity>> ROAD_POLE_LED_ENTITY =
+            BES.register("road_pole_led_entity",
+                    () -> BlockEntityType.Builder.create(RoadPoleLedEntity::new,
+                            MunicipalBlocks.ROAD_POLE_LED.get()).build(null));
+
     public static final RegistrySupplier<BlockEntityType<FlagBlockEntity>> FLAG_BLOCK_ENTITY =
             BES.register("flag_block_entity",
                     () -> BlockEntityType.Builder.create(FlagBlockEntity::new,
@@ -41,6 +47,11 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.create(RoadNameSignBlockEntity::new,
                             MunicipalBlocks.ROAD_NAME_SIGN_RC.get(),
                             MunicipalBlocks.ROAD_NAME_SIGN_RA.get()).build(null));
+
+    public static final RegistrySupplier<BlockEntityType<GantryFrameLedEntity>> GANTRY_FRAME_LED_ENTITY =
+            BES.register("gantry_frame_led_entity",
+                    () -> BlockEntityType.Builder.create(GantryFrameLedEntity::new,
+                            MunicipalBlocks.GANTRY_FRAME_LED.get()).build(null));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionAdvanceWarning1WuhanEntity>> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY =
             BES.register("sign_guide_intersection_advance_warning_1_wuhan_entity",

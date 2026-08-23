@@ -6,15 +6,15 @@ import com.beigu.yunbeiuc.network.SignExpresswayEntranceAdvance4UpdatePacket;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-public class SignExpresswayEntranceAdvance4Screen extends Screen {
-    private final BlockPos pos;
+import java.util.function.Consumer;
+
+public class SignExpresswayEntranceAdvance4Screen extends AbstractSignFormScreen {
 
     private SignExpresswayEntranceAdvance4Entity.Direction direction1;
     private SignExpresswayEntranceAdvance4Entity.Expressway expressway1;
@@ -30,8 +30,7 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
     private static final int INPUT_HEIGHT = 20;
 
     public SignExpresswayEntranceAdvance4Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_expressway_entrance_advance_4.title"));
-        this.pos = pos;
+        super(pos, "text.yunbeiuc.sign_expressway_entrance_advance_4");
     }
 
     @Override
@@ -58,9 +57,9 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         createDirectionButtons(panelX + 10, panelY + 40, direction -> this.direction1 = direction);
         createExpresswayButtons(panelX + 210, panelY + 40, expressway -> this.expressway1 = expressway);
 
-        this.expresswayNumber1TextField = createTextField(panelX + 205, panelY + 80, existingExpresswayNumber1);
+        this.expresswayNumber1TextField = createTextField(panelX + 205, panelY + 80, INPUT_WIDTH, INPUT_HEIGHT, existingExpresswayNumber1);
 
-        this.text1TextField = createTextField(panelX + 10, panelY + 80, existingText1);
+        this.text1TextField = createTextField(panelX + 10, panelY + 80, INPUT_WIDTH, INPUT_HEIGHT, existingText1);
 
         int buttonY = panelY + 195;
         this.addDrawableChild(
@@ -76,7 +75,7 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         );
     }
 
-    private void createDirectionButtons(int x, int y, DirectionConsumer directionConsumer) {
+    private void createDirectionButtons(int x, int y, Consumer<SignExpresswayEntranceAdvance4Entity.Direction> directionConsumer) {
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.north"), button -> {
                     directionConsumer.accept(SignExpresswayEntranceAdvance4Entity.Direction.NORTH);
@@ -99,7 +98,7 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         );
     }
 
-    private void createExpresswayButtons(int x, int y, ExpresswayConsumer expresswayConsumer) {
+    private void createExpresswayButtons(int x, int y, Consumer<SignExpresswayEntranceAdvance4Entity.Expressway> expresswayConsumer) {
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.expressway.national"), button -> {
                     expresswayConsumer.accept(SignExpresswayEntranceAdvance4Entity.Expressway.NATIONAL);
@@ -112,21 +111,8 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         );
     }
 
-    private TextFieldWidget createTextField(int x, int y, String existingText) {
-        TextFieldWidget field = new TextFieldWidget(
-                this.textRenderer,
-                x, y,
-                INPUT_WIDTH, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_expressway_entrance_advance_4.content")
-        );
-        field.setMaxLength(256);
-        field.setText(existingText);
-        field.setPlaceholder(Text.translatable("text.yunbeiuc.sign_expressway_entrance_advance_4.placeholder"));
-        this.addSelectableChild(field);
-        return field;
-    }
-
-    private void saveAndClose() {
+    @Override
+    protected void saveAndClose() {
         if (this.client != null && this.client.world != null) {
             String text1 = getTextSafely(this.text1TextField);
             String expresswayNumber1 = getTextSafely(this.expresswayNumber1TextField);
@@ -140,10 +126,6 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         this.close();
     }
 
-    private String getTextSafely(TextFieldWidget textField) {
-        return textField != null ? textField.getText() : "";
-    }
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
@@ -151,15 +133,7 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
-
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_expressway_entrance_advance_4.title"),
-                panelX + PANEL_WIDTH / 2, panelY + 12,
-                0xFFCCCCCC
-        );
+        renderPanelBackground(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT);
 
         renderLabel(context, panelX, panelY, "1_name", 31);
         renderLabel(context, panelX, panelY, "expressway_number_1_name", 71, 205);
@@ -175,60 +149,5 @@ public class SignExpresswayEntranceAdvance4Screen extends Screen {
         renderTextField(this.expresswayNumber1TextField, context, mouseX, mouseY, delta);
 
         super.render(context, mouseX, mouseY, delta);
-    }
-
-    private void renderLabel(DrawContext context, int panelX, int panelY, String suffix, int yOffset) {
-        renderLabel(context, panelX, panelY, suffix, yOffset, 10);
-    }
-
-    private void renderLabel(DrawContext context, int panelX, int panelY, String suffix, int yOffset, int xOffset) {
-        context.drawTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_expressway_entrance_advance_4." + suffix),
-                panelX + xOffset, panelY + yOffset,
-                0xFFAAAAAA
-        );
-    }
-
-    private void renderStatus(DrawContext context, int panelX, int panelY, int xOffset, int yOffset, Text text) {
-        context.drawTextWithShadow(
-                this.textRenderer,
-                text,
-                panelX + xOffset, panelY + yOffset,
-                0xFFFFFF00
-        );
-    }
-
-    private void renderTextField(TextFieldWidget textField, DrawContext context, int mouseX, int mouseY, float delta) {
-        if (textField != null) {
-            textField.render(context, mouseX, mouseY, delta);
-        }
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
-            this.close();
-            return true;
-        } else if (keyCode == 257 || keyCode == 335) {
-            this.saveAndClose();
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean shouldPause() {
-        return false;
-    }
-
-    @FunctionalInterface
-    private interface DirectionConsumer {
-        void accept(SignExpresswayEntranceAdvance4Entity.Direction direction);
-    }
-
-    @FunctionalInterface
-    private interface ExpresswayConsumer {
-        void accept(SignExpresswayEntranceAdvance4Entity.Expressway expressway);
     }
 }

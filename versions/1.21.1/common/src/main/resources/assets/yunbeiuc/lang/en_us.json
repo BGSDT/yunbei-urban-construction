@@ -43,7 +43,7 @@
   "text.yunbeiuc.flag_selection.load_failed": "Load Failed",
   "block.yunbeiuc.road_detection_camera": "Road Detection/Speed Camera",
   "block.yunbeiuc.road_lighting_lamp": "Road Illuminator",
-  "block.yunbeiuc.lighting_lamp.tooltip": "Right-click with Wand to toggle light state",
+  "block.yunbeiuc.road_lighting_lamp.tooltip": "Right-click with Wand to toggle light state",
   "block.yunbeiuc.road_radar_speed_detector": "Road Radar Speed Detector",
   "block.yunbeiuc.radar_speed_detector.tooltip": "Right-click with Wand to toggle light state",
   "block.yunbeiuc.traffic_lights_gray_vertical": "Gray Vertical Traffic Lights",

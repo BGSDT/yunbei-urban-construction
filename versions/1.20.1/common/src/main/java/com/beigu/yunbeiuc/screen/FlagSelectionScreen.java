@@ -9,8 +9,6 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -18,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class FlagSelectionScreen extends Screen {
     private final List<FlagOption> options;
@@ -48,7 +47,8 @@ public class FlagSelectionScreen extends Screen {
                 40,
                 this.height - 60,
                 20,
-                this.options
+                this.options,
+                option -> setSelectedFlag(option.getFlag())
         );
 
         this.addDrawableChild(this.listWidget);
@@ -312,88 +312,12 @@ public class FlagSelectionScreen extends Screen {
         }
     }
 
-    private class FlagListWidget extends ElementListWidget<FlagListWidget.Entry> {
-        private final int listWidth;
-
-        public FlagListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, List<FlagOption> flagOptions) {
-            super(client, width, height, top, bottom, itemHeight);
-            this.listWidth = width;
-
-            for (FlagOption option : flagOptions) {
-                this.addEntry(new Entry(option));
-            }
-        }
-
-        @Override
-        public int getRowWidth() {
-            return this.listWidth - 25;
-        }
-
-        @Override
-        protected int getScrollbarPositionX() {
-            return this.getRowLeft() + this.getRowWidth() + 4;
-        }
-
-        @Override
-        public int getRowLeft() {
-            return this.left + 5;
-        }
-
-        @Override
-        public int getRowRight() {
-            return this.getRowLeft() + this.getRowWidth();
-        }
-
-        public class Entry extends ElementListWidget.Entry<Entry> {
-            private final FlagOption option;
-
-            public Entry(FlagOption option) {
-                this.option = option;
-            }
-
-            @Override
-            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                if (option.getFlag() == selectedFlag) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
-                } else if (hovered) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
-                }
-
-                // 绘制颜色方块 (16x16像素)
-                int colorSize = 16;
-                int colorX = x + 5;
-                int colorY = y + (entryHeight - colorSize) / 2;
-
-                // 绘制颜色方块
-                context.fill(colorX, colorY, colorX + colorSize, colorY + colorSize, 0xFF000000 | option.getColor());
-                context.drawBorder(colorX, colorY, colorSize, colorSize, 0xFFCCCCCC);
-
-                // 绘制文本，向右偏移给颜色方块留出空间
-                int textX = colorX + colorSize + 8;
-                context.drawTextWithShadow(
-                        textRenderer,
-                        Text.literal(option.getDisplayName()),
-                        textX,
-                        y + (entryHeight - 8) / 2,
-                        0xFFFFFF
-                );
-            }
-
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                setSelectedFlag(option.getFlag());
-                return true;
-            }
-
-            @Override
-            public List<ClickableWidget> selectableChildren() {
-                return List.of();
-            }
-
-            @Override
-            public List<ClickableWidget> children() {
-                return List.of();
-            }
+    private class FlagListWidget extends AbstractOptionListWidget<FlagOption> {
+        public FlagListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight,
+                               List<FlagOption> flagOptions, Consumer<FlagOption> onSelect) {
+            super(client, width, height, top, bottom, itemHeight, flagOptions,
+                    option -> option.getFlag() == selectedFlag, onSelect,
+                    option -> Text.literal(option.getDisplayName()), FlagOption::getColor);
         }
     }
 }

@@ -6,15 +6,14 @@ import com.beigu.yunbeiuc.network.SignGuideLaneIndicator1UpdatePacket;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-public class SignGuideLaneIndicator1Screen extends Screen {
-    private final BlockPos pos;
+import java.util.function.Consumer;
 
+public class SignGuideLaneIndicator1Screen extends AbstractSignFormScreen {
     private SignGuideLaneIndicator1Entity.Direction direction1;
     private SignGuideLaneIndicator1Entity.Direction direction2;
     private SignGuideLaneIndicator1Entity.Direction direction3;
@@ -27,8 +26,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
     private static final int DIRECTION_COUNT = 4;
 
     public SignGuideLaneIndicator1Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.title"));
-        this.pos = pos;
+        super(pos, "text.yunbeiuc.sign_guide_lane_indicator_1");
     }
 
     @Override
@@ -72,7 +70,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
         );
     }
 
-    private void createDirectionButtons(int x, int y, DirectionConsumer directionConsumer) {
+    private void createDirectionButtons(int x, int y, Consumer<SignGuideLaneIndicator1Entity.Direction> directionConsumer) {
         // 一行6个方向按钮
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left_turn"), button -> {
@@ -106,7 +104,8 @@ public class SignGuideLaneIndicator1Screen extends Screen {
         );
     }
 
-    private void saveAndClose() {
+    @Override
+    protected void saveAndClose() {
         if (this.client != null && this.client.world != null) {
             SignGuideLaneIndicator1UpdatePacket packet =
                     new SignGuideLaneIndicator1UpdatePacket(pos, direction1, direction2, direction3, direction4);
@@ -124,15 +123,7 @@ public class SignGuideLaneIndicator1Screen extends Screen {
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
-
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.title"),
-                panelX + PANEL_WIDTH / 2, panelY + 12,
-                0xFFCCCCCC
-        );
+        renderPanelBackground(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT);
 
         // 渲染标签
         for (int i = 1; i <= DIRECTION_COUNT; i++) {
@@ -167,27 +158,5 @@ public class SignGuideLaneIndicator1Screen extends Screen {
                 panelX + 10, panelY + yOffset,
                 0xFFFFFF00
         );
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
-            this.close();
-            return true;
-        } else if (keyCode == 257 || keyCode == 335) {
-            this.saveAndClose();
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean shouldPause() {
-        return false;
-    }
-
-    @FunctionalInterface
-    private interface DirectionConsumer {
-        void accept(SignGuideLaneIndicator1Entity.Direction direction);
     }
 }

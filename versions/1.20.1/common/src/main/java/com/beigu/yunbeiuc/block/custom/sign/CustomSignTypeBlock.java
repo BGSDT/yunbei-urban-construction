@@ -40,12 +40,6 @@ public class CustomSignTypeBlock extends CustomSignBlock {
         public String asString() { return this.name; }
     }
 
-    @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.sign_text.tooltip"));
-        super.appendTooltip(stack, world, tooltip, options);
-    }
-
     private static final VoxelShape SHAPE_POLE_L_N = Block.createCuboidShape(0, 0, 19.1, 16, 16, 20);
     private static final VoxelShape SHAPE_POLE_L_E = Block.createCuboidShape(-2.1, 0, 0, -1, 16, 16);
     private static final VoxelShape SHAPE_POLE_L_S = Block.createCuboidShape(0, 0, -2.1, 16, 16, -1);

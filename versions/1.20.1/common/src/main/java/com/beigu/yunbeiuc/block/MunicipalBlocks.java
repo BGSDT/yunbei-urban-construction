@@ -47,6 +47,7 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
     public static final RegistrySupplier<Block> ROAD_POLE_HORIZONTAL = BLOCKS.register("road_pole_horizontal", () -> new RoadPoleHorizontal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_POLE_TSHAPE = BLOCKS.register("road_pole_tshape", () -> new RoadPoleHorizontal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_POLE_TEXT_DISPLAY = BLOCKS.register("road_pole_text_display", () -> new RoadPoleTextDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> ROAD_POLE_LED = BLOCKS.register("road_pole_led", () -> new RoadPoleLed(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_POLE_FLAG = BLOCKS.register("road_pole_flag", () -> new RoadPoleFlag(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_POLE_LIGHT_FOUNDATIONS = BLOCKS.register("road_pole_light_foundations", () -> new RoadPoleLightFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_POLE_LIGHT_FOUNDATIONS_SLAB = BLOCKS.register("road_pole_light_foundations_slab", () -> new RoadPoleLightFoundationsSlab(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
@@ -160,8 +161,9 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
     public static final RegistrySupplier<Block> INSTRUMENT_POLE_FOUNDATIONS = BLOCKS.register("instrument_pole_foundations", () -> new InstrumentPoleFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> INSTRUMENT_POLE_LONGITUDINAL = BLOCKS.register("instrument_pole_longitudinal", () -> new InstrumentPolelLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> INSTRUMENT_CAMERA = BLOCKS.register("instrument_camera", () -> new InstrumentCamera(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final RegistrySupplier<Block> INSTRUMENT_FEE_DISPLAY = BLOCKS.register("instrument_fee_display", () -> new InstrumentFeeDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
-    public static final RegistrySupplier<Block> INSTRUMENT_LANE_INDICATOR = BLOCKS.register("instrument_lane_indicator", () -> new InstrumentLaneIndicator(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool()));
+    public static final RegistrySupplier<Block> INSTRUMENT_FEE_DISPLAY = BLOCKS.register("instrument_fee_display", () -> new InstrumentFeeDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> INSTRUMENT_LANE_INDICATOR = BLOCKS.register("instrument_lane_indicator", () -> new InstrumentLaneIndicator(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> INSTRUMENT_STROBE_LIGHT = BLOCKS.register("instrument_strobe_light", () -> new InstrumentStrobeLight(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
     public static final RegistrySupplier<Block> ROAD_RAILINGS_IRON = BLOCKS.register("road_railings_iron", () -> new RoadRailings(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_RAILINGS_IRON_ENDING_1 = BLOCKS.register("road_railings_iron_ending_1", () -> new RoadRailings(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
@@ -185,6 +187,9 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
     public static final RegistrySupplier<Block> ROAD_CLOSED_BARRICADE_GUARDRAIL_2 = BLOCKS.register("road_closed_barricade_guardrail_2", () -> new RoadClosedBarricadeGuardrail2(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_CLOSED_BARRICADE_GUARDRAIL_3 = BLOCKS.register("road_closed_barricade_guardrail_3", () -> new RoadClosedBarricadeGuardrail3(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> ROAD_CLOSED_BARRICADE_GUARDRAIL_4 = BLOCKS.register("road_closed_barricade_guardrail_4", () -> new RoadClosedBarricadeGuardrail4(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+
+    public static final RegistrySupplier<Block> SPIKED_BELT = BLOCKS.register("spiked_belt", () -> new SpikedBelt(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
+    public static final RegistrySupplier<Block> RISING_BOLLARD = BLOCKS.register("rising_bollard", () -> new RisingBollard(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
 
     public static final RegistrySupplier<Block> CALTROP_RED = BLOCKS.register("caltrop_red", () -> new CaltropBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));
     public static final RegistrySupplier<Block> CALTROP_YELLOW = BLOCKS.register("caltrop_yellow", () -> new CaltropBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).nonOpaque().requiresTool()));

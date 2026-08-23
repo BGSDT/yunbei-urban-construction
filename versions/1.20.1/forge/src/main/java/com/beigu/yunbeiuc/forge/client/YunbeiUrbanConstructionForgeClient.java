@@ -22,9 +22,7 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderLayer cutout = RenderLayer.getCutoutMipped();
             RenderLayer translucent = RenderLayer.getTranslucent();
 
-            RoadBlocks.BLOCKS.forEach(blockRegistrySupplier -> {
-                RenderTypeRegistry.register(cutout, blockRegistrySupplier.get());
-            });
+            RoadBlocks.BLOCKS.forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
             
             RenderTypeRegistry.register(cutout, MunicipalBlocks.ROAD_FLOWER_BOX_1.get());
             RenderTypeRegistry.register(cutout, MunicipalBlocks.ROAD_FLOWER_BOX_2.get());
@@ -46,14 +44,14 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_3_BLUE_NORMAL.get());
             RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_3_BLUE_TB.get());
 
-            SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> {
-                RenderTypeRegistry.register(cutout, blockRegistrySupplier.get());
-            });
+            SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
 
-            BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayBlockEntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), FlagBlockEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY.get(), RoadNameSignBlockEntityRenderer::new);
-            BlockEntityRendererFactories.register(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), TrafficLightsBlockEntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), TrafficLightsBlockEntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.GANTRY_FRAME_LED_ENTITY.get(), GantryFrameLedEntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_LED_ENTITY.get(), RoadPoleLedEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY.get(), SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_ENTITY.get(), SignGuideIntersectionAdvanceWarning1EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY.get(), SignGuideIntersectionAdvanceWarning3EntityRenderer::new);

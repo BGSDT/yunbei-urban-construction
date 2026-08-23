@@ -61,6 +61,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> ROAD_POLE_HORIZONTAL = registerBlockItem(MunicipalBlocks.ROAD_POLE_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_POLE_TSHAPE = registerBlockItem(MunicipalBlocks.ROAD_POLE_TSHAPE, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_POLE_TEXT_DISPLAY = registerBlockItem(MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> ROAD_POLE_LED = registerBlockItem(MunicipalBlocks.ROAD_POLE_LED, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_POLE_FLAG = registerBlockItem(MunicipalBlocks.ROAD_POLE_FLAG, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_POLE_LIGHT_FOUNDATIONS = registerBlockItem(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_POLE_LIGHT_FOUNDATIONS_SLAB = registerBlockItem(MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB, ALL_MUNICIPAL_ITEMS);
@@ -163,6 +164,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> INSTRUMENT_CAMERA = registerBlockItem(MunicipalBlocks.INSTRUMENT_CAMERA, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> INSTRUMENT_FEE_DISPLAY = registerBlockItem(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> INSTRUMENT_LANE_INDICATOR = registerBlockItem(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> INSTRUMENT_STROBE_LIGHT = registerBlockItem(MunicipalBlocks.INSTRUMENT_STROBE_LIGHT, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_RAILINGS_IRON = registerBlockItem(MunicipalBlocks.ROAD_RAILINGS_IRON, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_RAILINGS_IRON_ENDING_1 = registerBlockItem(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_RAILINGS_IRON_ENDING_2 = registerBlockItem(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2, ALL_MUNICIPAL_ITEMS);
@@ -182,6 +184,8 @@ public class ModItems {
     public static final RegistrySupplier<Item> ROAD_CLOSED_BARRICADE_GUARDRAIL_2 = registerBlockItem(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_2, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_CLOSED_BARRICADE_GUARDRAIL_3 = registerBlockItem(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_3, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_CLOSED_BARRICADE_GUARDRAIL_4 = registerBlockItem(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_4, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> SPIKED_BELT = registerBlockItem(MunicipalBlocks.SPIKED_BELT, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> RISING_BOLLARD = registerBlockItem(MunicipalBlocks.RISING_BOLLARD, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> CALTROP_RED = registerBlockItem(MunicipalBlocks.CALTROP_RED, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> CALTROP_YELLOW = registerBlockItem(MunicipalBlocks.CALTROP_YELLOW, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_WARNING_POLE_RED = registerBlockItem(MunicipalBlocks.ROAD_WARNING_POLE_RED, ALL_MUNICIPAL_ITEMS);

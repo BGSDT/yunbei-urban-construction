@@ -8,15 +8,13 @@ import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
-    private final BlockPos pos;
+public class SignGuideIntersectionAdvanceWarning3Screen extends AbstractSignFormScreen {
     private TextFieldWidget text1TextField;
     private TextFieldWidget cnText2TextField;
     private TextFieldWidget enText2TextField;
@@ -42,8 +40,7 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
     private boolean isWarning4;
 
     public SignGuideIntersectionAdvanceWarning3Screen(BlockPos pos) {
-        super(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.title"));
-        this.pos = pos;
+        super(pos, "text.yunbeiuc.sign_guide_intersection_advance_warning_3");
     }
 
     @Override
@@ -94,28 +91,28 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
 
         this.text1TextField = null;
         if (isWarning4) {
-            this.text1TextField = createTextField(panelX + (PANEL_WIDTH - 310) / 2, panelY + 40, 310, existingText1);
+            this.text1TextField = createTextField(panelX + (PANEL_WIDTH - 310) / 2, panelY + 40, 310, INPUT_HEIGHT, existingText1);
         }
 
         if (isWarning4) {
-            this.cnText2TextField = createTextField(panelX + 5, panelY + 85 - andInputY, INPUT_WIDTH, existingCnText2);
-            this.enText2TextField = createTextField(panelX + 85, panelY + 85 - andInputY, INPUT_WIDTH, existingEnText2);
-            this.cnText3TextField = createTextField(panelX + 165, panelY + 85 - andInputY, INPUT_WIDTH, existingCnText3);
-            this.enText3TextField = createTextField(panelX + 245, panelY + 85 - andInputY, INPUT_WIDTH, existingEnText3);
+            this.cnText2TextField = createTextField(panelX + 5, panelY + 85 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingCnText2);
+            this.enText2TextField = createTextField(panelX + 85, panelY + 85 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingEnText2);
+            this.cnText3TextField = createTextField(panelX + 165, panelY + 85 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingCnText3);
+            this.enText3TextField = createTextField(panelX + 245, panelY + 85 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingEnText3);
         } else {
-            this.cnText2TextField = createTextField(panelX + 5, panelY + 85 - andInputY, NEW_INPUT_WIDTH, existingCnText2);
-            this.enText2TextField = createTextField(panelX + 165, panelY + 85 - andInputY, NEW_INPUT_WIDTH, existingEnText2);
+            this.cnText2TextField = createTextField(panelX + 5, panelY + 85 - andInputY, NEW_INPUT_WIDTH, INPUT_HEIGHT, existingCnText2);
+            this.enText2TextField = createTextField(panelX + 165, panelY + 85 - andInputY, NEW_INPUT_WIDTH, INPUT_HEIGHT, existingEnText2);
         }
 
-        this.cnText4TextField = createTextField(panelX + 5, panelY + 130 - andInputY, INPUT_WIDTH, existingCnText4);
-        this.enText4TextField = createTextField(panelX + 85, panelY + 130 - andInputY, INPUT_WIDTH, existingEnText4);
-        this.cnText5TextField = createTextField(panelX + 165, panelY + 130 - andInputY, INPUT_WIDTH, existingCnText5);
-        this.enText5TextField = createTextField(panelX + 245, panelY + 130 - andInputY, INPUT_WIDTH, existingEnText5);
+        this.cnText4TextField = createTextField(panelX + 5, panelY + 130 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingCnText4);
+        this.enText4TextField = createTextField(panelX + 85, panelY + 130 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingEnText4);
+        this.cnText5TextField = createTextField(panelX + 165, panelY + 130 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingCnText5);
+        this.enText5TextField = createTextField(panelX + 245, panelY + 130 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingEnText5);
 
-        this.cnText6TextField = createTextField(panelX + 5, panelY + 175 - andInputY, INPUT_WIDTH, existingCnText6);
-        this.enText6TextField = createTextField(panelX + 85, panelY + 175 - andInputY, INPUT_WIDTH, existingEnText6);
-        this.cnText7TextField = createTextField(panelX + 165, panelY + 175 - andInputY, INPUT_WIDTH, existingCnText7);
-        this.enText7TextField = createTextField(panelX + 245, panelY + 175 - andInputY, INPUT_WIDTH, existingEnText7);
+        this.cnText6TextField = createTextField(panelX + 5, panelY + 175 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingCnText6);
+        this.enText6TextField = createTextField(panelX + 85, panelY + 175 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingEnText6);
+        this.cnText7TextField = createTextField(panelX + 165, panelY + 175 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingCnText7);
+        this.enText7TextField = createTextField(panelX + 245, panelY + 175 - andInputY, INPUT_WIDTH, INPUT_HEIGHT, existingEnText7);
 
         int buttonY = panelY + 215;
         this.addDrawableChild(
@@ -135,21 +132,8 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
         }
     }
 
-    private TextFieldWidget createTextField(int x, int y, int width, String existingText) {
-        TextFieldWidget field = new TextFieldWidget(
-                this.textRenderer,
-                x, y,
-                width, INPUT_HEIGHT,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.content")
-        );
-        field.setMaxLength(256);
-        field.setText(existingText);
-        field.setPlaceholder(Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.placeholder"));
-        this.addSelectableChild(field);
-        return field;
-    }
-
-    private void saveAndClose() {
+    @Override
+    protected void saveAndClose() {
         if (this.client != null && this.client.world != null) {
             String text1 = getTextSafely(this.text1TextField);
             String cnText2 = getTextSafely(this.cnText2TextField);
@@ -175,10 +159,6 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
         this.close();
     }
 
-    private String getTextSafely(TextFieldWidget textField) {
-        return textField != null ? textField.getText() : "";
-    }
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
@@ -186,15 +166,7 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
         int panelX = (this.width - PANEL_WIDTH) / 2;
         int panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
-
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.translatable("text.yunbeiuc.sign_guide_intersection_advance_warning_3.title"),
-                panelX + PANEL_WIDTH / 2, panelY + 12,
-                0xFFCCCCCC
-        );
+        renderPanelBackground(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT);
 
         if (isWarning4) {
             context.drawCenteredTextWithShadow(
@@ -266,28 +238,5 @@ public class SignGuideIntersectionAdvanceWarning3Screen extends Screen {
         renderTextField(this.enText7TextField, context, mouseX, mouseY, delta);
 
         super.render(context, mouseX, mouseY, delta);
-    }
-
-    private void renderTextField(TextFieldWidget textField, DrawContext context, int mouseX, int mouseY, float delta) {
-        if (textField != null) {
-            textField.render(context, mouseX, mouseY, delta);
-        }
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
-            this.close();
-            return true;
-        } else if (keyCode == 257 || keyCode == 335) {
-            this.saveAndClose();
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean shouldPause() {
-        return false;
     }
 }

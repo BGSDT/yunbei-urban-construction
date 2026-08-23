@@ -12,8 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -22,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TrafficLightsScreen extends Screen {
     private final BlockPos pos;
@@ -92,7 +91,8 @@ public class TrafficLightsScreen extends Screen {
                     40,
                     this.height - 60,
                     30,
-                    this.options
+                    this.options,
+                    this::setSelectedOption
             );
             this.addDrawableChild(this.listWidget);
 
@@ -354,84 +354,12 @@ public class TrafficLightsScreen extends Screen {
         }
     }
 
-    private class DirectionListWidget extends ElementListWidget<DirectionListWidget.Entry> {
-        private final int listWidth;
-
-        public DirectionListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, List<DirectionOption> directionOptions) {
-            super(client, width, height, top, bottom, itemHeight);
-            this.listWidth = width;
-
-            for (DirectionOption option : directionOptions) {
-                this.addEntry(new Entry(option));
-            }
-        }
-
-        @Override
-        public int getRowWidth() {
-            return this.listWidth - 25;
-        }
-
-        @Override
-        protected int getScrollbarPositionX() {
-            return this.getRowLeft() + this.getRowWidth() + 4;
-        }
-
-        @Override
-        public int getRowLeft() {
-            return this.left + 5;
-        }
-
-        @Override
-        public int getRowRight() {
-            return this.getRowLeft() + this.getRowWidth();
-        }
-
-        public class Entry extends ElementListWidget.Entry<Entry> {
-            private final DirectionOption option;
-
-            public Entry(DirectionOption option) {
-                this.option = option;
-            }
-
-            @Override
-            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                if (option == selectedOption) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
-                } else if (hovered) {
-                    context.fill(x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
-                }
-
-                int colorSize = 16;
-                int colorX = x + 5;
-                int colorY = y + (entryHeight - colorSize) / 2;
-                context.fill(colorX, colorY, colorX + colorSize, colorY + colorSize, 0xFF000000 | option.getColor());
-                context.drawBorder(colorX, colorY, colorSize, colorSize, 0xFFCCCCCC);
-
-                int textX = colorX + colorSize + 8;
-                context.drawTextWithShadow(
-                        textRenderer,
-                        Text.translatable(option.getTranslationKey()),
-                        textX,
-                        y + (entryHeight - 8) / 2,
-                        0xFFFFFF
-                );
-            }
-
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                setSelectedOption(option);
-                return true;
-            }
-
-            @Override
-            public List<ClickableWidget> selectableChildren() {
-                return List.of();
-            }
-
-            @Override
-            public List<ClickableWidget> children() {
-                return List.of();
-            }
+    private class DirectionListWidget extends AbstractOptionListWidget<DirectionOption> {
+        public DirectionListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight,
+                                    List<DirectionOption> directionOptions, Consumer<DirectionOption> onSelect) {
+            super(client, width, height, top, bottom, itemHeight, directionOptions,
+                    option -> option == selectedOption, onSelect,
+                    option -> Text.translatable(option.getTranslationKey()), DirectionOption::getColor);
         }
     }
 

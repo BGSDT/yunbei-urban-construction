@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 public class RoadLightingLamp extends Block {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        tooltip.add(Text.translatable("block.yunbeiuc.lighting_lamp.tooltip"));
+        tooltip.add(Text.translatable("block.yunbeiuc.road_lighting_lamp.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
     public static final BooleanProperty LIT = Properties.LIT;
@@ -112,7 +112,6 @@ public class RoadLightingLamp extends Block {
             return this.name;
         }
 
-        // 状态循环： TRUE -> FALSE -> TRUE
         public LightTFState next() {
             return switch (this) {
                 case TRUE -> FALSE;
