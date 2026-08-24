@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.screen.CustomSignScreen;
+import com.beigu.yunbeiuc.screen.TextDisplayScreen;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class CustomSignBlock extends BlockWithEntity {
+public class CustomTextDisplayBlock extends BlockWithEntity {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_NORTH = Block.createCuboidShape(0, 0, 15, 16, 16, 16);
@@ -41,7 +41,7 @@ public class CustomSignBlock extends BlockWithEntity {
     private static final VoxelShape SHAPE_EAST = Block.createCuboidShape(0, 0, 0, 1, 16, 16);
     private static final VoxelShape SHAPE_WEST = Block.createCuboidShape(15, 0, 0, 16, 16, 16);
 
-    public CustomSignBlock(Settings settings) {
+    public CustomTextDisplayBlock(Settings settings) {
         super(settings);
         setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
     }
@@ -125,7 +125,7 @@ public class CustomSignBlock extends BlockWithEntity {
     private void openScreen(World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof CustomSignBlockEntity signEntity) {
-            MinecraftClient.getInstance().setScreen(new CustomSignScreen(signEntity));
+            MinecraftClient.getInstance().setScreen(new TextDisplayScreen(signEntity));
         }
     }
 }

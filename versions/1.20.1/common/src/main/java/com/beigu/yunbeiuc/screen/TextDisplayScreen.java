@@ -20,7 +20,7 @@ import java.util.*;
 
 import static com.beigu.yunbeiuc.network.ModMessages.UPDATE_CUSTOM_SIGN;
 
-public class CustomSignScreen extends Screen {
+public class TextDisplayScreen extends Screen {
     private static final int PANEL_TOP_HEIGHT = 20;
     private static final int PANEL_BOTTOM_HEIGHT_RATIO = 5;
     private static final int ADD_BUTTON_WIDTH = 20;
@@ -48,6 +48,10 @@ public class CustomSignScreen extends Screen {
     private ButtonWidget boldButton, italicButton, underlineButton, shadowButton;
     private ButtonWidget hAlignButton, vAlignButton, clearFormatButton;
 
+    private enum Category { POSITION, ROTATION, SCALE, FONT, ALIGN }
+    private Category activeCategory = Category.POSITION;
+    private ButtonWidget posCatButton, rotCatButton, scaleCatButton, fontCatButton, alignCatButton;
+
     private boolean preciseInputMode = false;
     private TextFieldWidget preciseInputField;
     private ButtonWidget backButton;
@@ -59,7 +63,6 @@ public class CustomSignScreen extends Screen {
     private final Set<Integer> selectedPresetIndices = new HashSet<>();
     private ButtonWidget savePresetButton;
 
-    private int lineActionIndex = -1;
     private TextLineData clipboardData = null;
     private boolean formatPainterMode = false;
     private int formatPainterSourceIndex = -1;
@@ -76,7 +79,7 @@ public class CustomSignScreen extends Screen {
     private int panelTopX, panelTopY, panelTopWidth, panelTopHeight;
     private int panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight;
 
-    public CustomSignScreen(CustomSignBlockEntity blockEntity) {
+    public TextDisplayScreen(CustomSignBlockEntity blockEntity) {
         super(Text.translatable("gui.yunbeiuc.custom_sign"));
         this.blockEntity = blockEntity;
         this.blockPos = blockEntity.getPos();
@@ -105,43 +108,54 @@ public class CustomSignScreen extends Screen {
         }).dimensions(sw / 2 - 40, panelTopY + panelTopHeight + 1, 80, 20).build();
         savePresetButton.visible = false;
 
+        // 属性分类按钮靠屏幕左侧依次排列，点击后锁定并在下方显示对应控件
+        int catBtnW = 50, catBtnGap = 4;
+        int catX = 5;
+        int catY = panelTopY + panelTopHeight + 1;
+        posCatButton = ButtonWidget.builder(Text.literal("位移"), b -> selectCategory(Category.POSITION)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        rotCatButton = ButtonWidget.builder(Text.literal("旋转"), b -> selectCategory(Category.ROTATION)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        scaleCatButton = ButtonWidget.builder(Text.literal("缩放"), b -> selectCategory(Category.SCALE)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        fontCatButton = ButtonWidget.builder(Text.literal("字体"), b -> selectCategory(Category.FONT)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        alignCatButton = ButtonWidget.builder(Text.literal("对齐"), b -> selectCategory(Category.ALIGN)).dimensions(catX, catY, catBtnW, 20).build();
+        updateCategoryButtonsLocked();
+
+        // 行操作按钮靠屏幕右侧排列，正在编辑文本行时显示
         int lineActionBtnW = 45, lineActionGap = 4;
         int lineActionTotalW = lineActionBtnW * 4 + lineActionGap * 3;
-        int lineActionStartX = sw / 2 - lineActionTotalW / 2;
+        int lineActionStartX = sw - lineActionTotalW - 4;
         int lineActionY = panelTopY + panelTopHeight + 1;
 
         copyLineButton = ButtonWidget.builder(Text.literal("复制"), btn -> {
-            if (lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
-                clipboardData = textLineWidgets.get(lineActionIndex).data.copy();
+            if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                clipboardData = textLineWidgets.get(selectedIndex).data.copy();
                 refreshTopPanel();
             }
         }).dimensions(lineActionStartX, lineActionY, lineActionBtnW, 20).build();
         copyLineButton.visible = false;
 
         pasteLineButton = ButtonWidget.builder(Text.literal("粘贴"), btn -> {
-            if (clipboardData != null && lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
-                textLineWidgets.get(lineActionIndex).data.applyFrom(clipboardData);
-                if (selectedIndex == lineActionIndex) updateBottomPanelDisplay();
-                lineActionIndex = -1;
+            if (clipboardData != null && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                textLineWidgets.get(selectedIndex).data.applyFrom(clipboardData);
+                updateBottomPanelDisplay();
                 refreshTopPanel(); refreshBottomPanel();
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
         }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap), lineActionY, lineActionBtnW, 20).build();
         pasteLineButton.visible = false;
+        pasteLineButton.active = false;
 
         deleteLineButton = ButtonWidget.builder(Text.literal("删除"), btn -> {
-            if (lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
-                deleteTextLine(lineActionIndex);
+            if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                deleteTextLine(selectedIndex);
             }
         }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap) * 2, lineActionY, lineActionBtnW, 20).build();
         deleteLineButton.visible = false;
 
         formatPainterButton = ButtonWidget.builder(Text.literal("格式刷"), btn -> {
-            if (lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size()) {
+            if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 formatPainterMode = true;
-                formatPainterSourceIndex = lineActionIndex;
-                lineActionIndex = -1;
+                formatPainterSourceIndex = selectedIndex;
                 refreshTopPanel();
             }
         }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap) * 3, lineActionY, lineActionBtnW, 20).build();
@@ -164,6 +178,11 @@ public class CustomSignScreen extends Screen {
         refreshTopPanel(); refreshBottomPanel();
         this.addDrawableChild(addLineButton);
         this.addDrawableChild(savePresetButton);
+        this.addDrawableChild(posCatButton);
+        this.addDrawableChild(rotCatButton);
+        this.addDrawableChild(scaleCatButton);
+        this.addDrawableChild(fontCatButton);
+        this.addDrawableChild(alignCatButton);
         this.addDrawableChild(copyLineButton);
         this.addDrawableChild(pasteLineButton);
         this.addDrawableChild(deleteLineButton);
@@ -309,6 +328,32 @@ public class CustomSignScreen extends Screen {
 
     private float stepFor(float base, float altStep) { return hasShiftDown() ? base * 4f : (hasAltDown() ? altStep : base); }
 
+    private void selectCategory(Category c) {
+        activeCategory = c;
+        preciseInputMode = false;
+        updateCategoryButtonsLocked();
+        refreshBottomPanel();
+    }
+
+    private void updateCategoryButtonsLocked() {
+        posCatButton.active = activeCategory != Category.POSITION;
+        rotCatButton.active = activeCategory != Category.ROTATION;
+        scaleCatButton.active = activeCategory != Category.SCALE;
+        fontCatButton.active = activeCategory != Category.FONT;
+        alignCatButton.active = activeCategory != Category.ALIGN;
+    }
+
+    private String[] getCategoryStatusLines(TextLineData d) {
+        if (d == null) return new String[0];
+        return switch (activeCategory) {
+            case POSITION -> new String[]{String.format("X:%.1f", d.getXOffset()), String.format("Y:%.1f", d.getYOffset()), String.format("Z:%.1f", d.getZOffset())};
+            case ROTATION -> new String[]{String.format("RX:%.1f", d.getRotX()), String.format("RY:%.1f", d.getRotY()), String.format("RZ:%.1f", d.getRotZ())};
+            case SCALE -> new String[]{String.format("SX:%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR), String.format("SY:%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR), String.format("SZ:%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR), String.format("S:%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR)};
+            case FONT -> new String[]{String.format("颜色:#%06X", d.getColor())};
+            case ALIGN -> new String[]{getHAlignText(d.getAlignment().hAlign), getVAlignText(d.getAlignment().vAlign)};
+        };
+    }
+
     private void enterPreciseMode(int type) { preciseInputMode = true; preciseInputType = type; refreshBottomPanel(); }
     private void exitPreciseMode() { preciseInputMode = false; refreshBottomPanel(); }
 
@@ -429,18 +474,29 @@ public class CustomSignScreen extends Screen {
                         else selectedPresetIndices.add(idx);
                         refreshTopPanel();
                     } else if (!presetSaveMode && !presetLoadMode) {
-                        selectedIndex = idx; preciseInputMode = false; lineActionIndex = -1;
+                        selectedIndex = idx; preciseInputMode = false;
                         refreshBottomPanel(); refreshTopPanel();
                     }
                 }).dimensions(startX + i * (btnWidth + spacing), panelTopY + 2, btnWidth, btnHeight).build();
+                // 正在编辑的文本行使用原版按钮的禁用外观表示"锁定"，格式刷/多选模式下按钮另有用途，不锁定
+                btn.active = formatPainterMode || presetSelectMode || idx != selectedIndex;
                 textButtons.add(btn); this.addDrawableChild(btn);
             }
         }
         if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
         savePresetButton.visible = presetSelectMode && !selectedPresetIndices.isEmpty() && !presetSaveMode && !presetLoadMode;
-        boolean showLineActions = lineActionIndex >= 0 && lineActionIndex < textLineWidgets.size() && !presetSelectMode && !presetSaveMode && !presetLoadMode;
+        // 属性分类按钮：非预设/格式刷模式下显示
+        boolean showCategoryButtons = !presetSelectMode && !presetSaveMode && !presetLoadMode && !formatPainterMode;
+        posCatButton.visible = showCategoryButtons;
+        rotCatButton.visible = showCategoryButtons;
+        scaleCatButton.visible = showCategoryButtons;
+        fontCatButton.visible = showCategoryButtons;
+        alignCatButton.visible = showCategoryButtons;
+        // 正在编辑文本行时显示行操作按钮（靠屏幕右侧）；无剪贴板内容时粘贴按钮锁定
+        boolean showLineActions = !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !formatPainterMode && !presetSelectMode && !presetSaveMode && !presetLoadMode;
         copyLineButton.visible = showLineActions;
-        pasteLineButton.visible = showLineActions && clipboardData != null;
+        pasteLineButton.visible = showLineActions;
+        pasteLineButton.active = showLineActions && clipboardData != null;
         deleteLineButton.visible = showLineActions;
         formatPainterButton.visible = showLineActions;
     }
@@ -462,6 +518,11 @@ public class CustomSignScreen extends Screen {
         presetButtons.clear();
         if (presetScrollUp != null) this.remove(presetScrollUp);
         if (presetScrollDown != null) this.remove(presetScrollDown);
+        for (ButtonWidget b : new ButtonWidget[]{xButton, yButton, zButton, rxButton, ryButton, rzButton,
+                sxButton, syButton, szButton, fontSizeButton, colorButton, boldButton, italicButton,
+                underlineButton, shadowButton, hAlignButton, vAlignButton, clearFormatButton}) {
+            b.visible = false;
+        }
 
         if (presetSaveMode) addPresetSaveWidgets();
         else if (presetLoadMode) addPresetLoadWidgets();
@@ -483,29 +544,41 @@ public class CustomSignScreen extends Screen {
     private void addBottomWidgets() {
         int lh = (panelBottomHeight - 10) / 2;
         int y1 = panelBottomY + 5, y2 = panelBottomY + 5 + lh, cx = panelBottomX + 5;
-        // 缩短输入框，为右侧XYZSC信息留出空间
+        // 缩短输入框，为右侧当前值状态留出空间
         textField.setWidth(panelBottomWidth - 10 - INFO_PANEL_WIDTH);
         textField.setPosition(cx, y1);
         this.addDrawableChild(textField);
         cx = panelBottomX + 5;
-        xButton.setPosition(cx, y2); this.addDrawableChild(xButton); cx += BTN_SIZE + BTN_GAP;
-        yButton.setPosition(cx, y2); this.addDrawableChild(yButton); cx += BTN_SIZE + BTN_GAP;
-        zButton.setPosition(cx, y2); this.addDrawableChild(zButton); cx += BTN_SIZE + BTN_GAP;
-        rxButton.setPosition(cx, y2); this.addDrawableChild(rxButton); cx += ROT_BTN_WIDTH + BTN_GAP;
-        ryButton.setPosition(cx, y2); this.addDrawableChild(ryButton); cx += ROT_BTN_WIDTH + BTN_GAP;
-        rzButton.setPosition(cx, y2); this.addDrawableChild(rzButton); cx += ROT_BTN_WIDTH + BTN_GAP;
-        sxButton.setPosition(cx, y2); this.addDrawableChild(sxButton); cx += BTN_SIZE + BTN_GAP;
-        syButton.setPosition(cx, y2); this.addDrawableChild(syButton); cx += BTN_SIZE + BTN_GAP;
-        szButton.setPosition(cx, y2); this.addDrawableChild(szButton); cx += BTN_SIZE + BTN_GAP;
-        fontSizeButton.setPosition(cx, y2); this.addDrawableChild(fontSizeButton); cx += BTN_SIZE + BTN_GAP;
-        colorButton.setPosition(cx, y2); this.addDrawableChild(colorButton); cx += BTN_SIZE + BTN_GAP;
-        boldButton.setPosition(cx, y2); this.addDrawableChild(boldButton); cx += BTN_SIZE + BTN_GAP;
-        italicButton.setPosition(cx, y2); this.addDrawableChild(italicButton); cx += BTN_SIZE + BTN_GAP;
-        underlineButton.setPosition(cx, y2); this.addDrawableChild(underlineButton); cx += BTN_SIZE + BTN_GAP;
-        shadowButton.setPosition(cx, y2); this.addDrawableChild(shadowButton); cx += BTN_SIZE + BTN_GAP;
-        hAlignButton.setPosition(cx, y2); this.addDrawableChild(hAlignButton); cx += BTN_SIZE + 40 + BTN_GAP;
-        vAlignButton.setPosition(cx, y2); this.addDrawableChild(vAlignButton); cx += BTN_SIZE + 40 + BTN_GAP;
-        clearFormatButton.setPosition(cx, y2); this.addDrawableChild(clearFormatButton);
+        switch (activeCategory) {
+            case POSITION -> {
+                xButton.setPosition(cx, y2); xButton.visible = true; this.addDrawableChild(xButton); cx += BTN_SIZE + BTN_GAP;
+                yButton.setPosition(cx, y2); yButton.visible = true; this.addDrawableChild(yButton); cx += BTN_SIZE + BTN_GAP;
+                zButton.setPosition(cx, y2); zButton.visible = true; this.addDrawableChild(zButton);
+            }
+            case ROTATION -> {
+                rxButton.setPosition(cx, y2); rxButton.visible = true; this.addDrawableChild(rxButton); cx += ROT_BTN_WIDTH + BTN_GAP;
+                ryButton.setPosition(cx, y2); ryButton.visible = true; this.addDrawableChild(ryButton); cx += ROT_BTN_WIDTH + BTN_GAP;
+                rzButton.setPosition(cx, y2); rzButton.visible = true; this.addDrawableChild(rzButton);
+            }
+            case SCALE -> {
+                sxButton.setPosition(cx, y2); sxButton.visible = true; this.addDrawableChild(sxButton); cx += BTN_SIZE + BTN_GAP;
+                syButton.setPosition(cx, y2); syButton.visible = true; this.addDrawableChild(syButton); cx += BTN_SIZE + BTN_GAP;
+                szButton.setPosition(cx, y2); szButton.visible = true; this.addDrawableChild(szButton); cx += BTN_SIZE + BTN_GAP;
+                fontSizeButton.setPosition(cx, y2); fontSizeButton.visible = true; this.addDrawableChild(fontSizeButton);
+            }
+            case FONT -> {
+                colorButton.setPosition(cx, y2); colorButton.visible = true; this.addDrawableChild(colorButton); cx += BTN_SIZE + BTN_GAP;
+                boldButton.setPosition(cx, y2); boldButton.visible = true; this.addDrawableChild(boldButton); cx += BTN_SIZE + BTN_GAP;
+                italicButton.setPosition(cx, y2); italicButton.visible = true; this.addDrawableChild(italicButton); cx += BTN_SIZE + BTN_GAP;
+                underlineButton.setPosition(cx, y2); underlineButton.visible = true; this.addDrawableChild(underlineButton); cx += BTN_SIZE + BTN_GAP;
+                shadowButton.setPosition(cx, y2); shadowButton.visible = true; this.addDrawableChild(shadowButton); cx += BTN_SIZE + BTN_GAP;
+                clearFormatButton.setPosition(cx, y2); clearFormatButton.visible = true; this.addDrawableChild(clearFormatButton);
+            }
+            case ALIGN -> {
+                hAlignButton.setPosition(cx, y2); hAlignButton.visible = true; this.addDrawableChild(hAlignButton); cx += BTN_SIZE + 40 + BTN_GAP;
+                vAlignButton.setPosition(cx, y2); vAlignButton.visible = true; this.addDrawableChild(vAlignButton);
+            }
+        }
     }
 
     private void addPreciseInputWidgets() {
@@ -595,7 +668,6 @@ public class CustomSignScreen extends Screen {
         if (presetSaveMode || presetLoadMode) return super.keyPressed(keyCode, scanCode, modifiers);
         if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
             presetSelectMode = true;
-            lineActionIndex = -1;
             formatPainterMode = false; formatPainterSourceIndex = -1;
             refreshTopPanel();
             return true;
@@ -626,28 +698,16 @@ public class CustomSignScreen extends Screen {
         if (preciseInputMode) { if (backButton != null && backButton.isMouseOver(mouseX, mouseY)) { exitPreciseMode(); return true; } return super.mouseClicked(mouseX, mouseY, button); }
         if (presetSaveMode || presetLoadMode) return super.mouseClicked(mouseX, mouseY, button);
         if (button == 1 && !presetSelectMode) {
-            if (xButton != null && xButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(0); return true; }
-            if (yButton != null && yButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(1); return true; }
-            if (zButton != null && zButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(4); return true; }
-            if (rxButton != null && rxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(5); return true; }
-            if (ryButton != null && ryButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(6); return true; }
-            if (rzButton != null && rzButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(7); return true; }
-            if (sxButton != null && sxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(8); return true; }
-            if (syButton != null && syButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(9); return true; }
-            if (szButton != null && szButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(10); return true; }
-            if (fontSizeButton != null && fontSizeButton.isMouseOver(mouseX, mouseY)) { adjustFontSize(); return true; }
-            for (int i = 0; i < textButtons.size(); i++) {
-                var btn = textButtons.get(i);
-                if (mouseX >= btn.getX() && mouseX < btn.getX() + btn.getWidth() && mouseY >= btn.getY() && mouseY < btn.getY() + btn.getHeight()) {
-                    int actualIdx = topScrollOffset + i;
-                    if (actualIdx < textLineWidgets.size()) {
-                        formatPainterMode = false; formatPainterSourceIndex = -1;
-                        lineActionIndex = actualIdx;
-                        refreshTopPanel();
-                    }
-                    return true;
-                }
-            }
+            if (xButton != null && xButton.visible && xButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(0); return true; }
+            if (yButton != null && yButton.visible && yButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(1); return true; }
+            if (zButton != null && zButton.visible && zButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(4); return true; }
+            if (rxButton != null && rxButton.visible && rxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(5); return true; }
+            if (ryButton != null && ryButton.visible && ryButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(6); return true; }
+            if (rzButton != null && rzButton.visible && rzButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(7); return true; }
+            if (sxButton != null && sxButton.visible && sxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(8); return true; }
+            if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(9); return true; }
+            if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(10); return true; }
+            if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) { adjustFontSize(); return true; }
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -659,8 +719,6 @@ public class CustomSignScreen extends Screen {
         for (int idx : selectedPresetIndices) newSet.add(idx > actualIdx ? idx - 1 : idx);
         selectedPresetIndices.clear(); selectedPresetIndices.addAll(newSet);
         if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
-        if (lineActionIndex == actualIdx) lineActionIndex = -1;
-        else if (lineActionIndex > actualIdx) lineActionIndex--;
         if (formatPainterSourceIndex == actualIdx) { formatPainterMode = false; formatPainterSourceIndex = -1; }
         else if (formatPainterSourceIndex > actualIdx) formatPainterSourceIndex--;
         preciseInputMode = false; refreshTopPanel(); refreshBottomPanel();
@@ -717,6 +775,8 @@ public class CustomSignScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        blockEntity.setEditingLineIndex(selectedIndex);
+
         // 顶部面板
         context.fill(panelTopX, panelTopY, panelTopX + panelTopWidth, panelTopY + panelTopHeight, 0xAA333333);
         context.drawBorder(panelTopX, panelTopY, panelTopWidth, panelTopHeight, 0xFF888888);
@@ -726,7 +786,7 @@ public class CustomSignScreen extends Screen {
         // 保存按钮行（全宽）
         context.fill(0, panelTopY + panelTopHeight, width, panelTopY + panelTopHeight + SAVE_BTN_ROW_HEIGHT, 0xAA222233);
         if (formatPainterMode) {
-            String h = "格式刷模式：点击目标文本行标签应用格式（不含文字、位置/旋转）";
+            String h = "格式刷模式：点击目标文本行标签应用格式（不含文字、位移/旋转）";
             context.drawText(textRenderer, Text.literal(h), (width - textRenderer.getWidth(h)) / 2,
                     panelTopY + panelTopHeight + (SAVE_BTN_ROW_HEIGHT - textRenderer.fontHeight) / 2, 0xFFFFDD55, false);
         }
@@ -738,12 +798,19 @@ public class CustomSignScreen extends Screen {
         if (!preciseInputMode && !presetSaveMode && !presetLoadMode) {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 var d = textLineWidgets.get(selectedIndex).data;
-                int lh = (panelBottomHeight - 10) / 2, y2 = panelBottomY + 5 + lh;
-                int cx = panelBottomX + 5 + (BTN_SIZE + BTN_GAP) * 8 + (ROT_BTN_WIDTH + BTN_GAP) * 3;
-                drawToggleBg(context, cx, y2, BTN_SIZE, d.isBold()); cx += BTN_SIZE + BTN_GAP;
-                drawToggleBg(context, cx, y2, BTN_SIZE, d.isItalic()); cx += BTN_SIZE + BTN_GAP;
-                drawToggleBg(context, cx, y2, BTN_SIZE, d.isUnderline()); cx += BTN_SIZE + BTN_GAP;
-                drawToggleBg(context, cx, y2, BTN_SIZE, d.isShadow());
+                int lh = (panelBottomHeight - 10) / 2, y1 = panelBottomY + 5, y2 = panelBottomY + 5 + lh;
+                if (activeCategory == Category.FONT) {
+                    int cx = panelBottomX + 5 + (BTN_SIZE + BTN_GAP);
+                    drawToggleBg(context, cx, y2, BTN_SIZE, d.isBold()); cx += BTN_SIZE + BTN_GAP;
+                    drawToggleBg(context, cx, y2, BTN_SIZE, d.isItalic()); cx += BTN_SIZE + BTN_GAP;
+                    drawToggleBg(context, cx, y2, BTN_SIZE, d.isUnderline()); cx += BTN_SIZE + BTN_GAP;
+                    drawToggleBg(context, cx, y2, BTN_SIZE, d.isShadow());
+                }
+                int statusY = y1 + 4;
+                for (String line : getCategoryStatusLines(d)) {
+                    context.drawText(textRenderer, Text.literal(line), panelBottomX + panelBottomWidth - INFO_PANEL_WIDTH + 5, statusY, 0xFF66FFCC, false);
+                    statusY += textRenderer.fontHeight + 1;
+                }
             }
             if (textLineWidgets.isEmpty()) {
                 String h = "点击 + 添加文本, 按P加载预设";
@@ -775,22 +842,27 @@ public class CustomSignScreen extends Screen {
         if (!presetSaveMode && !presetLoadMode && !preciseInputMode) {
             var d = (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) ? textLineWidgets.get(selectedIndex).data : null;
             List<TooltipEntry> tips = new ArrayList<>();
-            if (xButton != null && xButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 坐标", d != null ? String.format("当前值 %.1f", d.getXOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (yButton != null && yButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 坐标", d != null ? String.format("当前值 %.1f", d.getYOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (zButton != null && zButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 坐标", d != null ? String.format("当前值 %.1f", d.getZOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (rxButton != null && rxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotX()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (ryButton != null && ryButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotY()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (rzButton != null && rzButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotZ()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (sxButton != null && sxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (syButton != null && syButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (szButton != null && szButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (fontSizeButton != null && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (colorButton != null && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击精准输入"));
+            if (xButton != null && xButton.visible && xButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 坐标", d != null ? String.format("当前值 %.1f", d.getXOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (yButton != null && yButton.visible && yButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 坐标", d != null ? String.format("当前值 %.1f", d.getYOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (zButton != null && zButton.visible && zButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 坐标", d != null ? String.format("当前值 %.1f", d.getZOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (rxButton != null && rxButton.visible && rxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotX()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (ryButton != null && ryButton.visible && ryButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotY()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (rzButton != null && rzButton.visible && rzButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotZ()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (sxButton != null && sxButton.visible && sxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击精准输入"));
             if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
+            if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮"));
+            if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转", "点击显示 RX/RY/RZ 旋转按钮"));
+            if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放", "点击显示 SX/SY/SZ 缩放按钮"));
+            if (fontCatButton != null && fontCatButton.visible && fontCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("字体", "点击显示字号/颜色/加粗/斜体/下划线/阴影/清空格式按钮"));
+            if (alignCatButton != null && alignCatButton.visible && alignCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("对齐", "点击显示水平/垂直对齐按钮"));
             if (copyLineButton != null && copyLineButton.visible && copyLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("复制", "复制该文本行的全部属性"));
-            if (pasteLineButton != null && pasteLineButton.visible && pasteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("粘贴", "将复制的属性覆盖到该文本行"));
+            if (pasteLineButton != null && pasteLineButton.visible && pasteLineButton.isMouseOver(mouseX, mouseY)) tips.add(clipboardData != null ? TooltipEntry.of("粘贴", "将复制的属性覆盖到该文本行") : TooltipEntry.of("粘贴（已锁定）", "请先点击复制按钮复制一个文本行"));
             if (deleteLineButton != null && deleteLineButton.visible && deleteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("删除", "删除该文本行"));
-            if (formatPainterButton != null && formatPainterButton.visible && formatPainterButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("格式刷", "将颜色/对齐/加粗/斜体/下划线/阴影/字号", "复制到另一文本行（不含文字、位置、旋转）"));
+            if (formatPainterButton != null && formatPainterButton.visible && formatPainterButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("格式刷", "将颜色/对齐/加粗/斜体/下划线/阴影/字号", "复制到另一文本行（不含文字、位移、旋转）"));
             if (!tips.isEmpty()) drawTooltip(context, mouseX, mouseY, tips);
         }
     }
@@ -837,6 +909,7 @@ public class CustomSignScreen extends Screen {
 
     @Override
     public void close() {
+        blockEntity.setEditingLineIndex(-1);
         sendUpdateToServer();
         super.close();
     }

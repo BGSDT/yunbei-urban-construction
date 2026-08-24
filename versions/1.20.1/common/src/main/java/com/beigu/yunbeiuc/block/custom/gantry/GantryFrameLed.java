@@ -1,8 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
-import com.beigu.yunbeiuc.block.custom.sign.CustomSignBlock;
+import com.beigu.yunbeiuc.block.custom.sign.CustomTextDisplayBlock;
 import com.beigu.yunbeiuc.entity.GantryFrameLedEntity;
-import com.beigu.yunbeiuc.entity.RoadPoleTextDisplayEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -15,15 +14,13 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
-public class GantryFrameLed extends CustomSignBlock {
+public class GantryFrameLed extends CustomTextDisplayBlock {
     public GantryFrameLed(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(TYPE, Type.SINGLE));

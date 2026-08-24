@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
-import com.beigu.yunbeiuc.block.custom.sign.CustomSignBlock;
+import com.beigu.yunbeiuc.block.custom.sign.CustomTextDisplayBlock;
 import com.beigu.yunbeiuc.entity.RoadPoleLedEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,7 +21,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class RoadPoleLed extends CustomSignBlock {
+public class RoadPoleLed extends CustomTextDisplayBlock {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 

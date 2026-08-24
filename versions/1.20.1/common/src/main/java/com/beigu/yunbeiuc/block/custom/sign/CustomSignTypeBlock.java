@@ -5,13 +5,10 @@ import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
@@ -24,9 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public class CustomSignTypeBlock extends CustomSignBlock {
+public class CustomSignTypeBlock extends CustomTextDisplayBlock {
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 
     public enum Type implements StringIdentifiable {

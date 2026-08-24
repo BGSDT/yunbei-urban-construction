@@ -1,27 +1,21 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
-import com.beigu.yunbeiuc.block.custom.sign.CustomSignBlock;
+import com.beigu.yunbeiuc.block.custom.sign.CustomTextDisplayBlock;
 import com.beigu.yunbeiuc.entity.RoadPoleTextDisplayEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public class RoadPoleTextDisplay extends CustomSignBlock implements BlockEntityProvider {
+public class RoadPoleTextDisplay extends CustomTextDisplayBlock implements BlockEntityProvider {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.createCuboidShape(5, -4, -8, 11, 6, 24), Block.createCuboidShape(6, 6, 0, 10, 10, 16), BooleanBiFunction.OR);

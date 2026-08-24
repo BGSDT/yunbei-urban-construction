@@ -13,6 +13,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
+import java.util.List;
+import java.util.Locale;
+
 public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBlockEntity> implements BlockEntityRenderer<T> {
     protected final TextRenderer textRenderer;
 
@@ -27,8 +30,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float zOffset = getZOffset(entity);
         int effectiveLight = entity.isGlowingText() ? LightmapTextureManager.MAX_LIGHT_COORDINATE : light;
 
-        for (CustomSignBlockEntity.TextLineData lineData : entity.getTextLines()) {
-            renderTextLine(matrices, vertexConsumers, effectiveLight, overlay, zOffset, lineData);
+        List<CustomSignBlockEntity.TextLineData> lines = entity.getTextLines();
+        int editingIndex = entity.getEditingLineIndex();
+        for (int i = 0; i < lines.size(); i++) {
+            renderTextLine(matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex);
         }
 
         matrices.pop();
@@ -40,7 +45,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     // 子类实现 Z 轴偏移
     protected abstract float getZOffset(T entity);
 
-    private void renderTextLine(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData) {
+    private void renderTextLine(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing) {
         if (lineData.getText().isEmpty()) return;
         String text = lineData.getText().trim();
 
@@ -50,7 +55,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 try {
                     float w = Float.parseFloat(parts[1]);
                     float h = Float.parseFloat(parts[2]);
-                    renderRect(matrices, zOffset, lineData, w, h);
+                    renderRect(matrices, zOffset, lineData, w, h, editing);
                     return;
                 } catch (NumberFormatException ignored) {}
             }
@@ -59,9 +64,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (text.startsWith("-texture")) {
             String[] parts = text.split("\\s+", 2);
             if (parts.length >= 2) {
-                Identifier textureId = Identifier.tryParse(parts[1]);
+                // Identifier 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
+                Identifier textureId = Identifier.tryParse(parts[1].trim().toLowerCase(Locale.ROOT));
                 if (textureId != null) {
-                    renderTexture(matrices, vertexConsumers, light, overlay, zOffset, lineData, textureId);
+                    renderTexture(matrices, vertexConsumers, light, overlay, zOffset, lineData, textureId, editing);
                     return;
                 }
             }
@@ -73,14 +79,14 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 try {
                     Text jsonText = Text.Serializer.fromLenientJson(parts[1]);
                     if (jsonText != null) {
-                        renderJsonText(matrices, vertexConsumers, light, zOffset, lineData, jsonText);
+                        renderJsonText(matrices, vertexConsumers, light, zOffset, lineData, jsonText, editing);
                         return;
                     }
                 } catch (Exception ignored) {}
             }
         }
 
-        renderText(matrices, vertexConsumers, light, zOffset, lineData);
+        renderText(matrices, vertexConsumers, light, zOffset, lineData, editing);
     }
 
     private void applyRotation(MatrixStack matrices, CustomSignBlockEntity.TextLineData lineData) {
@@ -89,7 +95,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (lineData.getRotZ() != 0) matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(lineData.getRotZ()));
     }
 
-    private void renderJsonText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Text jsonText) {
+    private void renderJsonText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Text jsonText, boolean editing) {
         matrices.push();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -126,10 +132,12 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         this.textRenderer.draw(renderText, renderX, renderY, lineData.getColor(), lineData.isShadow(),
                 matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize());
+
         matrices.pop();
     }
 
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData) {
+    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing) {
         matrices.push();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -165,10 +173,12 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         this.textRenderer.draw(renderText, renderX, renderY, lineData.getColor(), lineData.isShadow(),
                 matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize());
+
         matrices.pop();
     }
 
-    private void renderRect(MatrixStack matrices, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height) {
+    private void renderRect(MatrixStack matrices, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing) {
         matrices.push();
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
@@ -219,10 +229,12 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
 
+        if (editing) renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 1f);
+
         matrices.pop();
     }
 
-    private void renderTexture(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, Identifier textureId) {
+    private void renderTexture(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, Identifier textureId, boolean editing) {
         matrices.push();
 
         float xPos = lineData.getXOffset() / 16f;
@@ -257,7 +269,49 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.vertex(matrix, halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
         consumer.vertex(matrix, -halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
 
+        if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f);
+
         matrices.pop();
+    }
+
+    // 在当前矩阵局部坐标系内绘制一个包住 (left,top)-(left+w,top+h) 区域的绿色描边矩形框，用于标注正在编辑的文本行
+    // unitScale：局部坐标 1 单位对应的方块尺寸（1 像素 = 1/16 方块），保证描边在世界空间中恒为 0.25px 粗
+    private void renderEditingOutline(MatrixStack matrices, float left, float top, float w, float h, float unitScale) {
+        float px = 0.25f / 16f / unitScale;
+        float margin = px;
+        float thickness = px;
+        float x0 = left - margin, y0 = top - margin, x1 = left + w + margin, y1 = top + h + margin;
+
+        int r = 0, g = 255, b = 0, a = 255;
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableCull();
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
+        addOutlineBar(buffer, matrix, x0, y0, x1, y0 + thickness, r, g, b, a);
+        addOutlineBar(buffer, matrix, x0, y1 - thickness, x1, y1, r, g, b, a);
+        addOutlineBar(buffer, matrix, x0, y0, x0 + thickness, y1, r, g, b, a);
+        addOutlineBar(buffer, matrix, x1 - thickness, y0, x1, y1, r, g, b, a);
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
+
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.disableDepthTest();
+    }
+
+    private void addOutlineBar(BufferBuilder buffer, Matrix4f matrix, float x0, float y0, float x1, float y1, int r, int g, int b, int a) {
+        buffer.vertex(matrix, x0, y0, 0).color(r, g, b, a).next();
+        buffer.vertex(matrix, x1, y0, 0).color(r, g, b, a).next();
+        buffer.vertex(matrix, x1, y1, 0).color(r, g, b, a).next();
+        buffer.vertex(matrix, x0, y0, 0).color(r, g, b, a).next();
+        buffer.vertex(matrix, x1, y1, 0).color(r, g, b, a).next();
+        buffer.vertex(matrix, x0, y1, 0).color(r, g, b, a).next();
     }
 
     @Override

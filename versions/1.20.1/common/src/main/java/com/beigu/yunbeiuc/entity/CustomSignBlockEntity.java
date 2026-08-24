@@ -17,6 +17,8 @@ import java.util.List;
 public class CustomSignBlockEntity extends BlockEntity {
     private List<TextLineData> textLines = new ArrayList<>();
     private boolean glowingText = false;
+    // 客户端UI状态：当前正在编辑的文本行索引，不写入NBT
+    private transient int editingLineIndex = -1;
 
     public CustomSignBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), pos, state);
@@ -41,6 +43,9 @@ public class CustomSignBlockEntity extends BlockEntity {
         markDirty();
         if (world != null) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
     }
+
+    public int getEditingLineIndex() { return editingLineIndex; }
+    public void setEditingLineIndex(int editingLineIndex) { this.editingLineIndex = editingLineIndex; }
 
     @Override
     public void writeNbt(NbtCompound nbt) {
