@@ -19,6 +19,8 @@ public class CustomSignBlockEntity extends BlockEntity {
     private boolean glowingText = false;
     // 客户端UI状态：当前正在编辑的文本行索引，不写入NBT
     private transient int editingLineIndex = -1;
+    // 客户端UI状态：当前gizmo模式（-1无 0位移 1旋转 2缩放），不写入NBT
+    private transient int editingGizmoMode = -1;
 
     public CustomSignBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), pos, state);
@@ -46,6 +48,9 @@ public class CustomSignBlockEntity extends BlockEntity {
 
     public int getEditingLineIndex() { return editingLineIndex; }
     public void setEditingLineIndex(int editingLineIndex) { this.editingLineIndex = editingLineIndex; }
+
+    public int getEditingGizmoMode() { return editingGizmoMode; }
+    public void setEditingGizmoMode(int editingGizmoMode) { this.editingGizmoMode = editingGizmoMode; }
 
     @Override
     public void writeNbt(NbtCompound nbt) {

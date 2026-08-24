@@ -18,6 +18,7 @@ import java.util.Locale;
 
 public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBlockEntity> implements BlockEntityRenderer<T> {
     protected final TextRenderer textRenderer;
+    private int gizmoLineIndex;
 
     protected AbstractTextDisplayEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
@@ -27,13 +28,18 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     public final void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         applyTransforms(matrices, entity);
+        Matrix4f baseFrame = new Matrix4f(matrices.peek().getPositionMatrix());
         float zOffset = getZOffset(entity);
         int effectiveLight = entity.isGlowingText() ? LightmapTextureManager.MAX_LIGHT_COORDINATE : light;
 
         List<CustomSignBlockEntity.TextLineData> lines = entity.getTextLines();
         int editingIndex = entity.getEditingLineIndex();
+        int gizmoMode = editingIndex >= 0 ? entity.getEditingGizmoMode() : -1;
+        if (editingIndex >= 0) TextGizmo.beginFrameRects();
+        else TextGizmo.clearRects();
         for (int i = 0; i < lines.size(); i++) {
-            renderTextLine(matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex);
+            gizmoLineIndex = i;
+            renderTextLine(matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex, gizmoMode, baseFrame);
         }
 
         matrices.pop();
@@ -45,7 +51,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     // 子类实现 Z 轴偏移
     protected abstract float getZOffset(T entity);
 
-    private void renderTextLine(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing) {
+    private void renderTextLine(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         if (lineData.getText().isEmpty()) return;
         String text = lineData.getText().trim();
 
@@ -55,7 +61,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 try {
                     float w = Float.parseFloat(parts[1]);
                     float h = Float.parseFloat(parts[2]);
-                    renderRect(matrices, zOffset, lineData, w, h, editing);
+                    renderRect(matrices, zOffset, lineData, w, h, editing, gizmoMode, baseFrame);
                     return;
                 } catch (NumberFormatException ignored) {}
             }
@@ -67,7 +73,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 // Identifier 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
                 Identifier textureId = Identifier.tryParse(parts[1].trim().toLowerCase(Locale.ROOT));
                 if (textureId != null) {
-                    renderTexture(matrices, vertexConsumers, light, overlay, zOffset, lineData, textureId, editing);
+                    renderTexture(matrices, vertexConsumers, light, overlay, zOffset, lineData, textureId, editing, gizmoMode, baseFrame);
                     return;
                 }
             }
@@ -79,14 +85,14 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 try {
                     Text jsonText = Text.Serializer.fromLenientJson(parts[1]);
                     if (jsonText != null) {
-                        renderJsonText(matrices, vertexConsumers, light, zOffset, lineData, jsonText, editing);
+                        renderJsonText(matrices, vertexConsumers, light, zOffset, lineData, jsonText, editing, gizmoMode, baseFrame);
                         return;
                     }
                 } catch (Exception ignored) {}
             }
         }
 
-        renderText(matrices, vertexConsumers, light, zOffset, lineData, editing);
+        renderText(matrices, vertexConsumers, light, zOffset, lineData, editing, gizmoMode, baseFrame);
     }
 
     private void applyRotation(MatrixStack matrices, CustomSignBlockEntity.TextLineData lineData) {
@@ -95,7 +101,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (lineData.getRotZ() != 0) matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(lineData.getRotZ()));
     }
 
-    private void renderJsonText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Text jsonText, boolean editing) {
+    private void renderJsonText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Text jsonText, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.push();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -105,6 +111,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         matrices.translate(xPos, yPos, zPos);
         applyRotation(matrices, lineData);
+        Matrix4f gizmoFrame = editing && gizmoMode >= 0 ? new Matrix4f(matrices.peek().getPositionMatrix()) : null;
         matrices.scale(baseScale * lineData.getScaleX(), -baseScale * lineData.getScaleY(), baseScale * lineData.getScaleZ());
 
         Text renderText = jsonText.copy();
@@ -132,12 +139,15 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         this.textRenderer.draw(renderText, renderX, renderY, lineData.getColor(), lineData.isShadow(),
                 matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
-        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize());
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
+        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight,
+                baseScale * lineData.getScaleX(), -baseScale * lineData.getScaleY());
+        if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
         matrices.pop();
     }
 
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing) {
+    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.push();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -147,6 +157,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         matrices.translate(xPos, yPos, zPos);
         applyRotation(matrices, lineData);
+        Matrix4f gizmoFrame = editing && gizmoMode >= 0 ? new Matrix4f(matrices.peek().getPositionMatrix()) : null;
         matrices.scale(baseScale * lineData.getScaleX(), -baseScale * lineData.getScaleY(), baseScale * lineData.getScaleZ());
 
         Style style = Style.EMPTY
@@ -173,12 +184,15 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         this.textRenderer.draw(renderText, renderX, renderY, lineData.getColor(), lineData.isShadow(),
                 matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
-        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize());
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
+        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight,
+                baseScale * lineData.getScaleX(), -baseScale * lineData.getScaleY());
+        if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
         matrices.pop();
     }
 
-    private void renderRect(MatrixStack matrices, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing) {
+    private void renderRect(MatrixStack matrices, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.push();
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
@@ -229,12 +243,17 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
 
-        if (editing) renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 1f);
+        if (editing) renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f, 1f);
+        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f);
+        if (editing && gizmoMode >= 0) {
+            TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.peek().getPositionMatrix()), lineData,
+                    zOffset, width / 16f / 2f * lineData.getFontSize(), height / 16f / 2f * lineData.getFontSize());
+        }
 
         matrices.pop();
     }
 
-    private void renderTexture(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, Identifier textureId, boolean editing) {
+    private void renderTexture(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, Identifier textureId, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.push();
 
         float xPos = lineData.getXOffset() / 16f;
@@ -269,20 +288,28 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.vertex(matrix, halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
         consumer.vertex(matrix, -halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
 
-        if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f);
+        if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f, 1f);
+        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f);
+        if (editing && gizmoMode >= 0) {
+            TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.peek().getPositionMatrix()), lineData,
+                    zOffset, imageSize / 2f, imageSize / 2f);
+        }
 
         matrices.pop();
     }
 
     // 在当前矩阵局部坐标系内绘制一个包住 (left,top)-(left+w,top+h) 区域的绿色描边矩形框，用于标注正在编辑的文本行
-    // unitScale：局部坐标 1 单位对应的方块尺寸（1 像素 = 1/16 方块），保证描边在世界空间中恒为 0.25px 粗
-    private void renderEditingOutline(MatrixStack matrices, float left, float top, float w, float h, float unitScale) {
-        float px = 0.25f / 16f / unitScale;
-        float margin = px;
-        float thickness = px;
-        float x0 = left - margin, y0 = top - margin, x1 = left + w + margin, y1 = top + h + margin;
+    // unitScale：局部坐标 1 单位对应的方块尺寸（1 像素 = 1/16 方块）；scaleX/scaleY 为矩阵所含缩放，
+    // 用于抵消厚度被放大，保证描边在世界空间中恒为 0.25px 粗
+    private void renderEditingOutline(MatrixStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY) {
+        float px = 0.25f / 16f / Math.max(1e-5f, unitScale);
+        float thicknessX = px / Math.max(0.01f, scaleX);
+        float thicknessY = px / Math.max(0.01f, scaleY);
+        float marginX = thicknessX;
+        float marginY = thicknessY;
+        float x0 = left - marginX, y0 = top - marginY, x1 = left + w + marginX, y1 = top + h + marginY;
 
-        int r = 0, g = 255, b = 0, a = 255;
+        int r = 0, g = 255, b = 255, a = 255;
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         RenderSystem.enableBlend();
@@ -294,10 +321,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
-        addOutlineBar(buffer, matrix, x0, y0, x1, y0 + thickness, r, g, b, a);
-        addOutlineBar(buffer, matrix, x0, y1 - thickness, x1, y1, r, g, b, a);
-        addOutlineBar(buffer, matrix, x0, y0, x0 + thickness, y1, r, g, b, a);
-        addOutlineBar(buffer, matrix, x1 - thickness, y0, x1, y1, r, g, b, a);
+        addOutlineBar(buffer, matrix, x0, y0, x1, y0 + thicknessY, r, g, b, a);
+        addOutlineBar(buffer, matrix, x0, y1 - thicknessY, x1, y1, r, g, b, a);
+        addOutlineBar(buffer, matrix, x0, y0, x0 + thicknessX, y1, r, g, b, a);
+        addOutlineBar(buffer, matrix, x1 - thicknessX, y0, x1, y1, r, g, b, a);
         BufferRenderer.drawWithGlobalProgram(buffer.end());
 
         RenderSystem.enableCull();

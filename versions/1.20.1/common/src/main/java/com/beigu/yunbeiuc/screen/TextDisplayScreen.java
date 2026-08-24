@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.screen;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.beigu.yunbeiuc.network.CustomSignUpdatePacket;
+import com.beigu.yunbeiuc.render.TextGizmo;
 import com.beigu.yunbeiuc.util.PresetManager;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
@@ -78,6 +79,9 @@ public class TextDisplayScreen extends Screen {
 
     private int panelTopX, panelTopY, panelTopWidth, panelTopHeight;
     private int panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight;
+
+    private int grabbedGizmo = -1;
+    private float grabAngleStart, grabValueStart, grabAxisStart, grabSize0;
 
     public TextDisplayScreen(CustomSignBlockEntity blockEntity) {
         super(Text.translatable("gui.yunbeiuc.custom_sign"));
@@ -331,9 +335,116 @@ public class TextDisplayScreen extends Screen {
     private void selectCategory(Category c) {
         activeCategory = c;
         preciseInputMode = false;
+        releaseGizmo();
         updateCategoryButtonsLocked();
         refreshBottomPanel();
     }
+
+    private int currentGizmoMode() {
+        if (presetSaveMode || presetLoadMode || preciseInputMode || formatPainterMode) return -1;
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return -1;
+        return switch (activeCategory) {
+            case POSITION -> TextGizmo.MODE_POSITION;
+            case ROTATION -> TextGizmo.MODE_ROTATION;
+            case SCALE -> TextGizmo.MODE_SCALE;
+            default -> -1;
+        };
+    }
+
+    private static float snapToStep(float v, float step) { return step <= 0f ? v : Math.round(v / step) * step; }
+
+    private static float clampScaleDisplay(float display) { return Math.max(1.6f, display); }
+
+    private void releaseGizmo() {
+        grabbedGizmo = -1;
+        TextGizmo.grabId = -1;
+        TextGizmo.hoverId = -1;
+    }
+
+    private boolean tryGrabGizmo(double mouseX, double mouseY) {
+        if (currentGizmoMode() < 0 || !TextGizmo.isFresh()) return false;
+        var d = textLineWidgets.get(selectedIndex).data;
+        int h = TextGizmo.pick(mouseX, mouseY, d.getScaleX(), d.getScaleY(), d.getScaleZ());
+        if (h < 0) return false;
+        grabbedGizmo = h;
+        TextGizmo.grabId = h;
+        int kind = TextGizmo.handleKind(h);
+        if (kind == TextGizmo.KIND_AXIS) {
+            Float v = TextGizmo.axisDragValue(axis(h), mouseX, mouseY);
+            grabAxisStart = v != null ? v : 0f;
+            grabValueStart = switch (axis(h)) { case 0 -> d.getXOffset(); case 1 -> d.getYOffset(); default -> d.getZOffset(); };
+        } else if (kind == TextGizmo.KIND_ROT) {
+            Float a = TextGizmo.rotationDragAngle(axis(h), mouseX, mouseY);
+            grabAngleStart = a != null ? a : 0f;
+            grabValueStart = switch (axis(h)) { case 0 -> d.getRotX(); case 1 -> d.getRotY(); default -> d.getRotZ(); };
+        } else if (kind == TextGizmo.KIND_CORNER) {
+            grabSize0 = d.getFontSize();
+        }
+        return true;
+    }
+
+    private static int axis(int handle) { return TextGizmo.handleAxis(handle); }
+
+    private boolean trySelectLine(double mouseX, double mouseY) {
+        if (presetSaveMode || presetLoadMode || preciseInputMode || formatPainterMode || presetSelectMode) return false;
+        int idx = TextGizmo.pickLine(mouseX, mouseY);
+        if (idx < 0 || idx >= textLineWidgets.size()) return false;
+        if (idx == selectedIndex) return true;
+        selectedIndex = idx;
+        releaseGizmo();
+        preciseInputMode = false;
+        refreshTopPanel();
+        refreshBottomPanel();
+        updateBottomPanelDisplay();
+        return true;
+    }
+
+    private void applyGizmoDrag(double mouseX, double mouseY) {
+        var d = textLineWidgets.get(selectedIndex).data;
+        int kind = TextGizmo.handleKind(grabbedGizmo);
+        int axis = TextGizmo.handleAxis(grabbedGizmo);
+        switch (kind) {
+            case TextGizmo.KIND_AXIS -> {
+                Float v = TextGizmo.axisDragValue(axis, mouseX, mouseY);
+                if (v != null) {
+                    float val = snapToStep(grabValueStart + (v - grabAxisStart), stepFor(1.0f, 0.5f));
+                    switch (axis) { case 0 -> d.setXOffset(val); case 1 -> d.setYOffset(val); default -> d.setZOffset(val); }
+                }
+            }
+            case TextGizmo.KIND_ROT -> {
+                Float a = TextGizmo.rotationDragAngle(axis, mouseX, mouseY);
+                if (a != null) {
+                    float delta = a - grabAngleStart;
+                    delta -= 360f * Math.round(delta / 360f);
+                    float val = snapToStep(grabValueStart + delta, stepFor(15.0f, 5.0f));
+                    switch (axis) { case 0 -> d.setRotX(val); case 1 -> d.setRotY(val); default -> d.setRotZ(val); }
+                }
+            }
+            case TextGizmo.KIND_CORNER -> {
+                float[] uv = TextGizmo.scaleDragPoint(mouseX, mouseY);
+                if (uv != null) {
+                    float hw = TextGizmo.halfWidthPx(), hh = TextGizmo.halfHeightPx();
+                    float curLen = (float) Math.sqrt(sq(hw * d.getScaleX()) + sq(hh * d.getScaleY()));
+                    if (curLen > 1e-4f) {
+                        float r = (float) Math.sqrt(sq(uv[0]) + sq(uv[1])) / curLen;
+                        d.setFontSize(clampScaleDisplay(snapToStep(grabSize0 * 16f * r, stepFor(1f, 0.5f))) / 16f);
+                    }
+                }
+            }
+            case TextGizmo.KIND_EDGE -> {
+                float[] uv = TextGizmo.scaleDragPoint(mouseX, mouseY);
+                if (uv != null) {
+                    float step = stepFor(1f, 0.5f);
+                    if (axis == 0) d.setScaleX(clampScaleDisplay(snapToStep(Math.abs(uv[0]) / Math.max(1e-4f, TextGizmo.halfWidthPx()) * 16f, step)) / 16f);
+                    else d.setScaleY(clampScaleDisplay(snapToStep(Math.abs(uv[1]) / Math.max(1e-4f, TextGizmo.halfHeightPx()) * 16f, step)) / 16f);
+                }
+            }
+        }
+        syncWidgetsToBlockEntity();
+        blockEntity.markDirty();
+    }
+
+    private static float sq(float v) { return v * v; }
 
     private void updateCategoryButtonsLocked() {
         posCatButton.active = activeCategory != Category.POSITION;
@@ -709,10 +820,47 @@ public class TextDisplayScreen extends Screen {
             if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(10); return true; }
             if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) { adjustFontSize(); return true; }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        boolean consumed = super.mouseClicked(mouseX, mouseY, button);
+        if (!consumed && button == 0) {
+            consumed = tryGrabGizmo(mouseX, mouseY);
+            if (!consumed) consumed = trySelectLine(mouseX, mouseY);
+        }
+        return consumed;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (grabbedGizmo >= 0 && currentGizmoMode() >= 0) {
+            applyGizmoDrag(mouseX, mouseY);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (grabbedGizmo >= 0) {
+            releaseGizmo();
+            sendUpdateToServer();
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        if (grabbedGizmo < 0) {
+            if (currentGizmoMode() >= 0 && !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                var d = textLineWidgets.get(selectedIndex).data;
+                TextGizmo.hoverId = TextGizmo.pick(mouseX, mouseY, d.getScaleX(), d.getScaleY(), d.getScaleZ());
+            } else {
+                TextGizmo.hoverId = -1;
+            }
+        }
+        super.mouseMoved(mouseX, mouseY);
     }
 
     private void deleteTextLine(int actualIdx) {
+        releaseGizmo();
         blockEntity.getTextLines().remove(actualIdx); textLineWidgets.remove(actualIdx);
         selectedPresetIndices.remove(actualIdx);
         Set<Integer> newSet = new HashSet<>();
@@ -776,6 +924,7 @@ public class TextDisplayScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         blockEntity.setEditingLineIndex(selectedIndex);
+        blockEntity.setEditingGizmoMode(currentGizmoMode());
 
         // 顶部面板
         context.fill(panelTopX, panelTopY, panelTopX + panelTopWidth, panelTopY + panelTopHeight, 0xAA333333);
@@ -854,9 +1003,9 @@ public class TextDisplayScreen extends Screen {
             if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
             if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击精准输入"));
             if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
-            if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮"));
-            if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转", "点击显示 RX/RY/RZ 旋转按钮"));
-            if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放", "点击显示 SX/SY/SZ 缩放按钮"));
+            if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));
+            if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转", "点击显示 RX/RY/RZ 旋转按钮", "可在世界中拖拽圆环旋转（Shift/Alt 调整步长）"));
+            if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放", "点击显示 SX/SY/SZ 缩放按钮", "可拖拽绿框角点等比缩放、边点单轴缩放（Shift/Alt 调整步长）"));
             if (fontCatButton != null && fontCatButton.visible && fontCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("字体", "点击显示字号/颜色/加粗/斜体/下划线/阴影/清空格式按钮"));
             if (alignCatButton != null && alignCatButton.visible && alignCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("对齐", "点击显示水平/垂直对齐按钮"));
             if (copyLineButton != null && copyLineButton.visible && copyLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("复制", "复制该文本行的全部属性"));
@@ -910,6 +1059,8 @@ public class TextDisplayScreen extends Screen {
     @Override
     public void close() {
         blockEntity.setEditingLineIndex(-1);
+        blockEntity.setEditingGizmoMode(-1);
+        TextGizmo.clear();
         sendUpdateToServer();
         super.close();
     }
