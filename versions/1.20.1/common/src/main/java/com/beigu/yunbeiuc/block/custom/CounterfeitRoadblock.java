@@ -37,7 +37,7 @@ public class CounterfeitRoadblock extends Block {
         this.setDefaultState(this.getStateManager().getDefaultState()
                 .with(FACING, Direction.NORTH)
                 .with(TYPE, Type.SINGLE)
-                .with(ACTIVE, false));
+                .with(ACTIVE, true));
     }
 
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
