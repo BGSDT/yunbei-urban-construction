@@ -55,16 +55,18 @@ public final class TextGizmo {
     private static float bs = 1f;
     private static float halfWpx;
     private static float halfHpx;
+    private static float halfWbBlocks;
+    private static float halfHbBlocks;
     private static float offPxX;
     private static float offPxY;
     private static float offPxZ;
-    private static float zoPx;
     private static long updateTime;
 
     private static final List<H> HANDLES = new ArrayList<>();
 
     private static final List<LineRect> LINE_RECTS = new ArrayList<>();
     private static boolean rectsActive = false;
+    private static long rectsTime = 0L;
 
     private static final class LineRect {
         final int index;
@@ -78,6 +80,7 @@ public final class TextGizmo {
     public static void beginFrameRects() {
         LINE_RECTS.clear();
         rectsActive = true;
+        rectsTime = System.currentTimeMillis();
     }
 
     public static void clearRects() {
@@ -134,6 +137,10 @@ public final class TextGizmo {
 
     public static float halfHeightPx() { return halfHpx; }
 
+    public static float halfWidthBlocks() { return halfWbBlocks; }
+
+    public static float halfHeightBlocks() { return halfHbBlocks; }
+
     public static void updateAndRender(int mode, Matrix4f baseFrame, Matrix4f lineFrame, TextLineData d, float zOffsetBlocks, float halfWBlocks, float halfHBlocks) {
         Matrix4f pm = RenderSystem.getProjectionMatrix();
         if (pm == null || d == null || lineFrame == null || baseFrame == null) return;
@@ -150,10 +157,11 @@ public final class TextGizmo {
         proj = new Matrix4f(pm);
         halfWpx = halfWBlocks / bs;
         halfHpx = halfHBlocks / bs;
+        halfWbBlocks = halfWBlocks;
+        halfHbBlocks = halfHBlocks;
         offPxX = d.getXOffset();
         offPxY = d.getYOffset();
         offPxZ = d.getZOffset();
-        zoPx = zOffsetBlocks * 16f;
         updateTime = System.currentTimeMillis();
 
         HANDLES.clear();
@@ -273,6 +281,7 @@ public final class TextGizmo {
         Vector3f co = new Vector3f(c).sub(o);
         float t = co.dot(n) / dn;
         Vector3f v = new Vector3f(dir).mul(t).sub(co);
+        if (v.lengthSquared() < 1e-10f) return null;
         Vector3f b1 = perp(n);
         Vector3f b2 = new Vector3f(n).cross(b1);
         return (float) Math.toDegrees(Math.atan2(v.dot(b2), v.dot(b1)));
@@ -291,7 +300,7 @@ public final class TextGizmo {
         Vector3f df = frameInv.transformDirection(new Vector3f(dv));
         if (Math.abs(df.z) < 1e-6f) return null;
         float t = -of.z / df.z;
-        return new float[]{(of.x + t * df.x) / bs, (of.y + t * df.y) / bs};
+        return new float[]{of.x + t * df.x, of.y + t * df.y};
     }
 
     private static void draw(int mode, TextLineData d) {
@@ -310,14 +319,14 @@ public final class TextGizmo {
 
         if (mode == MODE_POSITION || mode == MODE_ROTATION) {
             if (mode == MODE_POSITION) {
-                axis(buf, m, center, axisDirView(0), GIZMO_SIZE, AXIS_X, 240, 80, 80);
-                axis(buf, m, center, axisDirView(1), GIZMO_SIZE, AXIS_Y, 90, 235, 105);
-                axis(buf, m, center, axisDirView(2), GIZMO_SIZE, AXIS_Z, 100, 160, 255);
+                axis(buf, m, center, axisDirView(0), GIZMO_SIZE, AXIS_X, 253, 48, 67);
+                axis(buf, m, center, axisDirView(1), GIZMO_SIZE, AXIS_Y, 38, 236, 69);
+                axis(buf, m, center, axisDirView(2), GIZMO_SIZE, AXIS_Z, 45, 94, 232);
                 disc(buf, m, center, 0.035f, 255, 255, 255, 210);
             } else {
-                ring(buf, m, center, axisDirView(0), GIZMO_SIZE, ROT_X, 240, 80, 80);
-                ring(buf, m, center, axisDirView(1), GIZMO_SIZE, ROT_Y, 90, 235, 105);
-                ring(buf, m, center, axisDirView(2), GIZMO_SIZE, ROT_Z, 100, 160, 255);
+                ring(buf, m, center, axisDirView(0), GIZMO_SIZE, ROT_X, 253, 48, 67);
+                ring(buf, m, center, axisDirView(1), GIZMO_SIZE, ROT_Y, 38, 236, 69);
+                ring(buf, m, center, axisDirView(2), GIZMO_SIZE, ROT_Z, 45, 94, 232);
             }
         } else if (mode == MODE_SCALE) {
             for (H h : HANDLES) {
@@ -381,6 +390,7 @@ public final class TextGizmo {
 
     public static int pickLine(double mx, double my) {
         if (!rectsActive || LINE_RECTS.isEmpty()) return -1;
+        if (System.currentTimeMillis() - rectsTime > FRESH_MS) return -1;
         int best = -1;
         float bestDepth = Float.MAX_VALUE;
         for (LineRect r : LINE_RECTS) {
@@ -426,13 +436,13 @@ public final class TextGizmo {
     private static void axis(BufferBuilder buf, Matrix4f m, Vector3f c, Vector3f dir, float len, int id, int r, int g, int b) {
         boolean hot = id == hoverId || id == grabId;
         Vector3f tip = new Vector3f(dir).mul(len).add(c);
-        ribbon(buf, m, c, tip, hot ? 0.028f : 0.018f, r, g, b, hot ? 255 : 215);
+        ribbon(buf, m, c, tip, 0.25f / 16f, r, g, b, hot ? 255 : 215);
         disc(buf, m, tip, hot ? 0.075f : 0.055f, r, g, b, 255);
     }
 
     private static void ring(BufferBuilder buf, Matrix4f m, Vector3f c, Vector3f n, float radius, int id, int r, int g, int b) {
         boolean hot = id == hoverId || id == grabId;
-        float th = hot ? 0.024f : 0.013f;
+        float th = 0.25f / 16f;
         Vector3f b1 = perp(n);
         Vector3f b2 = new Vector3f(n).cross(b1);
         arc(buf, m, c, b1, b2, radius, 0f, (float) Math.PI, th, hot ? 255 : r, hot ? 255 : g, hot ? 120 : b, 255);

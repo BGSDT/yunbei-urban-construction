@@ -33,6 +33,7 @@ public class TextDisplayScreen extends Screen {
     private static final int SAVE_BTN_ROW_HEIGHT = 22;
     private static final int INFO_PANEL_WIDTH = 100;
     private static final float SCALE_DISPLAY_FACTOR = 16f;
+    private static final int[] COLOR_PALETTE = {0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFA500, 0x000000};
 
     private final CustomSignBlockEntity blockEntity;
     private final BlockPos blockPos;
@@ -47,6 +48,7 @@ public class TextDisplayScreen extends Screen {
     private ButtonWidget rxButton, ryButton, rzButton;
     private ButtonWidget sxButton, syButton, szButton;
     private ButtonWidget boldButton, italicButton, underlineButton, shadowButton;
+    private ButtonWidget outlineButton, outlineColorButton;
     private ButtonWidget hAlignButton, vAlignButton, clearFormatButton;
 
     private enum Category { POSITION, ROTATION, SCALE, FONT, ALIGN }
@@ -81,7 +83,8 @@ public class TextDisplayScreen extends Screen {
     private int panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight;
 
     private int grabbedGizmo = -1;
-    private float grabAngleStart, grabValueStart, grabAxisStart, grabSize0;
+    private float grabValueStart, grabAxisStart, grabSize0, grabLen0;
+    private float grabAnglePrev, grabAccumDeg;
 
     public TextDisplayScreen(CustomSignBlockEntity blockEntity) {
         super(Text.translatable("gui.yunbeiuc.custom_sign"));
@@ -218,23 +221,14 @@ public class TextDisplayScreen extends Screen {
             }
         }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
 
-        int[] colors = {0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFA500, 0x000000};
-        colorButton = ButtonWidget.builder(Text.literal("■"), button -> {
-            if (hasControlDown()) enterPreciseMode(3);
-            else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                var d = textLineWidgets.get(selectedIndex).data;
-                int ci = -1; for (int i = 0; i < colors.length; i++) if (colors[i] == d.getColor()) { ci = i; break; }
-                d.setColor(colors[(ci + 1) % colors.length]);
-                colorButton.setMessage(Text.literal("■").styled(s -> s.withColor(d.getColor())));
-                syncAndUpdateClient();
-                sendUpdateToServer();
-            }
-        }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
+        colorButton = makeColorCycleButton(3);
 
         boldButton = makeToggle("B", s -> s.withBold(true), d -> { d.setBold(!d.isBold()); syncAndUpdateClient(); });
         italicButton = makeToggle("I", s -> s.withItalic(true), d -> { d.setItalic(!d.isItalic()); syncAndUpdateClient(); });
         underlineButton = makeToggle("U", s -> s.withUnderline(true), d -> { d.setUnderline(!d.isUnderline()); syncAndUpdateClient(); });
         shadowButton = makeToggle("D", s -> s.withBold(true), d -> { d.setShadow(!d.isShadow()); syncAndUpdateClient(); });
+        outlineButton = makeToggle("O", s -> s.withBold(true), d -> { d.setOutline(!d.isOutline()); syncAndUpdateClient(); });
+        outlineColorButton = makeColorCycleButton(12);
 
         hAlignButton = ButtonWidget.builder(Text.literal("水平居中"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
@@ -261,9 +255,9 @@ public class TextDisplayScreen extends Screen {
         clearFormatButton = ButtonWidget.builder(Text.literal("✕"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
-                d.setBold(false); d.setItalic(false); d.setUnderline(false); d.setShadow(false);
+                d.setBold(false); d.setItalic(false); d.setUnderline(false); d.setShadow(false); d.setOutline(false);
                 d.setColor(0xFFFFFF); d.setFontSize(1.0f); d.setAlignment(CustomSignBlockEntity.TextAlignment.CENTER_CENTER);
-                colorButton.setMessage(Text.literal("■").styled(s -> s.withColor(0xFFFFFF)));
+                colorButton.setMessage(colorMsg(0xFFFFFF));
                 hAlignButton.setMessage(Text.literal("水平居中")); vAlignButton.setMessage(Text.literal("垂直居中"));
                 syncAndUpdateClient();
                 sendUpdateToServer();
@@ -323,6 +317,40 @@ public class TextDisplayScreen extends Screen {
         }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
     }
 
+    private ButtonWidget makeColorCycleButton(final int type) {
+        return ButtonWidget.builder(Text.literal("■"), button -> {
+            if (hasControlDown()) { enterPreciseMode(type); return; }
+            cycleColorByType(type, 1);
+        }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
+    }
+
+    private void cycleColorByType(int type, int dir) {
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size() || presetSaveMode || presetLoadMode) return;
+        var d = textLineWidgets.get(selectedIndex).data;
+        int cur = switch (type) { case 3 -> d.getColor(); default -> d.getOutlineColor(); };
+        int ci = -1;
+        for (int i = 0; i < COLOR_PALETTE.length; i++) if (COLOR_PALETTE[i] == cur) { ci = i; break; }
+        int nc = COLOR_PALETTE[(ci + dir + COLOR_PALETTE.length) % COLOR_PALETTE.length];
+        applyColor(type, nc, d);
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
+    private void applyColor(int type, int c, TextLineData d) {
+        switch (type) {
+            case 3 -> { d.setColor(c); colorButton.setMessage(colorMsg(c)); }
+            default -> { d.setOutlineColor(c); outlineColorButton.setMessage(colorMsg(c)); }
+        }
+    }
+
+    private static Text colorMsg(int c) { return Text.literal("■").styled(s -> s.withColor(c)); }
+
+    private static Integer tryParseHex(String t) {
+        String hex = t.replace("#", "").trim();
+        if (hex.length() != 6) return null;
+        try { return Integer.parseInt(hex, 16); } catch (NumberFormatException e) { return null; }
+    }
+
     private CustomSignBlockEntity.TextAlignment getAlignment(int h, int v) {
         for (var a : CustomSignBlockEntity.TextAlignment.values()) if (a.hAlign == h && a.vAlign == v) return a;
         return CustomSignBlockEntity.TextAlignment.CENTER_CENTER;
@@ -375,15 +403,22 @@ public class TextDisplayScreen extends Screen {
             grabValueStart = switch (axis(h)) { case 0 -> d.getXOffset(); case 1 -> d.getYOffset(); default -> d.getZOffset(); };
         } else if (kind == TextGizmo.KIND_ROT) {
             Float a = TextGizmo.rotationDragAngle(axis(h), mouseX, mouseY);
-            grabAngleStart = a != null ? a : 0f;
+            grabAnglePrev = a != null ? a : 0f;
+            grabAccumDeg = 0f;
             grabValueStart = switch (axis(h)) { case 0 -> d.getRotX(); case 1 -> d.getRotY(); default -> d.getRotZ(); };
         } else if (kind == TextGizmo.KIND_CORNER) {
             grabSize0 = d.getFontSize();
+            grabLen0 = (float) Math.sqrt(sq(TextGizmo.halfWidthBlocks() * d.getScaleX())
+                    + sq(TextGizmo.halfHeightBlocks() * d.getScaleY()));
         }
         return true;
     }
 
     private static int axis(int handle) { return TextGizmo.handleAxis(handle); }
+
+    private boolean isOverUiPanel(double mx, double my) {
+        return my >= panelTopY;
+    }
 
     private boolean trySelectLine(double mouseX, double mouseY) {
         if (presetSaveMode || presetLoadMode || preciseInputMode || formatPainterMode || presetSelectMode) return false;
@@ -414,29 +449,27 @@ public class TextDisplayScreen extends Screen {
             case TextGizmo.KIND_ROT -> {
                 Float a = TextGizmo.rotationDragAngle(axis, mouseX, mouseY);
                 if (a != null) {
-                    float delta = a - grabAngleStart;
-                    delta -= 360f * Math.round(delta / 360f);
-                    float val = snapToStep(grabValueStart + delta, stepFor(15.0f, 5.0f));
+                    float stepDeg = a - grabAnglePrev;
+                    stepDeg -= 360f * Math.round(stepDeg / 360f);
+                    grabAnglePrev = a;
+                    grabAccumDeg += stepDeg;
+                    float val = snapToStep(grabValueStart + grabAccumDeg, stepFor(15.0f, 5.0f));
                     switch (axis) { case 0 -> d.setRotX(val); case 1 -> d.setRotY(val); default -> d.setRotZ(val); }
                 }
             }
             case TextGizmo.KIND_CORNER -> {
                 float[] uv = TextGizmo.scaleDragPoint(mouseX, mouseY);
-                if (uv != null) {
-                    float hw = TextGizmo.halfWidthPx(), hh = TextGizmo.halfHeightPx();
-                    float curLen = (float) Math.sqrt(sq(hw * d.getScaleX()) + sq(hh * d.getScaleY()));
-                    if (curLen > 1e-4f) {
-                        float r = (float) Math.sqrt(sq(uv[0]) + sq(uv[1])) / curLen;
-                        d.setFontSize(clampScaleDisplay(snapToStep(grabSize0 * 16f * r, stepFor(1f, 0.5f))) / 16f);
-                    }
+                if (uv != null && grabLen0 > 1e-5f) {
+                    float r = (float) Math.sqrt(sq(uv[0]) + sq(uv[1])) / grabLen0;
+                    d.setFontSize(clampScaleDisplay(snapToStep(grabSize0 * 16f * r, stepFor(1f, 0.5f))) / 16f);
                 }
             }
             case TextGizmo.KIND_EDGE -> {
                 float[] uv = TextGizmo.scaleDragPoint(mouseX, mouseY);
                 if (uv != null) {
                     float step = stepFor(1f, 0.5f);
-                    if (axis == 0) d.setScaleX(clampScaleDisplay(snapToStep(Math.abs(uv[0]) / Math.max(1e-4f, TextGizmo.halfWidthPx()) * 16f, step)) / 16f);
-                    else d.setScaleY(clampScaleDisplay(snapToStep(Math.abs(uv[1]) / Math.max(1e-4f, TextGizmo.halfHeightPx()) * 16f, step)) / 16f);
+                    if (axis == 0) d.setScaleX(clampScaleDisplay(snapToStep(Math.abs(uv[0]) / Math.max(1e-5f, TextGizmo.halfWidthBlocks()) * 16f, step)) / 16f);
+                    else d.setScaleY(clampScaleDisplay(snapToStep(Math.abs(uv[1]) / Math.max(1e-5f, TextGizmo.halfHeightBlocks()) * 16f, step)) / 16f);
                 }
             }
         }
@@ -460,7 +493,9 @@ public class TextDisplayScreen extends Screen {
             case POSITION -> new String[]{String.format("X:%.1f", d.getXOffset()), String.format("Y:%.1f", d.getYOffset()), String.format("Z:%.1f", d.getZOffset())};
             case ROTATION -> new String[]{String.format("RX:%.1f", d.getRotX()), String.format("RY:%.1f", d.getRotY()), String.format("RZ:%.1f", d.getRotZ())};
             case SCALE -> new String[]{String.format("SX:%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR), String.format("SY:%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR), String.format("SZ:%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR), String.format("S:%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR)};
-            case FONT -> new String[]{String.format("颜色:#%06X", d.getColor())};
+            case FONT -> new String[]{String.format("颜色:#%06X", d.getColor()),
+                    String.format("阴影:%s", d.isShadow() ? "开" : "关"),
+                    String.format("描边:#%06X %s", d.getOutlineColor(), d.isOutline() ? "开" : "关")};
             case ALIGN -> new String[]{getHAlignText(d.getAlignment().hAlign), getVAlignText(d.getAlignment().vAlign)};
         };
     }
@@ -473,15 +508,17 @@ public class TextDisplayScreen extends Screen {
         preciseInputField.setMaxLength(Integer.MAX_VALUE);
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             var d = textLineWidgets.get(selectedIndex).data;
-            preciseInputField.setText(switch (preciseInputType) {
-                case 0 -> String.format("%.1f", d.getXOffset()); case 1 -> String.format("%.1f", d.getYOffset());
-                case 2 -> String.format("%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR); case 3 -> String.format("#%06X", d.getColor());
-                case 4 -> String.format("%.1f", d.getZOffset());
-                case 5 -> String.format("%.1f", d.getRotX()); case 6 -> String.format("%.1f", d.getRotY());
-                case 7 -> String.format("%.1f", d.getRotZ());
-                case 8 -> String.format("%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR); case 9 -> String.format("%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR);
-                case 10 -> String.format("%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR); default -> "0";
-            });
+        preciseInputField.setText(switch (preciseInputType) {
+            case 0 -> String.format("%.1f", d.getXOffset()); case 1 -> String.format("%.1f", d.getYOffset());
+            case 2 -> String.format("%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR); case 3 -> String.format("#%06X", d.getColor());
+            case 4 -> String.format("%.1f", d.getZOffset());
+            case 5 -> String.format("%.1f", d.getRotX()); case 6 -> String.format("%.1f", d.getRotY());
+            case 7 -> String.format("%.1f", d.getRotZ());
+            case 8 -> String.format("%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR); case 9 -> String.format("%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR);
+            case 10 -> String.format("%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR);
+            case 12 -> String.format("#%06X", d.getOutlineColor());
+            default -> "0";
+        });
         }
         preciseInputField.setChangedListener(text -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
@@ -490,13 +527,14 @@ public class TextDisplayScreen extends Screen {
                     switch (preciseInputType) {
                         case 0 -> d.setXOffset(Float.parseFloat(text)); case 1 -> d.setYOffset(Float.parseFloat(text));
                         case 2 -> d.setFontSize(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
-                        case 3 -> { String hex = text.replace("#", "").trim(); if (hex.length() == 6) { d.setColor(Integer.parseInt(hex, 16)); colorButton.setMessage(Text.literal("■").styled(s -> s.withColor(d.getColor()))); } }
+                        case 3 -> { Integer c = tryParseHex(text); if (c != null) applyColor(3, c, d); }
                         case 4 -> d.setZOffset(Float.parseFloat(text));
                         case 5 -> d.setRotX(Float.parseFloat(text)); case 6 -> d.setRotY(Float.parseFloat(text));
                         case 7 -> d.setRotZ(Float.parseFloat(text));
                         case 8 -> d.setScaleX(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
                         case 9 -> d.setScaleY(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
                         case 10 -> d.setScaleZ(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
+                                    case 12 -> { Integer c = tryParseHex(text); if (c != null) applyColor(12, c, d); }
                     }
                 } catch (NumberFormatException ignored) {}
                 syncAndUpdateClient();
@@ -619,6 +657,7 @@ public class TextDisplayScreen extends Screen {
         this.remove(fontSizeButton); this.remove(colorButton); this.remove(boldButton); this.remove(italicButton);
         this.remove(underlineButton); this.remove(shadowButton); this.remove(hAlignButton); this.remove(vAlignButton);
         this.remove(clearFormatButton);
+        this.remove(outlineButton); this.remove(outlineColorButton);
         if (preciseInputField != null) this.remove(preciseInputField);
         if (backButton != null) this.remove(backButton);
         if (presetNameField != null) this.remove(presetNameField);
@@ -631,7 +670,8 @@ public class TextDisplayScreen extends Screen {
         if (presetScrollDown != null) this.remove(presetScrollDown);
         for (ButtonWidget b : new ButtonWidget[]{xButton, yButton, zButton, rxButton, ryButton, rzButton,
                 sxButton, syButton, szButton, fontSizeButton, colorButton, boldButton, italicButton,
-                underlineButton, shadowButton, hAlignButton, vAlignButton, clearFormatButton}) {
+                underlineButton, shadowButton, hAlignButton, vAlignButton, clearFormatButton,
+                outlineButton, outlineColorButton}) {
             b.visible = false;
         }
 
@@ -647,7 +687,8 @@ public class TextDisplayScreen extends Screen {
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
         var d = textLineWidgets.get(selectedIndex).data;
         textField.setText(d.getText());
-        colorButton.setMessage(Text.literal("■").styled(s -> s.withColor(d.getColor())));
+        colorButton.setMessage(colorMsg(d.getColor()));
+        outlineColorButton.setMessage(colorMsg(d.getOutlineColor()));
         hAlignButton.setMessage(Text.literal(getHAlignText(d.getAlignment().hAlign)));
         vAlignButton.setMessage(Text.literal(getVAlignText(d.getAlignment().vAlign)));
     }
@@ -683,6 +724,8 @@ public class TextDisplayScreen extends Screen {
                 italicButton.setPosition(cx, y2); italicButton.visible = true; this.addDrawableChild(italicButton); cx += BTN_SIZE + BTN_GAP;
                 underlineButton.setPosition(cx, y2); underlineButton.visible = true; this.addDrawableChild(underlineButton); cx += BTN_SIZE + BTN_GAP;
                 shadowButton.setPosition(cx, y2); shadowButton.visible = true; this.addDrawableChild(shadowButton); cx += BTN_SIZE + BTN_GAP;
+                outlineButton.setPosition(cx, y2); outlineButton.visible = true; this.addDrawableChild(outlineButton); cx += BTN_SIZE + BTN_GAP;
+                outlineColorButton.setPosition(cx, y2); outlineColorButton.visible = true; this.addDrawableChild(outlineColorButton); cx += BTN_SIZE + BTN_GAP;
                 clearFormatButton.setPosition(cx, y2); clearFormatButton.visible = true; this.addDrawableChild(clearFormatButton);
             }
             case ALIGN -> {
@@ -819,9 +862,11 @@ public class TextDisplayScreen extends Screen {
             if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(9); return true; }
             if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(10); return true; }
             if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) { adjustFontSize(); return true; }
+            if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) { cycleColorByType(3, -1); return true; }
+            if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) { cycleColorByType(12, -1); return true; }
         }
         boolean consumed = super.mouseClicked(mouseX, mouseY, button);
-        if (!consumed && button == 0) {
+        if (!consumed && button == 0 && !isOverUiPanel(mouseX, mouseY)) {
             consumed = tryGrabGizmo(mouseX, mouseY);
             if (!consumed) consumed = trySelectLine(mouseX, mouseY);
         }
@@ -849,7 +894,8 @@ public class TextDisplayScreen extends Screen {
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         if (grabbedGizmo < 0) {
-            if (currentGizmoMode() >= 0 && !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+            if (currentGizmoMode() >= 0 && !isOverUiPanel(mouseX, mouseY)
+                    && !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 var d = textLineWidgets.get(selectedIndex).data;
                 TextGizmo.hoverId = TextGizmo.pick(mouseX, mouseY, d.getScaleX(), d.getScaleY(), d.getScaleZ());
             } else {
@@ -953,7 +999,8 @@ public class TextDisplayScreen extends Screen {
                     drawToggleBg(context, cx, y2, BTN_SIZE, d.isBold()); cx += BTN_SIZE + BTN_GAP;
                     drawToggleBg(context, cx, y2, BTN_SIZE, d.isItalic()); cx += BTN_SIZE + BTN_GAP;
                     drawToggleBg(context, cx, y2, BTN_SIZE, d.isUnderline()); cx += BTN_SIZE + BTN_GAP;
-                    drawToggleBg(context, cx, y2, BTN_SIZE, d.isShadow());
+                    drawToggleBg(context, cx, y2, BTN_SIZE, d.isShadow()); cx += BTN_SIZE + BTN_GAP;
+                    drawToggleBg(context, cx, y2, BTN_SIZE, d.isOutline());
                 }
                 int statusY = y1 + 4;
                 for (String line : getCategoryStatusLines(d)) {
@@ -974,7 +1021,7 @@ public class TextDisplayScreen extends Screen {
             String h = "暂无预设，请先保存预设";
             context.drawText(textRenderer, Text.literal(h), panelBottomX + (panelBottomWidth - textRenderer.getWidth(h))/2, panelBottomY + (panelBottomHeight - textRenderer.fontHeight)/2 - 10, 0xFFAAAAAA, false);
         } else if (preciseInputMode) {
-            String l = switch (preciseInputType) { case 0 -> "输入 X 坐标"; case 1 -> "输入 Y 坐标"; case 2 -> "输入字号"; case 3 -> "输入颜色 (#RRGGBB)"; case 4 -> "输入 Z 坐标"; case 5 -> "输入 X 轴旋转角度"; case 6 -> "输入 Y 轴旋转角度"; case 7 -> "输入 Z 轴旋转角度"; case 8 -> "输入 X 轴缩放"; case 9 -> "输入 Y 轴缩放"; case 10 -> "输入 Z 轴缩放"; default -> ""; };
+            String l = switch (preciseInputType) { case 0 -> "输入 X 坐标"; case 1 -> "输入 Y 坐标"; case 2 -> "输入字号"; case 3 -> "输入颜色 (#RRGGBB)"; case 4 -> "输入 Z 坐标"; case 5 -> "输入 X 轴旋转角度"; case 6 -> "输入 Y 轴旋转角度"; case 7 -> "输入 Z 轴旋转角度"; case 8 -> "输入 X 轴缩放"; case 9 -> "输入 Y 轴缩放"; case 10 -> "输入 Z 轴缩放"; case 12 -> "输入描边颜色 (#RRGGBB)"; default -> ""; };
             context.drawText(textRenderer, Text.literal(l), panelBottomX + 5, panelBottomY + 5, 0xFFAAAAAA, false);
         }
 
@@ -1001,6 +1048,9 @@ public class TextDisplayScreen extends Screen {
             if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
             if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
             if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (shadowButton != null && shadowButton.visible && shadowButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("阴影", "原版阴影，点击开关"));
+            if (outlineButton != null && outlineButton.visible && outlineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("描边", "点击开关文字描边（颜色见右侧 ■）"));
+            if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 右键反向切换 | Ctrl+点击精准输入"));
             if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击精准输入"));
             if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
             if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));

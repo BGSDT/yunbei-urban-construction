@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -36,7 +37,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         int editingIndex = entity.getEditingLineIndex();
         int gizmoMode = editingIndex >= 0 ? entity.getEditingGizmoMode() : -1;
         if (editingIndex >= 0) TextGizmo.beginFrameRects();
-        else TextGizmo.clearRects();
         for (int i = 0; i < lines.size(); i++) {
             gizmoLineIndex = i;
             renderTextLine(matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex, gizmoMode, baseFrame);
@@ -47,6 +47,15 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
     // 子类实现前置变换（平移/旋转）
     protected abstract void applyTransforms(MatrixStack matrices, T entity);
+
+    // 检查纹理资源是否真实存在，避免渲染缺失纹理时反复刷错误日志
+    private boolean textureExists(Identifier id) {
+        try {
+            return MinecraftClient.getInstance().getResourceManager().getResource(id).isPresent();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     // 子类实现 Z 轴偏移
     protected abstract float getZOffset(T entity);
@@ -72,7 +81,9 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             if (parts.length >= 2) {
                 // Identifier 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
                 Identifier textureId = Identifier.tryParse(parts[1].trim().toLowerCase(Locale.ROOT));
-                if (textureId != null) {
+                // 仅当路径以 .png 结尾且资源真实存在时才按贴图渲染；
+                // 目录条目会被 getResource 误判为存在（jar 内含目录项），必须用后缀过滤掉，否则输入过程会反复报错
+                if (textureId != null && textureId.getPath().endsWith(".png") && textureExists(textureId)) {
                     renderTexture(matrices, vertexConsumers, light, overlay, zOffset, lineData, textureId, editing, gizmoMode, baseFrame);
                     return;
                 }
@@ -136,12 +147,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             default -> -textHeight / 2.0f;
         };
 
-        this.textRenderer.draw(renderText, renderX, renderY, lineData.getColor(), lineData.isShadow(),
-                matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+        drawStyledText(renderText, renderX, renderY, lineData, matrices.peek().getPositionMatrix(), vertexConsumers, light);
 
         if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
-        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight,
-                baseScale * lineData.getScaleX(), -baseScale * lineData.getScaleY());
+        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
         if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
         matrices.pop();
@@ -181,15 +190,29 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             default -> -textHeight / 2.0f;
         };
 
-        this.textRenderer.draw(renderText, renderX, renderY, lineData.getColor(), lineData.isShadow(),
-                matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+        drawStyledText(renderText, renderX, renderY, lineData, matrices.peek().getPositionMatrix(), vertexConsumers, light);
 
         if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
-        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight,
-                baseScale * lineData.getScaleX(), -baseScale * lineData.getScaleY());
+        TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
         if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
         matrices.pop();
+    }
+
+    private void drawStyledText(Text renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light) {
+        boolean outline = lineData.isOutline();
+        boolean shadow = lineData.isShadow();
+        if (outline) {
+            if (shadow) {
+                this.textRenderer.draw(renderText, x, y, lineData.getColor(), true,
+                        matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+            }
+            this.textRenderer.drawWithOutline(renderText.asOrderedText(), x, y, lineData.getColor(), lineData.getOutlineColor(),
+                    matrix, vertexConsumers, light);
+        } else {
+            this.textRenderer.draw(renderText, x, y, lineData.getColor(), shadow,
+                    matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+        }
     }
 
     private void renderRect(MatrixStack matrices, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {

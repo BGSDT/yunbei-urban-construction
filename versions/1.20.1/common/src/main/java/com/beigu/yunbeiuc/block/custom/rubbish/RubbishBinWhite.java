@@ -36,14 +36,12 @@ public class RubbishBinWhite extends Block {
     private static final VoxelShape SHAPE_S = Block.createCuboidShape(0, 0, 4.25, 16, 16, 11.75);
     private static final VoxelShape SHAPE_W = Block.createCuboidShape(4.25, 0, 0, 11.75, 16, 16);
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-    public static final EnumProperty<NumberState> NUMBER_STATE = EnumProperty.of("number_state", NumberState.class);
 
     public RubbishBinWhite(Settings settings) {
         super(settings);
         this.setDefaultState(
                 getStateManager().getDefaultState()
                         .with(FACING, Direction.NORTH)
-                        .with(NUMBER_STATE, NumberState.ZERO)
         );
     }
 
@@ -59,7 +57,7 @@ public class RubbishBinWhite extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, NUMBER_STATE);
+        builder.add(FACING);
     }
 
     @Override
@@ -80,62 +78,10 @@ public class RubbishBinWhite extends Block {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getStackInHand(hand);
-        NumberState currentState = state.get(NUMBER_STATE);
-        if (heldItem.isOf(ModItems.WAND.get())) {
-            world.setBlockState(pos, state.with(NUMBER_STATE, NumberState.ZERO));
+        if (!heldItem.isEmpty()) {
+            player.setStackInHand(hand, ItemStack.EMPTY);
             return ActionResult.success(world.isClient());
-        }else {
-            if (currentState == NumberState.NINE) {
-                player.sendMessage(Text.translatable("block.yunbeiuc.rubbish_bin.full"), true);
-                return ActionResult.success(world.isClient());
-            } else if (!heldItem.isEmpty()) {
-                // 移除手中的物品（设置为空栈）
-                player.setStackInHand(hand, ItemStack.EMPTY);
-                NumberState nextState = state.get(NUMBER_STATE).next();
-                world.setBlockState(pos, state.with(NUMBER_STATE, nextState));
-                return ActionResult.success(world.isClient());
-            }
         }
         return super.onUse(state, world, pos, player, hand, hit);
-    }
-
-    public enum NumberState implements StringIdentifiable {
-        ZERO("zero"),
-        ONE("one"),
-        TWO("two"),
-        THREE("three"),
-        FOUR("four"),
-        FIVE("five"),
-        SIX("six"),
-        SEVEN("seven"),
-        EIGHT("eight"),
-        NINE("nine");
-
-        private final String name;
-
-        NumberState(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
-
-        // 状态循环：红→绿→红
-        public NumberState next() {
-            return switch (this) {
-                case ZERO -> ONE;
-                case ONE -> TWO;
-                case TWO -> THREE;
-                case THREE -> FOUR;
-                case FOUR -> FIVE;
-                case FIVE -> SIX;
-                case SIX -> SEVEN;
-                case SEVEN -> EIGHT;
-                case EIGHT -> NINE;
-                case NINE -> ZERO;
-            };
-        }
     }
 }

@@ -1,0 +1,26 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "yunbeiuc:block/reflective_sign_yellow",
+		"1": "yunbeiuc:block/counterfeit_roadblock_simple_yellow",
+		"particle": "yunbeiuc:block/counterfeit_roadblock_simple_yellow"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 0.5, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 3.52522, 8.77577]},
+			"faces": {
+				"north": {"uv": [4.125, 2.125, 4.375, 2.375], "texture": "#1"},
+				"east": {"uv": [4.625, 2.125, 4.65625, 2.375], "texture": "#1"},
+				"south": {"uv": [5.125, 2.125, 5.375, 2.375], "texture": "#1"},
+				"west": {"uv": [5.84375, 2.125, 5.875, 2.375], "texture": "#1"},
+				"up": {"uv": [16, 16, 0, 0], "texture": "#0"},
+				"down": {"uv": [6.625, 2.125, 6.875, 2.15625], "texture": "#1"}
+			}
+		}
+	],
+	"cyellowit": "Made with Blockbench"
+}

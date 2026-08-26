@@ -33,7 +33,6 @@ public class RisingBollard extends Block {
         tooltip.add(Text.translatable("block.yunbeiuc.rising_bollard.tooltip"));
         super.appendTooltip(stack, world, tooltip, options);
     }
-    public static final BooleanProperty LIT = Properties.LIT;
     private static final VoxelShape SHAPE_ON = Block.createCuboidShape(2, 0, 2, 14, 16, 14);
     private static final VoxelShape SHAPE_OFF = Block.createCuboidShape(2, 0, 2, 14, 0.1, 14);
 
@@ -42,11 +41,10 @@ public class RisingBollard extends Block {
     public static final EnumProperty<LightTFState> LIGHT_TF_STATE = EnumProperty.of("light_tf_state", LightTFState.class);
 
     public RisingBollard(Settings settings) {
-        super(settings.luminance(state -> state.get(LIT) ? 15 : 0));
+        super(settings);
         this.setDefaultState(
                 getStateManager().getDefaultState()
                         .with(FACING, Direction.NORTH)
-                        .with(LIT, true)
                         .with(LIGHT_TF_STATE, LightTFState.TRUE)
         );
     }
@@ -61,7 +59,7 @@ public class RisingBollard extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING,LIT,LIGHT_TF_STATE);
+        builder.add(FACING,LIGHT_TF_STATE);
     }
 
     @Override
@@ -85,9 +83,8 @@ public class RisingBollard extends Block {
         // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world.isClient()) {
             if (heldItem.isOf(ModItems.WAND.get())) {
-                boolean newLitState = !state.get(LIT);
                 LightTFState newLightState = state.get(LIGHT_TF_STATE).next();
-                world.setBlockState(pos, state.with(LIT, newLitState).with(LIGHT_TF_STATE, newLightState));
+                world.setBlockState(pos, state.with(LIGHT_TF_STATE, newLightState));
             }
         }
         return ActionResult.SUCCESS;

@@ -33,6 +33,7 @@ import com.beigu.yunbeiuc.block.custom.waring.WarningNetwork;
 import com.beigu.yunbeiuc.block.custom.waring.WarningNetworkPole;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
+import net.minecraft.block.ConduitBlock;
 import net.minecraft.registry.RegistryKeys;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import net.minecraft.block.AbstractBlock;
@@ -197,6 +198,15 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
     public static final RegistrySupplier<Block> ROAD_WARNING_POLE_RED = BLOCKS.register("road_warning_pole_red", () -> new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> ROAD_WARNING_POLE_YELLOW = BLOCKS.register("road_warning_pole_yellow", () -> new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> ROAD_WARNING_POLE_GREEN = BLOCKS.register("road_warning_pole_green", () -> new RoadWarningPole(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_STANDARD_YELLOW = BLOCKS.register("counterfeit_roadblock_standard_yellow", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_STANDARD_RED = BLOCKS.register("counterfeit_roadblock_standard_red", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_ENHANCED_YELLOW = BLOCKS.register("counterfeit_roadblock_enhanced_yellow", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_ENHANCED_RED = BLOCKS.register("counterfeit_roadblock_enhanced_red", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_EASY_YELLOW = BLOCKS.register("counterfeit_roadblock_easy_yellow", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_EASY_RED = BLOCKS.register("counterfeit_roadblock_easy_red", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_EASY_LINE = BLOCKS.register("counterfeit_roadblock_easy_line", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> COUNTERFEIT_ROADBLOCK_SIMPLE_YELLOW = BLOCKS.register("counterfeit_roadblock_simple_yellow", () -> new CounterfeitRoadblock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
     public static final RegistrySupplier<Block> IRON_HORSE_YELLOW = BLOCKS.register("iron_horse_yellow", () -> new IronHorse(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> IRON_HORSE_RED = BLOCKS.register("iron_horse_red", () -> new IronHorse(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));

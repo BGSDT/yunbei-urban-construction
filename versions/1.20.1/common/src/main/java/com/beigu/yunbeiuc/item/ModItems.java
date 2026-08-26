@@ -191,6 +191,14 @@ public class ModItems {
     public static final RegistrySupplier<Item> ROAD_WARNING_POLE_RED = registerBlockItem(MunicipalBlocks.ROAD_WARNING_POLE_RED, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_WARNING_POLE_YELLOW = registerBlockItem(MunicipalBlocks.ROAD_WARNING_POLE_YELLOW, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_WARNING_POLE_GREEN = registerBlockItem(MunicipalBlocks.ROAD_WARNING_POLE_GREEN, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_STANDARD_YELLOW = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_STANDARD_YELLOW, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_STANDARD_RED = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_STANDARD_RED, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_ENHANCED_YELLOW = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_ENHANCED_YELLOW, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_ENHANCED_RED = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_ENHANCED_RED, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_EASY_YELLOW = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_EASY_YELLOW, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_EASY_RED = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_EASY_RED, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_EASY_LINE = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_EASY_LINE, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> COUNTERFEIT_ROADBLOCK_SIMPLE_YELLOW = registerBlockItem(MunicipalBlocks.COUNTERFEIT_ROADBLOCK_SIMPLE_YELLOW, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> IRON_HORSE_YELLOW = registerBlockItem(MunicipalBlocks.IRON_HORSE_YELLOW, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> IRON_HORSE_RED = registerBlockItem(MunicipalBlocks.IRON_HORSE_RED, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> IRON_HORSE_WHITE = registerBlockItem(MunicipalBlocks.IRON_HORSE_WHITE, ALL_MUNICIPAL_ITEMS);

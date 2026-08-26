@@ -80,6 +80,8 @@ public class CustomSignBlockEntity extends BlockEntity {
         private int color;
         private TextAlignment alignment;
         private boolean bold, italic, underline, shadow;
+        private boolean outline;
+        private int outlineColor = 0x000000;
         private float fontSize;
         private float scaleX, scaleY, scaleZ;
 
@@ -89,6 +91,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             this.rotX = 0; this.rotY = 0; this.rotZ = 0;
             this.color = 0xFFFFFF; this.alignment = TextAlignment.CENTER_CENTER;
             this.bold = false; this.italic = false; this.underline = false; this.shadow = false;
+            this.outline = false; this.outlineColor = 0x000000;
             this.fontSize = 1.0f;
             this.scaleX = 1.0f; this.scaleY = 1.0f; this.scaleZ = 1.0f;
         }
@@ -99,6 +102,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             c.rotX = rotX; c.rotY = rotY; c.rotZ = rotZ;
             c.color = color; c.alignment = alignment;
             c.bold = bold; c.italic = italic; c.underline = underline; c.shadow = shadow;
+            c.outline = outline; c.outlineColor = outlineColor;
             c.fontSize = fontSize;
             c.scaleX = scaleX; c.scaleY = scaleY; c.scaleZ = scaleZ;
             return c;
@@ -110,6 +114,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             this.rotX = other.rotX; this.rotY = other.rotY; this.rotZ = other.rotZ;
             this.color = other.color; this.alignment = other.alignment;
             this.bold = other.bold; this.italic = other.italic; this.underline = other.underline; this.shadow = other.shadow;
+            this.outline = other.outline; this.outlineColor = other.outlineColor;
             this.fontSize = other.fontSize;
             this.scaleX = other.scaleX; this.scaleY = other.scaleY; this.scaleZ = other.scaleZ;
         }
@@ -117,6 +122,7 @@ public class CustomSignBlockEntity extends BlockEntity {
         public void applyFormatFrom(TextLineData other) {
             this.color = other.color; this.alignment = other.alignment;
             this.bold = other.bold; this.italic = other.italic; this.underline = other.underline; this.shadow = other.shadow;
+            this.outline = other.outline; this.outlineColor = other.outlineColor;
             this.fontSize = other.fontSize;
         }
 
@@ -128,6 +134,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             nbt.putInt("color", color); nbt.putString("alignment", alignment.name());
             nbt.putBoolean("bold", bold); nbt.putBoolean("italic", italic);
             nbt.putBoolean("underline", underline); nbt.putBoolean("shadow", shadow);
+            nbt.putBoolean("outline", outline);; nbt.putInt("outlineColor", outlineColor);
             nbt.putFloat("fontSize", fontSize);
             nbt.putFloat("scaleX", scaleX); nbt.putFloat("scaleY", scaleY); nbt.putFloat("scaleZ", scaleZ);
             return nbt;
@@ -142,6 +149,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             catch (IllegalArgumentException e) { data.alignment = TextAlignment.CENTER_CENTER; }
             data.bold = nbt.getBoolean("bold"); data.italic = nbt.getBoolean("italic");
             data.underline = nbt.getBoolean("underline"); data.shadow = nbt.getBoolean("shadow");
+            data.outline = nbt.getBoolean("outline");data.outlineColor = nbt.contains("outlineColor") ? nbt.getInt("outlineColor") : 0x000000;
             data.fontSize = nbt.contains("fontSize") ? nbt.getFloat("fontSize") : 1.0f;
             data.scaleX = nbt.contains("scaleX") ? nbt.getFloat("scaleX") : 1.0f;
             data.scaleY = nbt.contains("scaleY") ? nbt.getFloat("scaleY") : 1.0f;
@@ -162,6 +170,8 @@ public class CustomSignBlockEntity extends BlockEntity {
         public boolean isItalic() { return italic; } public void setItalic(boolean i) { this.italic = i; }
         public boolean isUnderline() { return underline; } public void setUnderline(boolean u) { this.underline = u; }
         public boolean isShadow() { return shadow; } public void setShadow(boolean s) { this.shadow = s; }
+        public boolean isOutline() { return outline; } public void setOutline(boolean o) { this.outline = o; }
+        public int getOutlineColor() { return outlineColor; } public void setOutlineColor(int c) { this.outlineColor = c; }
         public float getFontSize() { return fontSize; } public void setFontSize(float s) { this.fontSize = s; }
         public float getScaleX() { return scaleX; } public void setScaleX(float s) { this.scaleX = s; }
         public float getScaleY() { return scaleY; } public void setScaleY(float s) { this.scaleY = s; }
