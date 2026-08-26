@@ -22,6 +22,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsBlockEntity> {
     private final TextRenderer textRenderer;
 
@@ -32,9 +37,12 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     private static final Identifier LEFT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
     private static final Identifier LEFT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_yellow.png");
     private static final Identifier LEFT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_green.png");
-    private static final Identifier STRAIGHT_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_red.png");
-    private static final Identifier STRAIGHT_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_yellow.png");
-    private static final Identifier STRAIGHT_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_green.png");
+    private static final Identifier STRAIGHT_CIRCLE_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_red.png");
+    private static final Identifier STRAIGHT_CIRCLE_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_yellow.png");
+    private static final Identifier STRAIGHT_CIRCLE_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_green.png");
+    private static final Identifier STRAIGHT_ARROW_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_red.png");
+    private static final Identifier STRAIGHT_ARROW_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_yellow.png");
+    private static final Identifier STRAIGHT_ARROW_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_green.png");
     private static final Identifier RIGHT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_red.png");
     private static final Identifier RIGHT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_yellow.png");
     private static final Identifier RIGHT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_green.png");
@@ -44,6 +52,15 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     private static final Identifier NON_MOTOR_VEHICLES_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_red.png");
     private static final Identifier NON_MOTOR_VEHICLES_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_yellow.png");
     private static final Identifier NON_MOTOR_VEHICLES_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_green.png");
+    private static final Identifier NON_MOTOR_VEHICLES_LEFT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_red.png");
+    private static final Identifier NON_MOTOR_VEHICLES_LEFT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_yellow.png");
+    private static final Identifier NON_MOTOR_VEHICLES_LEFT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_green.png");
+    private static final Identifier NON_MOTOR_VEHICLES_RIGHT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_red.png");
+    private static final Identifier NON_MOTOR_VEHICLES_RIGHT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_yellow.png");
+    private static final Identifier NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_green.png");
+    private static final Identifier SLOW_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_red.png");
+    private static final Identifier SLOW_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_yellow.png");
+    private static final Identifier SLOW_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_green.png");
     private static final Identifier PAVEMENT_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
     private static final Identifier PAVEMENT_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
 
@@ -82,10 +99,16 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                     case GREEN -> LEFT_TURN_GREEN;
                     case GRAY -> null;
                 };
-                case STRAIGHT -> switch (lightState) {
-                    case RED -> STRAIGHT_RED;
-                    case YELLOW -> STRAIGHT_YELLOW;
-                    case GREEN -> STRAIGHT_GREEN;
+                case STRAIGHT_CIRCLE -> switch (lightState) {
+                    case RED -> STRAIGHT_CIRCLE_RED;
+                    case YELLOW -> STRAIGHT_CIRCLE_YELLOW;
+                    case GREEN -> STRAIGHT_CIRCLE_GREEN;
+                    case GRAY -> null;
+                };
+                case STRAIGHT_ARROW -> switch (lightState) {
+                    case RED -> STRAIGHT_ARROW_RED;
+                    case YELLOW -> STRAIGHT_ARROW_YELLOW;
+                    case GREEN -> STRAIGHT_ARROW_GREEN;
                     case GRAY -> null;
                 };
                 case RIGHT_TURN -> switch (lightState) {
@@ -104,6 +127,24 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                     case RED -> NON_MOTOR_VEHICLES_RED;
                     case YELLOW -> NON_MOTOR_VEHICLES_YELLOW;
                     case GREEN -> NON_MOTOR_VEHICLES_GREEN;
+                    case GRAY -> null;
+                };
+                case NON_MOTOR_VEHICLES_LEFT_TURN -> switch (lightState) {
+                    case RED -> NON_MOTOR_VEHICLES_LEFT_TURN_RED;
+                    case YELLOW -> NON_MOTOR_VEHICLES_LEFT_TURN_YELLOW;
+                    case GREEN -> NON_MOTOR_VEHICLES_LEFT_TURN_GREEN;
+                    case GRAY -> null;
+                };
+                case NON_MOTOR_VEHICLES_RIGHT_TURN -> switch (lightState) {
+                    case RED -> NON_MOTOR_VEHICLES_RIGHT_TURN_RED;
+                    case YELLOW -> NON_MOTOR_VEHICLES_RIGHT_TURN_YELLOW;
+                    case GREEN -> NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN;
+                    case GRAY -> null;
+                };
+                case SLOW -> switch (lightState) {
+                    case RED -> SLOW_RED;
+                    case YELLOW -> SLOW_YELLOW;
+                    case GREEN -> SLOW_GREEN;
                     case GRAY -> null;
                 };
             };
@@ -188,7 +229,15 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         String directionText = getDirectionText(entity.getDirectionType());
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()) directionText = "人行道";
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) directionText = "倒计时器";
-        String phaseText = "相位: " + (entity.getPhaseIndex() + 1) + " / " + entity.getPhaseCount();
+        String phaseText;
+        List<Integer> phaseIndices = new ArrayList<>(entity.getPhaseIndices());
+        Collections.sort(phaseIndices);
+        if (phaseIndices.isEmpty()) {
+            phaseText = "相位: - / " + entity.getPhaseCount();
+        } else {
+            String joined = phaseIndices.stream().map(i -> String.valueOf(i + 1)).collect(Collectors.joining(","));
+            phaseText = "相位: " + joined + " / " + entity.getPhaseCount();
+        }
 
         int directionWidth = textRenderer.getWidth(Text.literal(directionText));
         int phaseWidth = textRenderer.getWidth(Text.literal(phaseText));
@@ -365,11 +414,15 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
     private String getDirectionText(TrafficLightsBlockEntity.DirectionType type) {
         return switch (type) {
-            case STRAIGHT -> "直行";
+            case STRAIGHT_CIRCLE -> "直行（圆形）";
+            case STRAIGHT_ARROW -> "直行（箭头）";
             case LEFT_TURN -> "左转";
             case RIGHT_TURN -> "右转";
             case TURN_AROUND -> "掉头";
             case NON_MOTOR_VEHICLES -> "非机动车";
+            case NON_MOTOR_VEHICLES_LEFT_TURN -> "非机动车（左转）";
+            case NON_MOTOR_VEHICLES_RIGHT_TURN -> "非机动车（右转）";
+            case SLOW -> "慢";
         };
     }
 

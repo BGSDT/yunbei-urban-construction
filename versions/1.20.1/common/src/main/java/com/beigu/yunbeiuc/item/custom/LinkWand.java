@@ -1,13 +1,18 @@
 package com.beigu.yunbeiuc.item.custom;
 
-import com.beigu.yunbeiuc.network.ChatCommandHandler;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
+import com.beigu.yunbeiuc.network.ModMessages;
+import com.beigu.yunbeiuc.network.OpenTrafficLightsTimingScreenS2CPacket;
+import dev.architectury.networking.NetworkManager;
+import io.netty.buffer.Unpooled;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -72,19 +77,12 @@ public class LinkWand extends Item {
                 }
             }
 
-            ChatCommandHandler.setPlayerLastGroup(player, groupId, finalPositions);
+            OpenTrafficLightsTimingScreenS2CPacket packet = new OpenTrafficLightsTimingScreenS2CPacket(groupId, finalPositions);
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            packet.write(buf);
+            NetworkManager.sendToPlayer((ServerPlayerEntity) player, ModMessages.OPEN_TRAFFIC_LIGHTS_TIMING_SCREEN, buf);
 
-            player.sendMessage(Text.literal(""), false);
-            player.sendMessage(Text.literal("§c⚪§e⚪§a⚪§a§l云北城建红绿灯控制面板 ===== 操作提示"), false);
-            player.sendMessage(Text.literal("§e已成功链接 §6§l" + finalPositions.size() + " §e个红绿灯"), false);
-            player.sendMessage(Text.literal(""), false);
-            player.sendMessage(Text.literal("§e§l使用以下命令设置时间和相位数量："), false);
-            player.sendMessage(Text.literal("§6  /yunbeiuc lights <相位数量> <时间1> <时间2> ..."), false);
-            player.sendMessage(Text.literal("§e示例（4个相位）："), false);
-            player.sendMessage(Text.literal("§7  /yunbeiuc lights 4 40 40 40 40"), false);
-            player.sendMessage(Text.literal(""), false);
-            player.sendMessage(Text.literal("§e设置后使用§6魔杖§e右键红绿灯设置相位"), false);
-            player.sendMessage(Text.literal("§a========================================"), false);
+            player.sendMessage(Text.literal("§a已成功链接 §6§l" + finalPositions.size() + " §a个红绿灯§a，正在打开时间设置界面..."), true);
 
             PLAYER_LINKING.remove(playerId);
             return ActionResult.SUCCESS;

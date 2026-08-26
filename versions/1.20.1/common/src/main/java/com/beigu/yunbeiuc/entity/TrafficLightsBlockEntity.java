@@ -18,7 +18,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class TrafficLightsBlockEntity extends BlockEntity {
-    private int phaseIndex = -1;
+    private static final int MAX_PHASE_INDICES = 4;
+
+    private List<Integer> phaseIndices = new ArrayList<>();
     private String groupId = null;
     private List<BlockPos> groupPositions = new ArrayList<>();
 
@@ -33,7 +35,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     private static final int FLASH_DURATION = 3 * 20;
     private static final int FLASH_INTERVAL = 10;
 
-    private DirectionType directionType = DirectionType.STRAIGHT;
+    private DirectionType directionType = DirectionType.STRAIGHT_CIRCLE;
 
     private int syncTimer = 0;
 
@@ -72,7 +74,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
     /**
      * 校正相位数据的一致性，防止 phaseTimes 数组长度与 phaseCount 不一致时发生数组越界崩溃。
-     * 以 phaseTimes.length 为唯一依据；并钳制 currentActivePhase / phaseIndex 到合法范围。
+     * 以 phaseTimes.length 为唯一依据；并钳制 currentActivePhase / phaseIndices 到合法范围。
      */
     private void normalizePhaseData() {
         if (phaseTimes != null && phaseTimes.length > 0) {
@@ -80,7 +82,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         } else {
             phaseTimes = null;
             phaseCount = 0;
-            phaseIndex = -1;
+            phaseIndices.clear();
             currentActivePhase = 0;
             cycleActive = false;
             return;
@@ -88,9 +90,19 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         if (currentActivePhase < 0 || currentActivePhase >= phaseCount) {
             currentActivePhase = 0;
         }
-        if (phaseIndex < -1 || phaseIndex >= phaseCount) {
-            phaseIndex = -1;
+
+        Set<Integer> deduped = new LinkedHashSet<>();
+        for (Integer idx : phaseIndices) {
+            if (idx != null && idx >= 0 && idx < phaseCount) {
+                deduped.add(idx);
+            }
         }
+        List<Integer> normalized = new ArrayList<>(deduped);
+        int maxAllowed = Math.min(MAX_PHASE_INDICES, phaseCount);
+        if (normalized.size() > maxAllowed) {
+            normalized = normalized.subList(0, maxAllowed);
+        }
+        phaseIndices = new ArrayList<>(normalized);
     }
 
     private void updateLightState() {
@@ -107,7 +119,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         int yellowStartTick = totalTicks - YELLOW_DURATION;
         int flashStartTick = yellowStartTick - FLASH_DURATION;
 
-        if (phaseIndex == currentActivePhase) {
+        if (phaseIndices.contains(currentActivePhase)) {
             if (currentTick < flashStartTick) {
                 lightState = TrafficLightsBlock.LightState.GREEN;
             } else if (currentTick < yellowStartTick) {
@@ -152,7 +164,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
      */
     public int getGreenRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
-        if (phaseIndex != currentActivePhase) return -1;
+        if (!phaseIndices.contains(currentActivePhase)) return -1;
 
         normalizePhaseData();
 
@@ -172,7 +184,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
      */
     public int getYellowRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
-        if (phaseIndex != currentActivePhase) return -1;
+        if (!phaseIndices.contains(currentActivePhase)) return -1;
 
         normalizePhaseData();
 
@@ -192,7 +204,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
      */
     public int getRedRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
-        if (phaseIndex == currentActivePhase) return -1;
+        if (phaseIndices.contains(currentActivePhase)) return -1;
 
         normalizePhaseData();
 
@@ -200,7 +212,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         int remainingTicks = totalTicks - currentTick;
         for (int i = 1; i < phaseCount; i++) {
             int nextPhase = (currentActivePhase + i) % phaseCount;
-            if (nextPhase == phaseIndex) break;
+            if (phaseIndices.contains(nextPhase)) break;
             remainingTicks += phaseTimes[nextPhase] * 20;
         }
 
@@ -254,7 +266,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
     // ==================== 相位控制 ====================
 
-    public boolean setPhaseIndex(int index, PlayerEntity player) {
+    public boolean setPhaseIndices(List<Integer> indices, PlayerEntity player) {
         if (phaseTimes == null || phaseCount <= 0) {
             if (player != null && !world.isClient()) {
                 player.sendMessage(Text.literal("§c请先使用命令设置时间！"), true);
@@ -267,15 +279,35 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             }
             return false;
         }
-        if (index < 0 || index >= phaseCount) {
+        int maxAllowed = Math.min(MAX_PHASE_INDICES, phaseCount);
+        if (indices.size() > maxAllowed) {
             if (player != null && !world.isClient()) {
-                player.sendMessage(Text.literal("§c无效的相位索引！范围：1-" + phaseCount), true);
+                player.sendMessage(Text.literal("§c最多只能设置 " + maxAllowed + " 个相位！"), true);
             }
             return false;
         }
-        this.phaseIndex = index;
+        if (new HashSet<>(indices).size() != indices.size()) {
+            if (player != null && !world.isClient()) {
+                player.sendMessage(Text.literal("§c相位不可以重复！"), true);
+            }
+            return false;
+        }
+        for (int index : indices) {
+            if (index < 0 || index >= phaseCount) {
+                if (player != null && !world.isClient()) {
+                    player.sendMessage(Text.literal("§c无效的相位索引！范围：1-" + phaseCount), true);
+                }
+                return false;
+            }
+        }
+        this.phaseIndices = new ArrayList<>(indices);
         if (player != null && !world.isClient()) {
-            player.sendMessage(Text.literal("§a相位已设置为 §6" + (index + 1) + " §7(共" + phaseCount + "个相位)"), true);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < indices.size(); i++) {
+                if (i > 0) sb.append(", ");
+                sb.append(indices.get(i) + 1);
+            }
+            player.sendMessage(Text.literal("§a相位已设置为 §6" + sb + " §7(共" + phaseCount + "个相位)"), true);
         }
         markDirtyAndUpdate();
         return true;
@@ -309,8 +341,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
                     tl.groupPositions.clear();
                     tl.phaseTimes = null;
                     tl.phaseCount = 0;
-                    tl.phaseIndex = -1;
-                    tl.directionType = DirectionType.STRAIGHT;
+                    tl.phaseIndices.clear();
+                    tl.directionType = DirectionType.STRAIGHT_CIRCLE;
                     tl.stopCycle();
                     tl.markDirtyAndUpdate();
                 }
@@ -321,8 +353,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         groupPositions.clear();
         phaseTimes = null;
         phaseCount = 0;
-        phaseIndex = -1;
-        directionType = DirectionType.STRAIGHT;
+        phaseIndices.clear();
+        directionType = DirectionType.STRAIGHT_CIRCLE;
         markDirtyAndUpdate();
     }
 
@@ -332,7 +364,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         // phaseCount 以 timings.length 为准，防止两者不一致导致后续数组越界
         this.phaseTimes = timings;
         this.phaseCount = timings != null ? timings.length : 0;
-        this.phaseIndex = -1;
+        this.phaseIndices.clear();
         startCycle();
         markDirtyAndUpdate();
     }
@@ -340,7 +372,35 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     public void setGroup(String groupId, List<BlockPos> positions) {
         this.groupId = groupId;
         this.groupPositions = new ArrayList<>(positions);
+        this.directionType = DirectionType.STRAIGHT_CIRCLE;
+        if (world != null && !world.isClient()) {
+            BlockState state = getCachedState();
+            if (state.contains(TrafficLightsBlock.LIGHT_STATE)) {
+                world.setBlockState(pos, state.with(TrafficLightsBlock.LIGHT_STATE, TrafficLightsBlock.LightState.RED), Block.NOTIFY_ALL);
+            }
+        }
         markDirtyAndUpdate();
+    }
+
+    /**
+     * 分组前的静态状态：手动设置图案+颜色并持续保持，直到该红绿灯被加入相位组。
+     */
+    public boolean setStaticState(DirectionType direction, TrafficLightsBlock.LightState color, PlayerEntity player) {
+        if (isInGroup()) {
+            if (player != null && !world.isClient()) {
+                player.sendMessage(Text.literal("§c该红绿灯已加入相位组，无法单独设置静态状态！"), true);
+            }
+            return false;
+        }
+        this.directionType = direction;
+        if (world != null && !world.isClient()) {
+            BlockState state = getCachedState();
+            if (state.contains(TrafficLightsBlock.LIGHT_STATE)) {
+                world.setBlockState(pos, state.with(TrafficLightsBlock.LIGHT_STATE, color), Block.NOTIFY_ALL);
+            }
+        }
+        markDirtyAndUpdate();
+        return true;
     }
 
     // ==================== 获取器 ====================
@@ -357,8 +417,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         return phaseCount;
     }
 
-    public int getPhaseIndex() {
-        return phaseIndex;
+    public List<Integer> getPhaseIndices() {
+        return Collections.unmodifiableList(phaseIndices);
     }
 
     public int[] getPhaseTimes() {
@@ -383,7 +443,17 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        this.phaseIndex = nbt.getInt("phaseIndex");
+        if (nbt.contains("phaseIndices")) {
+            int[] arr = nbt.getIntArray("phaseIndices");
+            this.phaseIndices = new ArrayList<>();
+            for (int v : arr) this.phaseIndices.add(v);
+        } else if (nbt.contains("phaseIndex")) {
+            int old = nbt.getInt("phaseIndex");
+            this.phaseIndices = new ArrayList<>();
+            if (old >= 0) this.phaseIndices.add(old);
+        } else {
+            this.phaseIndices = new ArrayList<>();
+        }
         this.groupId = nbt.contains("groupId") ? nbt.getString("groupId") : null;
         this.phaseCount = nbt.getInt("phaseCount");
         this.directionType = DirectionType.fromName(nbt.getString("directionType"));
@@ -415,7 +485,9 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
-        nbt.putInt("phaseIndex", this.phaseIndex);
+        int[] indicesArray = new int[phaseIndices.size()];
+        for (int i = 0; i < phaseIndices.size(); i++) indicesArray[i] = phaseIndices.get(i);
+        nbt.putIntArray("phaseIndices", indicesArray);
         nbt.putString("directionType", this.directionType.getName());
 
         if (groupId != null) {
@@ -465,11 +537,15 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     // ==================== 枚举类 ====================
 
     public enum DirectionType {
-        STRAIGHT("straight"),
+        STRAIGHT_CIRCLE("straight"),
+        STRAIGHT_ARROW("straight_arrow"),
         LEFT_TURN("left_turn"),
         RIGHT_TURN("right_turn"),
         TURN_AROUND("turn_around"),
-        NON_MOTOR_VEHICLES("non_motor_vehicles");
+        NON_MOTOR_VEHICLES("non_motor_vehicles"),
+        NON_MOTOR_VEHICLES_LEFT_TURN("non_motor_vehicles_left_turn"),
+        NON_MOTOR_VEHICLES_RIGHT_TURN("non_motor_vehicles_right_turn"),
+        SLOW("slow");
 
         private final String name;
 
@@ -487,7 +563,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
                     return type;
                 }
             }
-            return STRAIGHT;
+            return STRAIGHT_CIRCLE;
         }
     }
 

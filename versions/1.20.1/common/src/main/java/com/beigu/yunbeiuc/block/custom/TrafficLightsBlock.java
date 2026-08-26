@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.block.custom;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.screen.TrafficLightsScreen;
+import com.beigu.yunbeiuc.screen.TrafficLightsStaticStateScreen;
 import com.beigu.yunbeiuc.screen.ZonesBoardOverWeightScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -105,13 +106,13 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
             if (world.isClient()) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
-                    // 检查是否已设置时间和链接组
-                    if (!trafficLightsBE.hasTimings()) {
-                        player.sendMessage(Text.literal("§c请先使用命令设置时间！"), true);
-                        return ActionResult.FAIL;
-                    }
                     if (!trafficLightsBE.isInGroup()) {
-                        player.sendMessage(Text.literal("§c此红绿灯未链接到任何组！"), true);
+                        // 未分组：打开静态状态设置界面
+                        openStaticStateScreen(pos);
+                        return ActionResult.success(true);
+                    }
+                    if (!trafficLightsBE.hasTimings()) {
+                        player.sendMessage(Text.literal("§c请先在链接完成后弹出的界面中设置时间！"), true);
                         return ActionResult.FAIL;
                     }
                     // 打开GUI
@@ -127,6 +128,11 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
     @Environment(EnvType.CLIENT)
     private void openDisplayScreen(BlockPos pos) {
         MinecraftClient.getInstance().setScreen(new TrafficLightsScreen(pos));
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openStaticStateScreen(BlockPos pos) {
+        MinecraftClient.getInstance().setScreen(new TrafficLightsStaticStateScreen(pos));
     }
 
     @Override

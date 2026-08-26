@@ -24,6 +24,7 @@ YunbeiUrbanConstruction {
         ModBlockEntities.init();
         ModItemGroups.init();
         ModMessages.registerC2SPackets();
+        ModMessages.registerS2CPackets();
 
         LOGGER.info("Yunbei Urban Construction has finished loading");
     }
