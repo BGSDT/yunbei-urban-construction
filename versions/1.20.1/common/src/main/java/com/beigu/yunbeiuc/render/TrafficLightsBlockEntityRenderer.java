@@ -85,6 +85,16 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     private void renderLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, TrafficLightsBlockEntity.DirectionType directionType, TrafficLightsBlock.LightState lightState, Block currentBlock) {
         Identifier texture;
 
+        // SLOW 图案的闪烁逻辑：0.5s 显示，0.5s 隐藏
+        if (directionType == TrafficLightsBlockEntity.DirectionType.SLOW) {
+            long currentTime = System.currentTimeMillis();
+            int cycle = (int) ((currentTime / 500) % 2);
+            if (cycle == 1) {
+                // 隐藏阶段，直接返回不渲染
+                return;
+            }
+        }
+
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()) {
             texture = switch (lightState) {
                 case RED, YELLOW -> PAVEMENT_RED;
@@ -309,6 +319,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.translate(0.5f, 0.0f, -0.74f);
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
+        // 背景 88 始终显示
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, "88", 0X2e3134,
                 0, -6f, 0,
@@ -321,6 +332,16 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         );
 
         if (lightState == TrafficLightsBlock.LightState.GRAY){
+            matrices.pop();
+            return;
+        }
+
+        // 判断是否显示实际数字
+        int displayMode = entity.getCountdownDisplayMode();
+        int threshold = entity.getCountdownThreshold();
+        boolean shouldShowDigits = (displayMode == 0) || (displayMode == 1 && remaining <= threshold);
+
+        if (!shouldShowDigits) {
             matrices.pop();
             return;
         }

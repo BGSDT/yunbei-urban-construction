@@ -1,18 +1,12 @@
 package com.beigu.yunbeiuc.item.custom;
 
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
-import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.OpenTrafficLightsTimingScreenS2CPacket;
-import dev.architectury.networking.NetworkManager;
-import io.netty.buffer.Unpooled;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -77,12 +71,8 @@ public class LinkWand extends Item {
                 }
             }
 
-            OpenTrafficLightsTimingScreenS2CPacket packet = new OpenTrafficLightsTimingScreenS2CPacket(groupId, finalPositions);
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            packet.write(buf);
-            NetworkManager.sendToPlayer((ServerPlayerEntity) player, ModMessages.OPEN_TRAFFIC_LIGHTS_TIMING_SCREEN, buf);
-
-            player.sendMessage(Text.literal("§a已成功链接 §6§l" + finalPositions.size() + " §a个红绿灯§a，正在打开时间设置界面..."), true);
+            player.sendMessage(Text.literal("§a已成功链接 §6§l" + finalPositions.size() + " §a个红绿灯"), true);
+            player.sendMessage(Text.literal("§7请用 §e普通魔杖 §7右键任意已链接的红绿灯以设置时间"), true);
 
             PLAYER_LINKING.remove(playerId);
             return ActionResult.SUCCESS;

@@ -12,7 +12,6 @@ public class  ModMessages {
     public static final Identifier UPDATE_TRAFFIC_LIGHTS = id("update_traffic_lights");
     public static final Identifier UPDATE_TRAFFIC_LIGHTS_TIMING = id("update_traffic_lights_timing");
     public static final Identifier UPDATE_TRAFFIC_LIGHTS_STATIC_STATE = id("update_traffic_lights_static_state");
-    public static final Identifier OPEN_TRAFFIC_LIGHTS_TIMING_SCREEN = id("open_traffic_lights_timing_screen");
     public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN = id("update_sign_guide_intersection_advance_warning_1_wuhan");
     public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1 = id("update_sign_guide_intersection_advance_warning_1");
     public static final Identifier UPDATE_SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3 = id("update_sign_guide_intersection_advance_warning_3");
@@ -245,13 +244,6 @@ public class  ModMessages {
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_CUSTOM_SIGN, (buf, context) -> {
             CustomSignUpdatePacket packet = new CustomSignUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
-        });
-    }
-
-    public static void registerS2CPackets() {
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C, OPEN_TRAFFIC_LIGHTS_TIMING_SCREEN, (buf, context) -> {
-            OpenTrafficLightsTimingScreenS2CPacket packet = new OpenTrafficLightsTimingScreenS2CPacket(buf);
-            context.queue(packet::apply);
         });
     }
 }

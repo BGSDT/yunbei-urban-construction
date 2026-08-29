@@ -14,23 +14,31 @@ public class TrafficLightsUpdatePacket {
     private final BlockPos pos;
     private final int[] phaseIndices;
     private final TrafficLightsBlockEntity.DirectionType directionType;
+    private final int countdownDisplayMode;
+    private final int countdownThreshold;
 
-    public TrafficLightsUpdatePacket(BlockPos pos, int[] phaseIndices, TrafficLightsBlockEntity.DirectionType directionType) {
+    public TrafficLightsUpdatePacket(BlockPos pos, int[] phaseIndices, TrafficLightsBlockEntity.DirectionType directionType, int countdownDisplayMode, int countdownThreshold) {
         this.pos = pos;
         this.phaseIndices = phaseIndices;
         this.directionType = directionType;
+        this.countdownDisplayMode = countdownDisplayMode;
+        this.countdownThreshold = countdownThreshold;
     }
 
     public TrafficLightsUpdatePacket(PacketByteBuf buf) {
         this.pos = buf.readBlockPos();
         this.phaseIndices = buf.readIntArray();
         this.directionType = TrafficLightsBlockEntity.DirectionType.fromName(buf.readString());
+        this.countdownDisplayMode = buf.readInt();
+        this.countdownThreshold = buf.readInt();
     }
 
     public void write(PacketByteBuf buf) {
         buf.writeBlockPos(pos);
         buf.writeIntArray(phaseIndices);
         buf.writeString(directionType.getName());
+        buf.writeInt(countdownDisplayMode);
+        buf.writeInt(countdownThreshold);
     }
 
     public void apply(ServerPlayerEntity player) {
@@ -40,6 +48,8 @@ public class TrafficLightsUpdatePacket {
                 List<Integer> indices = Arrays.stream(phaseIndices).boxed().collect(Collectors.toList());
                 entity.setPhaseIndices(indices, player);
                 entity.setDirectionType(directionType);
+                entity.setCountdownDisplayMode(countdownDisplayMode);
+                entity.setCountdownThreshold(countdownThreshold);
                 entity.markDirty();
             }
         }

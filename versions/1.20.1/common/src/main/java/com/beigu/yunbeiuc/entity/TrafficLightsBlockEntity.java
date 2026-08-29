@@ -37,6 +37,11 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
     private DirectionType directionType = DirectionType.STRAIGHT_CIRCLE;
 
+    // 读秒器显示模式：0=全显，1=半显
+    private int countdownDisplayMode = 0;
+    // 半显模式阈值（秒）
+    private int countdownThreshold = 15;
+
     private int syncTimer = 0;
 
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
@@ -119,8 +124,14 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         int yellowStartTick = totalTicks - YELLOW_DURATION;
         int flashStartTick = yellowStartTick - FLASH_DURATION;
 
+        boolean continuesGreen = phaseIndices.contains(currentActivePhase)
+                && phaseIndices.contains((currentActivePhase + 1) % phaseCount);
+
         if (phaseIndices.contains(currentActivePhase)) {
-            if (currentTick < flashStartTick) {
+            if (continuesGreen) {
+                // 下一相位对本灯同样为绿灯，视为连续相位，不出现黄灯/闪烁，直接保持绿灯
+                lightState = TrafficLightsBlock.LightState.GREEN;
+            } else if (currentTick < flashStartTick) {
                 lightState = TrafficLightsBlock.LightState.GREEN;
             } else if (currentTick < yellowStartTick) {
                 int flashTick = currentTick - flashStartTick;
@@ -170,12 +181,23 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int yellowStartTick = totalTicks - YELLOW_DURATION;
-
-        if (currentTick < yellowStartTick) {
-            int remainingTicks = yellowStartTick - currentTick;
-            return (remainingTicks + 19) / 20;
+        if (currentTick >= yellowStartTick && !phaseIndices.contains((currentActivePhase + 1) % phaseCount)) {
+            return -1;
         }
-        return -1;
+
+        // 连续绿灯相位（本相位与下一相位对本灯均为绿灯）时，中间不出现黄灯，
+        // 剩余秒数需要跨相位叠加，包含中间本应出现的黄灯时长
+        int phase = currentActivePhase;
+        long remainingTicks = totalTicks - currentTick;
+        for (int i = 1; i < phaseCount; i++) {
+            int nextPhase = (phase + i) % phaseCount;
+            if (!phaseIndices.contains(nextPhase)) break;
+            remainingTicks += phaseTimes[nextPhase] * 20L;
+        }
+        remainingTicks -= YELLOW_DURATION;
+        if (remainingTicks < 0) remainingTicks = 0;
+
+        return (int) ((remainingTicks + 19) / 20);
     }
 
     /**
@@ -187,6 +209,9 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         if (!phaseIndices.contains(currentActivePhase)) return -1;
 
         normalizePhaseData();
+
+        // 与下一相位相接为连续绿灯时，中间不出现黄灯
+        if (phaseIndices.contains((currentActivePhase + 1) % phaseCount)) return -1;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int yellowStartTick = totalTicks - YELLOW_DURATION;
@@ -429,12 +454,34 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         return groupId;
     }
 
+    public List<BlockPos> getGroupPositions() {
+        return Collections.unmodifiableList(groupPositions);
+    }
+
     public DirectionType getDirectionType() {
         return directionType;
     }
 
     public void setDirectionType(DirectionType directionType) {
         this.directionType = directionType;
+        markDirtyAndUpdate();
+    }
+
+    public int getCountdownDisplayMode() {
+        return countdownDisplayMode;
+    }
+
+    public void setCountdownDisplayMode(int mode) {
+        this.countdownDisplayMode = mode;
+        markDirtyAndUpdate();
+    }
+
+    public int getCountdownThreshold() {
+        return countdownThreshold;
+    }
+
+    public void setCountdownThreshold(int threshold) {
+        this.countdownThreshold = threshold;
         markDirtyAndUpdate();
     }
 
@@ -457,6 +504,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         this.groupId = nbt.contains("groupId") ? nbt.getString("groupId") : null;
         this.phaseCount = nbt.getInt("phaseCount");
         this.directionType = DirectionType.fromName(nbt.getString("directionType"));
+        this.countdownDisplayMode = nbt.getInt("countdownDisplayMode");
+        this.countdownThreshold = nbt.contains("countdownThreshold") ? nbt.getInt("countdownThreshold") : 15;
 
         if (nbt.contains("phaseTimes")) {
             this.phaseTimes = nbt.getIntArray("phaseTimes");
@@ -489,6 +538,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         for (int i = 0; i < phaseIndices.size(); i++) indicesArray[i] = phaseIndices.get(i);
         nbt.putIntArray("phaseIndices", indicesArray);
         nbt.putString("directionType", this.directionType.getName());
+        nbt.putInt("countdownDisplayMode", this.countdownDisplayMode);
+        nbt.putInt("countdownThreshold", this.countdownThreshold);
 
         if (groupId != null) {
             nbt.putString("groupId", groupId);

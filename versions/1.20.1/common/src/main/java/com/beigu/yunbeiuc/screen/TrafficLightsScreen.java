@@ -13,6 +13,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -28,6 +29,7 @@ public class TrafficLightsScreen extends Screen {
     private final BlockPos pos;
     private final TrafficLightsBlockEntity blockEntity;
     private final boolean isPavement;  // 是否为人行道红绿灯
+    private final boolean isCountdownTimer;  // 是否为读秒器
 
     private final List<DirectionOption> options;
     private DirectionListWidget listWidget;
@@ -40,6 +42,12 @@ public class TrafficLightsScreen extends Screen {
     private ButtonWidget addPhaseButton;
     private int panelX;
     private int panelY;
+
+    // 读秒器相关控件
+    private ButtonWidget displayModeButton;
+    private TextFieldWidget thresholdField;
+    private int displayMode;  // 0=全显, 1=半显
+    private int threshold;
 
     private static final int RIGHT_PANEL_WIDTH = 200;
     private static final int RIGHT_PANEL_HEIGHT = 300;
@@ -56,9 +64,10 @@ public class TrafficLightsScreen extends Screen {
         this.pos = pos;
         this.blockEntity = (TrafficLightsBlockEntity) MinecraftClient.getInstance().world.getBlockEntity(pos);
 
-        // 判断是否为人行道红绿灯
+        // 判断是否为人行道红绿灯或读秒器
         Block currentBlock = blockEntity.getCachedState().getBlock();
-        this.isPavement = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
+        this.isPavement = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get();
+        this.isCountdownTimer = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
 
         this.phaseCount = blockEntity.getPhaseCount();
         if (this.phaseCount <= 0) this.phaseCount = 4;
@@ -67,6 +76,10 @@ public class TrafficLightsScreen extends Screen {
             this.phaseIndices.add(0);
         }
         this.options = createDirectionOptions();
+
+        // 读秒器相关初始化
+        this.displayMode = blockEntity.getCountdownDisplayMode();
+        this.threshold = blockEntity.getCountdownThreshold();
 
         for (DirectionOption option : options) {
             if (option.getDirectionType() == blockEntity.getDirectionType()) {
@@ -96,8 +109,8 @@ public class TrafficLightsScreen extends Screen {
 
         int panelX, panelY;
 
-        if (!isPavement) {
-            // 非人行道：左侧列表 + 右侧面板
+        if (!isPavement && !isCountdownTimer) {
+            // 非人行道且非读秒器：左侧列表 + 右侧面板
             int listWidth = this.width / 3;
             this.listWidget = new DirectionListWidget(
                     this.client,
@@ -116,7 +129,7 @@ public class TrafficLightsScreen extends Screen {
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
         } else {
-            // 人行道：面板居中
+            // 人行道或读秒器：面板居中
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
         }
@@ -127,6 +140,31 @@ public class TrafficLightsScreen extends Screen {
         // 相位滑块
         if (phaseCount > 1) {
             rebuildPhaseSliders();
+        }
+
+        // 读秒器专属控件
+        if (isCountdownTimer) {
+            // 显示模式按钮
+            displayModeButton = this.addDrawableChild(
+                    ButtonWidget.builder(
+                            Text.literal(displayMode == 0 ? "全显" : "半显"),
+                            button -> {
+                                displayMode = (displayMode == 0) ? 1 : 0;
+                                button.setMessage(Text.literal(displayMode == 0 ? "全显" : "半显"));
+                                if (thresholdField != null) {
+                                    thresholdField.setEditable(displayMode != 0);
+                                }
+                            })
+                            .dimensions(panelX + 20, panelY + PREVIEW_Y_OFFSET, 80, 20)
+                            .build()
+            );
+
+            // 阈值输入框（全显模式下锁定，不可编辑）
+            thresholdField = new TextFieldWidget(this.textRenderer, panelX + 110, panelY + PREVIEW_Y_OFFSET, 70, 20, Text.literal(""));
+            thresholdField.setMaxLength(3);
+            thresholdField.setText(String.valueOf(threshold));
+            thresholdField.setEditable(displayMode != 0);
+            this.addDrawableChild(thresholdField);
         }
 
         // 保存按钮
@@ -150,8 +188,8 @@ public class TrafficLightsScreen extends Screen {
 
         int panelX, panelY;
 
-        if (!isPavement) {
-            // 非人行道布局
+        if (!isPavement && !isCountdownTimer) {
+            // 非人行道且非读秒器布局
             int listAreaWidth = this.width / 3;
             int rightAreaX = this.width / 3;
             int rightAreaWidth = this.width * 2 / 3;
@@ -179,7 +217,7 @@ public class TrafficLightsScreen extends Screen {
                 );
             }
         } else {
-            // 人行道布局：面板居中
+            // 人行道或读秒器布局：面板居中
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
 
@@ -223,7 +261,23 @@ public class TrafficLightsScreen extends Screen {
                 0xFFFFFF00
         );
 
-        if (!isPavement && selectedOption != null) {
+        // 读秒器显示模式标签
+        if (isCountdownTimer) {
+            context.drawTextWithShadow(
+                    this.textRenderer,
+                    Text.literal("显示模式:"),
+                    panelX + 20, panelY + PREVIEW_Y_OFFSET - 15,
+                    0xFFAAAAAA
+            );
+            context.drawTextWithShadow(
+                    this.textRenderer,
+                    Text.literal("阈值(秒):"),
+                    panelX + 110, panelY + PREVIEW_Y_OFFSET - 15,
+                    0xFFAAAAAA
+            );
+        }
+
+        if (!isPavement && !isCountdownTimer && selectedOption != null) {
             // 预览区域（仅非人行道显示）
             int previewSize = PREVIEW_SIZE;
             int previewX = panelX + 10;
@@ -279,8 +333,21 @@ public class TrafficLightsScreen extends Screen {
             int[] phaseIndicesArray = new int[phaseIndices.size()];
             for (int i = 0; i < phaseIndices.size(); i++) phaseIndicesArray[i] = phaseIndices.get(i);
 
+            int finalDisplayMode = displayMode;
+            int finalThreshold = threshold;
+
+            if (isCountdownTimer && thresholdField != null) {
+                try {
+                    finalThreshold = Integer.parseInt(thresholdField.getText());
+                    if (finalThreshold < 1) finalThreshold = 1;
+                    if (finalThreshold > 300) finalThreshold = 300;
+                } catch (NumberFormatException e) {
+                    finalThreshold = 15;
+                }
+            }
+
             TrafficLightsUpdatePacket packet =
-                    new TrafficLightsUpdatePacket(pos, phaseIndicesArray, selectedDirection);
+                    new TrafficLightsUpdatePacket(pos, phaseIndicesArray, selectedDirection, finalDisplayMode, finalThreshold);
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS, buf);
