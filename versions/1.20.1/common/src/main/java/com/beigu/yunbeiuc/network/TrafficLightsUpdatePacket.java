@@ -16,13 +16,15 @@ public class TrafficLightsUpdatePacket {
     private final TrafficLightsBlockEntity.DirectionType directionType;
     private final int countdownDisplayMode;
     private final int countdownThreshold;
+    private final boolean showSeconds;
 
-    public TrafficLightsUpdatePacket(BlockPos pos, int[] phaseIndices, TrafficLightsBlockEntity.DirectionType directionType, int countdownDisplayMode, int countdownThreshold) {
+    public TrafficLightsUpdatePacket(BlockPos pos, int[] phaseIndices, TrafficLightsBlockEntity.DirectionType directionType, int countdownDisplayMode, int countdownThreshold, boolean showSeconds) {
         this.pos = pos;
         this.phaseIndices = phaseIndices;
         this.directionType = directionType;
         this.countdownDisplayMode = countdownDisplayMode;
         this.countdownThreshold = countdownThreshold;
+        this.showSeconds = showSeconds;
     }
 
     public TrafficLightsUpdatePacket(PacketByteBuf buf) {
@@ -31,6 +33,7 @@ public class TrafficLightsUpdatePacket {
         this.directionType = TrafficLightsBlockEntity.DirectionType.fromName(buf.readString());
         this.countdownDisplayMode = buf.readInt();
         this.countdownThreshold = buf.readInt();
+        this.showSeconds = buf.readBoolean();
     }
 
     public void write(PacketByteBuf buf) {
@@ -39,6 +42,7 @@ public class TrafficLightsUpdatePacket {
         buf.writeString(directionType.getName());
         buf.writeInt(countdownDisplayMode);
         buf.writeInt(countdownThreshold);
+        buf.writeBoolean(showSeconds);
     }
 
     public void apply(ServerPlayerEntity player) {
@@ -50,6 +54,7 @@ public class TrafficLightsUpdatePacket {
                 entity.setDirectionType(directionType);
                 entity.setCountdownDisplayMode(countdownDisplayMode);
                 entity.setCountdownThreshold(countdownThreshold);
+                entity.setShowSeconds(showSeconds);
                 entity.markDirty();
             }
         }

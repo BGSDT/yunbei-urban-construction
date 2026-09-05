@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.autoassign;
+package com.beigu.yunbeiuc.block.custom.traffic;
 
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;

@@ -8,6 +8,9 @@ import com.beigu.yunbeiuc.render.*;
 import com.beigu.yunbeiuc.util.CustomFontManager;
 import com.beigu.yunbeiuc.util.FlagLoader;
 import com.beigu.yunbeiuc.util.PresetManager;
+import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
+import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetLoader;
+import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetManager;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -88,8 +91,11 @@ public class YunbeiUrbanConstructionForgeClient {
             BlockEntityRendererRegistry.register(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), CustomSignBlockEntityRenderer::new);
 
             FlagLoader.loadFlags(MinecraftClient.getInstance().getResourceManager());
+            TrafficLightsPatternPresetLoader.loadPresets(MinecraftClient.getInstance().getResourceManager());
             CustomFontManager.getInstance().onResourceReload();
             PresetManager.load();
+            TrafficLightsPatternPresetManager.load();
+            TrafficLightsPatternCategoryManager.load();
         });
     }
 }

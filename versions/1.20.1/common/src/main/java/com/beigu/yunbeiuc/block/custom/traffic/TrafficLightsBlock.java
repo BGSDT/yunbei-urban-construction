@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.block.custom;
+package com.beigu.yunbeiuc.block.custom.traffic;
 
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
@@ -139,10 +139,20 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
             boolean isCountdownTimer = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
             boolean isShanghai = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
                     || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get();
+            boolean isPavement = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get();
 
-            if (isCountdownTimer || isShanghai) {
+            if (isCountdownTimer) {
+                // 读秒器：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
                 MinecraftClient.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
+            } else if (isShanghai) {
+                // 上海红绿灯：有方向列表 + 秒数输入 + 是否显示秒数开关
+                MinecraftClient.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
+            } else if (isPavement) {
+                // 人行道红绿灯：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
+                MinecraftClient.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsSimpleStaticStateScreen(pos));
             } else {
+                // 普通红绿灯（含单灯横式/竖式）：有方向列表，无秒数相关控件
                 MinecraftClient.getInstance().setScreen(new TrafficLightsStaticStateScreen(pos));
             }
         }

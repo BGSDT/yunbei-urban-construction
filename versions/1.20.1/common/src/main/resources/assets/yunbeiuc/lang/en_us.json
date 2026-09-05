@@ -71,7 +71,7 @@
   "text.yunbeiuc.traffic_lights.direction.non_motor_vehicles": "Non-Motor Vehicles",
   "text.yunbeiuc.traffic_lights.direction.non_motor_vehicles_left_turn": "Non-Motor Vehicles Left Turn",
   "text.yunbeiuc.traffic_lights.direction.non_motor_vehicles_right_turn": "Non-Motor Vehicles Right Turn",
-  "text.yunbeiuc.traffic_lights.direction.slow": "Slow",
+  "text.yunbeiuc.traffic_lights.direction.color_flash": "Color Flash",
   "block.yunbeiuc.traffic_lights.tooltip": "Use Link Wand to link the traffic lights, then set the phase and pattern with Wand to automatically switch between phases",
   "text.yunbeiuc.traffic_lights_timing.title": "Traffic Lights Timing Settings",
   "text.yunbeiuc.traffic_lights_timing.save": "Save",

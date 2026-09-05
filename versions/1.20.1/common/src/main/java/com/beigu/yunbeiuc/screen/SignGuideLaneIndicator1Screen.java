@@ -20,7 +20,7 @@ public class SignGuideLaneIndicator1Screen extends AbstractSignFormScreen {
     private SignGuideLaneIndicator1Entity.Direction direction4;
 
     private static final int PANEL_WIDTH = 400;
-    private static final int PANEL_HEIGHT = 280;
+    private static final int PANEL_HEIGHT = 240;
     private static final int DIRECTION_BUTTON_WIDTH = 55;
     private static final int DIRECTION_BUTTON_HEIGHT = 20;
     private static final int DIRECTION_COUNT = 4;
@@ -56,7 +56,7 @@ public class SignGuideLaneIndicator1Screen extends AbstractSignFormScreen {
         createDirectionButtons(panelX + 10, panelY + 130, direction -> this.direction3 = direction);
         createDirectionButtons(panelX + 10, panelY + 175, direction -> this.direction4 = direction);
 
-        int buttonY = panelY + 245;
+        int buttonY = panelY + 205;
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.sign_guide_lane_indicator_1.save"), button -> this.saveAndClose())
                         .dimensions(panelX + 100, buttonY, 90, 24)

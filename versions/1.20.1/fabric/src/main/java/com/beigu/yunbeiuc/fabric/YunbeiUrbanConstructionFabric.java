@@ -4,6 +4,7 @@ import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.network.ChatCommandHandler;
 import com.beigu.yunbeiuc.util.CustomFontManager;
 import com.beigu.yunbeiuc.util.FlagLoader;
+import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetLoader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -32,6 +33,7 @@ public final class YunbeiUrbanConstructionFabric implements ModInitializer {
                     @Override
                     public void reload(ResourceManager manager) {
                         FlagLoader.loadFlags(manager);
+                        TrafficLightsPatternPresetLoader.loadPresets(manager);
                         CustomFontManager.getInstance().onResourceReload();
                     }
                 }

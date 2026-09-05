@@ -80,6 +80,11 @@ public class ModItems {
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_FOGGY = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_SHANGHAI = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_SHANGHAI = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_COUNTDOWN_TIMER = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER, ALL_MUNICIPAL_ITEMS);

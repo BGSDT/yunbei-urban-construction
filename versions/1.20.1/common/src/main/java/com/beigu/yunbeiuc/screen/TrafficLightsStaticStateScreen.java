@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.block.custom.TrafficLightsBlock;
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsStaticStateUpdatePacket;
@@ -47,6 +47,11 @@ public class TrafficLightsStaticStateScreen extends Screen {
                     this.selectedOption = option;
                     break;
                 }
+            }
+            // 读取当前颜色
+            var state = blockEntity.getCachedState();
+            if (state.contains(TrafficLightsBlock.LIGHT_STATE)) {
+                this.selectedColor = state.get(TrafficLightsBlock.LIGHT_STATE);
             }
         }
         if (this.selectedOption == null && !options.isEmpty()) {
@@ -255,8 +260,12 @@ public class TrafficLightsStaticStateScreen extends Screen {
                 selectedDirection = TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE;
             }
 
+            // 人行道红绿灯保留当前的显示读秒开关和固定秒数
+            boolean showSeconds = blockEntity != null ? blockEntity.isShowSeconds() : false;
+            int fixedSeconds = blockEntity != null ? blockEntity.getFixedSeconds() : 10;
+
             TrafficLightsStaticStateUpdatePacket packet =
-                    new TrafficLightsStaticStateUpdatePacket(pos, selectedDirection, selectedColor);
+                    new TrafficLightsStaticStateUpdatePacket(pos, selectedDirection, selectedColor, showSeconds, fixedSeconds);
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
@@ -286,8 +295,10 @@ public class TrafficLightsStaticStateScreen extends Screen {
                 "text.yunbeiuc.traffic_lights.direction.non_motor_vehicles_left_turn"));
         options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.NON_MOTOR_VEHICLES_RIGHT_TURN,
                 "text.yunbeiuc.traffic_lights.direction.non_motor_vehicles_right_turn"));
-        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.SLOW,
-                "text.yunbeiuc.traffic_lights.direction.slow"));
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.COLOR_FLASH,
+                "text.yunbeiuc.traffic_lights.direction.color_flash"));
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.SLOW_FLASH,
+                "text.yunbeiuc.traffic_lights.direction.slow_flash"));
         return options;
     }
 
@@ -318,8 +329,13 @@ public class TrafficLightsStaticStateScreen extends Screen {
                 case NON_MOTOR_VEHICLES -> 0x00AAAA;
                 case NON_MOTOR_VEHICLES_LEFT_TURN -> 0x0088AA;
                 case NON_MOTOR_VEHICLES_RIGHT_TURN -> 0x00AA88;
-                case SLOW -> 0xFFAA00;
+                case COLOR_FLASH -> 0xFFAA00;
+                case SLOW_FLASH -> 0xFFCC00;
             };
+        }
+
+        public AbstractOptionListWidget.Icon getIcon() {
+            return com.beigu.yunbeiuc.util.TrafficLightsDirectionIcons.get(directionType);
         }
     }
 
@@ -328,7 +344,8 @@ public class TrafficLightsStaticStateScreen extends Screen {
                                     List<DirectionOption> directionOptions, Consumer<DirectionOption> onSelect) {
             super(client, width, height, top, bottom, itemHeight, directionOptions,
                     option -> option == selectedOption, onSelect,
-                    option -> Text.translatable(option.getTranslationKey()), DirectionOption::getColor);
+                    option -> Text.translatable(option.getTranslationKey()), DirectionOption::getColor,
+                    DirectionOption::getIcon);
         }
     }
 

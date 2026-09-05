@@ -4,6 +4,7 @@ import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsTimingUpdatePacket;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -64,7 +65,7 @@ public class TrafficLightsTimingScreen extends Screen {
     }
 
     private int panelHeight() {
-        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 60;
+        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 85;
     }
 
     private void rebuildLayout() {
@@ -105,6 +106,14 @@ public class TrafficLightsTimingScreen extends Screen {
             this.addDrawableChild(field);
             timingFields.add(field);
         }
+
+        // 移除创建相位预设按钮
+        // int patternButtonY = panelY + panelHeight() - 60;
+        // this.addDrawableChild(
+        //         ButtonWidget.builder(Text.literal("创建相位预设"), button -> openPatternEditor())
+        //                 .dimensions(panelX + PANEL_WIDTH / 2 - 80, patternButtonY, 160, 20)
+        //                 .build()
+        // );
 
         int buttonY = panelY + panelHeight() - 35;
         this.saveButton = this.addDrawableChild(
@@ -157,6 +166,10 @@ public class TrafficLightsTimingScreen extends Screen {
         packet.write(buf);
         NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_TIMING, buf);
         this.close();
+    }
+
+    private void openPatternEditor() {
+        MinecraftClient.getInstance().setScreen(new TrafficLightsPatternEditorScreen());
     }
 
     @Override

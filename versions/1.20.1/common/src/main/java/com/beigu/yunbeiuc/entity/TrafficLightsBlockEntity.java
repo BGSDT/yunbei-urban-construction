@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
-import com.beigu.yunbeiuc.block.custom.TrafficLightsBlock;
+import com.beigu.yunbeiuc.block.MunicipalBlocks;
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -12,7 +13,6 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -42,10 +42,21 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     // 半显模式阈值（秒）
     private int countdownThreshold = 15;
 
+    // 人行道红绿灯：是否在logo镜像位置显示读秒数字
+    private boolean showSeconds = false;
+    // 静态状态下的固定秒数（用于人行道红绿灯静态显示）
+    private int fixedSeconds = 10;
+
     private int syncTimer = 0;
 
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
+
+        // 雾灯方块默认设置为慢闪黄色（SLOW_FLASH）
+        Block block = state.getBlock();
+        if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
+            this.directionType = DirectionType.SLOW_FLASH;
+        }
     }
 
     // ==================== Tick 逻辑 ====================
@@ -118,6 +129,10 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         BlockState currentState = getCachedState();
         if (!currentState.contains(TrafficLightsBlock.LIGHT_STATE)) return;
 
+        Block currentBlock = currentState.getBlock();
+        boolean isPavementLight = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get();
+
         TrafficLightsBlock.LightState lightState;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
@@ -131,14 +146,27 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             if (continuesGreen) {
                 // 下一相位对本灯同样为绿灯，视为连续相位，不出现黄灯/闪烁，直接保持绿灯
                 lightState = TrafficLightsBlock.LightState.GREEN;
-            } else if (currentTick < flashStartTick) {
-                lightState = TrafficLightsBlock.LightState.GREEN;
-            } else if (currentTick < yellowStartTick) {
-                int flashTick = currentTick - flashStartTick;
-                int flashPhase = flashTick / FLASH_INTERVAL;
-                lightState = (flashPhase % 2 == 0) ? TrafficLightsBlock.LightState.GRAY : TrafficLightsBlock.LightState.GREEN;
+            } else if (isPavementLight) {
+                // 人行道红绿灯：黄灯时间并入绿色，最后3秒闪烁（原黄灯位置闪烁）
+                if (currentTick < yellowStartTick) {
+                    lightState = TrafficLightsBlock.LightState.GREEN;
+                } else {
+                    // 黄灯时间改为绿灯闪烁
+                    int flashTick = currentTick - yellowStartTick;
+                    int flashPhase = flashTick / FLASH_INTERVAL;
+                    lightState = (flashPhase % 2 == 0) ? TrafficLightsBlock.LightState.GRAY : TrafficLightsBlock.LightState.GREEN;
+                }
             } else {
-                lightState = TrafficLightsBlock.LightState.YELLOW;
+                // 普通红绿灯：闪烁3秒 + 黄灯3秒
+                if (currentTick < flashStartTick) {
+                    lightState = TrafficLightsBlock.LightState.GREEN;
+                } else if (currentTick < yellowStartTick) {
+                    int flashTick = currentTick - flashStartTick;
+                    int flashPhase = flashTick / FLASH_INTERVAL;
+                    lightState = (flashPhase % 2 == 0) ? TrafficLightsBlock.LightState.GRAY : TrafficLightsBlock.LightState.GREEN;
+                } else {
+                    lightState = TrafficLightsBlock.LightState.YELLOW;
+                }
             }
         } else {
             lightState = TrafficLightsBlock.LightState.RED;
@@ -179,9 +207,16 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
         normalizePhaseData();
 
+        Block currentBlock = getCachedState().getBlock();
+        boolean isPavementLight = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get();
+
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int yellowStartTick = totalTicks - YELLOW_DURATION;
-        if (currentTick >= yellowStartTick && !phaseIndices.contains((currentActivePhase + 1) % phaseCount)) {
+
+        // 人行道灯：黄灯时间段视为绿灯闪烁，继续返回剩余秒数
+        // 普通灯：黄灯时间段返回-1（由getYellowRemainingSeconds处理）
+        if (currentTick >= yellowStartTick && !isPavementLight && !phaseIndices.contains((currentActivePhase + 1) % phaseCount)) {
             return -1;
         }
 
@@ -194,7 +229,12 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             if (!phaseIndices.contains(nextPhase)) break;
             remainingTicks += phaseTimes[nextPhase] * 20L;
         }
-        remainingTicks -= YELLOW_DURATION;
+
+        // 人行道灯：黄灯时间并入绿灯显示，不减去黄灯时长
+        // 普通灯：减去黄灯时长（因为黄灯单独显示）
+        if (!isPavementLight) {
+            remainingTicks -= YELLOW_DURATION;
+        }
         if (remainingTicks < 0) remainingTicks = 0;
 
         return (int) ((remainingTicks + 19) / 20);
@@ -410,7 +450,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     /**
      * 分组前的静态状态：手动设置图案+颜色并持续保持，直到该红绿灯被加入相位组。
      */
-    public boolean setStaticState(DirectionType direction, TrafficLightsBlock.LightState color, PlayerEntity player) {
+    public boolean setStaticState(DirectionType direction, TrafficLightsBlock.LightState color,
+                                   boolean showSeconds, int fixedSeconds, PlayerEntity player) {
         if (isInGroup()) {
             if (player != null && !world.isClient()) {
                 player.sendMessage(Text.literal("§c该红绿灯已加入相位组，无法单独设置静态状态！"), true);
@@ -418,6 +459,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
             return false;
         }
         this.directionType = direction;
+        this.showSeconds = showSeconds;
+        this.fixedSeconds = fixedSeconds;
         if (world != null && !world.isClient()) {
             BlockState state = getCachedState();
             if (state.contains(TrafficLightsBlock.LIGHT_STATE)) {
@@ -485,6 +528,24 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         markDirtyAndUpdate();
     }
 
+    public boolean isShowSeconds() {
+        return showSeconds;
+    }
+
+    public void setShowSeconds(boolean showSeconds) {
+        this.showSeconds = showSeconds;
+        markDirtyAndUpdate();
+    }
+
+    public int getFixedSeconds() {
+        return fixedSeconds;
+    }
+
+    public void setFixedSeconds(int fixedSeconds) {
+        this.fixedSeconds = fixedSeconds;
+        markDirtyAndUpdate();
+    }
+
     // ==================== NBT 读写 ====================
 
     @Override
@@ -506,6 +567,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         this.directionType = DirectionType.fromName(nbt.getString("directionType"));
         this.countdownDisplayMode = nbt.getInt("countdownDisplayMode");
         this.countdownThreshold = nbt.contains("countdownThreshold") ? nbt.getInt("countdownThreshold") : 15;
+        this.showSeconds = nbt.getBoolean("showSeconds");
+        this.fixedSeconds = nbt.contains("fixedSeconds") ? nbt.getInt("fixedSeconds") : 10;
 
         if (nbt.contains("phaseTimes")) {
             this.phaseTimes = nbt.getIntArray("phaseTimes");
@@ -540,6 +603,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         nbt.putString("directionType", this.directionType.getName());
         nbt.putInt("countdownDisplayMode", this.countdownDisplayMode);
         nbt.putInt("countdownThreshold", this.countdownThreshold);
+        nbt.putBoolean("showSeconds", this.showSeconds);
+        nbt.putInt("fixedSeconds", this.fixedSeconds);
 
         if (groupId != null) {
             nbt.putString("groupId", groupId);
@@ -596,7 +661,8 @@ public class TrafficLightsBlockEntity extends BlockEntity {
         NON_MOTOR_VEHICLES("non_motor_vehicles"),
         NON_MOTOR_VEHICLES_LEFT_TURN("non_motor_vehicles_left_turn"),
         NON_MOTOR_VEHICLES_RIGHT_TURN("non_motor_vehicles_right_turn"),
-        SLOW("slow");
+        COLOR_FLASH("color_flash"),
+        SLOW_FLASH("slow_flash");
 
         private final String name;
 

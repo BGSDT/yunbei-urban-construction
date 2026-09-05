@@ -2,7 +2,7 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
-import com.beigu.yunbeiuc.block.custom.TrafficLightsBlock;
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.util.CustomFontRenderer;
@@ -58,11 +58,11 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     private static final Identifier NON_MOTOR_VEHICLES_RIGHT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_red.png");
     private static final Identifier NON_MOTOR_VEHICLES_RIGHT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_yellow.png");
     private static final Identifier NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_green.png");
+    private static final Identifier PAVEMENT_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
+    private static final Identifier PAVEMENT_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
     private static final Identifier SLOW_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_red.png");
     private static final Identifier SLOW_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_yellow.png");
     private static final Identifier SLOW_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_green.png");
-    private static final Identifier PAVEMENT_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
-    private static final Identifier PAVEMENT_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
 
     @Override
     public void render(TrafficLightsBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -80,21 +80,104 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             renderTimeText(entity, matrices, vertexConsumers, light, facing, type);
         }
         renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock);
+
+        if ((currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get())
+                && entity.isShowSeconds()) {
+            renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, type);
+        }
+    }
+
+    private void renderPavementSeconds(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState) {
+        int remaining;
+        if (entity.isInGroup()) {
+            TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+            remaining = info.getActiveRemaining();
+            if (remaining < 0) {
+                return;
+            }
+        } else {
+            remaining = entity.getFixedSeconds();
+        }
+
+        int color = (lightState == TrafficLightsBlock.LightState.RED) ? 0xFF0000 : 0x39FF00;
+
+        float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
+                ? 3.85f / 16f : -3.85f / 16f;
+        float y = -logoY;
+        float z = -0.46f;
+
+        matrices.push();
+
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.translate(0.2f, y, z);
+
+        float scaleValue = 0.07f;
+        matrices.scale(scaleValue, -scaleValue, scaleValue);
+
+        String text = String.valueOf(remaining);
+        if (remaining >= 99) text = "99";
+
+        CustomFontRenderer.renderText(
+                matrices, vertexConsumers, "88", 0X2e3134,
+                0, -2.5f, 0,
+                0.035f,
+                light,
+                CustomFontRenderer.TextAlignment.RIGHT,
+                "ds_digital",
+                1,
+                1.4f
+        );
+
+        if (lightState == TrafficLightsBlock.LightState.GRAY){
+            matrices.pop();
+            return;
+        }
+
+        matrices.translate(0f, 0.0f, 0.01f);
+
+        CustomFontRenderer.renderText(
+                matrices, vertexConsumers, text, color,
+                0, -2.5f, 0,
+                0.035f,
+                light,
+                CustomFontRenderer.TextAlignment.RIGHT,
+                "ds_digital",
+                1,
+                1.4f
+        );
+
+        matrices.pop();
     }
 
     private void renderLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, TrafficLightsBlockEntity.DirectionType directionType, TrafficLightsBlock.LightState lightState, Block currentBlock) {
         Identifier texture;
 
-        // SLOW 图案的闪烁逻辑：0.5s 显示，0.5s 隐藏
-        if (directionType == TrafficLightsBlockEntity.DirectionType.SLOW) {
-            long currentTime = System.currentTimeMillis();
-            int cycle = (int) ((currentTime / 500) % 2);
-            if (cycle == 1) {
-                // 隐藏阶段，直接返回不渲染
+        // COLOR_FLASH 图案的慢闪逻辑：与灯的GRAY闪烁同步（0.5s一闪）
+        if (directionType == TrafficLightsBlockEntity.DirectionType.COLOR_FLASH) {
+            // 使用与BlockEntity.tick()相同的闪烁逻辑
+            // FLASH_INTERVAL = 10 ticks = 0.5s
+            long currentTimeMillis = System.currentTimeMillis();
+            int flashPhase = (int) ((currentTimeMillis / 500) % 2);
+            if (flashPhase == 0) {
+                // GRAY相位（隐藏阶段），不渲染
                 return;
             }
+            // flashPhase == 1 时为GREEN相位（显示阶段），继续渲染
         }
 
+        // SLOW_FLASH 图案的慢闪逻辑：与灯的GRAY闪烁同步（0.5s一闪）
+        if (directionType == TrafficLightsBlockEntity.DirectionType.SLOW_FLASH) {
+            long currentTimeMillis = System.currentTimeMillis();
+            int flashPhase = (int) ((currentTimeMillis / 500) % 2);
+            if (flashPhase == 0) {
+                // GRAY相位（隐藏阶段），不渲染
+                return;
+            }
+            // flashPhase == 1 时为GREEN相位（显示阶段），继续渲染
+        }
+
+        // 人行道红绿灯的特殊处理
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()) {
             texture = switch (lightState) {
                 case RED, YELLOW -> PAVEMENT_RED;
@@ -109,7 +192,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                     case GREEN -> LEFT_TURN_GREEN;
                     case GRAY -> null;
                 };
-                case STRAIGHT_CIRCLE -> switch (lightState) {
+                case STRAIGHT_CIRCLE, COLOR_FLASH -> switch (lightState) {
                     case RED -> STRAIGHT_CIRCLE_RED;
                     case YELLOW -> STRAIGHT_CIRCLE_YELLOW;
                     case GREEN -> STRAIGHT_CIRCLE_GREEN;
@@ -151,7 +234,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                     case GREEN -> NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN;
                     case GRAY -> null;
                 };
-                case SLOW -> switch (lightState) {
+                case SLOW_FLASH -> switch (lightState) {
                     case RED -> SLOW_RED;
                     case YELLOW -> SLOW_YELLOW;
                     case GREEN -> SLOW_GREEN;
@@ -182,6 +265,19 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 default -> 0f;
             };
             z = -0.46f;
+        } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
+            // 单灯横式（含雾灯）：图案在中心 x=0, y=0
+            x = 0;
+            y = 0;
+            z = -0.68f;
+        } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL.get()) {
+            // 单灯竖式：图案在中心 x=0, y=0
+            x = 0;
+            y = 0;
+            z = -0.53f;
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get()) {
             x = switch (lightState) {
@@ -239,6 +335,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         String directionText = getDirectionText(entity.getDirectionType());
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()) directionText = "人行道";
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) directionText = "倒计时器";
+        // 单灯红绿灯直接显示图案文本，不显示"单灯横式/竖式"
         String phaseText;
         List<Integer> phaseIndices = new ArrayList<>(entity.getPhaseIndices());
         Collections.sort(phaseIndices);
@@ -299,8 +396,27 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     }
 
     private void renderText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState) {
-        TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
-        int remaining = info.getActiveRemaining();
+        int remaining;
+        boolean showSeconds = entity.isShowSeconds();
+
+        // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
+        if (entity.isInGroup()) {
+            TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+            remaining = info.getActiveRemaining();
+            if (remaining < 0) {
+                return;
+            }
+        } else {
+            // 静态状态：如果关闭显示读秒，直接返回
+            if (!showSeconds) {
+                return;
+            }
+            // 如果是黄灯，不显示读秒
+            if (lightState == TrafficLightsBlock.LightState.YELLOW) {
+                return;
+            }
+            remaining = entity.getFixedSeconds();
+        }
 
         // 颜色直接由方块状态中的 LIGHT_STATE 决定，与灯模型同步
         int color = switch (lightState) {
@@ -336,14 +452,15 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             return;
         }
 
-        // 判断是否显示实际数字
-        int displayMode = entity.getCountdownDisplayMode();
-        int threshold = entity.getCountdownThreshold();
-        boolean shouldShowDigits = (displayMode == 0) || (displayMode == 1 && remaining <= threshold);
-
-        if (!shouldShowDigits) {
-            matrices.pop();
-            return;
+        // 相位组中：判断是否显示实际数字
+        if (entity.isInGroup()) {
+            int displayMode = entity.getCountdownDisplayMode();
+            int threshold = entity.getCountdownThreshold();
+            boolean shouldShowDigits = (displayMode == 0) || (displayMode == 1 && remaining <= threshold);
+            if (!shouldShowDigits) {
+                matrices.pop();
+                return;
+            }
         }
 
         matrices.translate(0f, 0.0f, 0.01f);
@@ -365,8 +482,28 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     }
 
     private void renderTimeText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState) {
-        TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
-        int remaining = info.getActiveRemaining();
+        int remaining;
+        boolean showSeconds = entity.isShowSeconds();
+
+        // 上海红绿灯黄灯时始终隐藏读秒
+        if (lightState == TrafficLightsBlock.LightState.YELLOW) {
+            return;
+        }
+
+        // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
+        if (entity.isInGroup()) {
+            TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+            remaining = info.getActiveRemaining();
+            if (remaining < 0) {
+                return;
+            }
+        } else {
+            // 静态状态：如果关闭显示读秒，直接返回
+            if (!showSeconds) {
+                return;
+            }
+            remaining = entity.getFixedSeconds();
+        }
 
         // 颜色直接由方块状态中的 LIGHT_STATE 决定，与灯模型同步
         int color = switch (lightState) {
@@ -385,11 +522,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.translate(0.25f, 0.0f, -0.53f);
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
-        if (lightState == TrafficLightsBlock.LightState.YELLOW){
-            matrices.pop();
-            return;
-        }
-
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, "88", 0X2e3134,
                 0, -2.5f, 0,
@@ -401,7 +533,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 1.4f
         );
 
-        if (lightState == TrafficLightsBlock.LightState.GRAY || remaining >= 15 || (color == 0xFFF000 && remaining == 3)){
+        if (lightState == TrafficLightsBlock.LightState.GRAY || (entity.isInGroup() && remaining >= 15)){
             matrices.pop();
             return;
         }
@@ -409,6 +541,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.translate(0f, 0.0f, 0.01f);
 
         String text = String.valueOf(remaining);
+        if (remaining > 99) text = "99";
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, text, color,
                 0, -2.5f, 0,
@@ -443,7 +576,8 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             case NON_MOTOR_VEHICLES -> "非机动车";
             case NON_MOTOR_VEHICLES_LEFT_TURN -> "非机动车（左转）";
             case NON_MOTOR_VEHICLES_RIGHT_TURN -> "非机动车（右转）";
-            case SLOW -> "慢";
+            case COLOR_FLASH -> "色闪";
+            case SLOW_FLASH -> "慢闪";
         };
     }
 

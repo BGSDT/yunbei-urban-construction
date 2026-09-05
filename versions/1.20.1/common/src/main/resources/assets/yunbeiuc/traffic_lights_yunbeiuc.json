@@ -1,0 +1,188 @@
+{
+  "模组资源包": {
+    "color": 5635925,
+    "标准4路口": {
+      "color": 11141120,
+      "phaseCount": 4,
+      "slots": [
+        {
+          "direction": "N",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            0
+          ],
+          "order": 1
+        },
+        {
+          "direction": "N",
+          "kind": "NORMAL",
+          "directionType": "left_turn",
+          "phaseIndices": [
+            1
+          ],
+          "order": 2
+        },
+        {
+          "direction": "N",
+          "kind": "NORMAL",
+          "directionType": "straight",
+          "phaseIndices": [
+            0
+          ],
+          "order": 3
+        },
+        {
+          "direction": "N",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            0
+          ],
+          "order": 4
+        },
+        {
+          "direction": "S",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            0
+          ],
+          "order": 1
+        },
+        {
+          "direction": "S",
+          "kind": "NORMAL",
+          "directionType": "left_turn",
+          "phaseIndices": [
+            1
+          ],
+          "order": 2
+        },
+        {
+          "direction": "S",
+          "kind": "NORMAL",
+          "directionType": "straight",
+          "phaseIndices": [
+            0
+          ],
+          "order": 3
+        },
+        {
+          "direction": "S",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            0
+          ],
+          "order": 4
+        },
+        {
+          "direction": "W",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            2
+          ],
+          "order": 1
+        },
+        {
+          "direction": "W",
+          "kind": "NORMAL",
+          "directionType": "left_turn",
+          "phaseIndices": [
+            3
+          ],
+          "order": 2
+        },
+        {
+          "direction": "W",
+          "kind": "NORMAL",
+          "directionType": "straight",
+          "phaseIndices": [
+            2
+          ],
+          "order": 3
+        },
+        {
+          "direction": "W",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            2
+          ],
+          "order": 4
+        },
+        {
+          "direction": "E",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            2
+          ],
+          "order": 1
+        },
+        {
+          "direction": "E",
+          "kind": "NORMAL",
+          "directionType": "left_turn",
+          "phaseIndices": [
+            3
+          ],
+          "order": 2
+        },
+        {
+          "direction": "E",
+          "kind": "NORMAL",
+          "directionType": "straight",
+          "phaseIndices": [
+            2
+          ],
+          "order": 3
+        },
+        {
+          "direction": "E",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            2
+          ],
+          "order": 4
+        }
+      ]
+    },
+    "人行道斑马线（2相位）": {
+      "color": 16711680,
+      "phaseCount": 2,
+      "slots": [
+        {
+          "direction": "N",
+          "kind": "NORMAL",
+          "directionType": "straight",
+          "phaseIndices": [
+            0
+          ],
+          "order": 1
+        },
+        {
+          "direction": "E",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            1
+          ],
+          "order": 1
+        },
+        {
+          "direction": "W",
+          "kind": "PAVEMENT",
+          "directionType": "straight",
+          "phaseIndices": [
+            1
+          ],
+          "order": 1
+        }
+      ]
+    }
+  }
+}

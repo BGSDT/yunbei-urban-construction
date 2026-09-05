@@ -36,15 +36,12 @@ public class RisingBollard extends Block {
     private static final VoxelShape SHAPE_ON = Block.createCuboidShape(2, 0, 2, 14, 16, 14);
     private static final VoxelShape SHAPE_OFF = Block.createCuboidShape(2, 0, 2, 14, 0.1, 14);
 
-
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightTFState> LIGHT_TF_STATE = EnumProperty.of("light_tf_state", LightTFState.class);
 
     public RisingBollard(Settings settings) {
         super(settings);
         this.setDefaultState(
                 getStateManager().getDefaultState()
-                        .with(FACING, Direction.NORTH)
                         .with(LIGHT_TF_STATE, LightTFState.TRUE)
         );
     }
@@ -59,22 +56,7 @@ public class RisingBollard extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING,LIGHT_TF_STATE);
-    }
-
-    @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(FACING, rotation.rotate(state.get(FACING)));
-    }
-
-    @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(FACING)));
-    }
-
-    @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        builder.add(LIGHT_TF_STATE);
     }
 
     @Override

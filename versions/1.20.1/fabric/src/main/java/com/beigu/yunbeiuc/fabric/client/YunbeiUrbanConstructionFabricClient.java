@@ -6,6 +6,8 @@ import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
 import com.beigu.yunbeiuc.util.PresetManager;
+import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
+import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.client.render.RenderLayer;
@@ -38,6 +40,11 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_3_WHITE_TB.get(), RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_3_BLUE_NORMAL.get(), RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.SOUND_BARRIER_3_BLUE_TB.get(), RenderLayer.getTranslucent());
+
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get(), RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get(), RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL.get(), RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL.get(), RenderLayer.getCutout());
 
         SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderLayer.getCutout()));
 
@@ -83,5 +90,7 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockEntityRendererFactories.register(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), CustomSignBlockEntityRenderer::new);
 
         PresetManager.load();
+        TrafficLightsPatternPresetManager.load();
+        TrafficLightsPatternCategoryManager.load();
     }
 }

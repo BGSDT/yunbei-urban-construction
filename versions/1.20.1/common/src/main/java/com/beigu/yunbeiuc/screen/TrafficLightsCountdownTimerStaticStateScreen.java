@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.block.MunicipalBlocks;
-import com.beigu.yunbeiuc.block.custom.TrafficLightsBlock;
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsStaticStateUpdatePacket;
@@ -20,16 +19,27 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
     private final BlockPos pos;
     private TrafficLightsBlock.LightState selectedColor = TrafficLightsBlock.LightState.RED;
     private TextFieldWidget secondsField;
+    private boolean shouldShowCountdown = false;
 
     private int panelX;
     private int panelY;
 
     private static final int PANEL_WIDTH = 220;
-    private static final int PANEL_HEIGHT = 240;
+    private static final int PANEL_HEIGHT = 250;
 
     public TrafficLightsCountdownTimerStaticStateScreen(BlockPos pos) {
         super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
         this.pos = pos;
+
+        // 读取当前颜色
+        TrafficLightsBlockEntity blockEntity = MinecraftClient.getInstance().world != null
+                ? (TrafficLightsBlockEntity) MinecraftClient.getInstance().world.getBlockEntity(pos) : null;
+        if (blockEntity != null) {
+            var state = blockEntity.getCachedState();
+            if (state.contains(TrafficLightsBlock.LIGHT_STATE)) {
+                this.selectedColor = state.get(TrafficLightsBlock.LIGHT_STATE);
+            }
+        }
     }
 
     @Override
@@ -39,14 +49,36 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         this.panelX = (this.width - PANEL_WIDTH) / 2;
         this.panelY = (this.height - PANEL_HEIGHT) / 2;
 
-        // 秒数输入框
-        secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, panelY + 70, 160, 20, Text.literal(""));
+        TrafficLightsBlockEntity blockEntity = MinecraftClient.getInstance().world != null
+                ? (TrafficLightsBlockEntity) MinecraftClient.getInstance().world.getBlockEntity(pos) : null;
+        if (blockEntity != null) {
+            this.shouldShowCountdown = blockEntity.isShowSeconds();
+        }
+
+        // 显示读秒开关
+        this.addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"),
+                        button -> {
+                            shouldShowCountdown = !shouldShowCountdown;
+                            button.setMessage(Text.literal(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"));
+                            if (secondsField != null) {
+                                secondsField.setEditable(shouldShowCountdown);
+                            }
+                        })
+                        .dimensions(panelX + 30, panelY + 50, 160, 20)
+                        .build()
+        );
+
+        // 秒数输入框（不显示读秒时锁定）
+        secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, panelY + 90, 160, 20, Text.literal(""));
         secondsField.setMaxLength(3);
-        secondsField.setText("10");
+        secondsField.setText(blockEntity != null ? String.valueOf(blockEntity.getFixedSeconds()) : "10");
+        secondsField.setEditable(shouldShowCountdown);
         this.addDrawableChild(secondsField);
 
-        // 颜色按钮
-        int colorButtonY = panelY + 120;
+        // 颜色按钮 - 三个颜色
+        int colorButtonY = panelY + 130;
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
                                 button -> this.selectedColor = TrafficLightsBlock.LightState.RED)
@@ -69,21 +101,21 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         // 保存取消按钮
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
-                        .dimensions(panelX + 40, panelY + 200, 60, 20)
+                        .dimensions(panelX + 40, panelY + 210, 60, 20)
                         .build()
         );
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
-                        .dimensions(panelX + 120, panelY + 200, 60, 20)
+                        .dimensions(panelX + 120, panelY + 210, 60, 20)
                         .build()
         );
     }
+
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
-        // 居中标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 this.title,
@@ -109,7 +141,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.literal("固定秒数:"),
-                panelX + 30, panelY + 55,
+                panelX + 30, panelY + 75,
                 0xFFAAAAAA
         );
 
@@ -117,7 +149,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights_static_state.color_label"),
-                panelX + 30, panelY + 105,
+                panelX + 30, panelY + 115,
                 0xFFAAAAAA
         );
 
@@ -156,9 +188,13 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                 seconds = 10;
             }
 
-            // 读秒器/上海红绿灯的静态状态不需要方向，使用默认值
+            TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) this.client.world.getBlockEntity(pos);
+            TrafficLightsBlockEntity.DirectionType currentDirection = blockEntity != null
+                    ? blockEntity.getDirectionType()
+                    : TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE;
+
             TrafficLightsStaticStateUpdatePacket packet =
-                    new TrafficLightsStaticStateUpdatePacket(pos, TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE, selectedColor);
+                    new TrafficLightsStaticStateUpdatePacket(pos, currentDirection, selectedColor, shouldShowCountdown, seconds);
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
@@ -170,4 +206,5 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
     public boolean shouldPause() {
         return false;
     }
+
 }

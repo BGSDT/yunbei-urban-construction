@@ -49,8 +49,17 @@ public class TrafficLightsScreen extends Screen {
     private int displayMode;  // 0=全显, 1=半显
     private int threshold;
 
+    // 人行道红绿灯相关控件
+    private ButtonWidget showSecondsButton;
+    private boolean showSeconds;
+
+    // 底部操作按钮（人行道相位行数变化时需要随面板重新布局）
+    private ButtonWidget saveButton;
+    private ButtonWidget cancelButton;
+    private ButtonWidget patternPresetButton;
+
     private static final int RIGHT_PANEL_WIDTH = 200;
-    private static final int RIGHT_PANEL_HEIGHT = 300;
+    private static final int RIGHT_PANEL_HEIGHT = 330;
     private static final int MAX_PHASE_SLIDERS = 4;
     private static final int PHASE_SLIDER_START_Y = 80;
     private static final int PHASE_SLIDER_ROW_HEIGHT = 25;
@@ -58,6 +67,10 @@ public class TrafficLightsScreen extends Screen {
     private static final int PREVIEW_Y_OFFSET = PHASE_SLIDER_START_Y + PHASE_SLIDER_AREA_HEIGHT + 10;
     private static final int PREVIEW_SIZE = 60;
     private static final int BUTTONS_Y_OFFSET = PREVIEW_Y_OFFSET + PREVIEW_SIZE + 15;
+
+    // 人行道面板：按实际相位滑块行数收紧高度，"显示秒数"按钮紧贴滑块区域下方
+    private static final int PAVEMENT_ROW_GAP = 8;
+    private static final int PAVEMENT_BOTTOM_MARGIN = 15;
 
     public TrafficLightsScreen(BlockPos pos) {
         super(Text.translatable("text.yunbeiuc.traffic_lights.title"));
@@ -81,8 +94,18 @@ public class TrafficLightsScreen extends Screen {
         this.displayMode = blockEntity.getCountdownDisplayMode();
         this.threshold = blockEntity.getCountdownThreshold();
 
+        // 人行道红绿灯相关初始化
+        this.showSeconds = blockEntity.isShowSeconds();
+
+        // 雾灯方块：如果图案为默认的 STRAIGHT_CIRCLE，则设置为 SLOW_FLASH（慢闪黄色）
+        boolean isFoggy = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get();
+        TrafficLightsBlockEntity.DirectionType currentDirection = blockEntity.getDirectionType();
+        if (isFoggy && currentDirection == TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE) {
+            currentDirection = TrafficLightsBlockEntity.DirectionType.SLOW_FLASH;
+        }
+
         for (DirectionOption option : options) {
-            if (option.getDirectionType() == blockEntity.getDirectionType()) {
+            if (option.getDirectionType() == currentDirection) {
                 this.selectedOption = option;
                 break;
             }
@@ -129,9 +152,9 @@ public class TrafficLightsScreen extends Screen {
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
         } else {
-            // 人行道或读秒器：面板居中
+            // 人行道或读秒器：面板居中（人行道按紧凑高度居中，读秒器保持原高度）
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
+            panelY = (this.height - (isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT)) / 2;
         }
 
         this.panelX = panelX;
@@ -167,19 +190,121 @@ public class TrafficLightsScreen extends Screen {
             this.addDrawableChild(thresholdField);
         }
 
+        // 人行道红绿灯专属控件：显示秒数开关（紧贴相位滑块区域下方）
+        if (isPavement) {
+            showSecondsButton = this.addDrawableChild(
+                    ButtonWidget.builder(
+                            Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
+                            button -> {
+                                showSeconds = !showSeconds;
+                                button.setMessage(Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
+                            })
+                            .dimensions(panelX + 30, panelY + getShowSecondsYOffset(), 140, 20)
+                            .build()
+            );
+        }
+
+        // 保存/取消/使用相位预设按钮的y偏移：人行道按紧凑布局计算，其余保持原偏移
+        int buttonsYOffset = isPavement ? getPavementButtonsYOffset() : BUTTONS_Y_OFFSET;
+
         // 保存按钮
-        this.addDrawableChild(
+        saveButton = this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
-                        .dimensions(panelX + 30, panelY + BUTTONS_Y_OFFSET, 60, 20)
+                        .dimensions(panelX + 30, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
 
         // 取消按钮
-        this.addDrawableChild(
+        cancelButton = this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
-                        .dimensions(panelX + 110, panelY + BUTTONS_Y_OFFSET, 60, 20)
+                        .dimensions(panelX + 110, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
+
+        // 使用相位预设按钮：把整组的相位分配一次性应用为某个已保存的预设
+        patternPresetButton = this.addDrawableChild(
+                ButtonWidget.builder(Text.literal("相位预设"), button -> openPatternSelectScreen())
+                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
+                        .build()
+        );
+    }
+
+    // 人行道相位滑块行数变化后，重新计算紧凑面板高度并重建"显示秒数"及底部按钮位置
+    private void relayoutPavementControls() {
+        panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
+        panelY = (this.height - getPanelHeight()) / 2;
+
+        rebuildPhaseSliders();
+
+        if (showSecondsButton != null) {
+            this.remove(showSecondsButton);
+        }
+        showSecondsButton = this.addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
+                        button -> {
+                            showSeconds = !showSeconds;
+                            button.setMessage(Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
+                        })
+                        .dimensions(panelX + 30, panelY + getShowSecondsYOffset(), 140, 20)
+                        .build()
+        );
+
+        int buttonsYOffset = getPavementButtonsYOffset();
+
+        if (saveButton != null) {
+            this.remove(saveButton);
+        }
+        saveButton = this.addDrawableChild(
+                ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
+                        .dimensions(panelX + 30, panelY + buttonsYOffset, 60, 20)
+                        .build()
+        );
+
+        if (cancelButton != null) {
+            this.remove(cancelButton);
+        }
+        cancelButton = this.addDrawableChild(
+                ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
+                        .dimensions(panelX + 110, panelY + buttonsYOffset, 60, 20)
+                        .build()
+        );
+
+        if (patternPresetButton != null) {
+            this.remove(patternPresetButton);
+        }
+        patternPresetButton = this.addDrawableChild(
+                ButtonWidget.builder(Text.literal("相位预设"), button -> openPatternSelectScreen())
+                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
+                        .build()
+        );
+    }
+
+    // ==================== 人行道紧凑布局计算 ====================
+
+    private int getPavementSliderRows() {
+        return (isPavement && phaseCount > 1) ? phaseIndices.size() : 0;
+    }
+
+    private int getShowSecondsYOffset() {
+        return PHASE_SLIDER_START_Y + getPavementSliderRows() * PHASE_SLIDER_ROW_HEIGHT + PAVEMENT_ROW_GAP;
+    }
+
+    private int getPavementButtonsYOffset() {
+        return getShowSecondsYOffset() + 20 + PAVEMENT_ROW_GAP;
+    }
+
+    private int getPanelHeight() {
+        if (isPavement) {
+            int buttonsYOffset = getPavementButtonsYOffset();
+            int patternButtonY = buttonsYOffset + 25;
+            return patternButtonY + 20 + PAVEMENT_BOTTOM_MARGIN;
+        }
+        return RIGHT_PANEL_HEIGHT;
+    }
+
+    private void openPatternSelectScreen() {
+        MinecraftClient.getInstance().setScreen(new TrafficLightsPatternCategorySelectScreen(pos));
     }
 
     @Override
@@ -217,9 +342,9 @@ public class TrafficLightsScreen extends Screen {
                 );
             }
         } else {
-            // 人行道或读秒器布局：面板居中
+            // 人行道或读秒器布局：面板居中（人行道按紧凑高度居中，读秒器保持原高度）
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
+            panelY = (this.height - (isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT)) / 2;
 
             // 居中标题
             context.drawCenteredTextWithShadow(
@@ -231,9 +356,10 @@ public class TrafficLightsScreen extends Screen {
             );
         }
 
-        // 右侧面板背景
-        context.fill(panelX, panelY, panelX + RIGHT_PANEL_WIDTH, panelY + RIGHT_PANEL_HEIGHT, 0xAA333333);
-        context.drawBorder(panelX, panelY, RIGHT_PANEL_WIDTH, RIGHT_PANEL_HEIGHT, 0xFFCCCCCC);
+        // 右侧面板背景（人行道使用紧凑高度，其余使用原高度）
+        int panelHeight = isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT;
+        context.fill(panelX, panelY, panelX + RIGHT_PANEL_WIDTH, panelY + panelHeight, 0xAA333333);
+        context.drawBorder(panelX, panelY, RIGHT_PANEL_WIDTH, panelHeight, 0xFFCCCCCC);
 
         // 右侧面板标题
         context.drawCenteredTextWithShadow(
@@ -347,7 +473,7 @@ public class TrafficLightsScreen extends Screen {
             }
 
             TrafficLightsUpdatePacket packet =
-                    new TrafficLightsUpdatePacket(pos, phaseIndicesArray, selectedDirection, finalDisplayMode, finalThreshold);
+                    new TrafficLightsUpdatePacket(pos, phaseIndicesArray, selectedDirection, finalDisplayMode, finalThreshold, showSeconds);
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS, buf);
@@ -440,13 +566,21 @@ public class TrafficLightsScreen extends Screen {
         if (candidate < 0) return;
 
         phaseIndices.add(candidate);
-        rebuildPhaseSliders();
+        if (isPavement) {
+            relayoutPavementControls();
+        } else {
+            rebuildPhaseSliders();
+        }
     }
 
     private void removePhaseSlider(int slotIndex) {
         if (slotIndex <= 0 || slotIndex >= phaseIndices.size()) return;
         phaseIndices.remove(slotIndex);
-        rebuildPhaseSliders();
+        if (isPavement) {
+            relayoutPavementControls();
+        } else {
+            rebuildPhaseSliders();
+        }
     }
 
     private List<DirectionOption> createDirectionOptions() {
@@ -467,8 +601,10 @@ public class TrafficLightsScreen extends Screen {
                 "text.yunbeiuc.traffic_lights.direction.non_motor_vehicles_left_turn"));
         options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.NON_MOTOR_VEHICLES_RIGHT_TURN,
                 "text.yunbeiuc.traffic_lights.direction.non_motor_vehicles_right_turn"));
-        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.SLOW,
-                "text.yunbeiuc.traffic_lights.direction.slow"));
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.COLOR_FLASH,
+                "text.yunbeiuc.traffic_lights.direction.color_flash"));
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.SLOW_FLASH,
+                "text.yunbeiuc.traffic_lights.direction.slow_flash"));
         return options;
     }
 
@@ -578,7 +714,8 @@ public class TrafficLightsScreen extends Screen {
                 case NON_MOTOR_VEHICLES -> 0x00AAAA;
                 case NON_MOTOR_VEHICLES_LEFT_TURN -> 0x0088AA;
                 case NON_MOTOR_VEHICLES_RIGHT_TURN -> 0x00AA88;
-                case SLOW -> 0xFFAA00;
+                case COLOR_FLASH -> 0xFFAA00;
+                case SLOW_FLASH -> 0xFFCC00;
             };
         }
     }
@@ -588,7 +725,8 @@ public class TrafficLightsScreen extends Screen {
                                     List<DirectionOption> directionOptions, Consumer<DirectionOption> onSelect) {
             super(client, width, height, top, bottom, itemHeight, directionOptions,
                     option -> option == selectedOption, onSelect,
-                    option -> Text.translatable(option.getTranslationKey()), DirectionOption::getColor);
+                    option -> Text.translatable(option.getTranslationKey()), DirectionOption::getColor,
+                    option -> com.beigu.yunbeiuc.util.TrafficLightsDirectionIcons.get(option.getDirectionType()));
         }
     }
 

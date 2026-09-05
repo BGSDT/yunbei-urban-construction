@@ -19,7 +19,7 @@ import com.beigu.yunbeiuc.block.custom.instrument.*;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandBlock;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandEdgeBlock;
 import com.beigu.yunbeiuc.block.custom.island.SafetyIslandObliqueBlock;
-import com.beigu.yunbeiuc.block.custom.TrafficLightsBlock;
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.block.custom.pole.*;
 import com.beigu.yunbeiuc.block.custom.guardrail.RoadClosedBarricadeGuardrail1;
 import com.beigu.yunbeiuc.block.custom.railings.RoadRailings;
@@ -33,7 +33,6 @@ import com.beigu.yunbeiuc.block.custom.waring.WarningNetwork;
 import com.beigu.yunbeiuc.block.custom.waring.WarningNetworkPole;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.block.ConduitBlock;
 import net.minecraft.registry.RegistryKeys;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import net.minecraft.block.AbstractBlock;
@@ -69,6 +68,11 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_BLACK_VERTICAL = BLOCKS.register("traffic_lights_black_vertical", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_GRAY_HORIZONTAL = BLOCKS.register("traffic_lights_gray_horizontal", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_BLACK_HORIZONTAL = BLOCKS.register("traffic_lights_black_horizontal", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL = BLOCKS.register("traffic_lights_gray_single_horizontal", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL = BLOCKS.register("traffic_lights_black_single_horizontal", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL = BLOCKS.register("traffic_lights_gray_single_vertical", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL = BLOCKS.register("traffic_lights_black_single_vertical", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
+    public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_FOGGY = BLOCKS.register("traffic_lights_foggy", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_GRAY_SHANGHAI = BLOCKS.register("traffic_lights_gray_shanghai", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_BLACK_SHANGHAI = BLOCKS.register("traffic_lights_black_shanghai", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_COUNTDOWN_TIMER = BLOCKS.register("traffic_lights_countdown_timer", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
     public static final RegistrySupplier<Block> TRAFFIC_LIGHTS_PAVEMENT_GRAY = BLOCKS.register("traffic_lights_pavement_gray", () -> new TrafficLightsBlock(AbstractBlock.Settings.create().strength(1.25F, 4.2F).luminance(state -> 15).requiresTool()));
@@ -157,10 +161,10 @@ public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Yun
 
     public static final RegistrySupplier<Block> ROAD_NAME_SIGN_RC = BLOCKS.register("road_name_sign_rc", () -> new RoadNameSignBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> ROAD_NAME_SIGN_RA = BLOCKS.register("road_name_sign_ra", () -> new RoadNameSignBlock(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final RegistrySupplier<Block> ROAD_NAME_SIGN_POLE = BLOCKS.register("road_name_sign_pole", () -> new InstrumentPolelLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> ROAD_NAME_SIGN_POLE = BLOCKS.register("road_name_sign_pole", () -> new InstrumentPoleLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
 
     public static final RegistrySupplier<Block> INSTRUMENT_POLE_FOUNDATIONS = BLOCKS.register("instrument_pole_foundations", () -> new InstrumentPoleFoundations(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
-    public static final RegistrySupplier<Block> INSTRUMENT_POLE_LONGITUDINAL = BLOCKS.register("instrument_pole_longitudinal", () -> new InstrumentPolelLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
+    public static final RegistrySupplier<Block> INSTRUMENT_POLE_LONGITUDINAL = BLOCKS.register("instrument_pole_longitudinal", () -> new InstrumentPoleLongitudinal(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> INSTRUMENT_CAMERA = BLOCKS.register("instrument_camera", () -> new InstrumentCamera(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> INSTRUMENT_FEE_DISPLAY = BLOCKS.register("instrument_fee_display", () -> new InstrumentFeeDisplay(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));
     public static final RegistrySupplier<Block> INSTRUMENT_LANE_INDICATOR = BLOCKS.register("instrument_lane_indicator", () -> new InstrumentLaneIndicator(AbstractBlock.Settings.copy(Blocks.CYAN_TERRACOTTA).requiresTool().nonOpaque()));

@@ -1,8 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
-import com.beigu.yunbeiuc.autoassign.TrafficLightsAutoAssigner;
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsAutoAssigner;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;

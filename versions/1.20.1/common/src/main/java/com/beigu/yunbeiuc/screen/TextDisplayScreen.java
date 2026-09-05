@@ -319,9 +319,29 @@ public class TextDisplayScreen extends Screen {
 
     private ButtonWidget makeColorCycleButton(final int type) {
         return ButtonWidget.builder(Text.literal("■"), button -> {
-            if (hasControlDown()) { enterPreciseMode(type); return; }
+            if (hasControlDown()) {
+                if (type == 3 || type == 12) {
+                    openColorPickerForType(type);
+                } else {
+                    enterPreciseMode(type);
+                }
+                return;
+            }
             cycleColorByType(type, 1);
         }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
+    }
+
+    private void openColorPickerForType(int type) {
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
+        TextLineWidget w = textLineWidgets.get(selectedIndex);
+        TextLineData d = w.data;
+        int currentColor = (type == 3) ? d.getColor() : d.getOutlineColor();
+        if (currentColor == -1) currentColor = 0xFFFFFF;
+        MinecraftClient.getInstance().setScreen(new ColorPickerScreen(this, currentColor, c -> {
+            applyColor(type, c, d);
+            syncAndUpdateClient();
+            sendUpdateToServer();
+        }));
     }
 
     private void cycleColorByType(int type, int dir) {
@@ -1050,8 +1070,8 @@ public class TextDisplayScreen extends Screen {
             if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
             if (shadowButton != null && shadowButton.visible && shadowButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("阴影", "原版阴影，点击开关"));
             if (outlineButton != null && outlineButton.visible && outlineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("描边", "点击开关文字描边（颜色见右侧 ■）"));
-            if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 右键反向切换 | Ctrl+点击精准输入"));
-            if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击精准输入"));
+            if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 右键反向切换 | Ctrl+点击打开色盘"));
+            if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击打开色盘"));
             if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
             if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));
             if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转", "点击显示 RX/RY/RZ 旋转按钮", "可在世界中拖拽圆环旋转（Shift/Alt 调整步长）"));
