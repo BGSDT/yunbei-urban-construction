@@ -3,23 +3,18 @@ package com.beigu.yunbeiuc.render;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning1Entity;
+import com.beigu.yunbeiuc.render.base.BaseSignRenderer;
+import com.beigu.yunbeiuc.render.base.SignTypeConverter;
 import net.minecraft.block.Block;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.util.Identifier;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.RotationAxis;
 
-public class SignGuideIntersectionAdvanceWarning1EntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning1Entity> {
-    private final TextRenderer textRenderer;
+public class SignGuideIntersectionAdvanceWarning1EntityRenderer extends BaseSignRenderer<SignGuideIntersectionAdvanceWarning1Entity> {
 
     public SignGuideIntersectionAdvanceWarning1EntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.textRenderer = ctx.getTextRenderer();
+        super(ctx.getTextRenderer());
     }
 
     @Override
@@ -34,61 +29,14 @@ public class SignGuideIntersectionAdvanceWarning1EntityRenderer implements Block
         Direction facing = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1.FACING);
         SignGuideIntersectionAdvanceWarning1.Type type = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1.TYPE);
 
+        SignType signType = SignTypeConverter.convert(type);
+
         if(currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2.get()){
-            renderText(matrices, vertexConsumers, light, facing, text1, type, -17f, 10f);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, 3f,  -1f);
+            renderLeftAlignedText(matrices, vertexConsumers, light, facing, text1, signType, -17f, 10f, 0.035f, 0xFFFFFF);
+            renderLeftAlignedText(matrices, vertexConsumers, light, facing, text2, signType, 3f, -1f, 0.035f, 0xFFFFFF);
         }else {
-            renderText(matrices, vertexConsumers, light, facing, text1, type, -12f, 12f);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, -5f, -7f);
+            renderLeftAlignedText(matrices, vertexConsumers, light, facing, text1, signType, -12f, 12f, 0.035f, 0xFFFFFF);
+            renderLeftAlignedText(matrices, vertexConsumers, light, facing, text2, signType, -5f, -7f, 0.035f, 0xFFFFFF);
         }
-    }
-
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignGuideIntersectionAdvanceWarning1.Type type, float andX, float andY) {
-        matrices.push();
-
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-
-        float scaleValue = 0.035f;
-
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
-        int textHeight = this.textRenderer.fontHeight;
-
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.81f;
-            case NORMAL -> -0.46f;
-        };
-
-        float leftX = andX / 16f;
-        float centeredY = andY / 16f;
-        matrices.translate(leftX, centeredY, zOffset);
-
-        matrices.scale(scaleValue, -scaleValue, scaleValue);
-
-        this.textRenderer.draw(
-                styledText,
-                0,
-                -textHeight / 2.0f,
-                0xFFFFFF,
-                false,
-                matrices.peek().getPositionMatrix(),
-                vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
-                0,
-                light
-        );
-
-        matrices.pop();
-    }
-
-    @Override
-    public boolean rendersOutsideBoundingBox(SignGuideIntersectionAdvanceWarning1Entity blockEntity) {
-        return true;
-    }
-
-    @Override
-    public int getRenderDistance() {
-        return 256;
     }
 }
