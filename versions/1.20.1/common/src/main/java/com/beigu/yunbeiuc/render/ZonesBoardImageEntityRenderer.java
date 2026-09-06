@@ -3,35 +3,27 @@ package com.beigu.yunbeiuc.render;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.sign.ZonesBoardImage;
 import com.beigu.yunbeiuc.entity.ZonesBoardImageEntity;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
-import net.minecraft.util.Identifier;
 
-public class ZonesBoardImageEntityRenderer implements BlockEntityRenderer<ZonesBoardImageEntity> {
-    private final TextRenderer textRenderer;
-
-    public ZonesBoardImageEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.textRenderer = ctx.getTextRenderer();
-    }
-
+public class ZonesBoardImageEntityRenderer extends BaseSignRenderer<ZonesBoardImageEntity> {
     private static final Identifier RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_red_number_logo.png");
     private static final Identifier YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_yellow_number_logo.png");
     private static final Identifier WHITE = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_white_number_logo.png");
     private static final Identifier EXPRESSWAY = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_logo.png");
 
+    public ZonesBoardImageEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        super(ctx.getTextRenderer());
+    }
+
     @Override
-    public void render(ZonesBoardImageEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(ZonesBoardImageEntity entity, float tickDelta, MatrixStack matrices,
+                       VertexConsumerProvider vertexConsumers, int light, int overlay) {
         String text1 = entity.getText1();
         ZonesBoardImageEntity.BoardImage image = entity.getImage();
         Float andX = entity.getAndX();
@@ -42,13 +34,26 @@ public class ZonesBoardImageEntityRenderer implements BlockEntityRenderer<ZonesB
 
         Direction facing = entity.getCachedState().get(ZonesBoardImage.FACING);
         ZonesBoardImage.Type type = entity.getCachedState().get(ZonesBoardImage.TYPE);
+        SignType signType = convertToSignType(type);
 
-        renderLogo(matrices, vertexConsumers, light, overlay, facing, image, 0f + andX, 4f + andY, type, andScale);
+        float baseX = 0f + andX;
+        float baseY = 4f + andY;
 
-        renderText(matrices, vertexConsumers, light, facing, text1, type, 0f + andX, 4f + andY, image, andScale);
+        renderLogo(matrices, vertexConsumers, light, overlay, facing, image, baseX, baseY, type, andScale);
+        renderBoardText(matrices, vertexConsumers, light, facing, text1, type, baseX, baseY, image, andScale);
     }
 
-    private void renderLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, ZonesBoardImageEntity.BoardImage image, float andX, float andY, ZonesBoardImage.Type type, Float andScale) {
+    private SignType convertToSignType(ZonesBoardImage.Type type) {
+        return switch (type) {
+            case POLE_L -> SignType.POLE_L;
+            case POLE_H -> SignType.POLE_H;
+            case NORMAL -> SignType.NORMAL;
+        };
+    }
+
+    private void renderLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay,
+                           Direction facing, ZonesBoardImageEntity.BoardImage image, float andX, float andY,
+                           ZonesBoardImage.Type type, Float andScale) {
         Identifier texture = switch (image) {
             case RED -> RED;
             case YELLOW -> YELLOW;
@@ -56,49 +61,34 @@ public class ZonesBoardImageEntityRenderer implements BlockEntityRenderer<ZonesB
             case EXPRESSWAY -> EXPRESSWAY;
         };
 
-        matrices.push();
-
         float zOffset = switch (type) {
             case POLE_L -> -1.75f;
             case POLE_H -> -1.79f;
             case NORMAL -> -1.43f;
         };
 
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-
         float arrowSize = 0.75f;
-        if(image == ZonesBoardImageEntity.BoardImage.EXPRESSWAY){
+        if (image == ZonesBoardImageEntity.BoardImage.EXPRESSWAY) {
             arrowSize = 1f;
         }
         arrowSize = arrowSize + andScale;
-        float halfSize = arrowSize / 2f;
 
-        float x = andX / 16f;
-        float y = andY / 16f;
-
-        matrices.translate(x, y, zOffset);
-
-        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
-
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-
-        matrices.pop();
+        renderTextureWithCustomZ(matrices, vertexConsumers, light, overlay, facing, texture,
+                andX, andY, zOffset, arrowSize);
     }
 
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, ZonesBoardImage.Type type, float andX, float andY, ZonesBoardImageEntity.BoardImage image, Float andScale) {
+    private void renderBoardText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
+                                Direction facing, String text, ZonesBoardImage.Type type, float andX, float andY,
+                                ZonesBoardImageEntity.BoardImage image, Float andScale) {
         matrices.push();
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+        matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
         float scaleValue = 0.03f;
 
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true)
+                .withFont(new Identifier("minecraft", "uniform")));
         int textWidth = this.textRenderer.getWidth(styledText);
         int textHeight = this.textRenderer.fontHeight;
 
@@ -109,8 +99,8 @@ public class ZonesBoardImageEntityRenderer implements BlockEntityRenderer<ZonesB
         };
 
         int color = 0X000000;
-        if(image == ZonesBoardImageEntity.BoardImage.RED) color = 0XFFFFFF;
-        if(image == ZonesBoardImageEntity.BoardImage.EXPRESSWAY){
+        if (image == ZonesBoardImageEntity.BoardImage.RED) color = 0XFFFFFF;
+        if (image == ZonesBoardImageEntity.BoardImage.EXPRESSWAY) {
             color = 0X2D9B47;
             scaleValue = 0.02f;
         }
@@ -131,21 +121,11 @@ public class ZonesBoardImageEntityRenderer implements BlockEntityRenderer<ZonesB
                 false,
                 matrices.peek().getPositionMatrix(),
                 vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
+                net.minecraft.client.font.TextRenderer.TextLayerType.NORMAL,
                 0,
                 light
         );
 
         matrices.pop();
-    }
-
-    @Override
-    public boolean rendersOutsideBoundingBox(ZonesBoardImageEntity blockEntity) {
-        return true;
-    }
-
-    @Override
-    public int getRenderDistance() {
-        return 256;
     }
 }

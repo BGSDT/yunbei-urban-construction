@@ -90,6 +90,8 @@ public class ModItems {
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_COUNTDOWN_TIMER = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_GRAY = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_BLACK = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_CONE = registerBlockItem(MunicipalBlocks.TRAFFIC_CONE, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_COLLISION_BARREL = registerBlockItem(MunicipalBlocks.ROAD_COLLISION_BARREL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> WATER_SAFETY_BARRIER_RED = registerBlockItem(MunicipalBlocks.WATER_SAFETY_BARRIER_RED, ALL_MUNICIPAL_ITEMS);

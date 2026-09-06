@@ -2,9 +2,11 @@ package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsUpdatePacket;
+import com.beigu.yunbeiuc.network.TrafficLightsMountTypeUpdatePacket;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
@@ -57,9 +59,11 @@ public class TrafficLightsScreen extends Screen {
     private ButtonWidget saveButton;
     private ButtonWidget cancelButton;
     private ButtonWidget patternPresetButton;
+    private ButtonWidget mountTypeButton;
+    private TrafficLightsBlock.MountType pendingMountType;
 
     private static final int RIGHT_PANEL_WIDTH = 200;
-    private static final int RIGHT_PANEL_HEIGHT = 330;
+    private static final int RIGHT_PANEL_HEIGHT = 385;
     private static final int MAX_PHASE_SLIDERS = 4;
     private static final int PHASE_SLIDER_START_Y = 80;
     private static final int PHASE_SLIDER_ROW_HEIGHT = 25;
@@ -79,7 +83,10 @@ public class TrafficLightsScreen extends Screen {
 
         // 判断是否为人行道红绿灯或读秒器
         Block currentBlock = blockEntity.getCachedState().getBlock();
-        this.isPavement = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get();
+        this.isPavement = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
         this.isCountdownTimer = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
 
         this.phaseCount = blockEntity.getPhaseCount();
@@ -97,11 +104,11 @@ public class TrafficLightsScreen extends Screen {
         // 人行道红绿灯相关初始化
         this.showSeconds = blockEntity.isShowSeconds();
 
-        // 雾灯方块：如果图案为默认的 STRAIGHT_CIRCLE，则设置为 SLOW_FLASH（慢闪黄色）
+        // 雾灯方块：如果图案为默认的 STRAIGHT_CIRCLE，则设置为 COLOR_FLASH（色闪黄色）
         boolean isFoggy = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get();
         TrafficLightsBlockEntity.DirectionType currentDirection = blockEntity.getDirectionType();
         if (isFoggy && currentDirection == TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE) {
-            currentDirection = TrafficLightsBlockEntity.DirectionType.SLOW_FLASH;
+            currentDirection = TrafficLightsBlockEntity.DirectionType.COLOR_FLASH;
         }
 
         for (DirectionOption option : options) {
@@ -227,6 +234,24 @@ public class TrafficLightsScreen extends Screen {
                         .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
                         .build()
         );
+
+        // 切换安装模式按钮（墙面/路杆）- 一体化红绿灯不显示
+        Block currentBlock = blockEntity != null ? blockEntity.getCachedState().getBlock() : null;
+        boolean isIntegration = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
+
+        if (!isIntegration) {
+            TrafficLightsBlock.MountType currentMountType = blockEntity != null && blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE) ?
+                    blockEntity.getCachedState().get(TrafficLightsBlock.TYPE) : TrafficLightsBlock.MountType.SIMPLE;
+            pendingMountType = currentMountType;
+            mountTypeButton = this.addDrawableChild(
+                    ButtonWidget.builder(
+                            Text.literal(currentMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                            button -> toggleMountType())
+                            .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
+                            .build()
+            );
+        }
     }
 
     // 人行道相位滑块行数变化后，重新计算紧凑面板高度并重建"显示秒数"及底部按钮位置
@@ -278,6 +303,39 @@ public class TrafficLightsScreen extends Screen {
                         .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
                         .build()
         );
+
+        Block currentBlock = blockEntity != null ? blockEntity.getCachedState().getBlock() : null;
+        boolean isIntegration = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
+
+        if (!isIntegration) {
+            if (mountTypeButton != null) {
+                this.remove(mountTypeButton);
+            }
+            TrafficLightsBlock.MountType currentMountType = blockEntity != null && blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE) ?
+                    blockEntity.getCachedState().get(TrafficLightsBlock.TYPE) : TrafficLightsBlock.MountType.SIMPLE;
+            if (pendingMountType == null) {
+                pendingMountType = currentMountType;
+            }
+            mountTypeButton = this.addDrawableChild(
+                    ButtonWidget.builder(
+                            Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                            button -> toggleMountType())
+                            .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
+                            .build()
+            );
+        }
+    }
+
+    private void toggleMountType() {
+        if (blockEntity == null || !blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE)) return;
+
+        pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
+                TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
+
+        if (mountTypeButton != null) {
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+        }
     }
 
     // ==================== 人行道紧凑布局计算 ====================
@@ -477,6 +535,17 @@ public class TrafficLightsScreen extends Screen {
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS, buf);
+
+            // 保存时才应用mountType的更改
+            if (pendingMountType != null && blockEntity != null && blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE)) {
+                TrafficLightsBlock.MountType currentType = blockEntity.getCachedState().get(TrafficLightsBlock.TYPE);
+                if (pendingMountType != currentType) {
+                    TrafficLightsMountTypeUpdatePacket mountPacket = new TrafficLightsMountTypeUpdatePacket(pos, pendingMountType);
+                    PacketByteBuf mountBuf = new PacketByteBuf(Unpooled.buffer());
+                    mountPacket.write(mountBuf);
+                    NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, mountBuf);
+                }
+            }
         }
         this.close();
     }

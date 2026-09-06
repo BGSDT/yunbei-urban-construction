@@ -4,22 +4,15 @@ import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1Wuhan;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning1WuhanEntity;
 import net.minecraft.block.Block;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.util.Identifier;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.RotationAxis;
 
-public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements BlockEntityRenderer<SignGuideIntersectionAdvanceWarning1WuhanEntity> {
-    private final TextRenderer textRenderer;
+public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer extends BaseSignRenderer<SignGuideIntersectionAdvanceWarning1WuhanEntity> {
 
     public SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.textRenderer = ctx.getTextRenderer();
+        super(ctx.getTextRenderer());
     }
 
     @Override
@@ -46,67 +39,26 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer implements 
         Direction facing = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1Wuhan.FACING);
         SignGuideIntersectionAdvanceWarning1Wuhan.Type type = entity.getCachedState().get(SignGuideIntersectionAdvanceWarning1Wuhan.TYPE);
 
+        SignType signType = SignTypeConverter.convert(type);
+
         if(currentBlock == SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get()){
-            renderText(matrices, vertexConsumers, light, facing, text1, type, true, 16.5f, 12f, true);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, true, 16.5f, -12f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, -6f, 12f, false);
-            renderText(matrices, vertexConsumers, light, facing, enText3, type, false, -6f, 8f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, -6f, 1f, false);
-            renderText(matrices, vertexConsumers, light, facing, enText4, type, false, -6f, -3f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, -6f, -10f, false);
-            renderText(matrices, vertexConsumers, light, facing, enText5, type, false, -6f, -14f, true);
+            renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, 16.5f, 12f, 0.023f, 0x275aa8);
+            renderCenteredText(matrices, vertexConsumers, light, facing, text2, signType, 16.5f, -12f, 0.023f, 0x275aa8);
+            renderCenteredText(matrices, vertexConsumers, light, facing, cnText3, signType, -6f, 12f, 0.03f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, enText3, signType, -6f, 8f, 0.023f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, cnText4, signType, -6f, 1f, 0.03f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, enText4, signType, -6f, -3f, 0.023f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, cnText5, signType, -6f, -10f, 0.03f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, enText5, signType, -6f, -14f, 0.023f, 0xFFFFFF);
         }else {
-            renderText(matrices, vertexConsumers, light, facing, text1, type, true, -16.5f, 12f, true);
-            renderText(matrices, vertexConsumers, light, facing, text2, type, true, -16.5f, -12f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText3, type, false, 6f, 12f, false);
-            renderText(matrices, vertexConsumers, light, facing, enText3, type, false, 6f, 8f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText4, type, false, 6f, 1f, false);
-            renderText(matrices, vertexConsumers, light, facing, enText4, type, false, 6f, -3f, true);
-            renderText(matrices, vertexConsumers, light, facing, cnText5, type, false, 6f, -10f, false);
-            renderText(matrices, vertexConsumers, light, facing, enText5, type, false, 6f, -14f, true);
+            renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, -16.5f, 12f, 0.023f, 0x275aa8);
+            renderCenteredText(matrices, vertexConsumers, light, facing, text2, signType, -16.5f, -12f, 0.023f, 0x275aa8);
+            renderCenteredText(matrices, vertexConsumers, light, facing, cnText3, signType, 6f, 12f, 0.03f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, enText3, signType, 6f, 8f, 0.023f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, cnText4, signType, 6f, 1f, 0.03f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, enText4, signType, 6f, -3f, 0.023f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, cnText5, signType, 6f, -10f, 0.03f, 0xFFFFFF);
+            renderCenteredText(matrices, vertexConsumers, light, facing, enText5, signType, 6f, -14f, 0.023f, 0xFFFFFF);
         }
-    }
-
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
-                            Direction facing, String text, SignGuideIntersectionAdvanceWarning1Wuhan.Type type,
-                            boolean isBlue, float andX, float andY, boolean isSmallScale) {
-        matrices.push();
-
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
-        int textWidth = this.textRenderer.getWidth(styledText);
-        int textHeight = this.textRenderer.fontHeight;
-        float scale = isSmallScale ? 0.023f : 0.03f;
-
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.81f;
-            case NORMAL -> -0.46f;
-        };
-
-        int textColor = isBlue ? 0X275aa8 : 0xFFFFFF;
-
-        matrices.translate(andX / 16f - (textWidth * scale) / 2f, andY / 16f, zOffset);
-        matrices.scale(scale, -scale, scale);
-
-        this.textRenderer.draw(
-                styledText, 0, -textHeight / 2.0f, textColor, false,
-                matrices.peek().getPositionMatrix(), vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL, 0, light
-        );
-
-        matrices.pop();
-    }
-
-    @Override
-    public boolean rendersOutsideBoundingBox(SignGuideIntersectionAdvanceWarning1WuhanEntity blockEntity) {
-        return true;
-    }
-
-    @Override
-    public int getRenderDistance() {
-        return 256;
     }
 }

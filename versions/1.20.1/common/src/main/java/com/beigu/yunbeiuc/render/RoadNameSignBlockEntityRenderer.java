@@ -64,14 +64,16 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         this.currentBlock = entity.getCachedState().getBlock();
 
         renderText(matrices, vertexConsumers, light, facing, chineseText, true, 4.5f, false, false);
-        renderText(matrices, vertexConsumers, light, facing, chineseText, true, 4.5f, true, false);
         renderText(matrices, vertexConsumers, light, facing, englishText, false, 0f, false, true);
-        renderText(matrices, vertexConsumers, light, facing, englishText, false, 0f, true, true);
 
         renderDirectionText(matrices, vertexConsumers, light, facing, "cnLeft", false, true, true);
         renderDirectionText(matrices, vertexConsumers, light, facing, "cnRight", false, false, true);
         renderDirectionText(matrices, vertexConsumers, light, facing, "enLeft", false, true, false);
         renderDirectionText(matrices, vertexConsumers, light, facing, "enRight", false, false, false);
+
+        renderText(matrices, vertexConsumers, light, facing, chineseText, true, 4.5f, true, false);
+        renderText(matrices, vertexConsumers, light, facing, englishText, false, 0f, true, true);
+
         renderDirectionText(matrices, vertexConsumers, light, facing, "cnLeftBack", true, true, true);
         renderDirectionText(matrices, vertexConsumers, light, facing, "cnRightBack", true, false, true);
         renderDirectionText(matrices, vertexConsumers, light, facing, "enLeftBack", true, true, false);

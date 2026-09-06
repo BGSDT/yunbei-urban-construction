@@ -34,6 +34,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         this.textRenderer = ctx.getTextRenderer();
     }
 
+    private float getZOffset(TrafficLightsBlock.MountType mountType) {
+        return switch (mountType) {
+            case POLE -> -0.46f;
+            case SIMPLE -> -0.33f;
+        };
+    }
+
     private static final Identifier LEFT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
     private static final Identifier LEFT_TURN_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_yellow.png");
     private static final Identifier LEFT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_green.png");
@@ -70,6 +77,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
         Direction facing = entity.getCachedState().get(TrafficLightsBlock.FACING);
         TrafficLightsBlock.LightState type = entity.getCachedState().get(TrafficLightsBlock.LIGHT_STATE);
+        TrafficLightsBlock.MountType mountType = entity.getCachedState().get(TrafficLightsBlock.TYPE);
         Block currentBlock = entity.getCachedState().getBlock();
         renderPhaseText(entity, matrices, vertexConsumers, light, currentBlock);
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()){
@@ -79,15 +87,15 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
             renderTimeText(entity, matrices, vertexConsumers, light, facing, type);
         }
-        renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock);
+        renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock, mountType);
 
         if ((currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get())
                 && entity.isShowSeconds()) {
-            renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, type);
+            renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, type, mountType);
         }
     }
 
-    private void renderPavementSeconds(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState) {
+    private void renderPavementSeconds(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType) {
         int remaining;
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
@@ -104,7 +112,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
                 ? 3.85f / 16f : -3.85f / 16f;
         float y = -logoY;
-        float z = -0.46f;
+        float z = getZOffset(mountType);
 
         matrices.push();
 
@@ -150,7 +158,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.pop();
     }
 
-    private void renderLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, TrafficLightsBlockEntity.DirectionType directionType, TrafficLightsBlock.LightState lightState, Block currentBlock) {
+    private void renderLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, TrafficLightsBlockEntity.DirectionType directionType, TrafficLightsBlock.LightState lightState, Block currentBlock, TrafficLightsBlock.MountType mountType) {
         Identifier texture;
 
         // COLOR_FLASH 图案的慢闪逻辑：与灯的GRAY闪烁同步（0.5s一闪）
@@ -264,7 +272,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 case GREEN -> -3.85f / 16f;
                 default -> 0f;
             };
-            z = -0.46f;
+            z = getZOffset(mountType);
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
@@ -301,12 +309,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.translate(x, y, z);
 
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
+        org.joml.Vector3f normalVec = matrices.peek().getNormalMatrix().transform(new org.joml.Vector3f(0, 0, 1));
 
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
+        consumer.vertex(positionMatrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+        consumer.vertex(positionMatrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+        consumer.vertex(positionMatrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+        consumer.vertex(positionMatrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
 
         matrices.pop();
     }

@@ -4,6 +4,7 @@ import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsStaticStateUpdatePacket;
+import com.beigu.yunbeiuc.network.TrafficLightsMountTypeUpdatePacket;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
@@ -20,12 +21,14 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
     private TrafficLightsBlock.LightState selectedColor = TrafficLightsBlock.LightState.RED;
     private TextFieldWidget secondsField;
     private boolean shouldShowCountdown = false;
+    private ButtonWidget mountTypeButton;
+    private TrafficLightsBlock.MountType pendingMountType;
 
     private int panelX;
     private int panelY;
 
     private static final int PANEL_WIDTH = 220;
-    private static final int PANEL_HEIGHT = 250;
+    private static final int PANEL_HEIGHT = 300;
 
     public TrafficLightsCountdownTimerStaticStateScreen(BlockPos pos) {
         super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
@@ -101,12 +104,27 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         // 保存取消按钮
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
-                        .dimensions(panelX + 40, panelY + 210, 60, 20)
+                        .dimensions(panelX + 40, panelY + 260, 60, 20)
                         .build()
         );
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
-                        .dimensions(panelX + 120, panelY + 210, 60, 20)
+                        .dimensions(panelX + 120, panelY + 260, 60, 20)
+                        .build()
+        );
+
+        if (mountTypeButton != null) {
+            this.remove(mountTypeButton);
+        }
+        TrafficLightsBlock.MountType currentMountType = getCurrentMountType();
+        if (pendingMountType == null) {
+            pendingMountType = currentMountType;
+        }
+        mountTypeButton = this.addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                        button -> toggleMountType())
+                        .dimensions(panelX + 30, panelY + 235, 160, 20)
                         .build()
         );
     }
@@ -198,6 +216,17 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
+
+            // 保存时才应用mountType的更改
+            if (pendingMountType != null && blockEntity != null && blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE)) {
+                TrafficLightsBlock.MountType currentType = blockEntity.getCachedState().get(TrafficLightsBlock.TYPE);
+                if (pendingMountType != currentType) {
+                    TrafficLightsMountTypeUpdatePacket mountPacket = new TrafficLightsMountTypeUpdatePacket(pos, pendingMountType);
+                    PacketByteBuf mountBuf = new PacketByteBuf(Unpooled.buffer());
+                    mountPacket.write(mountBuf);
+                    NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, mountBuf);
+                }
+            }
         }
         this.close();
     }
@@ -205,6 +234,24 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
     @Override
     public boolean shouldPause() {
         return false;
+    }
+
+    private TrafficLightsBlock.MountType getCurrentMountType() {
+        if (MinecraftClient.getInstance().world == null) return TrafficLightsBlock.MountType.SIMPLE;
+        TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) MinecraftClient.getInstance().world.getBlockEntity(pos);
+        if (blockEntity != null && blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE)) {
+            return blockEntity.getCachedState().get(TrafficLightsBlock.TYPE);
+        }
+        return TrafficLightsBlock.MountType.SIMPLE;
+    }
+
+    private void toggleMountType() {
+        pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
+                TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
+
+        if (mountTypeButton != null) {
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+        }
     }
 
 }

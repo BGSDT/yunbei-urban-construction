@@ -28,6 +28,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
 
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.of("light_state", LightState.class);
+    public static final EnumProperty<MountType> TYPE = EnumProperty.of("type", MountType.class);
 
     public TrafficLightsBlock(Settings settings) {
         super(settings);
@@ -48,12 +50,14 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
                 getStateManager().getDefaultState()
                         .with(FACING, Direction.NORTH)
                         .with(LIGHT_STATE, LightState.RED)
+                        .with(TYPE, MountType.SIMPLE)
         );
     }
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip"));
+        tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip.auto_detect"));
         super.appendTooltip(stack, world, tooltip, options);
     }
 
@@ -69,7 +73,7 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIGHT_STATE);
+        builder.add(FACING, LIGHT_STATE, TYPE);
     }
 
     @Override
@@ -89,7 +93,56 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        BlockState state = getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+
+        // 雾灯方块默认为黄色
+        if (this == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
+            state = state.with(LIGHT_STATE, LightState.YELLOW);
+        }
+
+        // 自动检测背后是否有路杆方块
+        Direction facing = state.get(FACING);
+        BlockPos behindPos = ctx.getBlockPos().offset(facing.getOpposite());
+        BlockState behindState = ctx.getWorld().getBlockState(behindPos);
+
+        MountType type = determineType(behindState);
+        state = state.with(TYPE, type);
+
+        return state;
+    }
+
+    private boolean isPoleBlock(Block block) {
+        return block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LONGITUDINAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_HORIZONTAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_TSHAPE.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LED.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FLAG.get();
+    }
+
+    private MountType determineType(BlockState behindState) {
+        Block behindBlock = behindState.getBlock();
+        if (isPoleBlock(behindBlock)) {
+            return MountType.POLE;
+        } else {
+            return MountType.SIMPLE;
+        }
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction,
+                                                BlockState neighborState, WorldAccess world,
+                                                BlockPos pos, BlockPos neighborPos) {
+        Direction facing = state.get(FACING);
+        if (direction == facing.getOpposite()) {
+            MountType newType = determineType(neighborState);
+            if (newType != state.get(TYPE)) {
+                return state.with(TYPE, newType);
+            }
+        }
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -101,8 +154,20 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getStackInHand(hand);
 
-        // 魔杖打开设置界面
+        // 魔杖交互
         if (heldItem.isOf(ModItems.WAND.get())) {
+            // Shift + 右键切换 type 状态
+            if (player.isSneaking()) {
+                if (!world.isClient()) {
+                    MountType currentType = state.get(TYPE);
+                    MountType newType = currentType == MountType.SIMPLE ? MountType.POLE : MountType.SIMPLE;
+                    world.setBlockState(pos, state.with(TYPE, newType));
+                    player.sendMessage(Text.literal("§a已切换至 " + (newType == MountType.POLE ? "§6路杆模式" : "§6简易模式")), true);
+                }
+                return ActionResult.success(world.isClient());
+            }
+
+            // 普通右键打开设置界面
             if (world.isClient()) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
@@ -205,6 +270,22 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
         private final String name;
 
         LightState(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String asString() {
+            return this.name;
+        }
+    }
+
+    public enum MountType implements StringIdentifiable {
+        SIMPLE("simple"),
+        POLE("pole");
+
+        private final String name;
+
+        MountType(String name) {
             this.name = name;
         }
 

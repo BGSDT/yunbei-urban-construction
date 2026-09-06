@@ -1,7 +1,10 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
+import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsTimingUpdatePacket;
+import com.beigu.yunbeiuc.network.TrafficLightsMountTypeUpdatePacket;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
@@ -25,6 +28,8 @@ public class TrafficLightsTimingScreen extends Screen {
     private final List<String> savedValues = new ArrayList<>();
 
     private ButtonWidget saveButton;
+    private ButtonWidget mountTypeButton;
+    private TrafficLightsBlock.MountType pendingMountType;
     private Text errorMessage = null;
 
     private static final int PANEL_WIDTH = 260;
@@ -65,7 +70,7 @@ public class TrafficLightsTimingScreen extends Screen {
     }
 
     private int panelHeight() {
-        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 85;
+        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 110;
     }
 
     private void rebuildLayout() {
@@ -127,6 +132,22 @@ public class TrafficLightsTimingScreen extends Screen {
                         .build()
         );
 
+        if (mountTypeButton != null) {
+            this.remove(mountTypeButton);
+        }
+        TrafficLightsBlock.MountType currentMountType = getCurrentMountType();
+        if (pendingMountType == null) {
+            pendingMountType = currentMountType;
+        }
+        int mountTypeY = panelY + panelHeight() - 60;
+        mountTypeButton = this.addDrawableChild(
+                ButtonWidget.builder(
+                        Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                        button -> toggleMountType())
+                        .dimensions(panelX + PANEL_WIDTH / 2 - 70, mountTypeY, 140, 20)
+                        .build()
+        );
+
         this.setFocused(timingFields.isEmpty() ? null : timingFields.get(0));
     }
 
@@ -165,6 +186,20 @@ public class TrafficLightsTimingScreen extends Screen {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         packet.write(buf);
         NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_TIMING, buf);
+
+        // 保存时才应用mountType的更改
+        if (pendingMountType != null) {
+            TrafficLightsBlock.MountType currentType = getCurrentMountType();
+            if (pendingMountType != currentType) {
+                for (BlockPos pos : positions) {
+                    TrafficLightsMountTypeUpdatePacket mountPacket = new TrafficLightsMountTypeUpdatePacket(pos, pendingMountType);
+                    PacketByteBuf mountBuf = new PacketByteBuf(Unpooled.buffer());
+                    mountPacket.write(mountBuf);
+                    NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, mountBuf);
+                }
+            }
+        }
+
         this.close();
     }
 
@@ -235,5 +270,28 @@ public class TrafficLightsTimingScreen extends Screen {
     @Override
     public boolean shouldPause() {
         return false;
+    }
+
+    private TrafficLightsBlock.MountType getCurrentMountType() {
+        if (positions.isEmpty()) return TrafficLightsBlock.MountType.SIMPLE;
+        BlockPos pos = positions.get(0);
+        if (MinecraftClient.getInstance().world == null) return TrafficLightsBlock.MountType.SIMPLE;
+        if (MinecraftClient.getInstance().world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity blockEntity) {
+            if (blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE)) {
+                return blockEntity.getCachedState().get(TrafficLightsBlock.TYPE);
+            }
+        }
+        return TrafficLightsBlock.MountType.SIMPLE;
+    }
+
+    private void toggleMountType() {
+        if (positions.isEmpty()) return;
+
+        pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
+                TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
+
+        if (mountTypeButton != null) {
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+        }
     }
 }

@@ -9,20 +9,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * 相位组自动分配入口。要支持新的布局组合方案，只需新写一个实现
- * {@link TrafficLightsLayoutPattern} 的类并加入下面的 PATTERNS 列表。
+ * 相位组自动分配入口（已禁用）。
+ * 自动分配功能已被移除，现在使用预设分配功能。
  */
 public class TrafficLightsAutoAssigner {
-    private static final List<TrafficLightsLayoutPattern> PATTERNS = List.of(
-            new FourDirectionStraightLeftPattern()
-    );
+    private static final List<TrafficLightsLayoutPattern> PATTERNS = List.of();
 
     public static boolean tryAutoAssign(World world, List<TrafficLightsBlockEntity> members, List<BlockPos> positions, int phaseCount, @Nullable PlayerEntity notifyPlayer) {
-        for (TrafficLightsLayoutPattern pattern : PATTERNS) {
-            if (pattern.tryApply(world, members, positions, phaseCount, notifyPlayer)) {
-                return true;
-            }
-        }
+        // 自动分配已禁用，始终返回 false
         return false;
     }
 }

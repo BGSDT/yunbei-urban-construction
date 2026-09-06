@@ -3,27 +3,13 @@ package com.beigu.yunbeiuc.render;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayExit8;
 import com.beigu.yunbeiuc.entity.SignExpresswayExit8Entity;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.util.Identifier;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
 
-public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<SignExpresswayExit8Entity> {
-    private final TextRenderer textRenderer;
-
-    public SignExpresswayExit8EntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.textRenderer = ctx.getTextRenderer();
-    }
+public class SignExpresswayExit8EntityRenderer extends BaseSignRenderer<SignExpresswayExit8Entity> {
 
     private static final Identifier NATIONAL_1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_national_logo_1.png");
     private static final Identifier PROVINCIAL_1 = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_provicial_logo_1.png");
@@ -33,6 +19,10 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
     private static final Identifier EAST = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_east.png");
     private static final Identifier SOUTH = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_south.png");
     private static final Identifier WEST = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/sign/sign_expressway_west.png");
+
+    public SignExpresswayExit8EntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        super(ctx.getTextRenderer());
+    }
 
     @Override
     public void render(SignExpresswayExit8Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -55,78 +45,43 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
         Direction facing = entity.getCachedState().get(SignExpresswayExit8.FACING);
         SignExpresswayExit8.Type type = entity.getCachedState().get(SignExpresswayExit8.TYPE);
 
-        renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -8f, 9f, type, expresswayNumber1);
-        renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway2, 8f, 9f, type, expresswayNumber2);
-        renderDirectionLogo(matrices, vertexConsumers, light, overlay, facing, direction1, -18.5f, 9.25f, type);
-        renderDirectionLogo(matrices, vertexConsumers, light, overlay, facing, direction2, 18.5f, 9.25f, type);
-        renderText(matrices, vertexConsumers, light, facing, text1, type, -14f, -2f, 0XFFFFFF);
-        renderText(matrices, vertexConsumers, light, facing, text2, type, 14.5f, -2f, 0XFFFFFF);
-        renderText(matrices, vertexConsumers, light, facing, exitNumber, type, 19.75f, 20.5f, 0X2D9B47);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, type, -7.5f, 8.5f);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber2, type, 7.5f, 8.5f);
+        SignType signType = SignTypeConverter.convert(type);
+
+        renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -8f, 9f, signType, expresswayNumber1);
+        renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway2, 8f, 9f, signType, expresswayNumber2);
+        renderDirectionLogo(matrices, vertexConsumers, light, overlay, facing, direction1, -18.5f, 9.25f, signType);
+        renderDirectionLogo(matrices, vertexConsumers, light, overlay, facing, direction2, 18.5f, 9.25f, signType);
+        renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, -14f, -2f, 0.03f, 0xFFFFFF);
+        renderCenteredText(matrices, vertexConsumers, light, facing, text2, signType, 14.5f, -2f, 0.03f, 0xFFFFFF);
+        renderCenteredText(matrices, vertexConsumers, light, facing, exitNumber, signType, 19.75f, 20.5f, 0.03f, 0x2D9B47);
+        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -7.5f, 8.5f, 0.045f, 0xFFFFFF);
+        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, 7.5f, 8.5f, 0.045f, 0xFFFFFF);
     }
 
-    private void renderExpresswayLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayExit8Entity.Expressway expressway, float andX, float andY, SignExpresswayExit8.Type type, String expresswayNumber) {
+    private void renderExpresswayLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayExit8Entity.Expressway expressway, float andX, float andY, SignType type, String expresswayNumber) {
         Identifier texture = switch (expressway) {
             case NATIONAL -> {
                 if (expresswayNumber == null || expresswayNumber.trim().isEmpty() || !expresswayNumber.matches(".*\\d.*")) {
                     yield NATIONAL_1;
                 } else {
-                    // 提取字符串中的数字
                     String digits = expresswayNumber.replaceAll("[^0-9]", "");
-                    if (digits.length() == 1) {
-                        yield NATIONAL_2;
-                    } else {
-                        yield NATIONAL_1;
-                    }
+                    yield digits.length() == 1 ? NATIONAL_2 : NATIONAL_1;
                 }
             }
             case PROVINCIAL -> {
                 if (expresswayNumber == null || expresswayNumber.trim().isEmpty() || !expresswayNumber.matches(".*\\d.*")) {
                     yield PROVINCIAL_1;
                 } else {
-                    // 提取字符串中的数字
                     String digits = expresswayNumber.replaceAll("[^0-9]", "");
-                    if (digits.length() == 1) {
-                        yield PROVINCIAL_2;
-                    } else {
-                        yield PROVINCIAL_1;
-                    }
+                    yield digits.length() == 1 ? PROVINCIAL_2 : PROVINCIAL_1;
                 }
             }
         };
 
-        matrices.push();
-
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.81f;
-            case NORMAL -> -0.46f;
-        };
-
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-
-        float arrowSize = 0.65f;
-        float halfSize = arrowSize / 2f;
-
-        float x = andX / 16f;
-        float y = andY / 16f;
-
-        matrices.translate(x, y, zOffset);
-
-        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
-
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-
-        matrices.pop();
+        renderTexture(matrices, vertexConsumers, light, overlay, facing, texture, type, andX, andY, 0.65f);
     }
 
-    private void renderDirectionLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayExit8Entity.Direction direction, float andX, float andY, SignExpresswayExit8.Type type) {
+    private void renderDirectionLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayExit8Entity.Direction direction, float andX, float andY, SignType type) {
         Identifier texture = switch (direction) {
             case NORTH -> NORTH;
             case EAST -> EAST;
@@ -134,123 +89,6 @@ public class SignExpresswayExit8EntityRenderer implements BlockEntityRenderer<Si
             case WEST -> WEST;
         };
 
-        matrices.push();
-
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.81f;
-            case NORMAL -> -0.46f;
-        };
-
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-
-        float arrowSize = 0.4f;
-        float halfSize = arrowSize / 2f;
-
-        float x = andX / 16f;
-        float y = andY / 16f;
-
-        matrices.translate(x, y, zOffset);
-
-        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture));
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
-
-        consumer.vertex(matrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, halfSize, halfSize, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-        consumer.vertex(matrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(0, 0, 1).next();
-
-        matrices.pop();
-    }
-
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignExpresswayExit8.Type type, float andX, float andY, int color) {
-        matrices.push();
-
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-
-        float scaleValue = 0.03f;
-
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
-        int textWidth = this.textRenderer.getWidth(styledText);
-        int textHeight = this.textRenderer.fontHeight;
-
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.81f;
-            case NORMAL -> -0.46f;
-        };
-
-        float centeredX = andX / 16f - (textWidth * scaleValue) / 2f;
-        float centeredY = andY / 16f;
-        matrices.translate(centeredX, centeredY, zOffset);
-
-        matrices.scale(scaleValue, -scaleValue, scaleValue);
-
-        this.textRenderer.draw(
-                styledText,
-                0,
-                -textHeight / 2.0f,
-                color,
-                false,
-                matrices.peek().getPositionMatrix(),
-                vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
-                0,
-                light
-        );
-
-        matrices.pop();
-    }
-
-    private void renderExpresswayText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignExpresswayExit8.Type type, float andX, float andY) {
-        matrices.push();
-
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-
-        float scaleValue = 0.045f;
-
-        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new Identifier("minecraft", "uniform")));
-        int textWidth = this.textRenderer.getWidth(styledText);
-        int textHeight = this.textRenderer.fontHeight;
-
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.80f;
-            case NORMAL -> -0.45f;
-        };
-
-        float centeredX = andX / 16f - (textWidth * scaleValue) / 2f;
-        float centeredY = andY / 16f;
-        matrices.translate(centeredX, centeredY, zOffset);
-
-        matrices.scale(scaleValue, -scaleValue, scaleValue);
-
-        this.textRenderer.draw(
-                styledText,
-                0,
-                -textHeight / 2.0f,
-                0xFFFFFF,
-                false,
-                matrices.peek().getPositionMatrix(),
-                vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
-                0,
-                light
-        );
-
-        matrices.pop();
-    }
-
-    @Override
-    public boolean rendersOutsideBoundingBox(SignExpresswayExit8Entity blockEntity) {
-        return true;
-    }
-
-    @Override
-    public int getRenderDistance() {
-        return 256;
+        renderTexture(matrices, vertexConsumers, light, overlay, facing, texture, type, andX, andY, 0.4f);
     }
 }

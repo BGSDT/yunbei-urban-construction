@@ -52,10 +52,10 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
 
-        // 雾灯方块默认设置为慢闪黄色（SLOW_FLASH）
+        // 雾灯方块默认设置为色闪黄色（COLOR_FLASH）
         Block block = state.getBlock();
         if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
-            this.directionType = DirectionType.SLOW_FLASH;
+            this.directionType = DirectionType.COLOR_FLASH;
         }
     }
 

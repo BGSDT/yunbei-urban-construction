@@ -1,4 +1,4 @@
-package com.beigu.yunbeiuc.render.base;
+package com.beigu.yunbeiuc.render;
 
 /**
  * 标志牌类型转换器

@@ -32,6 +32,12 @@ public class ModBlockEntities {
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()).build(null));
 
+    public static final RegistrySupplier<BlockEntityType<TrafficLightsPavementIntegrationBlockEntity>> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLOCK_ENTITY =
+            BES.register("traffic_lights_pavement_integration_block_entity",
+                    () -> BlockEntityType.Builder.create(TrafficLightsPavementIntegrationBlockEntity::new,
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get()).build(null));
+
     public static final RegistrySupplier<BlockEntityType<RoadPoleTextDisplayEntity>> ROAD_POLE_TEXT_DISPLAY_ENTITY =
             BES.register("road_pole_text_display_entity",
                     () -> BlockEntityType.Builder.create(RoadPoleTextDisplayEntity::new,

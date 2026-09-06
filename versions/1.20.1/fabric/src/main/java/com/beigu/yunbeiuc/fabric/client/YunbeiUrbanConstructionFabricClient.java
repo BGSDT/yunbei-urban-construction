@@ -45,6 +45,8 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get(), RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL.get(), RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL.get(), RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get(), RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get(), RenderLayer.getCutout());
 
         SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderLayer.getCutout()));
 
@@ -52,6 +54,7 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockEntityRendererFactories.register(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), FlagBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY.get(), RoadNameSignBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), TrafficLightsBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLOCK_ENTITY.get(), TrafficLightsPavementIntegrationBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.GANTRY_FRAME_LED_ENTITY.get(), GantryFrameLedEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.ROAD_POLE_LED_ENTITY.get(), RoadPoleLedEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY.get(), SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);

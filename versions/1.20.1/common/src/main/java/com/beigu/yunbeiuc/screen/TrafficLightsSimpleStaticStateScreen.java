@@ -4,8 +4,10 @@ import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsStaticStateUpdatePacket;
+import com.beigu.yunbeiuc.network.TrafficLightsMountTypeUpdatePacket;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -23,12 +25,14 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
     // 人行道红绿灯专用字段
     private boolean showSeconds = false;
     private TextFieldWidget secondsField;
+    private ButtonWidget mountTypeButton;
+    private TrafficLightsBlock.MountType pendingMountType;
 
     private int panelX;
     private int panelY;
 
     private static final int PANEL_WIDTH = 220;
-    private static final int PANEL_HEIGHT = 250;
+    private static final int PANEL_HEIGHT = 300;
 
     public TrafficLightsSimpleStaticStateScreen(BlockPos pos) {
         super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
@@ -39,7 +43,9 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         if (blockEntity instanceof TrafficLightsBlockEntity tl) {
             var currentBlock = tl.getCachedState().getBlock();
             this.isPavement = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
-                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get();
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
             if (isPavement) {
                 this.showSeconds = tl.isShowSeconds();
             }
@@ -139,6 +145,29 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
                         .dimensions(panelX + 120, panelY + PANEL_HEIGHT - 50, 60, 20)
                         .build()
         );
+
+        Block currentBlock = MinecraftClient.getInstance().world != null &&
+                MinecraftClient.getInstance().world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity tl ?
+                tl.getCachedState().getBlock() : null;
+        boolean isIntegration = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
+
+        if (!isIntegration) {
+            if (mountTypeButton != null) {
+                this.remove(mountTypeButton);
+            }
+            TrafficLightsBlock.MountType currentMountType = getCurrentMountType();
+            if (pendingMountType == null) {
+                pendingMountType = currentMountType;
+            }
+            mountTypeButton = this.addDrawableChild(
+                    ButtonWidget.builder(
+                            Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                            button -> toggleMountType())
+                            .dimensions(panelX + 30, panelY + PANEL_HEIGHT - 75, 160, 20)
+                            .build()
+            );
+        }
     }
 
     @Override
@@ -219,6 +248,20 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.write(buf);
             NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
+
+            // 保存时才应用mountType的更改
+            if (pendingMountType != null) {
+                TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) this.client.world.getBlockEntity(pos);
+                if (blockEntity != null && blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE)) {
+                    TrafficLightsBlock.MountType currentType = blockEntity.getCachedState().get(TrafficLightsBlock.TYPE);
+                    if (pendingMountType != currentType) {
+                        TrafficLightsMountTypeUpdatePacket mountPacket = new TrafficLightsMountTypeUpdatePacket(pos, pendingMountType);
+                        PacketByteBuf mountBuf = new PacketByteBuf(Unpooled.buffer());
+                        mountPacket.write(mountBuf);
+                        NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, mountBuf);
+                    }
+                }
+            }
         }
         this.close();
     }
@@ -226,5 +269,23 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
     @Override
     public boolean shouldPause() {
         return false;
+    }
+
+    private TrafficLightsBlock.MountType getCurrentMountType() {
+        if (MinecraftClient.getInstance().world == null) return TrafficLightsBlock.MountType.SIMPLE;
+        TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) MinecraftClient.getInstance().world.getBlockEntity(pos);
+        if (blockEntity != null && blockEntity.getCachedState().contains(TrafficLightsBlock.TYPE)) {
+            return blockEntity.getCachedState().get(TrafficLightsBlock.TYPE);
+        }
+        return TrafficLightsBlock.MountType.SIMPLE;
+    }
+
+    private void toggleMountType() {
+        pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
+                TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
+
+        if (mountTypeButton != null) {
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+        }
     }
 }

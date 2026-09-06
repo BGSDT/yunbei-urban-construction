@@ -38,6 +38,21 @@ public class LinkWand extends Item {
         if (world.isClient()) return ActionResult.SUCCESS;
 
         BlockEntity blockEntity = world.getBlockEntity(pos);
+
+        if (!(blockEntity instanceof TrafficLightsBlockEntity)) {
+            var state = world.getBlockState(pos);
+            if (state.getBlock() instanceof com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock) {
+                var part = state.get(com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock.PART);
+                BlockPos bottomPos = switch (part) {
+                    case BOTTOM -> pos;
+                    case MIDDLE -> pos.down();
+                    case TOP -> pos.down(2);
+                };
+                blockEntity = world.getBlockEntity(bottomPos);
+                pos = bottomPos;
+            }
+        }
+
         if (!(blockEntity instanceof TrafficLightsBlockEntity)) {
             player.sendMessage(Text.literal("§c这不是一个红绿灯！"), true);
             return ActionResult.FAIL;
@@ -46,7 +61,6 @@ public class LinkWand extends Item {
         UUID playerId = player.getUuid();
         List<BlockPos> linkedLights = PLAYER_LINKING.computeIfAbsent(playerId, k -> new ArrayList<>());
 
-        // Shift+右键完成链接
         if (player.isSneaking()) {
             if (linkedLights.size() < 2) {
                 player.sendMessage(Text.literal("§c你需要链接至少2个红绿灯！"), true);
@@ -78,7 +92,6 @@ public class LinkWand extends Item {
             return ActionResult.SUCCESS;
         }
 
-        // 普通右键
         if (linkedLights.contains(pos)) {
             linkedLights.remove(pos);
             player.sendMessage(Text.literal("§c已从链接组移除 §7(剩余 §6" + linkedLights.size() + " §c个)"), true);

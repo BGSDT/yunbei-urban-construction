@@ -15,31 +15,12 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 数据驱动的相位分配预设：由一组"槽位"描述整个红绿灯组的分配方案。
- * 每个槽位 = 相对组几何中心的某个方位上的某个成员类型（普通灯/人行道灯/读秒器），
- * 以及该成员应使用的图案（DirectionType）与相位索引列表。
- *
- * 应用时把组内全部成员按几何位置与类型匹配到槽位上，
- * 必须一一对应（数量完全一致，即"完美嵌入"）才会真正写入。
- */
 public class TrafficLightsPatternPreset {
 
     private String name = "";
     private int phaseCount = 4;
     private List<Slot> slots = new ArrayList<>();
-    /**
-     * 预设在列表中显示的"logo颜色"（不含 alpha 的 RGB）。
-     * -1 表示未显式设置，此时 {@link #getDisplayColor()} 会按名称哈希派生一个
-     * 固定的伪随机颜色，保证同一预设每次显示颜色一致（不会每帧变化）。
-     */
     private int color = -1;
-    /**
-     * 预设所属的二级菜单（分类）名称。默认归入"默认分类"
-     * （{@link com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager#DEFAULT_CATEGORY}）。
-     * 资源包内置预设由 {@link com.beigu.yunbeiuc.util.TrafficLightsPatternPresetLoader} 强制归入
-     * "模组资源包"分类，忽略此字段的任何设置。
-     */
     private String category = com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager.DEFAULT_CATEGORY;
 
     public TrafficLightsPatternPreset() {
@@ -94,10 +75,6 @@ public class TrafficLightsPatternPreset {
         this.category = category;
     }
 
-    /**
-     * 用于列表展示的实际颜色：已显式设置则直接返回，否则按名称哈希派生一个
-     * 固定的伪随机颜色（同名预设每次结果一致，避免列表渲染时颜色闪烁）。
-     */
     public int getDisplayColor() {
         if (color != -1) {
             return color & 0xFFFFFF;
@@ -105,28 +82,17 @@ public class TrafficLightsPatternPreset {
         return hashColor(name);
     }
 
-    /**
-     * 按任意字符串哈希派生一个固定的伪随机颜色，供编辑器在"随机"状态下预览用。
-     */
     public static int hashColor(String seed) {
         int hash = seed.hashCode();
         float hue = ((hash & 0x7FFFFFFF) % 360) / 360f;
         return java.awt.Color.HSBtoRGB(hue, 0.55f, 0.9f) & 0xFFFFFF;
     }
 
-    /**
-     * 槽位：相对组中心的方位 + 成员类型 + 图案 + 相位索引列表。
-     */
     public static class Slot {
         private Direction8 direction = Direction8.N;
         private MemberKind kind = MemberKind.NORMAL;
         private String directionType = TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE.getName();
         private List<Integer> phaseIndices = new ArrayList<>(List.of(0));
-        /**
-         * 同方位+同类型桶内的排序号（从 1 开始）。
-         * 桶内有多个槽位时，用它显式指定该槽位对应实际组内按坐标排序后的第几个成员，
-         * 避免只靠隐式几何排序导致作者无法预知匹配结果。
-         */
         private int order = 1;
 
         public Slot() {
@@ -185,14 +151,10 @@ public class TrafficLightsPatternPreset {
         }
     }
 
-    /**
-     * 相对组几何中心的 8 方位（Minecraft 坐标：+X=东，+Z=南，-X=西，-Z=北）。
-     */
     public enum Direction8 {
         N("北", 0, -1), E("东", 1, 0), S("南", 0, 1), W("西", -1, 0);
 
         private final String label;
-        // 由组质心指向该方位的朝外向量（只用符号，不需要归一化）
         private final double outX;
         private final double outZ;
 
@@ -214,9 +176,6 @@ public class TrafficLightsPatternPreset {
             return outZ;
         }
 
-        /**
-         * 按相对质心的偏移量分类到最近的四个主方位。
-         */
         public static Direction8 classify(double dx, double dz) {
             double ax = Math.abs(dx);
             double az = Math.abs(dz);
@@ -227,10 +186,6 @@ public class TrafficLightsPatternPreset {
             }
         }
 
-        /**
-         * "从左到右"排序键：以站在组中心朝该方位看过去的视角为基准，
-         * 左手侧数值小，右手侧数值大（右向量由朝外向量顺时针旋转 90° 得到）。
-         */
         public double leftToRightKey(double relX, double relZ) {
             double rightX = -outZ;
             double rightZ = outX;
@@ -238,9 +193,6 @@ public class TrafficLightsPatternPreset {
         }
     }
 
-    /**
-     * 组内成员类型。SHANGHAI 变体归入普通红绿灯。
-     */
     public enum MemberKind {
         NORMAL("普通红绿灯"), PAVEMENT("人行道红绿灯"), COUNTDOWN_TIMER("读秒器");
 
@@ -284,23 +236,12 @@ public class TrafficLightsPatternPreset {
         }
     }
 
-    /**
-     * 尝试把预设应用到整个链接组。
-     * 先做"完美嵌入"校验：组内每个成员必须能唯一对应到一个槽位，
-     * 且每个槽位都必须有成员填充。同方位同类型有多个成员时，按"从左到右"
-     * （面朝该方位站立时的左右手方向）排序后与槽位的 order（第几个）顺序对应，
-     * 让预设作者能在编辑器里明确指定对应关系，而不是依赖隐式几何排序。
-     * 校验全部通过才写入，否则不做任何修改并提示原因。
-     *
-     * @return true 表示应用成功
-     */
     public boolean tryApplyToGroup(World world, List<TrafficLightsBlockEntity> members, List<BlockPos> positions, @Nullable PlayerEntity notifyPlayer) {
         if (members.isEmpty() || members.size() != positions.size()) {
             send(notifyPlayer, "§c链接组成员数据无效！");
             return false;
         }
 
-        // 组相位数校验：预设用到的相位索引必须在组的相位范围内
         int groupPhaseCount = members.get(0).getPhaseCount();
         if (groupPhaseCount <= 0) {
             send(notifyPlayer, "§c该组还没有设置时间表，请先设置时间表！");
@@ -315,7 +256,6 @@ public class TrafficLightsPatternPreset {
             }
         }
 
-        // 成员类型归类，未知方块直接失败
         List<Member> memberList = new ArrayList<>();
         for (int i = 0; i < members.size(); i++) {
             MemberKind kind = MemberKind.fromBlock(members.get(i).getCachedState().getBlock());
@@ -326,7 +266,6 @@ public class TrafficLightsPatternPreset {
             memberList.add(new Member(members.get(i), positions.get(i)));
         }
 
-        // 质心
         double centroidX = 0, centroidZ = 0;
         for (BlockPos pos : positions) {
             centroidX += pos.getX();
@@ -335,8 +274,6 @@ public class TrafficLightsPatternPreset {
         centroidX /= positions.size();
         centroidZ /= positions.size();
 
-        // 预设槽位按 方位 -> 类型 分桶，桶内按 order（第几个）排序，
-        // 与旋转无关，只需构建一次
         Map<Direction8, Map<MemberKind, List<Slot>>> slotBuckets = new EnumMap<>(Direction8.class);
         for (Slot slot : slots) {
             slotBuckets.computeIfAbsent(slot.direction, d -> new EnumMap<>(MemberKind.class))
@@ -358,9 +295,6 @@ public class TrafficLightsPatternPreset {
             }
         }
 
-        // 依次尝试组的 4 种朝向（0°/90°/180°/270°），只要有一种能与预设"完美嵌入"就采用它，
-        // 这样预设不必严格要求成员摆放的绝对朝向与编辑时完全一致（例如编辑时是北/东/西，
-        // 实际链接组整体旋转 90° 后变成东/南/北，也能识别出契合并应用）。
         MatchResult fallback = null;
         for (int rotation = 0; rotation < 4; rotation++) {
             MatchResult result = matchWithRotation(memberList, centroidX, centroidZ, slotBuckets, rotation);
@@ -415,7 +349,6 @@ public class TrafficLightsPatternPreset {
             }
         }
 
-        // "完美嵌入"校验：键的并集内每个桶的数量必须完全一致
         List<String> errors = new ArrayList<>();
         java.util.Set<Direction8> allDirs = new java.util.LinkedHashSet<>();
         allDirs.addAll(memberBuckets.keySet());
