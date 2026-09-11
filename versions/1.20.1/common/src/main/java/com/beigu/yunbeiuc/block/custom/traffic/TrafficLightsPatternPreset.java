@@ -209,14 +209,17 @@ public class TrafficLightsPatternPreset {
         public static MemberKind fromBlock(Block block) {
             if (block == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get()
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_YELLOW_VERTICAL.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
-                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
                 return NORMAL;
             }
             if (block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
-                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()) {
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) {
                 return PAVEMENT;
             }
             if (block == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) {

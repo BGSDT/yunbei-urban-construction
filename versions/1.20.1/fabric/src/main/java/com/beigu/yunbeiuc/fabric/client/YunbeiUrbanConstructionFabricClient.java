@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.fabric.client;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
+import com.beigu.yunbeiuc.render.LinkWandRenderer;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
 import com.beigu.yunbeiuc.util.PresetManager;
@@ -10,6 +11,7 @@ import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
 import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 
@@ -95,5 +97,7 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         PresetManager.load();
         TrafficLightsPatternPresetManager.load();
         TrafficLightsPatternCategoryManager.load();
+
+        WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> LinkWandRenderer.renderLinkedLightsOutline(context.matrixStack(), context.camera()));
     }
 }

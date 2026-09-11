@@ -45,8 +45,8 @@ public class SignExpresswayEntranceAdvance13EntityRenderer extends BaseSignRende
 
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -6f, 10f, signType, expresswayNumber1);
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway2, 6f, 10f, signType, expresswayNumber2);
-        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -6f, 9.5f, 0.045f, 0xFFFFFF);
-        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, 6f, 9.5f, 0.045f, 0xFFFFFF);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, 6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
         renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, -7f, 1f, 0.035f, 0xFFFFFF);
         renderCenteredText(matrices, vertexConsumers, light, facing, text2, signType, -7f, -6f, 0.035f, 0xFFFFFF);
         renderCenteredText(matrices, vertexConsumers, light, facing, text3, signType, 7f, 1f, 0.035f, 0xFFFFFF);

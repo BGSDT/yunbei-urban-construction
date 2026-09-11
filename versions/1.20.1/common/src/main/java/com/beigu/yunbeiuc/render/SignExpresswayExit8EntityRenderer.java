@@ -54,8 +54,8 @@ public class SignExpresswayExit8EntityRenderer extends BaseSignRenderer<SignExpr
         renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, -14f, -2f, 0.03f, 0xFFFFFF);
         renderCenteredText(matrices, vertexConsumers, light, facing, text2, signType, 14.5f, -2f, 0.03f, 0xFFFFFF);
         renderCenteredText(matrices, vertexConsumers, light, facing, exitNumber, signType, 19.75f, 20.5f, 0.03f, 0x2D9B47);
-        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -7.5f, 8.5f, 0.045f, 0xFFFFFF);
-        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, 7.5f, 8.5f, 0.045f, 0xFFFFFF);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -7.5f, 8.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, 7.5f, 8.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
     }
 
     private void renderExpresswayLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayExit8Entity.Expressway expressway, float andX, float andY, SignType type, String expresswayNumber) {

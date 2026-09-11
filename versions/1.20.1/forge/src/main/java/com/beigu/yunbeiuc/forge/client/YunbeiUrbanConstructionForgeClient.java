@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.forge.client;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
+import com.beigu.yunbeiuc.render.LinkWandRenderer;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
 import com.beigu.yunbeiuc.util.CustomFontManager;
@@ -16,6 +17,8 @@ import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class YunbeiUrbanConstructionForgeClient {
@@ -101,5 +104,13 @@ public class YunbeiUrbanConstructionForgeClient {
             TrafficLightsPatternPresetManager.load();
             TrafficLightsPatternCategoryManager.load();
         });
+
+        MinecraftForge.EVENT_BUS.addListener(YunbeiUrbanConstructionForgeClient::onRenderLevelStage);
+    }
+
+    private static void onRenderLevelStage(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+            LinkWandRenderer.renderLinkedLightsOutline(event.getPoseStack(), event.getCamera());
+        }
     }
 }

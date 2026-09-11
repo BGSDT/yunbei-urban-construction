@@ -34,11 +34,24 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         this.textRenderer = ctx.getTextRenderer();
     }
 
-    private float getZOffset(TrafficLightsBlock.MountType mountType) {
-        return switch (mountType) {
-            case POLE -> -0.46f;
-            case SIMPLE -> -0.33f;
-        };
+    private float getZOffset(TrafficLightsBlock.MountType mountType, Block currentBlock) {
+        if (mountType == TrafficLightsBlock.MountType.POLE) {
+            if (isPavementBlock(currentBlock)) return -0.46f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.68f;
+            else return -0.53f;
+        }
+        if (mountType == TrafficLightsBlock.MountType.SIMPLE) {
+            if (isPavementBlock(currentBlock)) return -0.33f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.36f;
+            else return -0.33f;
+        }
+        return -0.53f;
+    }
+
+    private boolean isPavementBlock(Block currentBlock) {
+        return currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
     }
 
     private static final Identifier LEFT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
@@ -84,18 +97,18 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             renderText(entity, matrices, vertexConsumers, light, facing, type);
             return;
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get() ||
-                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
-            renderTimeText(entity, matrices, vertexConsumers, light, facing, type);
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
+            renderTimeText(entity, matrices, vertexConsumers, light, facing, type, currentBlock);
         }
         renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock, mountType);
 
-        if ((currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get())
-                && entity.isShowSeconds()) {
-            renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, type, mountType);
+        if (isPavementBlock(currentBlock) && entity.isShowSeconds()) {
+            renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock);
         }
     }
 
-    private void renderPavementSeconds(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType) {
+    private void renderPavementSeconds(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
@@ -112,7 +125,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
                 ? 3.85f / 16f : -3.85f / 16f;
         float y = -logoY;
-        float z = getZOffset(mountType);
+        float z = getZOffset(mountType, currentBlock);
 
         matrices.push();
 
@@ -186,7 +199,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         }
 
         // 人行道红绿灯的特殊处理
-        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()) {
+        if (isPavementBlock(currentBlock)) {
             texture = switch (lightState) {
                 case RED, YELLOW -> PAVEMENT_RED;
                 case GREEN -> PAVEMENT_GREEN;
@@ -266,26 +279,26 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float y = 0;
         float z = 0;
 
-        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()) {
+        if (isPavementBlock(currentBlock)) {
             y = switch (lightState) {
                 case RED, YELLOW -> 3.85f / 16f;
                 case GREEN -> -3.85f / 16f;
                 default -> 0f;
             };
-            z = getZOffset(mountType);
+            z = getZOffset(mountType, currentBlock);
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
             // 单灯横式（含雾灯）：图案在中心 x=0, y=0
             x = 0;
             y = 0;
-            z = -0.68f;
+            z = getZOffset(mountType, currentBlock);
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL.get()) {
             // 单灯竖式：图案在中心 x=0, y=0
             x = 0;
             y = 0;
-            z = -0.53f;
+            z = getZOffset(mountType, currentBlock);
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get()) {
             x = switch (lightState) {
@@ -293,9 +306,17 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 case GREEN -> 7.75f / 16f;
                 default -> 0f;
             };
-            z = -0.53f;
+            z = getZOffset(mountType, currentBlock);
+        } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
+            x = switch (lightState) {
+                case RED -> -3.9f / 16f;
+                case GREEN -> 11.6f / 16f;
+                default -> 3.85f / 16f;
+            };
+            z = getZOffset(mountType, currentBlock);
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get() ||
+                currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_YELLOW_VERTICAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
             y = switch (lightState) {
@@ -303,7 +324,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 case GREEN -> -7.75f / 16f;
                 default -> 0f;
             };
-            z = -0.53f;
+            z = getZOffset(mountType, currentBlock);
         }
 
         matrices.translate(x, y, z);
@@ -342,7 +363,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.scale(-scale, -scale, scale);
 
         String directionText = getDirectionText(entity.getDirectionType());
-        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get() || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()) directionText = "人行道";
+        if (isPavementBlock(currentBlock)) directionText = "人行道";
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) directionText = "倒计时器";
         // 单灯红绿灯直接显示图案文本，不显示"单灯横式/竖式"
         String phaseText;
@@ -490,12 +511,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.pop();
     }
 
-    private void renderTimeText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState) {
+    private void renderTimeText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, Block currentBlock) {
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
+        boolean isTaipei = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
 
-        // 上海红绿灯黄灯时始终隐藏读秒
-        if (lightState == TrafficLightsBlock.LightState.YELLOW) {
+        // 上海红绿灯黄灯时始终隐藏读秒（台北式黄灯显示剩余秒数）
+        if (lightState == TrafficLightsBlock.LightState.YELLOW && !isTaipei) {
             return;
         }
 
@@ -515,6 +537,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         }
 
         // 颜色直接由方块状态中的 LIGHT_STATE 决定，与灯模型同步
+        // 黄灯颜色仅台北式生效（上海式黄灯直接隐藏读秒）
         int color = switch (lightState) {
             case RED -> 0xFF0000;
             case YELLOW -> 0xFFF000;
@@ -528,7 +551,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
         float scaleValue = 0.085f;
-        matrices.translate(0.25f, 0.0f, -0.53f);
+        // 上海式：读秒在右侧；台北式：读秒在最左侧红灯的左边，留出间隔
+        float textX = isTaipei ? -11.65f / 16f + 0.25f : 0.25f;
+        matrices.translate(textX, 0.0f, -0.53f);
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
         CustomFontRenderer.renderText(

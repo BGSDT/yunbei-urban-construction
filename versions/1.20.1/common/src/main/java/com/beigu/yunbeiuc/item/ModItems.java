@@ -78,6 +78,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> ROAD_RADAR_SPEED_DETECTOR = registerBlockItem(MunicipalBlocks.ROAD_RADAR_SPEED_DETECTOR, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_YELLOW_VERTICAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_YELLOW_VERTICAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_BLACK_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL, ALL_MUNICIPAL_ITEMS);
@@ -92,6 +93,8 @@ public class ModItems {
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_BLACK = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GREEN_TAIPEI = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI = registerBlockItem(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> TRAFFIC_CONE = registerBlockItem(MunicipalBlocks.TRAFFIC_CONE, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_COLLISION_BARREL = registerBlockItem(MunicipalBlocks.ROAD_COLLISION_BARREL, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> WATER_SAFETY_BARRIER_RED = registerBlockItem(MunicipalBlocks.WATER_SAFETY_BARRIER_RED, ALL_MUNICIPAL_ITEMS);

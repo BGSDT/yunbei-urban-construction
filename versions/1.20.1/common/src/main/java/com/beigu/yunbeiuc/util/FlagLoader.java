@@ -20,6 +20,9 @@ public class FlagLoader {
         CUSTOM_FLAGS.clear();
 
         try {
+            // 按命名空间统计旗帜数量
+            Map<String, Integer> namespaceCounts = new LinkedHashMap<>();
+
             // 遍历所有命名空间，直接查找 flags_yunbeiuc.json
             for (String namespace : resourceManager.getAllNamespaces()) {
                 Identifier fileId = new Identifier(namespace, "flags_yunbeiuc.json");
@@ -30,6 +33,8 @@ public class FlagLoader {
 
                         JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
                         JsonObject customFlags = json.getAsJsonObject("custom_flags");
+
+                        int count = 0;
 
                         for (String flagId : customFlags.keySet()) {
                             JsonObject flagData = customFlags.getAsJsonObject(flagId);
@@ -53,8 +58,11 @@ public class FlagLoader {
 
                             CustomFlag flag = new CustomFlag(flagId, name, texture, color);
                             CUSTOM_FLAGS.put(flagId, flag);
+                            count++;
+                        }
 
-                            System.out.println("加载旗帜: " + flagId + " | 命名空间: " + namespace + " | 纹理: " + texture);
+                        if (count > 0) {
+                            namespaceCounts.put(namespace, count);
                         }
                     } catch (Exception e) {
                         System.err.println("加载旗帜文件失败 [" + fileId + "]: " + e.getMessage());
@@ -62,8 +70,12 @@ public class FlagLoader {
                 });
             }
 
-            System.out.println("旗帜加载完成，共 " + CUSTOM_FLAGS.size() + " 个旗帜");
-
+            // 输出汇总信息
+            if (!namespaceCounts.isEmpty()) {
+                for (Map.Entry<String, Integer> entry : namespaceCounts.entrySet()) {
+                    System.out.println("加载旗帜: 命名空间 " + entry.getKey() + " | 共 " + entry.getValue() + " 个");
+                }
+            }
         } catch (Exception e) {
             System.err.println("旗帜加载失败: " + e.getMessage());
             e.printStackTrace();

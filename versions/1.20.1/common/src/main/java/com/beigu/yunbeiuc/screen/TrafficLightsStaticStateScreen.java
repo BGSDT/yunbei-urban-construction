@@ -71,7 +71,8 @@ public class TrafficLightsStaticStateScreen extends Screen {
         Block currentBlock = blockEntity != null ? blockEntity.getCachedState().getBlock() : null;
 
         boolean isPavement = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
-                || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get();
+                || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
 
         if (!isPavement) {
             int listWidth = this.width / 3;
@@ -168,7 +169,8 @@ public class TrafficLightsStaticStateScreen extends Screen {
         Block currentBlock = blockEntity != null ? blockEntity.getCachedState().getBlock() : null;
 
         boolean isPavement = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
-                || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get();
+                || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
 
         if (!isPavement) {
             int listAreaWidth = this.width / 3;

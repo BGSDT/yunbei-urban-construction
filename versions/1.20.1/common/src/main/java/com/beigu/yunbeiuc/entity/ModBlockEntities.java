@@ -19,6 +19,7 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.create(TrafficLightsBlockEntity::new,
                             MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_YELLOW_VERTICAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get(),
@@ -30,7 +31,9 @@ public class ModBlockEntities {
                             MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get(),
-                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()).build(null));
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()).build(null));
 
     public static final RegistrySupplier<BlockEntityType<TrafficLightsPavementIntegrationBlockEntity>> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLOCK_ENTITY =
             BES.register("traffic_lights_pavement_integration_block_entity",

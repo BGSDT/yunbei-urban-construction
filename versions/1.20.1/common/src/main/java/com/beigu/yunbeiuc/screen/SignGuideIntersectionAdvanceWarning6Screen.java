@@ -79,7 +79,7 @@ public class SignGuideIntersectionAdvanceWarning6Screen extends AbstractSignForm
 
     private void createDirectionButtons(int x, int y, Consumer<SignGuideIntersectionAdvanceWarning6Entity.Direction> directionConsumer) {
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left"), button -> {
+                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.left_turn"), button -> {
                     directionConsumer.accept(SignGuideIntersectionAdvanceWarning6Entity.Direction.LEFT);
                 }).dimensions(x, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );
@@ -89,7 +89,7 @@ public class SignGuideIntersectionAdvanceWarning6Screen extends AbstractSignForm
                 }).dimensions(x + 48, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.right"), button -> {
+                ButtonWidget.builder(Text.translatable("text.yunbeiuc.direction.right_turn"), button -> {
                     directionConsumer.accept(SignGuideIntersectionAdvanceWarning6Entity.Direction.RIGHT);
                 }).dimensions(x + 96, y, DIRECTION_BUTTON_WIDTH, DIRECTION_BUTTON_HEIGHT).build()
         );

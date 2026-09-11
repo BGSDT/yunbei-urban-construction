@@ -38,7 +38,7 @@ public class TrafficLightsTimingScreen extends Screen {
     private static final int FIELD_HEIGHT = 20;
     private static final int FIELD_GAP_X = 10;
     private static final int FIELD_GAP_Y = 28;
-    private static final int FIELDS_START_Y = 70;
+    private static final int FIELDS_START_Y = 62;
     private static final int MIN_PHASE_COUNT = 2;
     private static final int MAX_PHASE_COUNT = 16;
 
@@ -70,7 +70,7 @@ public class TrafficLightsTimingScreen extends Screen {
     }
 
     private int panelHeight() {
-        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 110;
+        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 82;
     }
 
     private void rebuildLayout() {

@@ -60,11 +60,11 @@ public class SignExpresswayDistanceFromLocation5EntityRenderer extends BaseSignR
         renderRightAlignedText(matrices, vertexConsumers, light, facing, "km", signType, 17.5f, -7.5f, 0.025f, 0xFFFFFF);
         renderRightAlignedText(matrices, vertexConsumers, light, facing, "km", signType, 17.5f, -13.5f, 0.025f, 0xFFFFFF);
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -7f, 10f, signType, expresswayNumber1, false);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -7f, 9.5f, false);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -7f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway2, 7f, 10f, signType, expresswayNumber2, false);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, 7f, 9.5f, false);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, 7f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway3, -13f, -9f, signType, expresswayNumber3, true);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber3, signType, -13f, -9.5f, true);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber3, signType, -13f, -9.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
     }
 
     private void renderExpresswayLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayDistanceFromLocation5Entity.Expressway expressway, float andX, float andY, SignType type, String expresswayNumber, boolean isLeft) {
@@ -92,23 +92,5 @@ public class SignExpresswayDistanceFromLocation5EntityRenderer extends BaseSignR
             adjustedX = andX + 1f;
         }
         renderTexture(matrices, vertexConsumers, light, overlay, facing, texture, type, adjustedX, andY, 0.65f);
-    }
-
-    private void renderExpresswayText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignType type, float andX, float andY, boolean isLeft) {
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.80f;
-            case NORMAL -> -0.45f;
-        };
-
-        float adjustedX = andX;
-        if (isLeft) {
-            String digits = text.replaceAll("[^0-9]", "");
-            if (text.trim().isEmpty() || !text.matches(".*\\d.*") || digits.length() != 1) {
-                adjustedX = andX + 1f;
-            }
-        }
-
-        renderTextWithCustomZ(matrices, vertexConsumers, light, facing, text, adjustedX, andY, zOffset, 0.045f, 0xFFFFFF, TextAlignment.CENTER);
     }
 }

@@ -44,7 +44,7 @@ public class SignExpresswayDistanceFromLocation2EntityRenderer extends BaseSignR
 
         renderLeftAlignedText(matrices, vertexConsumers, light, facing, text1, signType, -15f, 11f, 0.04f, 0xFFFFFF);
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -11f, 0f, signType, expresswayNumber);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber, signType, -11f, -1f);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber, signType, -11f, -1f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
         renderLeftAlignedText(matrices, vertexConsumers, light, facing, text3, signType, -15f, -11f, 0.04f, 0xFFFFFF);
         renderRightAlignedText(matrices, vertexConsumers, light, facing, length1, signType, 10f, 11f, 0.04f, 0xFFFFFF);
         renderRightAlignedText(matrices, vertexConsumers, light, facing, length2, signType, 10f, 0f, 0.04f, 0xFFFFFF);
@@ -79,21 +79,5 @@ public class SignExpresswayDistanceFromLocation2EntityRenderer extends BaseSignR
             adjustedX = andX + 1f;
         }
         renderTexture(matrices, vertexConsumers, light, overlay, facing, texture, type, adjustedX, andY, 0.65f);
-    }
-
-    private void renderExpresswayText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignType type, float andX, float andY) {
-        String digits = text.replaceAll("[^0-9]", "");
-        float adjustedX = andX;
-        if (text.trim().isEmpty() || !text.matches(".*\\d.*") || digits.length() != 1) {
-            adjustedX = andX + 1f;
-        }
-
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.80f;
-            case NORMAL -> -0.45f;
-        };
-
-        renderTextWithCustomZ(matrices, vertexConsumers, light, facing, text, adjustedX, andY, zOffset, 0.045f, 0xFFFFFF, TextAlignment.CENTER);
     }
 }

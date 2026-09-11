@@ -22,6 +22,10 @@ public class LinkWand extends Item {
         super(settings);
     }
 
+    public static List<BlockPos> getPlayerLinkedPositions(UUID playerId) {
+        return PLAYER_LINKING.get(playerId);
+    }
+
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(Text.translatable("item.yunbeiuc.link_wand.tooltip"));
@@ -68,8 +72,13 @@ public class LinkWand extends Item {
             }
 
             for (BlockPos linkedPos : linkedLights) {
-                if (!(world.getBlockEntity(linkedPos) instanceof TrafficLightsBlockEntity)) {
+                if (!(world.getBlockEntity(linkedPos) instanceof TrafficLightsBlockEntity tl)) {
                     player.sendMessage(Text.literal("§c一些已链接的红绿灯不再有效！"), true);
+                    PLAYER_LINKING.remove(playerId);
+                    return ActionResult.FAIL;
+                }
+                if (tl.isInGroup()) {
+                    player.sendMessage(Text.literal("§c红绿灯 §6" + linkedPos.toShortString() + " §c已有相位序列！"), true);
                     PLAYER_LINKING.remove(playerId);
                     return ActionResult.FAIL;
                 }
@@ -94,17 +103,18 @@ public class LinkWand extends Item {
 
         if (linkedLights.contains(pos)) {
             linkedLights.remove(pos);
-            player.sendMessage(Text.literal("§c已从链接组移除 §7(剩余 §6" + linkedLights.size() + " §c个)"), true);
             if (linkedLights.isEmpty()) {
-                player.sendMessage(Text.literal("§7提示：右键红绿灯继续添加，直至所有红绿灯添加完后§eShift+右键 §7完成链接"), true);
+                player.sendMessage(Text.literal("§c已清空链接组"), true);
+            } else {
+                player.sendMessage(Text.literal("§a已成功链接 §6§l" + linkedLights.size() + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
             }
         } else {
-            linkedLights.add(pos);
-            player.sendMessage(Text.literal("§a已添加到链接组 §7(共 §6" + linkedLights.size() + " §a个)"), true);
-            if (linkedLights.size() == 1) {
-                player.sendMessage(Text.literal("§7  继续右键添加更多红绿灯"), true);
-                player.sendMessage(Text.literal("§7  按 §eShift+右键 §7完成链接"), true);
+            if (blockEntity instanceof TrafficLightsBlockEntity tl && tl.isInGroup()) {
+                player.sendMessage(Text.literal("§c该红绿灯已有相位序列，无法链接！"), true);
+                return ActionResult.FAIL;
             }
+            linkedLights.add(pos);
+            player.sendMessage(Text.literal("§a已成功链接 §6§l" + linkedLights.size() + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
         }
 
         return ActionResult.SUCCESS;

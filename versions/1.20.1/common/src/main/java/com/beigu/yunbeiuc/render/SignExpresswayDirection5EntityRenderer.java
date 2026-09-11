@@ -45,12 +45,12 @@ public class SignExpresswayDirection5EntityRenderer extends BaseSignRenderer<Sig
         if (currentBlock == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5.get()){
             renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, 4.5f, 7f, signType, expresswayNumber1);
             renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, 4.5f, -7f, 0.05f, 0xFFFFFF);
-            renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, 4.5f, 6.5f, 0.06f, 0xFFFFFF);
+            renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, 4.5f, 6.5f, 0.06f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
             renderDirectionLogo(matrices, vertexConsumers, light, overlay, facing, direction1, -8.5f, 8.5f, signType);
         } else if (currentBlock == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get()) {
             renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -4.5f, 7f, signType, expresswayNumber1);
             renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, -4.5f, -7f, 0.05f, 0xFFFFFF);
-            renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -4.5f, 6.5f, 0.06f, 0xFFFFFF);
+            renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -4.5f, 6.5f, 0.06f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
             renderDirectionLogo(matrices, vertexConsumers, light, overlay, facing, direction1, 8.5f, 8.5f, signType);
         }
     }

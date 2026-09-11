@@ -57,9 +57,9 @@ public class SignExpresswayDistanceFromLocation6EntityRenderer extends BaseSignR
         renderRightAlignedText(matrices, vertexConsumers, light, facing, "km", signType, 17.5f, -3.5f, 0.025f, 0xFFFFFF);
         renderRightAlignedText(matrices, vertexConsumers, light, facing, "km", signType, 17.5f, -10.5f, 0.025f, 0xFFFFFF);
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -14f, 8f, signType, expresswayNumber1);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -14f, 7.5f);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -14f, 7.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway2, -14f, -5.5f, signType, expresswayNumber2);
-        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, -14f, -6f);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber2, signType, -14f, -6f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
     }
 
     private void renderExpresswayLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayDistanceFromLocation6Entity.Expressway expressway, float andX, float andY, SignType type, String expresswayNumber) {
@@ -87,21 +87,5 @@ public class SignExpresswayDistanceFromLocation6EntityRenderer extends BaseSignR
             adjustedX = andX + 1f;
         }
         renderTexture(matrices, vertexConsumers, light, overlay, facing, texture, type, adjustedX, andY, 0.65f);
-    }
-
-    private void renderExpresswayText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, String text, SignType type, float andX, float andY) {
-        float zOffset = switch (type) {
-            case POLE_L -> -0.75f;
-            case POLE_H -> -0.80f;
-            case NORMAL -> -0.45f;
-        };
-
-        float adjustedX = andX;
-        String digits = text.replaceAll("[^0-9]", "");
-        if (text.trim().isEmpty() || !text.matches(".*\\d.*") || digits.length() != 1) {
-            adjustedX = andX + 1f;
-        }
-
-        renderTextWithCustomZ(matrices, vertexConsumers, light, facing, text, adjustedX, andY, zOffset, 0.045f, 0xFFFFFF, TextAlignment.CENTER);
     }
 }

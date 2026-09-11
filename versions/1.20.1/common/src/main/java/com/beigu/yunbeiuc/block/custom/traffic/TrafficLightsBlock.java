@@ -40,6 +40,36 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
     private static final VoxelShape SHAPE_S = Block.createCuboidShape(0, 4, 8, 16, 12, 16);
     private static final VoxelShape SHAPE_W = Block.createCuboidShape(0, 4, 0, 8, 12, 16);
 
+    // 普通竖装/黄色竖装：x[2.75,13.25] y[-4.75,20.75]（南向基准 z[8.5,16]）
+    private static final VoxelShape VERTICAL_N = Block.createCuboidShape(2.75, -4.75, 0, 13.25, 20.75, 7.5);
+    private static final VoxelShape VERTICAL_S = Block.createCuboidShape(2.75, -4.75, 8.5, 13.25, 20.75, 16);
+    private static final VoxelShape VERTICAL_E = Block.createCuboidShape(8.5, -4.75, 2.75, 16, 20.75, 13.25);
+    private static final VoxelShape VERTICAL_W = Block.createCuboidShape(0, -4.75, 2.75, 7.5, 20.75, 13.25);
+
+    // 横装/台北式：x[-4.75,20.75] y[2.75,13.25]（南向基准 z[8.5,16]）
+    private static final VoxelShape HORIZONTAL_N = Block.createCuboidShape(-4.75, 2.75, 0, 20.75, 13.25, 7.5);
+    private static final VoxelShape HORIZONTAL_S = Block.createCuboidShape(-4.75, 2.75, 8.5, 20.75, 13.25, 16);
+    private static final VoxelShape HORIZONTAL_E = Block.createCuboidShape(8.5, 2.75, -4.75, 16, 13.25, 20.75);
+    private static final VoxelShape HORIZONTAL_W = Block.createCuboidShape(0, 2.75, -4.75, 7.5, 13.25, 20.75);
+
+    // 人行道：x[2.75,13.25] y[-0.25,16.25]（南向基准 z[8.5,16]）
+    private static final VoxelShape PAVEMENT_N = Block.createCuboidShape(2.75, -0.25, 0, 13.25, 16.25, 7.5);
+    private static final VoxelShape PAVEMENT_S = Block.createCuboidShape(2.75, -0.25, 8.5, 13.25, 16.25, 16);
+    private static final VoxelShape PAVEMENT_E = Block.createCuboidShape(8.5, -0.25, 2.75, 16, 16.25, 13.25);
+    private static final VoxelShape PAVEMENT_W = Block.createCuboidShape(0, -0.25, 2.75, 7.5, 16.25, 13.25);
+
+    // 单灯（横式/竖式）：x[2.75,13.25] y[2.75,13.25]（南向基准 z[8.5,16]）
+    private static final VoxelShape SINGLE_N = Block.createCuboidShape(2.75, 2.75, 0, 13.25, 13.25, 7.5);
+    private static final VoxelShape SINGLE_S = Block.createCuboidShape(2.75, 2.75, 8.5, 13.25, 13.25, 16);
+    private static final VoxelShape SINGLE_E = Block.createCuboidShape(8.5, 2.75, 2.75, 16, 13.25, 13.25);
+    private static final VoxelShape SINGLE_W = Block.createCuboidShape(0, 2.75, 2.75, 7.5, 13.25, 13.25);
+
+    // 读秒器：x[0,16] y[2,16]（南向基准 z[7.75,16]）
+    private static final VoxelShape COUNTDOWN_N = Block.createCuboidShape(0, 2, 0, 16, 16, 8.25);
+    private static final VoxelShape COUNTDOWN_S = Block.createCuboidShape(0, 2, 7.75, 16, 16, 16);
+    private static final VoxelShape COUNTDOWN_E = Block.createCuboidShape(7.75, 2, 0, 16, 16, 16);
+    private static final VoxelShape COUNTDOWN_W = Block.createCuboidShape(0, 2, 0, 8.25, 16, 16);
+
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.of("light_state", LightState.class);
     public static final EnumProperty<MountType> TYPE = EnumProperty.of("type", MountType.class);
@@ -63,11 +93,52 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        VoxelShape north = SHAPE_N, south = SHAPE_S, east = SHAPE_E, west = SHAPE_W;
+        Block block = state.getBlock();
+
+        if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_YELLOW_VERTICAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
+            north = VERTICAL_N;
+            south = VERTICAL_S;
+            east = VERTICAL_E;
+            west = VERTICAL_W;
+        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
+            north = HORIZONTAL_N;
+            south = HORIZONTAL_S;
+            east = HORIZONTAL_E;
+            west = HORIZONTAL_W;
+        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) {
+            north = PAVEMENT_N;
+            south = PAVEMENT_S;
+            east = PAVEMENT_E;
+            west = PAVEMENT_W;
+        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL.get()) {
+            north = SINGLE_N;
+            south = SINGLE_S;
+            east = SINGLE_E;
+            west = SINGLE_W;
+        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) {
+            north = COUNTDOWN_N;
+            south = COUNTDOWN_S;
+            east = COUNTDOWN_E;
+            west = COUNTDOWN_W;
+        }
+
         return switch (state.get(FACING)) {
-            case WEST -> SHAPE_W;
-            case SOUTH -> SHAPE_S;
-            case EAST -> SHAPE_E;
-            default -> SHAPE_N;
+            case WEST -> west;
+            case SOUTH -> south;
+            case EAST -> east;
+            default -> north;
         };
     }
 
@@ -203,9 +274,11 @@ public class  TrafficLightsBlock extends BlockWithEntity implements BlockEntityP
             Block currentBlock = tl.getCachedState().getBlock();
             boolean isCountdownTimer = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
             boolean isShanghai = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
-                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get();
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
             boolean isPavement = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
-                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get();
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
 
             if (isCountdownTimer) {
                 // 读秒器：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关

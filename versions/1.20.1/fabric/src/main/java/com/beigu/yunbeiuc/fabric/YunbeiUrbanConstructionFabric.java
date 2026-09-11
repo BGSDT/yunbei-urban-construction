@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.fabric;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
-import com.beigu.yunbeiuc.network.ChatCommandHandler;
 import com.beigu.yunbeiuc.util.CustomFontManager;
 import com.beigu.yunbeiuc.util.FlagLoader;
 import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetLoader;
@@ -18,10 +17,6 @@ public final class YunbeiUrbanConstructionFabric implements ModInitializer {
     public void onInitialize() {
         YunbeiUrbanConstruction.init();
         ModCreativeTabEntries.register();
-
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            ChatCommandHandler.register(dispatcher);
-        });
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
                 new SimpleSynchronousResourceReloadListener() {

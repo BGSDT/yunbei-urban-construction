@@ -42,7 +42,7 @@ public class SignExpresswayEntranceAdvance4EntityRenderer extends BaseSignRender
         renderExpresswayLogo(matrices, vertexConsumers, light, overlay, facing, expressway1, -3f, 7f, signType, expresswayNumber1);
         renderDirectionLogo(matrices, vertexConsumers, light, overlay, facing, direction1, 6f, 7f, signType);
         renderCenteredText(matrices, vertexConsumers, light, facing, text1 + "方向", signType, 0f, -2f, 0.035f, 0xFFFFFF);
-        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -3f, 6.5f, 0.045f, 0xFFFFFF);
+        renderExpresswayText(matrices, vertexConsumers, light, facing, expresswayNumber1, signType, -3f, 6.5f, 0.045f, 0xFFFFFF, 0.002f, TextAlignment.CENTER);
     }
 
     private void renderDirectionLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Direction facing, SignExpresswayEntranceAdvance4Entity.Direction direction, float andX, float andY, SignType type) {

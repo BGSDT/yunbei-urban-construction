@@ -40,9 +40,9 @@ public abstract class BaseSignRenderer<T extends BlockEntity> implements BlockEn
      */
     protected float getZOffset(SignType type) {
         return switch (type) {
-            case POLE_L -> -0.75f;
+            case POLE_L -> -0.74f;
             case POLE_H -> -0.81f;
-            case NORMAL -> -0.46f;
+            case NORMAL -> -0.45f;
         };
     }
 
@@ -250,5 +250,93 @@ public abstract class BaseSignRenderer<T extends BlockEntity> implements BlockEn
         LEFT,
         CENTER,
         RIGHT
+    }
+
+    /**
+     * 渲染高速公路Logo(支持居中/左对齐)
+     * @param zOffsetDelta 相对于默认zOffset的额外偏移(负值=向前,正值=向后)
+     */
+    protected void renderExpresswayLogo(MatrixStack matrices, VertexConsumerProvider vertexConsumers,
+                                        int light, int overlay, Direction facing, Identifier logoTexture,
+                                        SignType type, float andX, float andY, float size,
+                                        float zOffsetDelta, TextAlignment alignment) {
+        matrices.push();
+
+        float zOffset = getZOffset(type) + zOffsetDelta;
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+
+        float halfSize = size / 2f;
+        float x = andX / 16f;
+        float y = andY / 16f;
+
+        // 根据对齐方式调整X坐标
+        if (alignment == TextAlignment.CENTER) {
+            x = x - halfSize; // 居中时减去半宽
+        } else if (alignment == TextAlignment.LEFT) {
+            // 左对齐时andX已经是左边缘
+        }
+
+        matrices.translate(x, y, zOffset);
+
+        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(logoTexture));
+        Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
+        org.joml.Vector3f normalVec = matrices.peek().getNormalMatrix().transform(new org.joml.Vector3f(0, 0, 1));
+
+        consumer.vertex(positionMatrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255)
+                .texture(0.0f, 1.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+        consumer.vertex(positionMatrix, halfSize, -halfSize, 0).color(255, 255, 255, 255)
+                .texture(1.0f, 1.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+        consumer.vertex(positionMatrix, halfSize, halfSize, 0).color(255, 255, 255, 255)
+                .texture(1.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+        consumer.vertex(positionMatrix, -halfSize, halfSize, 0).color(255, 255, 255, 255)
+                .texture(0.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+
+        matrices.pop();
+    }
+
+    /**
+     * 渲染高速文本(支持居中/左对齐/右对齐,自动处理单/双位数字偏移)
+     * @param zOffsetDelta 相对于默认zOffset的额外偏移(负值=向前,正值=向后)
+     */
+    protected void renderExpresswayText(MatrixStack matrices, VertexConsumerProvider vertexConsumers,
+                                        int light, Direction facing, String text, SignType type,
+                                        float andX, float andY, float scale, int color,
+                                        float zOffsetDelta, TextAlignment alignment) {
+        // 自动处理单位数字时的X偏移(单位数字的logo更窄,需要向右调整)
+        String digits = text.replaceAll("[^0-9]", "");
+        float adjustedX = andX;
+        if (alignment == TextAlignment.CENTER &&
+            (text.trim().isEmpty() || !text.matches(".*\\d.*") || digits.length() == 1)) {
+            adjustedX = andX + 1f;
+        }
+
+        matrices.push();
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+
+        Text styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true)
+                .withFont(new Identifier("minecraft", "uniform")));
+        int textWidth = this.textRenderer.getWidth(styledText);
+        int textHeight = this.textRenderer.fontHeight;
+
+        float zOffset = getZOffset(type) + zOffsetDelta;
+        float yPos = andY / 16f;
+
+        float xPos = switch (alignment) {
+            case CENTER -> adjustedX / 16f - (textWidth * scale) / 2f;
+            case LEFT -> adjustedX / 16f;
+            case RIGHT -> adjustedX / 16f - textWidth * scale;
+        };
+
+        matrices.translate(xPos, yPos, zOffset);
+        matrices.scale(scale, -scale, scale);
+
+        float renderX = alignment == TextAlignment.RIGHT ? -textWidth : 0;
+        this.textRenderer.draw(styledText, renderX, -textHeight / 2.0f, color, false,
+                matrices.peek().getPositionMatrix(), vertexConsumers,
+                TextRenderer.TextLayerType.NORMAL, 0, light);
+
+        matrices.pop();
     }
 }
