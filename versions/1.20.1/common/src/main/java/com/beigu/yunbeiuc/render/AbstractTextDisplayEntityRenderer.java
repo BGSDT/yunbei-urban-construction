@@ -33,13 +33,16 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float zOffset = getZOffset(entity);
         int effectiveLight = entity.isGlowingText() ? LightmapTextureManager.MAX_LIGHT_COORDINATE : light;
 
+        // 子类渲染固定内容（如枚举驱动的 logo 纹理），在动态文本行之前
+        renderFixedContent(entity, matrices, vertexConsumers, tickDelta, light, overlay, zOffset);
+
         List<CustomSignBlockEntity.TextLineData> lines = entity.getTextLines();
         int editingIndex = entity.getEditingLineIndex();
         int gizmoMode = editingIndex >= 0 ? entity.getEditingGizmoMode() : -1;
         if (editingIndex >= 0) TextGizmo.beginFrameRects();
         for (int i = 0; i < lines.size(); i++) {
             gizmoLineIndex = i;
-            renderTextLine(matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex, gizmoMode, baseFrame);
+            renderTextLine(entity, matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex, gizmoMode, baseFrame);
         }
 
         matrices.pop();
@@ -47,6 +50,14 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
     // 子类实现前置变换（平移/旋转）
     protected abstract void applyTransforms(MatrixStack matrices, T entity);
+
+    // 子类实现 Z 轴偏移
+    protected abstract float getZOffset(T entity);
+
+    // 子类可选渲染固定内容（枚举驱动的 logo 纹理等），在动态文本行之前执行；默认不渲染
+    protected void renderFixedContent(T entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers,
+                                      float tickDelta, int light, int overlay, float zOffset) {
+    }
 
     // 检查纹理资源是否真实存在，避免渲染缺失纹理时反复刷错误日志
     private boolean textureExists(Identifier id) {
@@ -57,10 +68,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         }
     }
 
-    // 子类实现 Z 轴偏移
-    protected abstract float getZOffset(T entity);
-
-    private void renderTextLine(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderTextLine(T entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         if (lineData.getText().isEmpty()) return;
         String text = lineData.getText().trim();
 
@@ -77,16 +85,29 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         }
 
         if (text.startsWith("-texture")) {
-            String[] parts = text.split("\\s+", 2);
+            String[] parts = text.split("\\s+", 3);
             if (parts.length >= 2) {
+                // 路径支持 {字段名} 占位符（如按枚举/编号选择 logo 纹理），与 -json 分支一致先解析；
                 // Identifier 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
-                Identifier textureId = Identifier.tryParse(parts[1].trim().toLowerCase(Locale.ROOT));
+                Identifier textureId = Identifier.tryParse(entity.resolvePlaceholders(parts[1]).trim().toLowerCase(Locale.ROOT));
                 // 仅当路径以 .png 结尾且资源真实存在时才按贴图渲染；
-                // 目录条目会被 getResource 误判为存在（jar 内含目录项），必须用后缀过滤掉，否则输入过程会反复报错
+                // 目录条目会被 getResource 误判为存在（jar 内含目录项），必须用后缀过滤掉，否则输入过程会反复报错；
+                // 无效路径（占位符按字段条件返回空、资源不存在、格式错误）静默跳过整行，不回退为文本渲染
                 if (textureId != null && textureId.getPath().endsWith(".png") && textureExists(textureId)) {
-                    renderTexture(matrices, vertexConsumers, light, overlay, zOffset, lineData, textureId, editing, gizmoMode, baseFrame);
-                    return;
+                    // 可选第三参数：x 偏移占位符（单位同 xOffset，如窄/宽版 logo 联动的 ±1px），叠加到行 xOffset
+                    float xShift = 0f;
+                    if (parts.length >= 3) {
+                        try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[2]).trim()); }
+                        catch (NumberFormatException ignored) {}
+                    }
+                    CustomSignBlockEntity.TextLineData shifted = lineData;
+                    if (xShift != 0f) {
+                        shifted = lineData.copy();
+                        shifted.setXOffset(lineData.getXOffset() + xShift);
+                    }
+                    renderTexture(matrices, vertexConsumers, light, overlay, zOffset, shifted, textureId, editing, gizmoMode, baseFrame);
                 }
+                return;
             }
         }
 
@@ -94,7 +115,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             String[] parts = text.split("\\s+", 2);
             if (parts.length >= 2) {
                 try {
-                    Text jsonText = Text.Serializer.fromLenientJson(parts[1]);
+                    Text jsonText = Text.Serializer.fromLenientJson(entity.resolvePlaceholders(parts[1]));
                     if (jsonText != null) {
                         renderJsonText(matrices, vertexConsumers, light, zOffset, lineData, jsonText, editing, gizmoMode, baseFrame);
                         return;
@@ -103,7 +124,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             }
         }
 
-        renderText(matrices, vertexConsumers, light, zOffset, lineData, editing, gizmoMode, baseFrame);
+        renderText(entity, matrices, vertexConsumers, light, zOffset, lineData, editing, gizmoMode, baseFrame);
     }
 
     private void applyRotation(MatrixStack matrices, CustomSignBlockEntity.TextLineData lineData) {
@@ -156,7 +177,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.pop();
     }
 
-    private void renderText(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderText(T entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.push();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -175,7 +196,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 .withUnderline(lineData.isUnderline())
                 .withFont(new Identifier("minecraft", "uniform"));
 
-        Text renderText = Text.literal(lineData.getText()).setStyle(style);
+        // 渲染时解析 {字段名} 占位符为固定 NBT 字段的值
+        Text renderText = Text.literal(entity.resolvePlaceholders(lineData.getText())).setStyle(style);
         int textWidth = this.textRenderer.getWidth(renderText);
         int textHeight = this.textRenderer.fontHeight;
 

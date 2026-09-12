@@ -2,15 +2,13 @@ package com.beigu.yunbeiuc.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 
-public class SignGuideIntersectionAdvanceWarning3Entity extends BlockEntity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockEntity {
     private String text1 = "";
     private String cnText2 = "";
     private String enText2 = "";
@@ -27,6 +25,8 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends BlockEntity {
 
     public SignGuideIntersectionAdvanceWarning3Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY.get(), pos, state);
+        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
+        ensureDefaultTextLines();
     }
 
     @Override
@@ -45,10 +45,14 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends BlockEntity {
         this.enText6 = nbt.getString("enText6");
         this.cnText7 = nbt.getString("cnText7");
         this.enText7 = nbt.getString("enText7");
+        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
+        if (!nbt.contains("TextLines")) {
+            ensureDefaultTextLines();
+        }
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    public void writeNbt(NbtCompound nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("cnText2", this.cnText2);
         nbt.putString("enText2", this.enText2);
@@ -65,15 +69,48 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends BlockEntity {
         super.writeNbt(nbt);
     }
 
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    /**
+     * 按原 SignGuideIntersectionAdvanceWarning3EntityRenderer 的固定布局生成默认文本行（颜色均为白色）：
+     * 原渲染器按方块身份区分（同一方块类注册了 WARNING_3 / WARNING_4 两个方块）：
+     * WARNING_3 → renderCenteredText(cnText2, 0, 8, 0.03) / (enText2, 0, 4, 0.023) / (cnText4, -14, 4, 0.03)
+     *             / (enText4, -14, 0, 0.023) / (cnText5, -14, -4, 0.03) / (enText5, -14, -8, 0.023)
+     *             / (cnText6, 14, 4, 0.03) / (enText6, 14, 0, 0.023) / (cnText7, 14, -4, 0.03) / (enText7, 14, -8, 0.023)；
+     * WARNING_4 → (text1, 0, -9, 0.03) / (cnText2, 0, 6, 0.03) / (enText2, 0, 3, 0.023) / (cnText3, 0, 13, 0.03)
+     *             / (enText3, 0, 10, 0.023) / (cnText4, -14, 8, 0.03) / (enText4, -14, 4, 0.023) / (cnText5, -14, 0, 0.03)
+     *             / (enText5, -14, -4, 0.023) / (cnText6, 14, 8, 0.03) / (enText6, 14, 4, 0.023) / (cnText7, 14, 0, 0.03)
+     *             / (enText7, 14, -4, 0.023)。
+     */
+    private void ensureDefaultTextLines() {
+        if (!getTextLines().isEmpty()) return;
+        boolean isWarning3 = getCachedState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3.get();
+        List<TextLineData> lines = new ArrayList<>();
+        if (isWarning3) {
+            lines.add(SignTextLinesHelper.centered("{cnText2}", 0f, 8f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText2}", 0f, 4f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText4}", -14f, 4f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText4}", -14f, 0f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText5}", -14f, -4f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText5}", -14f, -8f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText6}", 14f, 4f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText6}", 14f, 0f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText7}", 14f, -4f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText7}", 14f, -8f, 0.023f, 0xFFFFFF));
+        } else {
+            lines.add(SignTextLinesHelper.centered("{text1}", 0f, -9f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText2}", 0f, 6f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText2}", 0f, 3f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText3}", 0f, 13f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText3}", 0f, 10f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText4}", -14f, 8f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText4}", -14f, 4f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText5}", -14f, 0f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText5}", -14f, -4f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText6}", 14f, 8f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText6}", 14f, 4f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{cnText7}", 14f, 0f, 0.03f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("{enText7}", 14f, -4f, 0.023f, 0xFFFFFF));
+        }
+        setTextLines(lines);
     }
 
     public String getText1() {
@@ -167,6 +204,26 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends BlockEntity {
     public void setEnText7(String enText7) {
         this.enText7 = enText7;
         markDirtyAndUpdate();
+    }
+
+    @Override
+    public String getPlaceholderValue(String key) {
+        return switch (key) {
+            case "text1" -> text1;
+            case "cnText2" -> cnText2;
+            case "enText2" -> enText2;
+            case "cnText3" -> cnText3;
+            case "enText3" -> enText3;
+            case "cnText4" -> cnText4;
+            case "enText4" -> enText4;
+            case "cnText5" -> cnText5;
+            case "enText5" -> enText5;
+            case "cnText6" -> cnText6;
+            case "enText6" -> enText6;
+            case "cnText7" -> cnText7;
+            case "enText7" -> enText7;
+            default -> null;
+        };
     }
 
     private void markDirtyAndUpdate() {

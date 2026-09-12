@@ -1,66 +1,130 @@
 {
   "variants": {
-    "facing=north,light_state=red": {
+    "facing=north,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 0
+    },
+    "facing=east,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 90
+    },
+    "facing=south,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 180
+    },
+    "facing=west,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 270
+    },
+    "facing=north,light_state=red,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 0
     },
-    "facing=east,light_state=red": {
+    "facing=east,light_state=red,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 90
     },
-    "facing=south,light_state=red": {
+    "facing=south,light_state=red,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 180
     },
-    "facing=west,light_state=red": {
+    "facing=west,light_state=red,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 270
     },
-    "facing=north,light_state=yellow": {
+    "facing=north,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 0
+    },
+    "facing=east,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 90
+    },
+    "facing=south,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 180
+    },
+    "facing=west,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 270
+    },
+    "facing=north,light_state=yellow,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 0
     },
-    "facing=east,light_state=yellow": {
+    "facing=east,light_state=yellow,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 90
     },
-    "facing=south,light_state=yellow": {
+    "facing=south,light_state=yellow,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 180
     },
-    "facing=west,light_state=yellow": {
+    "facing=west,light_state=yellow,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 270
     },
-    "facing=north,light_state=green": {
+    "facing=north,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 0
+    },
+    "facing=east,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 90
+    },
+    "facing=south,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 180
+    },
+    "facing=west,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 270
+    },
+    "facing=north,light_state=green,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 0
     },
-    "facing=east,light_state=green": {
+    "facing=east,light_state=green,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 90
     },
-    "facing=south,light_state=green": {
+    "facing=south,light_state=green,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 180
     },
-    "facing=west,light_state=green": {
+    "facing=west,light_state=green,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 270
     },
-    "facing=north,light_state=gray": {
+    "facing=north,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 0
+    },
+    "facing=east,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 90
+    },
+    "facing=south,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 180
+    },
+    "facing=west,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_countdown_timer_simple",
+      "y": 270
+    },
+    "facing=north,light_state=gray,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 0
     },
-    "facing=east,light_state=gray": {
+    "facing=east,light_state=gray,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 90
     },
-    "facing=south,light_state=gray": {
+    "facing=south,light_state=gray,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 180
     },
-    "facing=west,light_state=gray": {
+    "facing=west,light_state=gray,type=pole": {
       "model": "yunbeiuc:block/traffic_lights_countdown_timer",
       "y": 270
     }

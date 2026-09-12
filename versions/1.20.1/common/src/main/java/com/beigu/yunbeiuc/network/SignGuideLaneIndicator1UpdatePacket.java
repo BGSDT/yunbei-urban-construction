@@ -8,12 +8,12 @@ import net.minecraft.util.math.BlockPos;
 
 public class SignGuideLaneIndicator1UpdatePacket {
     private final BlockPos pos;
-    private final SignGuideLaneIndicator1Entity.Direction direction1;
-    private final SignGuideLaneIndicator1Entity.Direction direction2;
-    private final SignGuideLaneIndicator1Entity.Direction direction3;
-    private final SignGuideLaneIndicator1Entity.Direction direction4;
+    private final SignGuideLaneIndicator1Entity.ArrowDirection direction1;
+    private final SignGuideLaneIndicator1Entity.ArrowDirection direction2;
+    private final SignGuideLaneIndicator1Entity.ArrowDirection direction3;
+    private final SignGuideLaneIndicator1Entity.ArrowDirection direction4;
 
-    public SignGuideLaneIndicator1UpdatePacket(BlockPos pos, SignGuideLaneIndicator1Entity.Direction direction1, SignGuideLaneIndicator1Entity.Direction direction2, SignGuideLaneIndicator1Entity.Direction direction3, SignGuideLaneIndicator1Entity.Direction direction4) {
+    public SignGuideLaneIndicator1UpdatePacket(BlockPos pos, SignGuideLaneIndicator1Entity.ArrowDirection direction1, SignGuideLaneIndicator1Entity.ArrowDirection direction2, SignGuideLaneIndicator1Entity.ArrowDirection direction3, SignGuideLaneIndicator1Entity.ArrowDirection direction4) {
         this.pos = pos;
         this.direction1 = direction1;
         this.direction2 = direction2;
@@ -23,10 +23,10 @@ public class SignGuideLaneIndicator1UpdatePacket {
 
     public SignGuideLaneIndicator1UpdatePacket(PacketByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.direction1 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.Direction.class);
-        this.direction2 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.Direction.class);
-        this.direction3 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.Direction.class);
-        this.direction4 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.Direction.class);
+        this.direction1 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.ArrowDirection.class);
+        this.direction2 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.ArrowDirection.class);
+        this.direction3 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.ArrowDirection.class);
+        this.direction4 = buf.readEnumConstant(SignGuideLaneIndicator1Entity.ArrowDirection.class);
     }
 
     public void write(PacketByteBuf buf) {

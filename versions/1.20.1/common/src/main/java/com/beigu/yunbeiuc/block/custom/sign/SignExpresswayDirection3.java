@@ -2,9 +2,9 @@ package com.beigu.yunbeiuc.block.custom.sign;
 
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleHorizontal;
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
+import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.SignExpresswayDirection3Entity;
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.screen.SignExpresswayDirection3Screen;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -81,7 +81,10 @@ public class  SignExpresswayDirection3 extends BlockWithEntity implements BlockE
 
     @net.fabricmc.api.Environment(net.fabricmc.api.EnvType.CLIENT)
     private void openTextDisplayScreen(BlockPos pos) {
-        MinecraftClient.getInstance().setScreen(new SignExpresswayDirection3Screen(pos));
+        BlockEntity blockEntity = MinecraftClient.getInstance().world.getBlockEntity(pos);
+        if (blockEntity instanceof CustomSignBlockEntity signEntity) {
+            MinecraftClient.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TextDisplayScreen(signEntity));
+        }
     }
 
     @Override

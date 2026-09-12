@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.entity.SignCompassDirection;
 import com.beigu.yunbeiuc.entity.SignExpresswayDirection5Entity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -11,9 +12,9 @@ public class SignExpresswayDirection5UpdatePacket {
     private final SignExpresswayDirection5Entity.Expressway expressway1;
     private final String text1;
     private final String expresswayNumber1;
-    private final SignExpresswayDirection5Entity.Direction direction1;
+    private final SignCompassDirection direction1;
 
-    public SignExpresswayDirection5UpdatePacket(BlockPos pos, SignExpresswayDirection5Entity.Expressway expressway1, String text1, String expresswayNumber1, SignExpresswayDirection5Entity.Direction direction1) {
+    public SignExpresswayDirection5UpdatePacket(BlockPos pos, SignExpresswayDirection5Entity.Expressway expressway1, String text1, String expresswayNumber1, SignCompassDirection direction1) {
         this.pos = pos;
         this.expressway1 = expressway1;
         this.text1 = text1;
@@ -26,7 +27,7 @@ public class SignExpresswayDirection5UpdatePacket {
         this.expressway1 = buf.readEnumConstant(SignExpresswayDirection5Entity.Expressway.class);
         this.text1 = buf.readString();
         this.expresswayNumber1 = buf.readString();
-        this.direction1 = buf.readEnumConstant(SignExpresswayDirection5Entity.Direction.class);
+        this.direction1 = buf.readEnumConstant(SignCompassDirection.class);
     }
 
     public void write(PacketByteBuf buf) {

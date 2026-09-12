@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
+import com.beigu.yunbeiuc.network.CustomSignFieldUpdatePacket;
 import com.beigu.yunbeiuc.network.CustomSignUpdatePacket;
 import com.beigu.yunbeiuc.render.TextGizmo;
 import com.beigu.yunbeiuc.util.PresetManager;
@@ -9,6 +10,7 @@ import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -20,6 +22,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.*;
 
 import static com.beigu.yunbeiuc.network.ModMessages.UPDATE_CUSTOM_SIGN;
+import static com.beigu.yunbeiuc.network.ModMessages.UPDATE_CUSTOM_SIGN_FIELD;
 
 public class TextDisplayScreen extends Screen {
     private static final int PANEL_TOP_HEIGHT = 20;
@@ -81,6 +84,16 @@ public class TextDisplayScreen extends Screen {
 
     private int panelTopX, panelTopY, panelTopWidth, panelTopHeight;
     private int panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight;
+
+    // 选项行（行标签面板上方）：选中行占位符关联可编辑枚举字段时显示按钮组，否则整行隐藏
+    private static final int OPTIONS_ROW_HEIGHT = 22;
+    private boolean optionsRowVisible = false;
+    private final List<ButtonWidget> optionButtons = new ArrayList<>();
+    private final List<Object[]> optionGroupTitles = new ArrayList<>();
+    // 输入框显示占位符解析值：listener 抑制标志 + 记录占位符原文/解析值（未编辑则保留占位符联动）
+    private boolean suppressTextFieldListener = false;
+    private String currentPlaceholderText = "";
+    private String currentResolvedText = "";
 
     private int grabbedGizmo = -1;
     private float grabValueStart, grabAxisStart, grabSize0, grabLen0;
@@ -154,7 +167,7 @@ public class TextDisplayScreen extends Screen {
 
         deleteLineButton = ButtonWidget.builder(Text.literal("删除"), btn -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                deleteTextLine(selectedIndex);
+                requestDeleteLine(selectedIndex);
             }
         }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap) * 2, lineActionY, lineActionBtnW, 20).build();
         deleteLineButton.visible = false;
@@ -200,8 +213,10 @@ public class TextDisplayScreen extends Screen {
         textField = new TextFieldWidget(this.textRenderer, 0, 0, panelBottomWidth - 10 - INFO_PANEL_WIDTH, 16, Text.literal("Text"));
         textField.setMaxLength(Integer.MAX_VALUE);
         textField.setChangedListener(text -> {
+            if (suppressTextFieldListener) return;
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                textLineWidgets.get(selectedIndex).data.setText(text);
+                // 编辑结果与解析值一致则保留占位符原文（维持字段联动），改动后写入纯文本
+                textLineWidgets.get(selectedIndex).data.setText(text.equals(currentResolvedText) ? currentPlaceholderText : text);
                 refreshTopPanel();
                 syncAndUpdateClient();
                 sendUpdateToServer();
@@ -437,7 +452,7 @@ public class TextDisplayScreen extends Screen {
     private static int axis(int handle) { return TextGizmo.handleAxis(handle); }
 
     private boolean isOverUiPanel(double mx, double my) {
-        return my >= panelTopY;
+        return my >= (optionsRowVisible ? panelTopY - OPTIONS_ROW_HEIGHT : panelTopY);
     }
 
     private boolean trySelectLine(double mouseX, double mouseY) {
@@ -596,6 +611,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private void refreshTopPanel() {
+        recomputeLayout();
         for (var btn : textButtons) this.remove(btn);
         textButtons.clear();
         if (topScrollLeft != null) { this.remove(topScrollLeft); topScrollLeft = null; }
@@ -632,7 +648,7 @@ public class TextDisplayScreen extends Screen {
             for (int i = 0; i < visibleCount; i++) {
                 int idx = topScrollOffset + i;
                 if (idx >= count) break;
-                String displayText = textLineWidgets.get(idx).data.getText();
+                String displayText = blockEntity.resolvePlaceholders(textLineWidgets.get(idx).data.getText());
                 if (displayText.isEmpty()) displayText = "(empty)";
 
                 ButtonWidget btn = ButtonWidget.builder(Text.literal(displayText), button -> {
@@ -668,6 +684,82 @@ public class TextDisplayScreen extends Screen {
         pasteLineButton.active = showLineActions && clipboardData != null;
         deleteLineButton.visible = showLineActions;
         formatPainterButton.visible = showLineActions;
+    }
+
+    // ==================== 选项行布局 ====================
+
+    /** 重算布局：选项行插在行标签面板与保存按钮行之间，可见时行标签面板上移 22px，各段始终紧贴无缝 */
+    private void recomputeLayout() {
+        optionsRowVisible = computeOptionsRowVisible();
+        int optionsH = optionsRowVisible ? OPTIONS_ROW_HEIGHT : 0;
+        panelTopY = panelBottomY - SAVE_BTN_ROW_HEIGHT - optionsH - panelTopHeight;
+        int rowBtnY = panelBottomY - SAVE_BTN_ROW_HEIGHT + 1;
+        savePresetButton.setPosition(width / 2 - 40, rowBtnY);
+        int catX = 5;
+        for (ButtonWidget b : new ButtonWidget[]{posCatButton, rotCatButton, scaleCatButton, fontCatButton, alignCatButton}) {
+            b.setPosition(catX, rowBtnY);
+            catX += 50 + 4;
+        }
+        int lineActionStartX = width - (45 * 4 + 4 * 3) - 4;
+        copyLineButton.setPosition(lineActionStartX, rowBtnY);
+        pasteLineButton.setPosition(lineActionStartX + (45 + 4), rowBtnY);
+        deleteLineButton.setPosition(lineActionStartX + (45 + 4) * 2, rowBtnY);
+        formatPainterButton.setPosition(lineActionStartX + (45 + 4) * 3, rowBtnY);
+        addLineButton.setPosition(panelTopX + panelTopWidth, panelTopY);
+        refreshOptionButtons();
+    }
+
+    private boolean computeOptionsRowVisible() {
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return false;
+        for (String key : CustomSignBlockEntity.extractPlaceholderKeys(textLineWidgets.get(selectedIndex).data.getText())) {
+            List<CustomSignBlockEntity.FieldOptionGroup> groups = blockEntity.getFieldOptions(key);
+            if (groups != null && !groups.isEmpty()) return true;
+        }
+        return false;
+    }
+
+    /** 重建选项行按钮：按占位符 key 分组，组标题在 render 中绘制，当前值按钮以禁用外观表示选中 */
+    private void refreshOptionButtons() {
+        for (var b : optionButtons) this.remove(b);
+        optionButtons.clear();
+        optionGroupTitles.clear();
+        if (!optionsRowVisible || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
+        String text = textLineWidgets.get(selectedIndex).data.getText();
+        int x = 5;
+        int y = panelBottomY - SAVE_BTN_ROW_HEIGHT - OPTIONS_ROW_HEIGHT + (OPTIONS_ROW_HEIGHT - 20) / 2;
+        for (String key : CustomSignBlockEntity.extractPlaceholderKeys(text)) {
+            List<CustomSignBlockEntity.FieldOptionGroup> groups = blockEntity.getFieldOptions(key);
+            if (groups == null) continue;
+            for (var group : groups) {
+                if (x + 40 > width - 10) return;
+                optionGroupTitles.add(new Object[]{group.title(), x, y + 6});
+                x += textRenderer.getWidth(group.title()) + 6;
+                for (var opt : group.options()) {
+                    int w = Math.max(20, textRenderer.getWidth(opt.label()) + 8);
+                    if (x + w > width - 5) return;
+                    ButtonWidget btn = ButtonWidget.builder(Text.literal(opt.label()), b -> applyOption(group.field(), opt.value()))
+                            .dimensions(x, y, w, 20).build();
+                    btn.active = !opt.current();
+                    optionButtons.add(btn);
+                    this.addDrawableChild(btn);
+                    x += w + 4;
+                }
+                x += 10;
+            }
+        }
+    }
+
+    private void applyOption(String field, String value) {
+        blockEntity.applyFieldOption(field, value);
+        // 延迟到回调外刷新（占位符解析结果随字段变化），避免在按钮点击处理中改动控件树
+        if (this.client != null) this.client.execute(() -> {
+            refreshTopPanel();
+            updateBottomPanelDisplay();
+        });
+        var packet = new CustomSignFieldUpdatePacket(blockPos, field, value);
+        var buf = new PacketByteBuf(Unpooled.buffer());
+        packet.write(buf);
+        NetworkManager.sendToServer(UPDATE_CUSTOM_SIGN_FIELD, buf);
     }
 
     private void refreshBottomPanel() {
@@ -706,7 +798,12 @@ public class TextDisplayScreen extends Screen {
     private void updateBottomPanelDisplay() {
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
         var d = textLineWidgets.get(selectedIndex).data;
-        textField.setText(d.getText());
+        // 输入框显示占位符解析后的实际文本，避免出现 {text1} 字面量
+        currentPlaceholderText = d.getText();
+        currentResolvedText = blockEntity.resolvePlaceholders(d.getText());
+        suppressTextFieldListener = true;
+        textField.setText(currentResolvedText);
+        suppressTextFieldListener = false;
         colorButton.setMessage(colorMsg(d.getColor()));
         outlineColorButton.setMessage(colorMsg(d.getOutlineColor()));
         hAlignButton.setMessage(Text.literal(getHAlignText(d.getAlignment().hAlign)));
@@ -925,6 +1022,28 @@ public class TextDisplayScreen extends Screen {
         super.mouseMoved(mouseX, mouseY);
     }
 
+    /**
+     * 删除前检查：自带生成的行（含 {占位符} 或 -texture/-rect/-json 指令）需二次确认——
+     * 删除后将失去枚举按钮、字段联动、图片自动更新等功能且无法自动恢复；纯文本行直接删除
+     */
+    private void requestDeleteLine(int idx) {
+        String text = textLineWidgets.get(idx).data.getText();
+        boolean generated = !CustomSignBlockEntity.extractPlaceholderKeys(text).isEmpty() || text.trim().startsWith("-");
+        if (!generated) {
+            deleteTextLine(idx);
+            return;
+        }
+        MinecraftClient.getInstance().setScreen(new ConfirmScreen(
+                confirmed -> {
+                    if (confirmed) deleteTextLine(idx);
+                    MinecraftClient.getInstance().setScreen(this);
+                },
+                Text.literal("删除文本行"),
+                Text.literal("该行包含占位符或图片指令，删除后将失去枚举按钮、字段联动、图片自动更新等功能，且无法自动恢复。"),
+                Text.literal("确定删除"),
+                Text.literal("取消")));
+    }
+
     private void deleteTextLine(int actualIdx) {
         releaseGizmo();
         blockEntity.getTextLines().remove(actualIdx); textLineWidgets.remove(actualIdx);
@@ -992,18 +1111,28 @@ public class TextDisplayScreen extends Screen {
         blockEntity.setEditingLineIndex(selectedIndex);
         blockEntity.setEditingGizmoMode(currentGizmoMode());
 
+        // 选项行（行标签面板与保存按钮行之间）：行背景 + 组标题（按钮由 super.render 绘制）
+        if (optionsRowVisible) {
+            int oy = panelBottomY - SAVE_BTN_ROW_HEIGHT - OPTIONS_ROW_HEIGHT;
+            context.fill(0, oy, width, panelBottomY - SAVE_BTN_ROW_HEIGHT, 0xAA333333);
+            context.drawBorder(0, oy, width, OPTIONS_ROW_HEIGHT, 0xFF888888);
+            for (Object[] t : optionGroupTitles) {
+                context.drawText(textRenderer, Text.literal((String) t[0]), (Integer) t[1], (Integer) t[2], 0xFF66FFCC, false);
+            }
+        }
+
         // 顶部面板
         context.fill(panelTopX, panelTopY, panelTopX + panelTopWidth, panelTopY + panelTopHeight, 0xAA333333);
         context.drawBorder(panelTopX, panelTopY, panelTopWidth, panelTopHeight, 0xFF888888);
         context.fill(panelTopX + panelTopWidth, panelTopY, panelTopX + panelTopWidth + ADD_BUTTON_WIDTH, panelTopY + panelTopHeight, 0xAA444444);
         context.drawBorder(panelTopX + panelTopWidth, panelTopY, ADD_BUTTON_WIDTH, panelTopHeight, 0xFF888888);
 
-        // 保存按钮行（全宽）
-        context.fill(0, panelTopY + panelTopHeight, width, panelTopY + panelTopHeight + SAVE_BTN_ROW_HEIGHT, 0xAA222233);
+        // 保存按钮行（全宽，锚定底部属性面板上缘）
+        context.fill(0, panelBottomY - SAVE_BTN_ROW_HEIGHT, width, panelBottomY, 0xAA222233);
         if (formatPainterMode) {
             String h = "格式刷模式：点击目标文本行标签应用格式（不含文字、位移/旋转）";
             context.drawText(textRenderer, Text.literal(h), (width - textRenderer.getWidth(h)) / 2,
-                    panelTopY + panelTopHeight + (SAVE_BTN_ROW_HEIGHT - textRenderer.fontHeight) / 2, 0xFFFFDD55, false);
+                    panelBottomY - SAVE_BTN_ROW_HEIGHT + (SAVE_BTN_ROW_HEIGHT - textRenderer.fontHeight) / 2, 0xFFFFDD55, false);
         }
 
         // 底部面板

@@ -38,11 +38,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         if (mountType == TrafficLightsBlock.MountType.POLE) {
             if (isPavementBlock(currentBlock)) return -0.46f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.68f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.74f;
             else return -0.53f;
         }
         if (mountType == TrafficLightsBlock.MountType.SIMPLE) {
             if (isPavementBlock(currentBlock)) return -0.33f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.36f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.38f;
             else return -0.33f;
         }
         return -0.53f;
@@ -94,12 +96,12 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         Block currentBlock = entity.getCachedState().getBlock();
         renderPhaseText(entity, matrices, vertexConsumers, light, currentBlock);
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()){
-            renderText(entity, matrices, vertexConsumers, light, facing, type);
+            renderText(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock);
             return;
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
-            renderTimeText(entity, matrices, vertexConsumers, light, facing, type, currentBlock);
+            renderTimeText(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock);
         }
         renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock, mountType);
 
@@ -425,7 +427,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.pop();
     }
 
-    private void renderText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState) {
+    private void renderText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
 
@@ -462,7 +464,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
         float scaleValue = 0.085f;
-        matrices.translate(0.5f, 0.0f, -0.74f);
+        matrices.translate(0.5f, 0.0f, getZOffset(mountType, currentBlock));
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
         // 背景 88 始终显示
@@ -511,7 +513,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.pop();
     }
 
-    private void renderTimeText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, Block currentBlock) {
+    private void renderTimeText(TrafficLightsBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
         boolean isTaipei = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
@@ -553,7 +555,8 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float scaleValue = 0.085f;
         // 上海式：读秒在右侧；台北式：读秒在最左侧红灯的左边，留出间隔
         float textX = isTaipei ? -11.65f / 16f + 0.25f : 0.25f;
-        matrices.translate(textX, 0.0f, -0.53f);
+        // 读秒与灯面共用 getZOffset 值；读秒为双层渲染（背景88+数字），整体加偏移浮出灯面
+        matrices.translate(textX, 0.0f, getZOffset(mountType, currentBlock) + 0.02f);
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
         CustomFontRenderer.renderText(

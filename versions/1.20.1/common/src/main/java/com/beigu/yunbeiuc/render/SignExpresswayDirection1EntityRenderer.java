@@ -1,36 +1,31 @@
 package com.beigu.yunbeiuc.render;
 
-import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDirection1;
 import com.beigu.yunbeiuc.entity.SignExpresswayDirection1Entity;
-import net.minecraft.block.Block;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 
-public class SignExpresswayDirection1EntityRenderer extends BaseSignRenderer<SignExpresswayDirection1Entity> {
+public class SignExpresswayDirection1EntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayDirection1Entity> {
 
     public SignExpresswayDirection1EntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(ctx.getTextRenderer());
+        super(ctx);
     }
 
     @Override
-    public void render(SignExpresswayDirection1Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        String text1 = entity.getText1();
-
-        if (text1 == null || text1.isEmpty()) text1 = " ";
-
+    protected void applyTransforms(MatrixStack matrices, SignExpresswayDirection1Entity entity) {
         Direction facing = entity.getCachedState().get(SignExpresswayDirection1.FACING);
-        SignExpresswayDirection1.Type type = entity.getCachedState().get(SignExpresswayDirection1.TYPE);
-        Block currentBlock = entity.getCachedState().getBlock();
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+    }
 
-        SignType signType = SignTypeConverter.convert(type);
-
-        if (currentBlock == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_1.get()){
-            renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, 4.5f, 0f, 0.05f, 0xFFFFFF);
-        } else if (currentBlock == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2.get()) {
-            renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, -4.5f, 0f, 0.05f, 0xFFFFFF);
-        }
+    @Override
+    protected float getZOffset(SignExpresswayDirection1Entity entity) {
+        return switch (SignTypeConverter.convert(entity.getCachedState().get(SignExpresswayDirection1.TYPE))) {
+            case POLE_L -> -0.74f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.45f;
+        };
     }
 }

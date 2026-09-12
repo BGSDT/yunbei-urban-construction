@@ -48,6 +48,7 @@ public class  ModMessages {
     public static final Identifier UPDATE_ZONES_BOARD_TIME_RANGE_2 = id("update_zone_board_time_range_2");
     public static final Identifier UPDATE_ZONES_BOARD_OVER_WEIGHT = id("update_zone_board_over_weight");
     public static final Identifier UPDATE_CUSTOM_SIGN = id("update_custom_sign");
+    public static final Identifier UPDATE_CUSTOM_SIGN_FIELD = id("update_custom_sign_field");
     private static Identifier id(String path) {
         return new Identifier(YunbeiUrbanConstruction.MOD_ID, path);
     }
@@ -255,6 +256,11 @@ public class  ModMessages {
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_CUSTOM_SIGN, (buf, context) -> {
             CustomSignUpdatePacket packet = new CustomSignUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
+        });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_CUSTOM_SIGN_FIELD, (buf, context) -> {
+            CustomSignFieldUpdatePacket packet = new CustomSignFieldUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayerEntity) context.getPlayer()));
         });
     }

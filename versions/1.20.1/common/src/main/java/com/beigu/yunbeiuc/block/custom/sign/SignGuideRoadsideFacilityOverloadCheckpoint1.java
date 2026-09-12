@@ -4,7 +4,7 @@ import com.beigu.yunbeiuc.block.custom.pole.RoadPoleHorizontal;
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
 import com.beigu.yunbeiuc.entity.SignGuideRoadsideFacilityOverloadCheckpoint1Entity;
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.screen.SignGuideRoadsideFacilityOverloadCheckpoint1Screen;
+import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -83,7 +83,10 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1 extends BlockWithEntit
 
     @Environment(EnvType.CLIENT)
     private void openTextDisplayScreen(BlockPos pos) {
-        MinecraftClient.getInstance().setScreen(new SignGuideRoadsideFacilityOverloadCheckpoint1Screen(pos));
+        BlockEntity blockEntity = MinecraftClient.getInstance().world.getBlockEntity(pos);
+        if (blockEntity instanceof CustomSignBlockEntity signEntity) {
+            MinecraftClient.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TextDisplayScreen(signEntity));
+        }
     }
 
     @Override

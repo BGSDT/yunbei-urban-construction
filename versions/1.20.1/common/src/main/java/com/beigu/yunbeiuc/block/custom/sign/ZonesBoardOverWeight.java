@@ -2,9 +2,9 @@ package com.beigu.yunbeiuc.block.custom.sign;
 
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleHorizontal;
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
+import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.ZonesBoardOverWeightEntity;
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.screen.ZonesBoardOverWeightScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -83,7 +83,10 @@ public class ZonesBoardOverWeight extends BlockWithEntity implements BlockEntity
 
     @Environment(EnvType.CLIENT)
     private void openTextDisplayScreen(BlockPos pos) {
-        MinecraftClient.getInstance().setScreen(new ZonesBoardOverWeightScreen(pos));
+        BlockEntity blockEntity = MinecraftClient.getInstance().world.getBlockEntity(pos);
+        if (blockEntity instanceof CustomSignBlockEntity signEntity) {
+            MinecraftClient.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TextDisplayScreen(signEntity));
+        }
     }
 
     @Override

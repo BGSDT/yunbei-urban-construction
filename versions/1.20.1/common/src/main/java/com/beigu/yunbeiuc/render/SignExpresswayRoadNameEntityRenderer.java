@@ -2,27 +2,30 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayRoadName;
 import com.beigu.yunbeiuc.entity.SignExpresswayRoadNameEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 
-public class SignExpresswayRoadNameEntityRenderer extends BaseSignRenderer<SignExpresswayRoadNameEntity> {
+public class SignExpresswayRoadNameEntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayRoadNameEntity> {
 
     public SignExpresswayRoadNameEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(ctx.getTextRenderer());
+        super(ctx);
     }
 
     @Override
-    public void render(SignExpresswayRoadNameEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        String text1 = entity.getText1();
-
-        if (text1 == null || text1.isEmpty()) text1 = " ";
-
+    protected void applyTransforms(MatrixStack matrices, SignExpresswayRoadNameEntity entity) {
         Direction facing = entity.getCachedState().get(SignExpresswayRoadName.FACING);
-        SignExpresswayRoadName.Type type = entity.getCachedState().get(SignExpresswayRoadName.TYPE);
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+    }
 
-        SignType signType = SignTypeConverter.convert(type);
-        renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, 0f, 0f, 0.045f, 0xFFFFFF);
+    @Override
+    protected float getZOffset(SignExpresswayRoadNameEntity entity) {
+        return switch (SignTypeConverter.convert(entity.getCachedState().get(SignExpresswayRoadName.TYPE))) {
+            case POLE_L -> -0.74f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.45f;
+        };
     }
 }

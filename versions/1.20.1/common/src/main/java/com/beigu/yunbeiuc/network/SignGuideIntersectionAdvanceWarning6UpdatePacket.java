@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.entity.SignTurnDirection;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning6Entity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -8,12 +9,12 @@ import net.minecraft.util.math.BlockPos;
 
 public class SignGuideIntersectionAdvanceWarning6UpdatePacket {
     private final BlockPos pos;
-    private final SignGuideIntersectionAdvanceWarning6Entity.Direction direction1;
-    private final SignGuideIntersectionAdvanceWarning6Entity.Direction direction2;
+    private final SignTurnDirection direction1;
+    private final SignTurnDirection direction2;
     private final String text1;
     private final String text2;
 
-    public SignGuideIntersectionAdvanceWarning6UpdatePacket(BlockPos pos, SignGuideIntersectionAdvanceWarning6Entity.Direction direction1, SignGuideIntersectionAdvanceWarning6Entity.Direction direction2, String text1, String text2) {
+    public SignGuideIntersectionAdvanceWarning6UpdatePacket(BlockPos pos, SignTurnDirection direction1, SignTurnDirection direction2, String text1, String text2) {
         this.pos = pos;
         this.direction1 = direction1;
         this.direction2 = direction2;
@@ -23,8 +24,8 @@ public class SignGuideIntersectionAdvanceWarning6UpdatePacket {
 
     public SignGuideIntersectionAdvanceWarning6UpdatePacket(PacketByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.direction1 = buf.readEnumConstant(SignGuideIntersectionAdvanceWarning6Entity.Direction.class);
-        this.direction2 = buf.readEnumConstant(SignGuideIntersectionAdvanceWarning6Entity.Direction.class);
+        this.direction1 = buf.readEnumConstant(SignTurnDirection.class);
+        this.direction2 = buf.readEnumConstant(SignTurnDirection.class);
         this.text1 = buf.readString();
         this.text2 = buf.readString();
     }

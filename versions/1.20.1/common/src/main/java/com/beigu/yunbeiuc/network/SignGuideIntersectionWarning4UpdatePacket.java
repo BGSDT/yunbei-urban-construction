@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.entity.SignTurnDirection;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
 import com.beigu.yunbeiuc.entity.SignGuideIntersectionWarning4Entity;
@@ -11,10 +12,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class SignGuideIntersectionWarning4UpdatePacket {
     private final BlockPos pos;
-    private final SignGuideIntersectionWarning4Entity.Direction direction1;
+    private final SignTurnDirection direction1;
     private String text1 = "";
 
-    public SignGuideIntersectionWarning4UpdatePacket(BlockPos pos, SignGuideIntersectionWarning4Entity.Direction direction1, String text1) {
+    public SignGuideIntersectionWarning4UpdatePacket(BlockPos pos, SignTurnDirection direction1, String text1) {
         this.pos = pos;
         this.direction1 = direction1;
         this.text1 = text1;
@@ -22,7 +23,7 @@ public class SignGuideIntersectionWarning4UpdatePacket {
 
     public SignGuideIntersectionWarning4UpdatePacket(PacketByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.direction1 = buf.readEnumConstant(SignGuideIntersectionWarning4Entity.Direction.class);
+        this.direction1 = buf.readEnumConstant(SignTurnDirection.class);
         this.text1 = buf.readString();
     }
 

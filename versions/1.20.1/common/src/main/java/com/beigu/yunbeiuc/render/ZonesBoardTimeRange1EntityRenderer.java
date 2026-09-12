@@ -2,29 +2,30 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.custom.sign.ZonesBoardTimeRange1;
 import com.beigu.yunbeiuc.entity.ZonesBoardTimeRange1Entity;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 
-public class ZonesBoardTimeRange1EntityRenderer extends BaseSignRenderer<ZonesBoardTimeRange1Entity> {
+public class ZonesBoardTimeRange1EntityRenderer extends AbstractTextDisplayEntityRenderer<ZonesBoardTimeRange1Entity> {
 
     public ZonesBoardTimeRange1EntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(ctx.getTextRenderer());
+        super(ctx);
     }
 
     @Override
-    public void render(ZonesBoardTimeRange1Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        String time1 = entity.getTime1();
-        String time2 = entity.getTime2();
-
-        if (time1 == null || time1.isEmpty()) time1 = " ";
-        if (time2 == null || time2.isEmpty()) time2 = " ";
-
+    protected void applyTransforms(MatrixStack matrices, ZonesBoardTimeRange1Entity entity) {
         Direction facing = entity.getCachedState().get(ZonesBoardTimeRange1.FACING);
-        ZonesBoardTimeRange1.Type type = entity.getCachedState().get(ZonesBoardTimeRange1.TYPE);
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+    }
 
-        SignType signType = SignTypeConverter.convert(type);
-        renderCenteredText(matrices, vertexConsumers, light, facing, time1 + "-" + time2, signType, 0f, 5.5f, 0.02f, 0x000000);
+    @Override
+    protected float getZOffset(ZonesBoardTimeRange1Entity entity) {
+        return switch (SignTypeConverter.convert(entity.getCachedState().get(ZonesBoardTimeRange1.TYPE))) {
+            case POLE_L -> -0.74f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.45f;
+        };
     }
 }

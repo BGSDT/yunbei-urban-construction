@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.entity.SignCompassDirection;
 import com.beigu.yunbeiuc.entity.SignExpresswayExit8Entity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -8,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class SignExpresswayExit8UpdatePacket {
     private final BlockPos pos;
-    private final SignExpresswayExit8Entity.Direction direction1;
-    private final SignExpresswayExit8Entity.Direction direction2;
+    private final SignCompassDirection direction1;
+    private final SignCompassDirection direction2;
     private final SignExpresswayExit8Entity.Expressway expressway1;
     private final SignExpresswayExit8Entity.Expressway expressway2;
     private final String text1;
@@ -18,7 +19,7 @@ public class SignExpresswayExit8UpdatePacket {
     private final String expresswayNumber2;
     private final String exitNumber;
 
-    public SignExpresswayExit8UpdatePacket(BlockPos pos, SignExpresswayExit8Entity.Direction direction1, SignExpresswayExit8Entity.Direction direction2, SignExpresswayExit8Entity.Expressway expressway1, SignExpresswayExit8Entity.Expressway expressway2, String text1, String text2, String expresswayNumber1, String expresswayNumber2, String exitNumber) {
+    public SignExpresswayExit8UpdatePacket(BlockPos pos, SignCompassDirection direction1, SignCompassDirection direction2, SignExpresswayExit8Entity.Expressway expressway1, SignExpresswayExit8Entity.Expressway expressway2, String text1, String text2, String expresswayNumber1, String expresswayNumber2, String exitNumber) {
         this.pos = pos;
         this.direction1 = direction1;
         this.direction2 = direction2;
@@ -33,8 +34,8 @@ public class SignExpresswayExit8UpdatePacket {
 
     public SignExpresswayExit8UpdatePacket(PacketByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.direction1 = buf.readEnumConstant(SignExpresswayExit8Entity.Direction.class);
-        this.direction2 = buf.readEnumConstant(SignExpresswayExit8Entity.Direction.class);
+        this.direction1 = buf.readEnumConstant(SignCompassDirection.class);
+        this.direction2 = buf.readEnumConstant(SignCompassDirection.class);
         this.expressway1 = buf.readEnumConstant(SignExpresswayExit8Entity.Expressway.class);
         this.expressway2 = buf.readEnumConstant(SignExpresswayExit8Entity.Expressway.class);
         this.text1 = buf.readString();

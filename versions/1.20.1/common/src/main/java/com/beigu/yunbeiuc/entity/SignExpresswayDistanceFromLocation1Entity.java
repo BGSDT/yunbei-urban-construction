@@ -2,15 +2,13 @@ package com.beigu.yunbeiuc.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 
-public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SignExpresswayDistanceFromLocation1Entity extends CustomSignBlockEntity {
     private String text1 = "";
     private String text2 = "";
     private String text3 = "";
@@ -20,6 +18,8 @@ public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
 
     public SignExpresswayDistanceFromLocation1Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1_ENTITY.get(), pos, state);
+        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
+        ensureDefaultTextLines();
     }
 
     @Override
@@ -31,10 +31,14 @@ public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
         this.length1 = nbt.getString("length1");
         this.length2 = nbt.getString("length2");
         this.length3 = nbt.getString("length3");
+        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
+        if (!nbt.contains("TextLines")) {
+            ensureDefaultTextLines();
+        }
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    public void writeNbt(NbtCompound nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("text3", this.text3);
@@ -44,15 +48,28 @@ public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
         super.writeNbt(nbt);
     }
 
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    /**
+     * 按原 SignExpresswayDistanceFromLocation1EntityRenderer 的固定布局生成默认文本行：
+     * renderLeftAlignedText(textN, -15, 9/0/-9, 0.04)；
+     * renderRightAlignedText(lengthN, 11, 9/0/-9, 0.04)；
+     * renderRightAlignedText("km", 15, 8.5/-0.5/-9.5, 0.025)。
+     */
+    private void ensureDefaultTextLines() {
+        if (!getTextLines().isEmpty()) return;
+        List<TextLineData> lines = new ArrayList<>();
+        // 左侧文本
+        lines.add(SignTextLinesHelper.left("{text1}", -15f, 9f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("{text2}", -15f, 0f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("{text3}", -15f, -9f, 0.04f, 0xFFFFFF));
+        // 右侧数字
+        lines.add(SignTextLinesHelper.right("{length1}", 11f, 9f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("{length2}", 11f, 0f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("{length3}", 11f, -9f, 0.04f, 0xFFFFFF));
+        // km 单位
+        lines.add(SignTextLinesHelper.right("km", 15f, 8.5f, 0.025f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("km", 15f, -0.5f, 0.025f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("km", 15f, -9.5f, 0.025f, 0xFFFFFF));
+        setTextLines(lines);
     }
 
     public String getText1() { return text1; }
@@ -85,6 +102,20 @@ public class SignExpresswayDistanceFromLocation1Entity extends BlockEntity {
         this.length3 = length3;
         markDirtyAndUpdate();
     }
+
+    @Override
+    public String getPlaceholderValue(String key) {
+        return switch (key) {
+            case "text1" -> text1;
+            case "text2" -> text2;
+            case "text3" -> text3;
+            case "length1" -> length1;
+            case "length2" -> length2;
+            case "length3" -> length3;
+            default -> null;
+        };
+    }
+
     private void markDirtyAndUpdate() {
         markDirty();
         if (world != null) {

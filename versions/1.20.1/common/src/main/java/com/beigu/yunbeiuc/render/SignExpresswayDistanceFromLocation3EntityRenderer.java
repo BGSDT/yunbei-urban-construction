@@ -2,30 +2,30 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation3;
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation3Entity;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 
-public class SignExpresswayDistanceFromLocation3EntityRenderer extends BaseSignRenderer<SignExpresswayDistanceFromLocation3Entity> {
+public class SignExpresswayDistanceFromLocation3EntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayDistanceFromLocation3Entity> {
 
     public SignExpresswayDistanceFromLocation3EntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(ctx.getTextRenderer());
+        super(ctx);
     }
 
     @Override
-    public void render(SignExpresswayDistanceFromLocation3Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        String text1 = entity.getText1();
-        String text2 = entity.getText2();
-
-        if (text1 == null || text1.isEmpty()) text1 = " ";
-        if (text2 == null || text2.isEmpty()) text2 = " ";
-
+    protected void applyTransforms(MatrixStack matrices, SignExpresswayDistanceFromLocation3Entity entity) {
         Direction facing = entity.getCachedState().get(SignExpresswayDistanceFromLocation3.FACING);
-        SignExpresswayDistanceFromLocation3.Type type = entity.getCachedState().get(SignExpresswayDistanceFromLocation3.TYPE);
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+    }
 
-        SignType signType = SignTypeConverter.convert(type);
-        renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, 0f, 5.5f, 0.045f, 0xFFFFFF);
-        renderCenteredText(matrices, vertexConsumers, light, facing, text2 + "个出口", signType, 0f, -5.5f, 0.045f, 0xFFFFFF);
+    @Override
+    protected float getZOffset(SignExpresswayDistanceFromLocation3Entity entity) {
+        return switch (SignTypeConverter.convert(entity.getCachedState().get(SignExpresswayDistanceFromLocation3.TYPE))) {
+            case POLE_L -> -0.74f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.45f;
+        };
     }
 }

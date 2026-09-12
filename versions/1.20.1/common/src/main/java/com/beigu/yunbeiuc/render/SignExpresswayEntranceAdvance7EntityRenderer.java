@@ -2,34 +2,30 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayEntranceAdvance7;
 import com.beigu.yunbeiuc.entity.SignExpresswayEntranceAdvance7Entity;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 
-public class SignExpresswayEntranceAdvance7EntityRenderer extends BaseSignRenderer<SignExpresswayEntranceAdvance7Entity> {
+public class SignExpresswayEntranceAdvance7EntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayEntranceAdvance7Entity> {
 
     public SignExpresswayEntranceAdvance7EntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(ctx.getTextRenderer());
+        super(ctx);
     }
 
     @Override
-    public void render(SignExpresswayEntranceAdvance7Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        String text1 = entity.getText1();
-        String text2 = entity.getText2();
-        String text3 = entity.getText3();
-
-        if (text1 == null || text1.isEmpty()) text1 = " ";
-        if (text2 == null || text2.isEmpty()) text2 = " ";
-        if (text3 == null || text3.isEmpty()) text3 = " ";
-
+    protected void applyTransforms(MatrixStack matrices, SignExpresswayEntranceAdvance7Entity entity) {
         Direction facing = entity.getCachedState().get(SignExpresswayEntranceAdvance7.FACING);
-        SignExpresswayEntranceAdvance7.Type type = entity.getCachedState().get(SignExpresswayEntranceAdvance7.TYPE);
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+    }
 
-        SignType signType = SignTypeConverter.convert(type);
-
-        renderCenteredText(matrices, vertexConsumers, light, facing, text1, signType, 0f, 8f, 0.035f, 0x2D9B47);
-        renderCenteredText(matrices, vertexConsumers, light, facing, text2, signType, -7f, -2f, 0.035f, 0xFFFFFF);
-        renderCenteredText(matrices, vertexConsumers, light, facing, text3, signType, 7f, -2f, 0.035f, 0xFFFFFF);
+    @Override
+    protected float getZOffset(SignExpresswayEntranceAdvance7Entity entity) {
+        return switch (SignTypeConverter.convert(entity.getCachedState().get(SignExpresswayEntranceAdvance7.TYPE))) {
+            case POLE_L -> -0.74f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.45f;
+        };
     }
 }

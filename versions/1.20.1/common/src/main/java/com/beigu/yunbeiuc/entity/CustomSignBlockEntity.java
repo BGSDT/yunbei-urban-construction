@@ -73,6 +73,59 @@ public class CustomSignBlockEntity extends BlockEntity {
     @Nullable @Override public Packet<ClientPlayPacketListener> toUpdatePacket() { return BlockEntityUpdateS2CPacket.create(this); }
     @Override public NbtCompound toInitialChunkDataNbt() { return createNbt(); }
 
+    // ==================== 占位符解析 ====================
+    // 文本行中的 {字段名} 会在渲染时替换为对应固定 NBT 字段的值；
+    // 新放置的方块由子类在 readNbt 中生成默认文本行，文本即 {字段名} 占位符，
+    // 用户仅需在 TextDisplayScreen 中修改文本（保留占位符可继续联动字段数据）。
+
+    private static final java.util.regex.Pattern PLACEHOLDER_PATTERN = java.util.regex.Pattern.compile("\\{(\\w+)\\}");
+
+    /** 按字段名取占位符值；子类 override 提供固定 NBT 字段映射，未知字段返回 null（保留原文） */
+    public String getPlaceholderValue(String key) { return null; }
+
+    /** 将文本中的 {字段名} 占位符替换为字段值 */
+    public String resolvePlaceholders(String text) {
+        if (text == null || text.indexOf('{') < 0) return text;
+        java.util.regex.Matcher m = PLACEHOLDER_PATTERN.matcher(text);
+        StringBuilder sb = new StringBuilder();
+        while (m.find()) {
+            String v = getPlaceholderValue(m.group(1));
+            m.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(v != null ? v : m.group(0)));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    // ==================== 可选字段编辑（TextDisplayScreen 选项行） ====================
+    // 选中行文本中的占位符若关联枚举字段（如国道/省道、左转/直行/右转），实体 override getFieldOptions
+    // 提供选项组，UI 在行标签上方显示按钮行，点击经 applyFieldOption 写回字段（网络包同步到服务端）。
+
+    /** 一个可选字段的选项：显示文本 + 写入值 + 是否当前值 */
+    public record FieldOption(String label, String value, boolean current) {}
+
+    /** 一个占位符关联的字段选项组：组标题 + 字段名 + 选项列表 */
+    public record FieldOptionGroup(String title, String field, List<FieldOption> options) {}
+
+    /** 便捷构造：value 等于 currentValue 的选项自动标记为当前项 */
+    protected static FieldOption opt(String label, String value, String currentValue) {
+        return new FieldOption(label, value, value != null && value.equals(currentValue));
+    }
+
+    /** 占位符 key 关联的可编辑字段选项组；无则返回 null（UI 隐藏选项行） */
+    public List<FieldOptionGroup> getFieldOptions(String placeholderKey) { return null; }
+
+    /** 应用选项按钮写入（field+value 由实体映射到对应 setter），子类实现需触发 markDirty/更新监听 */
+    public void applyFieldOption(String field, String value) { }
+
+    /** 提取文本中的全部占位符 key（按出现顺序） */
+    public static List<String> extractPlaceholderKeys(String text) {
+        List<String> keys = new ArrayList<>();
+        if (text == null) return keys;
+        java.util.regex.Matcher m = PLACEHOLDER_PATTERN.matcher(text);
+        while (m.find()) keys.add(m.group(1));
+        return keys;
+    }
+
     public static class TextLineData {
         private String text;
         private float xOffset, yOffset, zOffset;

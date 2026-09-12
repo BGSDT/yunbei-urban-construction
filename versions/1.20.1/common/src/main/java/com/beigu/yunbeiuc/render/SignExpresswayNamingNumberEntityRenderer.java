@@ -2,37 +2,30 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayNamingNumber;
 import com.beigu.yunbeiuc.entity.SignExpresswayNamingNumberEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 
-public class SignExpresswayNamingNumberEntityRenderer extends BaseSignRenderer<SignExpresswayNamingNumberEntity> {
+public class SignExpresswayNamingNumberEntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayNamingNumberEntity> {
 
     public SignExpresswayNamingNumberEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(ctx.getTextRenderer());
+        super(ctx);
     }
 
     @Override
-    public void render(SignExpresswayNamingNumberEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        String expresswayNumber = entity.getExpresswayNumber();
-        String expresswayName = entity.getExpresswayName();
-
-        if (expresswayNumber == null || expresswayNumber.isEmpty()) expresswayNumber = " ";
-        if (expresswayName == null || expresswayName.isEmpty()) expresswayName = " ";
-
+    protected void applyTransforms(MatrixStack matrices, SignExpresswayNamingNumberEntity entity) {
         Direction facing = entity.getCachedState().get(SignExpresswayNamingNumber.FACING);
-        SignExpresswayNamingNumber.Type type = entity.getCachedState().get(SignExpresswayNamingNumber.TYPE);
-
-        SignType signType = SignTypeConverter.convert(type);
-        renderCenteredText(matrices, vertexConsumers, light, facing, expresswayNumber, signType, 0f, 1.5f, 0.08f, 0xFFFFFF);
-        renderCenteredText(matrices, vertexConsumers, light, facing, insertSpaceBetweenChars(expresswayName), signType, 0f, -6.5f, 0.02f, 0xFFFFFF);
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
     }
 
-    public static String insertSpaceBetweenChars(String str) {
-        if (str == null || str.isEmpty() || str.equals(" ")) {
-            return str;
-        }
-        return str.replaceAll(".(?!$)", "$0 ");
+    @Override
+    protected float getZOffset(SignExpresswayNamingNumberEntity entity) {
+        return switch (SignTypeConverter.convert(entity.getCachedState().get(SignExpresswayNamingNumber.TYPE))) {
+            case POLE_L -> -0.74f;
+            case POLE_H -> -0.81f;
+            case NORMAL -> -0.45f;
+        };
     }
 }

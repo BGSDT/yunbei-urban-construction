@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
+import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.ZonesBoardImageEntity;
 import com.beigu.yunbeiuc.item.ModItems;
-import com.beigu.yunbeiuc.screen.ZonesBoardImageScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -81,11 +81,9 @@ public class ZonesBoardImage extends BlockWithEntity implements BlockEntityProvi
 
     @Environment(EnvType.CLIENT)
     private void openTextDisplayScreen(BlockPos pos) {
-        if (MinecraftClient.getInstance().world != null) {
-            BlockEntity blockEntity = MinecraftClient.getInstance().world.getBlockEntity(pos);
-            if (blockEntity instanceof ZonesBoardImageEntity zonesBoardEntity) {
-                MinecraftClient.getInstance().setScreen(new ZonesBoardImageScreen(pos));
-            }
+        BlockEntity blockEntity = MinecraftClient.getInstance().world.getBlockEntity(pos);
+        if (blockEntity instanceof CustomSignBlockEntity signEntity) {
+            MinecraftClient.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TextDisplayScreen(signEntity));
         }
     }
 
