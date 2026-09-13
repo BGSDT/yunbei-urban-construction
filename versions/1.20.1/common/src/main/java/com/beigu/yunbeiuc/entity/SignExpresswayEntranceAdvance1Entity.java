@@ -29,7 +29,7 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         this.text2 = nbt.getString("text2");
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
         // 旧存档兼容：无 logoType1 键时按原逻辑（国/省道 × 编号位数）推导初始值
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1") : legacyLogoType1();
+        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
@@ -57,9 +57,9 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", 0f, 7f, 0.65f));
-        lines.add(SignTextLinesHelper.centered("{text1}", -7f, -2f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("{text2}", 7f, -2f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centeredWithZ("{expresswayNumber1}", 0f, 6.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centered("汕头", -7f, -2f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("深圳", 7f, -2f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centeredWithZ("G15", 0f, 6.5f, 0.045f, 0xFFFFFF, 0.002f));
         setTextLines(lines);
     }
 
@@ -107,8 +107,8 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
             case "logo1" -> List.of(new FieldOptionGroup("高速Logo", "logoType1", List.of(
                     opt("国家高速公路（2位数）", "national_logo_1", logoType1),
                     opt("国家高速公路（1位数）", "national_logo_2", logoType1),
-                    opt("省级高速公路（2位数）", "provicial_logo_1", logoType1),
-                    opt("省级高速公路（1位数）", "provicial_logo_2", logoType1))));
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType1),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType1))));
             default -> null;
         };
     }
@@ -125,7 +125,7 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         boolean hasDigits = expresswayNumber1 != null && expresswayNumber1.matches(".*\\d.*");
         String digits = expresswayNumber1 == null ? "" : expresswayNumber1.replaceAll("[^0-9]", "");
         boolean oneDigit = hasDigits && digits.length() == 1;
-        String kind = expressway1 == Expressway.PROVINCIAL ? "provicial" : "national";
+        String kind = expressway1 == Expressway.PROVINCIAL ? "provincial" : "national";
         return kind + "_logo_" + (oneDigit ? "2" : "1");
     }
 

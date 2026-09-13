@@ -42,8 +42,8 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
         this.expresswayNumber2 = nbt.getString("expresswayNumber2");
         // 旧存档兼容：无 logoTypeN 键时按原逻辑（国/省道 × 编号位数）推导初始值
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1") : legacyLogoType1();
-        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2") : legacyLogoType2();
+        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
+        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
@@ -82,19 +82,19 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.left("{text1}", -7f, 8f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("{text2}", -7f, -3f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("{text3}", -7f, -10f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{length1}", 13.5f, 8f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{length2}", 13.5f, -3f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{length3}", 13.5f, -10f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("南通", -7f, 8f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("扬州", -7f, -3f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("南京", -7f, -10f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("25", 13.5f, 8f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("92", 13.5f, -3f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("115", 13.5f, -10f, 0.04f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.right("km", 17.5f, 7.5f, 0.025f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.right("km", 17.5f, -3.5f, 0.025f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.right("km", 17.5f, -10.5f, 0.025f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -14f, 8f, 0.65f));
-        lines.add(SignTextLinesHelper.centeredWithZ("{expresswayNumber1}", -14f, 7.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centeredWithZ("G15", -14f, 7.5f, 0.045f, 0xFFFFFF, 0.002f));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", -14f, -5.5f, 0.65f));
-        lines.add(SignTextLinesHelper.centeredWithZ("{expresswayNumber2}", -14f, -6f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centeredWithZ("G25", -14f, -6f, 0.045f, 0xFFFFFF, 0.002f));
         setTextLines(lines);
     }
 
@@ -170,7 +170,7 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
             case "length3" -> length3;
             case "expresswayNumber1" -> expresswayNumber1;
             case "expresswayNumber2" -> expresswayNumber2;
-            // 高速盾牌 logo 纹理：national/provicial × logo_1(宽)/logo_2(窄) 四选一枚举字段
+            // 高速盾牌 logo 纹理：national/provincial × logo_1(宽)/logo_2(窄) 四选一枚举字段
             case "logo1" -> logoType1;
             case "logo2" -> logoType2;
             // 对应原 renderExpresswayLogo 的宽版 _1 纹理 +1px X 偏移
@@ -194,13 +194,13 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
             case "logo1" -> List.of(new FieldOptionGroup("高速Logo", "logoType1", List.of(
                     opt("国家高速公路（2位数）", "national_logo_1", logoType1),
                     opt("国家高速公路（1位数）", "national_logo_2", logoType1),
-                    opt("省级高速公路（2位数）", "provicial_logo_1", logoType1),
-                    opt("省级高速公路（1位数）", "provicial_logo_2", logoType1))));
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType1),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType1))));
             case "logo2" -> List.of(new FieldOptionGroup("高速Logo", "logoType2", List.of(
                     opt("国家高速公路（2位数）", "national_logo_1", logoType2),
                     opt("国家高速公路（1位数）", "national_logo_2", logoType2),
-                    opt("省级高速公路（2位数）", "provicial_logo_1", logoType2),
-                    opt("省级高速公路（1位数）", "provicial_logo_2", logoType2))));
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType2),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType2))));
             default -> null;
         };
     }
@@ -213,9 +213,9 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
         }
     }
 
-    /** 与原渲染器 switch 一致：省道用 provicial（保留原资源拼写），无数字或多位数字用宽版 _1 */
+    /** 与原渲染器 switch 一致：省道用 provincial，无数字或多位数字用宽版 _1 */
     private static String expresswayLogoTexture(Expressway expressway, String expresswayNumber) {
-        String kind = expressway == Expressway.PROVINCIAL ? "provicial" : "national";
+        String kind = expressway == Expressway.PROVINCIAL ? "provincial" : "national";
         return kind + "_logo_" + (isNarrowLogo(expresswayNumber) ? "2" : "1");
     }
 

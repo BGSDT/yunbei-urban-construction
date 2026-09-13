@@ -34,8 +34,8 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
         this.expresswayNumber2 = nbt.getString("expresswayNumber2");
         // 旧存档兼容：无 logoTypeN 键时按原逻辑（国/省道 × 编号位数）推导初始值
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1") : legacyLogoType1();
-        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2") : legacyLogoType2();
+        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
+        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
@@ -76,12 +76,12 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -6f, 10f, 0.65f));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 6f, 10f, 0.65f));
-        lines.add(SignTextLinesHelper.centeredWithZ("{expresswayNumber1}", -6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f));
-        lines.add(SignTextLinesHelper.centeredWithZ("{expresswayNumber2}", 6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f));
-        lines.add(SignTextLinesHelper.centered("{text1}", -7f, 1f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("{text2}", -7f, -6f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("{text3}", 7f, 1f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("{text4}", 7f, -6f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centeredWithZ("G40", -6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centeredWithZ("G42", 6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centered("南通", -7f, 1f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("苏州", -7f, -6f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("信阳", 7f, 1f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("武汉", 7f, -6f, 0.035f, 0xFFFFFF));
         setTextLines(lines);
     }
 
@@ -163,13 +163,13 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
             case "logo1" -> List.of(new FieldOptionGroup("高速Logo", "logoType1", List.of(
                     opt("国家高速公路（2位数）", "national_logo_1", logoType1),
                     opt("国家高速公路（1位数）", "national_logo_2", logoType1),
-                    opt("省级高速公路（2位数）", "provicial_logo_1", logoType1),
-                    opt("省级高速公路（1位数）", "provicial_logo_2", logoType1))));
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType1),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType1))));
             case "logo2" -> List.of(new FieldOptionGroup("高速Logo", "logoType2", List.of(
                     opt("国家高速公路（2位数）", "national_logo_1", logoType2),
                     opt("国家高速公路（1位数）", "national_logo_2", logoType2),
-                    opt("省级高速公路（2位数）", "provicial_logo_1", logoType2),
-                    opt("省级高速公路（1位数）", "provicial_logo_2", logoType2))));
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType2),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType2))));
             default -> null;
         };
     }
@@ -186,7 +186,7 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         boolean hasDigits = expresswayNumber != null && expresswayNumber.matches(".*\\d.*");
         String digits = expresswayNumber == null ? "" : expresswayNumber.replaceAll("[^0-9]", "");
         boolean oneDigit = hasDigits && digits.length() == 1;
-        String kind = expressway == Expressway.PROVINCIAL ? "provicial" : "national";
+        String kind = expressway == Expressway.PROVINCIAL ? "provincial" : "national";
         return kind + "_logo_" + (oneDigit ? "2" : "1");
     }
 

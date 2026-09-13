@@ -13,8 +13,8 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     private String text1 = "";
     private String text2 = "";
     private String text3 = "";
-    private RoadType roadType1 = RoadType.EXPRESSWAY;
-    private RoadType roadType2 = RoadType.EXPRESSWAY;
+    private RoadType roadType1 = RoadType.ORDINARY_MUNICIPAL;
+    private RoadType roadType2 = RoadType.ORDINARY_MUNICIPAL;
     private RoadType roadType3 = RoadType.EXPRESSWAY;
     private String length1 = "";
     private String length2 = "";
@@ -43,9 +43,9 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         this.length2 = nbt.getString("length2");
         this.length3 = nbt.getString("length3");
         // 旧存档兼容：无 logoTypeN 键时按路名长度推导盾牌版本（3字/4字）
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1") : legacyLogoType1();
-        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2") : legacyLogoType2();
-        this.logoType3 = nbt.contains("logoType3") ? nbt.getString("logoType3") : legacyLogoType3();
+        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
+        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
+        this.logoType3 = nbt.contains("logoType3") ? nbt.getString("logoType3").replace("provicial", "provincial") : legacyLogoType3();
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行。
         // logo 行的存在性与文本 z 偏移都依赖 roadType（构造时字段还是默认值 EXPRESSWAY），
         // 故旧存档须先清空构造时生成的行，再按存档字段重建
@@ -83,12 +83,12 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.addAll(buildRow(roadType1, "{text1}", "logo1", 12f));
-        lines.addAll(buildRow(roadType2, "{text2}", "logo2", 0f));
-        lines.addAll(buildRow(roadType3, "{text3}", "logo3", -12f));
-        lines.add(SignTextLinesHelper.right("{length1}", 13f, 12f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{length2}", 13f, 0f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{length3}", 13f, -12f, 0.04f, 0xFFFFFF));
+        lines.addAll(buildRow(roadType1, "人民路", "logo1", 12f));
+        lines.addAll(buildRow(roadType2, "东环路", "logo2", 0f));
+        lines.addAll(buildRow(roadType3, "苏州新区", "logo3", -12f));
+        lines.add(SignTextLinesHelper.right("7", 13f, 12f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("17", 13f, 0f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("30", 13f, -12f, 0.04f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.right("km", 17f, 11.5f, 0.025f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.right("km", 17f, -0.5f, 0.025f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.right("km", 17f, -12.5f, 0.025f, 0xFFFFFF));

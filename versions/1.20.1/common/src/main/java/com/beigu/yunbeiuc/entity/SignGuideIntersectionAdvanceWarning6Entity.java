@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockEntity {
     private SignTurnDirection direction1 = SignTurnDirection.STRAIGHT;
-    private SignTurnDirection direction2 = SignTurnDirection.STRAIGHT;
+    private SignTurnDirection direction2 = SignTurnDirection.RIGHT;
     private String text1 = "";
     private String text2 = "";
 
@@ -46,11 +46,10 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
      * 按原 SignGuideIntersectionAdvanceWarning6EntityRenderer 的固定布局生成默认文本行：
      * 原渲染器按方块身份区分（同一方块类注册了 WARNING_6 / WARNING_8 两个方块）。
      * WARNING_6 → renderDirectionLogo1(direction1, andX -13, 6, size 0.4) / renderDirectionLogo1(direction2, -13, -6, 0.4)，
-     *             其中 adjustedX = (direction == RIGHT) ? 13 : -13（右转箭头整行 X 镜像），迁移为基础 xOffset 0 +
-     *             xShift 占位符 {logo1x}/{logo2x}（值 = 镜像后的完整 x）；
+     *             其中 adjustedX = (direction == RIGHT) ? 13 : -13（右转整行 X 镜像），迁移为按当前 direction1/2
+     *             直接生成行 xOffset，切换转向时由 applyFieldOption 同步更新（见 mirrorWarning6Lines）；
      *             renderTextWithDirectionAdjustment(text1, 6, 6, 0.035) / (text2, 6, -6, 0.035)——原渲染器按方向枚举
-     *             镜像行 X（RIGHT 时 -6），文本行无 xShift 机制，默认行按非镜像方向（LEFT/STRAIGHT）生成静态位置，
-     *             RIGHT 方向需手动调整该行 xOffset。
+     *             镜像行 X（RIGHT 时取反），迁移方式同 logo 行。
      * WARNING_8 → renderDirectionLogo2(direction1, -9, -3, 0.4) / renderDirectionLogo2(direction2, 9, -3, 0.4)（转弯箭头纹理，不镜像），
      *             renderCenteredText(text1, -9, 6, 0.035) / (text2, 9, 6, 0.035)。
      */
@@ -59,15 +58,20 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
         boolean isWarning6 = getCachedState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning6) {
-            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -13f, 6f, 0.4f));
-            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", -13f, -6f, 0.4f));
-            lines.add(SignTextLinesHelper.centered("{text1}", 6f, 6f, 0.035f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("{text2}", 6f, -6f, 0.035f, 0xFFFFFF));
+            // 原渲染器右转时整行 X 镜像：logo ±13、文本 ±6（旧存档 direction 已为 RIGHT 时同样生效）
+            float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
+            float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
+            float text1X = direction1 == SignTurnDirection.RIGHT ? -6f : 6f;
+            float text2X = direction2 == SignTurnDirection.RIGHT ? -6f : 6f;
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", logo1X, 6f, 0.4f));
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", logo2X, -6f, 0.4f));
+            lines.add(SignTextLinesHelper.centered("大厂", text1X, 6f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("燕郊", text2X, -6f, 0.035f, 0xFFFFFF));
         } else {
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -9f, -3f, 0.4f));
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", 9f, -3f, 0.4f));
-            lines.add(SignTextLinesHelper.centered("{text1}", -9f, 6f, 0.035f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("{text2}", 9f, 6f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("东菀", -9f, 6f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("深圳", 9f, 6f, 0.035f, 0xFFFFFF));
         }
         setTextLines(lines);
     }
@@ -102,8 +106,6 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
             // WARNING_8 方块用 left_turn/right_turn 纹理，其余用 left/right
             case "logo1" -> logoName(direction1, isWarning8);
             case "logo2" -> logoName(direction2, isWarning8);
-            // 对应原 renderDirectionLogo1 的 X 镜像：adjustedX = (direction == RIGHT) ? -andX : andX（andX = -13）
-            case "logo1x", "logo2x" -> "0"; // 兼容旧存档已保存的行；默认行不再附加偏移，X 由玩家在编辑界面调整
             case "text1" -> text1;
             case "text2" -> text2;
             default -> null;
@@ -128,9 +130,45 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
     @Override
     public void applyFieldOption(String field, String value) {
         switch (field) {
-            case "direction1" -> setDirection1(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
-            case "direction2" -> setDirection2(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
+            case "direction1" -> {
+                setDirection1(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
+                mirrorWarning6Lines();
+            }
+            case "direction2" -> {
+                setDirection2(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
+                mirrorWarning6Lines();
+            }
         }
+    }
+
+    /**
+     * 对应原渲染器 WARNING_6 分支的右转 X 镜像：direction 为 RIGHT 时整行 X 取反
+     * （renderDirectionLogo1 adjustedX = (texture==RIGHT) ? -andX : andX，andX=-13 → RIGHT 时 13；
+     *   renderTextWithDirectionAdjustment adjustedX = (direction==RIGHT) ? -6 : 6）。
+     * logo 行按 {logoN} 占位符定位；文本行默认文本为固定字面量，按 builtin 标记 + 出现顺序
+     * 定位（第 1/2 条对应 direction1/2）。UI 新增的自定义行（无 builtin 标记）不触碰；
+     * WARNING_8 方块布局固定不镜像。
+     */
+    private void mirrorWarning6Lines() {
+        if (getCachedState().getBlock() != com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get()) return;
+        float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float text1X = direction1 == SignTurnDirection.RIGHT ? -6f : 6f;
+        float text2X = direction2 == SignTurnDirection.RIGHT ? -6f : 6f;
+        boolean changed = false;
+        int textIndex = 0;
+        for (TextLineData line : getTextLines()) {
+            String text = line.getText();
+            if (text.trim().startsWith("-texture")) {
+                if (text.contains("{logo1}")) { line.setXOffset(logo1X); changed = true; }
+                else if (text.contains("{logo2}")) { line.setXOffset(logo2X); changed = true; }
+            } else if (line.isBuiltin()) {
+                if (textIndex == 0) { line.setXOffset(text1X); changed = true; }
+                else if (textIndex == 1) { line.setXOffset(text2X); changed = true; }
+                textIndex++;
+            }
+        }
+        if (changed) markDirtyAndUpdate();
     }
 
     private static String logoName(SignTurnDirection direction, boolean turnSet) {

@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockEntity {
-    private SignTurnDirection direction1 = SignTurnDirection.STRAIGHT;
-    private SignTurnDirection direction2 = SignTurnDirection.STRAIGHT;
-    private SignTurnDirection direction3 = SignTurnDirection.STRAIGHT;
+    private SignTurnDirection direction1 = SignTurnDirection.LEFT;
+    private SignTurnDirection direction2 = SignTurnDirection.LEFT;
+    private SignTurnDirection direction3 = SignTurnDirection.RIGHT;
     private String text1 = "";
     private String text2 = "";
     private String text3 = "";
@@ -52,20 +52,27 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
      * 按原 SignGuideIntersectionAdvanceWarning7EntityRenderer 的固定布局生成默认文本行：
      * renderDirectionLogo(direction1, andX -13, 12, size 0.4) / renderDirectionLogo(direction2, -13, 0, 0.4)
      * / renderDirectionLogo(direction3, -13, -12, 0.4)，其中 adjustedX = (direction == RIGHT) ? 13 : -13
-     * （右转箭头整行 X 镜像），迁移为基础 xOffset 0 + xShift 占位符 {logo1x}/{logo2x}/{logo3x}（值 = 镜像后的完整 x）；
+     * （右转整行 X 镜像），迁移为按当前 direction1/2/3 直接生成行 xOffset，切换转向时由 applyFieldOption
+     * 同步更新（见 mirrorLines）；
      * renderTextWithDirectionAdjustment(text1, 6, 12, 0.035) / (text2, 6, 0, 0.035) / (text3, 6, -12, 0.035)——
-     * 原渲染器按方向枚举镜像行 X（RIGHT 时 -6），文本行无 xShift 机制，默认行按非镜像方向（LEFT/STRAIGHT）
-     * 生成静态位置，RIGHT 方向需手动调整该行 xOffset。
+     * 原渲染器按方向枚举镜像行 X（RIGHT 时取反），迁移方式同 logo 行。
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
+        // 原渲染器右转时整行 X 镜像：logo ±13、文本 ±6（旧存档 direction 已为 RIGHT 时同样生效）
+        float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float logo3X = direction3 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float text1X = direction1 == SignTurnDirection.RIGHT ? -6f : 6f;
+        float text2X = direction2 == SignTurnDirection.RIGHT ? -6f : 6f;
+        float text3X = direction3 == SignTurnDirection.RIGHT ? -6f : 6f;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -13f, 12f, 0.4f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", -13f, 0f, 0.4f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo3}.png", -13f, -12f, 0.4f));
-        lines.add(SignTextLinesHelper.centered("{text1}", 6f, 12f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("{text2}", 6f, 0f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("{text3}", 6f, -12f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", logo1X, 12f, 0.4f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", logo2X, 0f, 0.4f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo3}.png", logo3X, -12f, 0.4f));
+        lines.add(SignTextLinesHelper.centered("学府路", text1X, 12f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("公滨路", text2X, 0f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("黄河路", text3X, -12f, 0.035f, 0xFFFFFF));
         setTextLines(lines);
     }
 
@@ -108,8 +115,6 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
             case "logo1" -> logoName(direction1);
             case "logo2" -> logoName(direction2);
             case "logo3" -> logoName(direction3);
-            // 对应原 renderDirectionLogo 的 X 镜像：adjustedX = (direction == RIGHT) ? -andX : andX（andX = -13）
-            case "logo1x", "logo2x", "logo3x" -> "0"; // 兼容旧存档已保存的行；默认行不再附加偏移，X 由玩家在编辑界面调整
             case "text1" -> text1;
             case "text2" -> text2;
             case "text3" -> text3;
@@ -139,10 +144,51 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
     @Override
     public void applyFieldOption(String field, String value) {
         switch (field) {
-            case "direction1" -> setDirection1(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
-            case "direction2" -> setDirection2(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
-            case "direction3" -> setDirection3(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
+            case "direction1" -> {
+                setDirection1(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
+                mirrorLines();
+            }
+            case "direction2" -> {
+                setDirection2(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
+                mirrorLines();
+            }
+            case "direction3" -> {
+                setDirection3(SignTurnDirection.fromName(value, SignTurnDirection.STRAIGHT));
+                mirrorLines();
+            }
         }
+    }
+
+    /**
+     * 对应原渲染器的右转 X 镜像：direction 为 RIGHT 时整行 X 取反
+     * （renderDirectionLogo adjustedX = (texture==RIGHT) ? -andX : andX，andX=-13 → RIGHT 时 13；
+     *   renderTextWithDirectionAdjustment adjustedX = (direction==RIGHT) ? -6 : 6）。
+     * logo 行按 {logoN} 占位符定位；文本行默认文本为固定字面量，按 builtin 标记 + 出现顺序
+     * 定位（第 1/2/3 条对应 direction1/2/3）。UI 新增的自定义行（无 builtin 标记）不触碰。
+     */
+    private void mirrorLines() {
+        float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float logo3X = direction3 == SignTurnDirection.RIGHT ? 13f : -13f;
+        float text1X = direction1 == SignTurnDirection.RIGHT ? -6f : 6f;
+        float text2X = direction2 == SignTurnDirection.RIGHT ? -6f : 6f;
+        float text3X = direction3 == SignTurnDirection.RIGHT ? -6f : 6f;
+        boolean changed = false;
+        int textIndex = 0;
+        for (TextLineData line : getTextLines()) {
+            String text = line.getText();
+            if (text.trim().startsWith("-texture")) {
+                if (text.contains("{logo1}")) { line.setXOffset(logo1X); changed = true; }
+                else if (text.contains("{logo2}")) { line.setXOffset(logo2X); changed = true; }
+                else if (text.contains("{logo3}")) { line.setXOffset(logo3X); changed = true; }
+            } else if (line.isBuiltin()) {
+                if (textIndex == 0) { line.setXOffset(text1X); changed = true; }
+                else if (textIndex == 1) { line.setXOffset(text2X); changed = true; }
+                else if (textIndex == 2) { line.setXOffset(text3X); changed = true; }
+                textIndex++;
+            }
+        }
+        if (changed) markDirtyAndUpdate();
     }
 
     private static String logoName(SignTurnDirection direction) {

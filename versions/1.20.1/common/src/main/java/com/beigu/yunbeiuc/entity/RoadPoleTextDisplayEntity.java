@@ -18,6 +18,8 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
             TextLineData defaultLine = new TextLineData("");
             defaultLine.setColor(0xFFFFFF);
             defaultLine.setFontSize(DEFAULT_FONT_SIZE);
+            // 系统初始化生成的行：删除时 UI 需二次确认
+            defaultLine.setBuiltin(true);
             getTextLines().add(defaultLine);
         }
     }
@@ -40,6 +42,8 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
             // 将旧的 fontSize (int) 转换为新的 fontSize (float)
             line.setFontSize(legacyFontSize / 100.0f); // 假设25对应0.25f
             line.setAlignment(TextAlignment.CENTER_CENTER);
+            // 旧格式迁移生成的行：删除时 UI 需二次确认
+            line.setBuiltin(true);
             getTextLines().add(line);
         }
     }
@@ -53,6 +57,8 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
         if (getTextLines().isEmpty()) {
             TextLineData line = new TextLineData(text);
             line.setFontSize(DEFAULT_FONT_SIZE);
+            // 系统 API 兜底创建的行：删除时 UI 需二次确认
+            line.setBuiltin(true);
             getTextLines().add(line);
         } else {
             getTextLines().get(0).setText(text);
@@ -69,6 +75,8 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
             TextLineData line = new TextLineData("");
             line.setColor(color);
             line.setFontSize(DEFAULT_FONT_SIZE);
+            // 系统 API 兜底创建的行：删除时 UI 需二次确认
+            line.setBuiltin(true);
             getTextLines().add(line);
         } else {
             getTextLines().get(0).setColor(color);
@@ -86,6 +94,8 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
         if (getTextLines().isEmpty()) {
             TextLineData line = new TextLineData("");
             line.setFontSize(fontSize / 100.0f);
+            // 系统 API 兜底创建的行：删除时 UI 需二次确认
+            line.setBuiltin(true);
             getTextLines().add(line);
         } else {
             getTextLines().get(0).setFontSize(fontSize / 100.0f);

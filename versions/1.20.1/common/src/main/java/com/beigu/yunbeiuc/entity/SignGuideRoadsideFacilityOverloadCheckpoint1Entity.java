@@ -44,8 +44,8 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.right("{length1}", -1.5f, -13f, 0.045f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{unit1}", 2.5f, -13.5f, 0.03f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("500", -1.5f, -13f, 0.045f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("m", 2.5f, -13.5f, 0.03f, 0xFFFFFF));
         setTextLines(lines);
     }
 

@@ -137,6 +137,9 @@ public class CustomSignBlockEntity extends BlockEntity {
         private int outlineColor = 0x000000;
         private float fontSize;
         private float scaleX, scaleY, scaleZ;
+        // 是否为实体默认布局生成的系统行（SignTextLinesHelper 工厂方法置 true）；
+        // 删除确认依据之一：文本被用户改写（占位符消失）后仍需提示，与 NBT 持久化
+        private boolean builtin = false;
 
         public TextLineData(String text) {
             this.text = text != null ? text : "";
@@ -158,6 +161,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             c.outline = outline; c.outlineColor = outlineColor;
             c.fontSize = fontSize;
             c.scaleX = scaleX; c.scaleY = scaleY; c.scaleZ = scaleZ;
+            c.builtin = builtin;
             return c;
         }
 
@@ -170,6 +174,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             this.outline = other.outline; this.outlineColor = other.outlineColor;
             this.fontSize = other.fontSize;
             this.scaleX = other.scaleX; this.scaleY = other.scaleY; this.scaleZ = other.scaleZ;
+            this.builtin = other.builtin;
         }
 
         public void applyFormatFrom(TextLineData other) {
@@ -190,6 +195,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             nbt.putBoolean("outline", outline);; nbt.putInt("outlineColor", outlineColor);
             nbt.putFloat("fontSize", fontSize);
             nbt.putFloat("scaleX", scaleX); nbt.putFloat("scaleY", scaleY); nbt.putFloat("scaleZ", scaleZ);
+            nbt.putBoolean("builtin", builtin);
             return nbt;
         }
 
@@ -207,6 +213,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             data.scaleX = nbt.contains("scaleX") ? nbt.getFloat("scaleX") : 1.0f;
             data.scaleY = nbt.contains("scaleY") ? nbt.getFloat("scaleY") : 1.0f;
             data.scaleZ = nbt.contains("scaleZ") ? nbt.getFloat("scaleZ") : 1.0f;
+            data.builtin = nbt.getBoolean("builtin");
             return data;
         }
 
@@ -229,6 +236,7 @@ public class CustomSignBlockEntity extends BlockEntity {
         public float getScaleX() { return scaleX; } public void setScaleX(float s) { this.scaleX = s; }
         public float getScaleY() { return scaleY; } public void setScaleY(float s) { this.scaleY = s; }
         public float getScaleZ() { return scaleZ; } public void setScaleZ(float s) { this.scaleZ = s; }
+        public boolean isBuiltin() { return builtin; } public void setBuiltin(boolean b) { this.builtin = b; }
     }
 
     public enum TextAlignment {

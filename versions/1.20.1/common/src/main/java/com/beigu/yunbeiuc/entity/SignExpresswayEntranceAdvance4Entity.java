@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity {
-    private SignCompassDirection direction1 = SignCompassDirection.EAST;
+    private SignCompassDirection direction1 = SignCompassDirection.SOUTH;
     private Expressway expressway1 = Expressway.NATIONAL;
     private String text1 = "";
     private String expresswayNumber1 = "";
@@ -29,7 +29,7 @@ public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity 
         this.text1 = nbt.getString("text1");
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
         // 旧存档兼容：无 logoType1 键时按原逻辑（国/省道 × 编号位数）推导初始值
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1") : legacyLogoType1();
+        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
@@ -59,8 +59,8 @@ public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity 
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -3f, 7f, 0.65f));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{dir1}.png", 6f, 7f, 0.4f));
-        lines.add(SignTextLinesHelper.centered("{text1}方向", 0f, -2f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centeredWithZ("{expresswayNumber1}", -3f, 6.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centered("梅州方向", 0f, -2f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centeredWithZ("G25", -3f, 6.5f, 0.045f, 0xFFFFFF, 0.002f));
         setTextLines(lines);
     }
 
@@ -96,7 +96,7 @@ public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity 
         boolean hasDigits = expresswayNumber1 != null && expresswayNumber1.matches(".*\\d.*");
         String digits = expresswayNumber1 == null ? "" : expresswayNumber1.replaceAll("[^0-9]", "");
         boolean oneDigit = hasDigits && digits.length() == 1;
-        String kind = expressway1 == Expressway.PROVINCIAL ? "provicial" : "national";
+        String kind = expressway1 == Expressway.PROVINCIAL ? "provincial" : "national";
         return kind + "_logo_" + (oneDigit ? "2" : "1");
     }
 
@@ -125,8 +125,8 @@ public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity 
             case "logo1" -> List.of(new FieldOptionGroup("高速Logo", "logoType1", List.of(
                     opt("国家高速公路（2位数）", "national_logo_1", logoType1),
                     opt("国家高速公路（1位数）", "national_logo_2", logoType1),
-                    opt("省级高速公路（2位数）", "provicial_logo_1", logoType1),
-                    opt("省级高速公路（1位数）", "provicial_logo_2", logoType1))));
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType1),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType1))));
             case "dir1" -> List.of(new FieldOptionGroup("方向", "direction1", List.of(
                     opt("北（N）", "north", direction1.getName()),
                     opt("南（S）", "south", direction1.getName()),

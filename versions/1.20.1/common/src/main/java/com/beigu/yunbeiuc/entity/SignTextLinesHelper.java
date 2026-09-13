@@ -60,6 +60,8 @@ public final class SignTextLinesHelper {
         line.setAlignment(TextAlignment.CENTER_CENTER);
         line.setBold(false);
         line.setFontSize(size / 0.4f);
+        // 系统默认布局行：删除时 UI 需二次确认（即使占位符被用户改写）
+        line.setBuiltin(true);
         return line;
     }
 
@@ -73,6 +75,8 @@ public final class SignTextLinesHelper {
         // 原渲染器文本一律 bold
         line.setBold(true);
         line.setFontSize(scale * 20f);
+        // 系统默认布局行：删除时 UI 需二次确认（即使占位符被用户改写）
+        line.setBuiltin(true);
         return line;
     }
 }

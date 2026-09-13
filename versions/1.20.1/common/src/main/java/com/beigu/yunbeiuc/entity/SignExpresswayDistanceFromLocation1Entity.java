@@ -58,13 +58,13 @@ public class SignExpresswayDistanceFromLocation1Entity extends CustomSignBlockEn
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
         // 左侧文本
-        lines.add(SignTextLinesHelper.left("{text1}", -15f, 9f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("{text2}", -15f, 0f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("{text3}", -15f, -9f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("采育", -15f, 9f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("廊坊", -15f, 0f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("天津", -15f, -9f, 0.04f, 0xFFFFFF));
         // 右侧数字
-        lines.add(SignTextLinesHelper.right("{length1}", 11f, 9f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{length2}", 11f, 0f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("{length3}", 11f, -9f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("14", 11f, 9f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("37", 11f, 0f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.right("95", 11f, -9f, 0.04f, 0xFFFFFF));
         // km 单位
         lines.add(SignTextLinesHelper.right("km", 15f, 8.5f, 0.025f, 0xFFFFFF));
         lines.add(SignTextLinesHelper.right("km", 15f, -0.5f, 0.025f, 0xFFFFFF));

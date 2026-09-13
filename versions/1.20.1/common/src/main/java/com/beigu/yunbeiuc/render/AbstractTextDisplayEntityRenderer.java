@@ -170,6 +170,12 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.peek().getPositionMatrix(), vertexConsumers, light);
 
+        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
+        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
+        if (editing && vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
+            immediate.draw();
+        }
+
         if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
         TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
         if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
@@ -213,6 +219,12 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         };
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.peek().getPositionMatrix(), vertexConsumers, light);
+
+        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
+        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
+        if (editing && vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
+            immediate.draw();
+        }
 
         if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
         TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
@@ -333,6 +345,12 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.vertex(positionMatrix, halfWidth, -halfHeight, 0).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
         consumer.vertex(positionMatrix, halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
         consumer.vertex(positionMatrix, -halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
+
+        // 图片顶点在缓冲层，gizmo 轴/描边为立即模式——编辑行先 flush 贴图层，
+        // 否则帧末绘制图片时会覆盖 gizmo 轴与编辑描边
+        if (editing && vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
+            immediate.draw();
+        }
 
         if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f, 1f);
         TextGizmo.addLineRect(matrices.peek().getPositionMatrix(), gizmoLineIndex, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f);

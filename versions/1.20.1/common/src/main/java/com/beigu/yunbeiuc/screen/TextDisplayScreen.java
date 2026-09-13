@@ -992,6 +992,11 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        // PageOverlay优先处理
+        if (PageOverlay.isVisible() && PageOverlay.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+            return true;
+        }
+
         if (grabbedGizmo >= 0 && currentGizmoMode() >= 0) {
             applyGizmoDrag(mouseX, mouseY);
             return true;
@@ -1001,11 +1006,24 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        // PageOverlay优先处理
+        if (PageOverlay.isVisible() && PageOverlay.mouseReleased(mouseX, mouseY, button)) {
+            return true;
+        }
+
         if (grabbedGizmo >= 0) {
             releaseGizmo();
             sendUpdateToServer();
         }
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        // PageOverlay优先处理
+        if (PageOverlay.isVisible() && PageOverlay.mouseScrolled(mouseX, mouseY, verticalAmount)) {
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount);
     }
 
     @Override
@@ -1023,12 +1041,16 @@ public class TextDisplayScreen extends Screen {
     }
 
     /**
-     * 删除前检查：自带生成的行（含 {占位符} 或 -texture/-rect/-json 指令）需二次确认——
-     * 删除后将失去枚举按钮、字段联动、图片自动更新等功能且无法自动恢复；纯文本行直接删除
+     * 删除前检查：自带生成的行（系统默认布局 builtin 标记，或含 {占位符}、-texture/-rect/-json 指令）需二次确认——
+     * 删除后不会自动恢复，且将失去枚举按钮、字段联动、图片自动更新等功能；其余纯文本行直接删除
      */
     private void requestDeleteLine(int idx) {
-        String text = textLineWidgets.get(idx).data.getText();
-        boolean generated = !CustomSignBlockEntity.extractPlaceholderKeys(text).isEmpty() || text.trim().startsWith("-");
+        var data = textLineWidgets.get(idx).data;
+        String text = data.getText();
+        // builtin 标记覆盖"占位符已被用户改写"的系统行；旧存档行无标记，仍按占位符/指令前缀判断
+        boolean generated = data.isBuiltin()
+                || !CustomSignBlockEntity.extractPlaceholderKeys(text).isEmpty()
+                || text.trim().startsWith("-");
         if (!generated) {
             deleteTextLine(idx);
             return;
@@ -1039,7 +1061,7 @@ public class TextDisplayScreen extends Screen {
                     MinecraftClient.getInstance().setScreen(this);
                 },
                 Text.literal("删除文本行"),
-                Text.literal("该行包含占位符或图片指令，删除后将失去枚举按钮、字段联动、图片自动更新等功能，且无法自动恢复。"),
+                Text.literal("该行为系统生成或包含占位符/图片指令，删除后不会自动恢复，且将失去枚举按钮、字段联动、图片自动更新等功能。"),
                 Text.literal("确定删除"),
                 Text.literal("取消")));
     }
