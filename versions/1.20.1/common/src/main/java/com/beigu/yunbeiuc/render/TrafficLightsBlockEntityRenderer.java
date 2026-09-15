@@ -35,6 +35,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     }
 
     private float getZOffset(TrafficLightsBlock.MountType mountType, Block currentBlock) {
+        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) return 0.16f;
         if (mountType == TrafficLightsBlock.MountType.POLE) {
             if (isPavementBlock(currentBlock)) return -0.46f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.68f;
@@ -82,6 +83,14 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     private static final Identifier NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_green.png");
     private static final Identifier PAVEMENT_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
     private static final Identifier PAVEMENT_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
+    private static final Identifier PAVEMENT_RED_TAIPEI = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red_taipei.png");
+    private static final Identifier[] PAVEMENT_GREEN_TAIPEI_FRAMES = {
+            new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_1.png"),
+            new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_2.png"),
+            new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_3.png"),
+            new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_4.png"),
+            new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_5.png")
+    };
     private static final Identifier SLOW_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_red.png");
     private static final Identifier SLOW_YELLOW = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_yellow.png");
     private static final Identifier SLOW_GREEN = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_green.png");
@@ -126,6 +135,8 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
         float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
                 ? 3.85f / 16f : -3.85f / 16f;
+        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
+                    ? 3.3875f / 16f : -3.3875f / 16f;
         float y = -logoY;
         float z = getZOffset(mountType, currentBlock);
 
@@ -133,7 +144,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
-        matrices.translate(0.2f, y, z);
+        float x = 0f;
+        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) x = 5f / 16f;
+        matrices.translate(0.2f + x, y, z);
 
         float scaleValue = 0.07f;
         matrices.scale(scaleValue, -scaleValue, scaleValue);
@@ -207,6 +220,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 case GREEN -> PAVEMENT_GREEN;
                 default -> null;
             };
+            if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) {
+                texture = switch (lightState) {
+                    case RED, YELLOW -> PAVEMENT_RED_TAIPEI;
+                    case GREEN -> getAnimatedGreenTaipeiFrame();
+                    default -> null;
+                };
+            }
         } else {
             texture = switch (directionType) {
                 case LEFT_TURN -> switch (lightState) {
@@ -282,11 +302,19 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float z = 0;
 
         if (isPavementBlock(currentBlock)) {
+            if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) x = 5f / 16f;
             y = switch (lightState) {
                 case RED, YELLOW -> 3.85f / 16f;
                 case GREEN -> -3.85f / 16f;
                 default -> 0f;
             };
+            if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) {
+                y = switch (lightState) {
+                    case RED, YELLOW -> 3.3875f / 16f;
+                    case GREEN -> -3.3875f / 16f;
+                    default -> 0f;
+                };
+            }
             z = getZOffset(mountType, currentBlock);
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get() ||
@@ -616,6 +644,23 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             case COLOR_FLASH -> "色闪";
             case SLOW_FLASH -> "慢闪";
         };
+    }
+
+    private Identifier getAnimatedGreenTaipeiFrame() {
+        // 动画循环：1234554321，总长10帧，每帧0.1s，总周期1s
+        // cyclePosition: 0,1,2,3,4,5,6,7,8,9
+        // frameIndex:    0,1,2,3,4,4,3,2,1,0
+        long currentTimeMillis = System.currentTimeMillis();
+        int cyclePosition = (int) ((currentTimeMillis / 100) % 10);
+
+        int frameIndex;
+        if (cyclePosition <= 4) {
+            frameIndex = cyclePosition;
+        } else {
+            frameIndex = 9 - cyclePosition;
+        }
+
+        return PAVEMENT_GREEN_TAIPEI_FRAMES[frameIndex];
     }
 
     @Override

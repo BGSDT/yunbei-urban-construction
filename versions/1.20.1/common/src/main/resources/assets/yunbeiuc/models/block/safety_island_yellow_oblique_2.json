@@ -5,6 +5,7 @@
 	"textures": {
 		"1": "yunbeiuc:block/color/656565",
 		"2": "yunbeiuc:block/reflective_sign_yellow",
+		"3": "yunbeiuc:block/reflective_sign_yellow_128",
 		"particle": "yunbeiuc:block/color/656565"
 	},
 	"elements": [
@@ -56,7 +57,7 @@
 				"east": {"uv": [10.75, 7.5, 12.75, 8.5], "texture": "#1"},
 				"south": {"uv": [7, 10, 11, 11], "texture": "#1"},
 				"west": {"uv": [10.75, 8.5, 12.75, 9.5], "texture": "#1"},
-				"up": {"uv": [6.25, 5.5, 4, 9.5], "texture": "#2"},
+				"up": {"uv": [16, 3.5, 13.75, 7.5], "texture": "#3"},
 				"down": {"uv": [4, 8, 0, 10], "texture": "#1"}
 			}
 		},
@@ -78,7 +79,7 @@
 			"to": [16, 20, 11.5],
 			"rotation": {"angle": 0, "axis": "y", "origin": [13.75, 7.75, 6.75]},
 			"faces": {
-				"north": {"uv": [2.25, 0, 0, 6], "texture": "#2"},
+				"north": {"uv": [16, 0, 11.5, 12], "texture": "#2"},
 				"east": {"uv": [4, 9.5, 5.5, 12.5], "texture": "#1"},
 				"south": {"uv": [0, 2.96875, 4, 5.96875], "texture": "#1"},
 				"west": {"uv": [5.5, 9.5, 7, 12.5], "texture": "#1"},
@@ -120,7 +121,7 @@
 				"north": {"uv": [4, 9.5, 5.5, 12.5], "texture": "#1"},
 				"east": {"uv": [0, 2.96875, 4, 5.96875], "texture": "#1"},
 				"south": {"uv": [5.5, 9.5, 7, 12.5], "texture": "#1"},
-				"west": {"uv": [2.25, 0, 0, 6], "texture": "#2"},
+				"west": {"uv": [4.5, 0, 0, 12], "texture": "#2"},
 				"up": {"uv": [12, 1.5, 8, 0], "rotation": 270, "texture": "#1"},
 				"down": {"uv": [12, 1.5, 8, 3], "rotation": 90, "texture": "#1"}
 			}
@@ -134,7 +135,7 @@
 				"east": {"uv": [7, 10, 11, 11], "texture": "#1"},
 				"south": {"uv": [10.75, 8.5, 12.75, 9.5], "texture": "#1"},
 				"west": {"uv": [0, 10, 4, 11], "texture": "#1"},
-				"up": {"uv": [6.25, 5.5, 4, 9.5], "rotation": 270, "texture": "#2"},
+				"up": {"uv": [2.25, 4.25, 0, 8.25], "rotation": 270, "texture": "#3"},
 				"down": {"uv": [4, 8, 0, 10], "rotation": 90, "texture": "#1"}
 			}
 		}
@@ -178,7 +179,8 @@
 			"origin": [13.75, 7.75, 6.75],
 			"scope": 0,
 			"color": 0,
-			"children": [6, 7, 8, 9]
-		}
+			"children": [6, 7, 8]
+		},
+		9
 	]
 }

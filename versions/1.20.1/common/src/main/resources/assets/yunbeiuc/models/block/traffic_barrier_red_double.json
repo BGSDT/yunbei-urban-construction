@@ -3,7 +3,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "yunbeiuc:block/color/656565",
-		"1": "yunbeiuc:block/reflective_sign_red",
+		"1": "yunbeiuc:block/reflective_sign_red_128",
 		"particle": "yunbeiuc:block/color/656565"
 	},
 	"elements": [

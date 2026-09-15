@@ -130,10 +130,10 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
     public List<FieldOptionGroup> getFieldOptions(String placeholderKey) {
         return switch (placeholderKey) {
             case "logo" -> List.of(new FieldOptionGroup("底色", "image", List.of(
-                    opt("红底", "red", image.getName()),
-                    opt("黄底", "yellow", image.getName()),
-                    opt("白底", "white", image.getName()),
-                    opt("高速公路", "expressway", image.getName()))));
+                    opt("国道", "red", image.getName()),
+                    opt("省道", "yellow", image.getName()),
+                    opt("县、乡道", "white", image.getName()),
+                    opt("快速路", "expressway", image.getName()))));
             default -> null;
         };
     }

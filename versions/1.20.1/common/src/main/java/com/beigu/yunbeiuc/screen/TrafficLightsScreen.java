@@ -63,10 +63,10 @@ public class TrafficLightsScreen extends Screen {
     private TrafficLightsBlock.MountType pendingMountType;
 
     private static final int RIGHT_PANEL_WIDTH = 200;
-    private static final int RIGHT_PANEL_HEIGHT = 320;
+    private static final int RIGHT_PANEL_HEIGHT = 340;
     private static final int MAX_PHASE_SLIDERS = 4;
     private static final int PHASE_SLIDER_START_Y = 68;
-    private static final int PHASE_SLIDER_ROW_HEIGHT = 25;
+    private static final int PHASE_SLIDER_ROW_HEIGHT = 28;
     private static final int PHASE_SLIDER_AREA_HEIGHT = MAX_PHASE_SLIDERS * PHASE_SLIDER_ROW_HEIGHT;
     private static final int PREVIEW_Y_OFFSET = PHASE_SLIDER_START_Y + PHASE_SLIDER_AREA_HEIGHT + 10;
     private static final int PREVIEW_SIZE = 50;
@@ -74,7 +74,7 @@ public class TrafficLightsScreen extends Screen {
 
     // 人行道面板：按实际相位滑块行数收紧高度，"显示秒数"按钮紧贴滑块区域下方
     private static final int PAVEMENT_ROW_GAP = 8;
-    private static final int PAVEMENT_BOTTOM_MARGIN = 15;
+    private static final int PAVEMENT_BOTTOM_MARGIN = 30;
 
     public TrafficLightsScreen(BlockPos pos) {
         super(Text.translatable("text.yunbeiuc.traffic_lights.title"));

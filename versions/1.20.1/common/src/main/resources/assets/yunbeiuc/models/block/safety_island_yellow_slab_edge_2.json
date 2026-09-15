@@ -4,7 +4,7 @@
 	"texture_size": [64, 64],
 	"textures": {
 		"2": "yunbeiuc:block/color/656565",
-		"3": "yunbeiuc:block/reflective_sign_yellow",
+		"3": "yunbeiuc:block/reflective_sign_yellow_128",
 		"particle": "yunbeiuc:block/color/656565"
 	},
 	"elements": [
@@ -43,7 +43,7 @@
 				"east": {"uv": [10.75, 7.5, 12.75, 8.5], "texture": "#2"},
 				"south": {"uv": [7, 10, 11, 11], "texture": "#2"},
 				"west": {"uv": [10.75, 8.5, 12.75, 9.5], "texture": "#2"},
-				"up": {"uv": [8, 7, 0, 13], "texture": "#3"},
+				"up": {"uv": [8, 7.75, 0, 11.75], "texture": "#3"},
 				"down": {"uv": [4, 8, 0, 10], "texture": "#2"}
 			}
 		}

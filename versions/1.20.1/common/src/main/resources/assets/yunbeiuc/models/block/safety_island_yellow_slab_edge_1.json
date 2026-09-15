@@ -3,8 +3,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
+		"1": "yunbeiuc:block/reflective_sign_yellow_128",
 		"2": "yunbeiuc:block/color/656565",
-		"3": "yunbeiuc:block/reflective_sign_yellow",
 		"particle": "yunbeiuc:block/color/656565"
 	},
 	"elements": [
@@ -43,7 +43,7 @@
 				"east": {"uv": [10.75, 7.5, 12.75, 8.5], "texture": "#2"},
 				"south": {"uv": [7, 10, 11, 11], "texture": "#2"},
 				"west": {"uv": [10.75, 8.5, 12.75, 9.5], "texture": "#2"},
-				"up": {"uv": [0, 9.25, 8, 13.25], "texture": "#3"},
+				"up": {"uv": [0, 7.75, 8, 11.75], "texture": "#1"},
 				"down": {"uv": [4, 8, 0, 10], "texture": "#2"}
 			}
 		}

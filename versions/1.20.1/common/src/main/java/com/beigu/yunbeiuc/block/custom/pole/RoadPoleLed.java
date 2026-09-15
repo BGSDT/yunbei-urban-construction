@@ -6,11 +6,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
@@ -21,6 +24,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class RoadPoleLed extends CustomTextDisplayBlock {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
@@ -30,6 +35,11 @@ public class RoadPoleLed extends CustomTextDisplayBlock {
     private static final VoxelShape SHAPE_E = Block.createCuboidShape(5.5, 0, 0, 10.5, 16, 16);
     private static final VoxelShape SHAPE_W = Block.createCuboidShape(5.5, 0, 0, 10.5, 16, 16);
 
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        tooltip.add(Text.translatable("block.yunbeiuc.road_pole_led.tooltip"));
+        super.appendTooltip(stack, world, tooltip, options);
+    }
     public RoadPoleLed(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(TYPE, Type.SINGLE));

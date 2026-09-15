@@ -191,10 +191,30 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         slot.setDirectionType(values[(slot.getDirectionType().ordinal() + 1) % values.length]);
     }
 
-    private void cyclePhase(TrafficLightsPatternPreset.Slot slot) {
-        List<Integer> indices = slot.getPhaseIndices();
-        int current = indices.get(0);
-        indices.set(0, (current + 1) % phaseCount);
+    private String formatPhaseIndices(List<Integer> indices) {
+        if (indices.isEmpty()) return "";
+        if (indices.size() == 1) return String.valueOf(indices.get(0) + 1);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < Math.min(indices.size(), 2); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(indices.get(i) + 1);
+        }
+        if (indices.size() > 2) sb.append("...");
+        return sb.toString();
+    }
+
+    private void openPhaseMultiSelect(TrafficLightsPatternPreset.Slot slot) {
+        MinecraftClient.getInstance().setScreen(
+            new TrafficLightsPhaseMultiSelectScreen(
+                this,
+                phaseCount,
+                slot.getPhaseIndices(),
+                selected -> {
+                    slot.setPhaseIndices(new ArrayList<>(selected));
+                    rebuild();
+                }
+            )
+        );
     }
 
     private void increaseOrder(TrafficLightsPatternPreset.Slot slot) {
@@ -459,10 +479,16 @@ public class TrafficLightsPatternEditorScreen extends Screen {
                     null
             ));
         }
+        List<Integer> phases = slot.getPhaseIndices();
+        StringBuilder phaseStr = new StringBuilder();
+        for (int i = 0; i < phases.size(); i++) {
+            if (i > 0) phaseStr.append(",");
+            phaseStr.append(phases.get(i) + 1);
+        }
         tips.add(new TooltipEntry(
                 slot.getDirection().getLabel() + " " + slot.getKind().getLabel(),
                 directionTypeLabel(slot.getDirectionType()),
-                "相位 " + (slot.getPhaseIndices().get(0) + 1),
+                "相位 " + phaseStr,
                 "顺序 " + slot.getOrder()
         ));
         drawTooltip(context, mx, my, tips);
@@ -583,9 +609,8 @@ public class TrafficLightsPatternEditorScreen extends Screen {
                         .dimensions(0, 0, 76, 20)
                         .build();
 
-                this.phaseButton = ButtonWidget.builder(Text.literal("相位" + (slot.getPhaseIndices().get(0) + 1)), button -> {
-                            cyclePhase(slot);
-                            rebuild();
+                this.phaseButton = ButtonWidget.builder(Text.literal("相位" + formatPhaseIndices(slot.getPhaseIndices())), button -> {
+                            openPhaseMultiSelect(slot);
                         })
                         .dimensions(0, 0, 44, 20)
                         .build();

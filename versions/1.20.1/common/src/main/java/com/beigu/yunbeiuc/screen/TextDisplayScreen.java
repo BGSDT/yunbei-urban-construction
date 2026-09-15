@@ -992,11 +992,6 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        // PageOverlay优先处理
-        if (PageOverlay.isVisible() && PageOverlay.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
-            return true;
-        }
-
         if (grabbedGizmo >= 0 && currentGizmoMode() >= 0) {
             applyGizmoDrag(mouseX, mouseY);
             return true;
@@ -1006,24 +1001,11 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        // PageOverlay优先处理
-        if (PageOverlay.isVisible() && PageOverlay.mouseReleased(mouseX, mouseY, button)) {
-            return true;
-        }
-
         if (grabbedGizmo >= 0) {
             releaseGizmo();
             sendUpdateToServer();
         }
         return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        // PageOverlay优先处理
-        if (PageOverlay.isVisible() && PageOverlay.mouseScrolled(mouseX, mouseY, verticalAmount)) {
-            return true;
-        }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount);
     }
 
     @Override
