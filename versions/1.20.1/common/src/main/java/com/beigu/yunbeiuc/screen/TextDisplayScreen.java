@@ -57,6 +57,8 @@ public class TextDisplayScreen extends Screen {
     private enum Category { POSITION, ROTATION, SCALE, FONT, ALIGN }
     private Category activeCategory = Category.POSITION;
     private ButtonWidget posCatButton, rotCatButton, scaleCatButton, fontCatButton, alignCatButton;
+    // 图案按钮：紧贴「对齐」分类按钮右侧，点击打开图案与字体选择界面
+    private ButtonWidget patternButton;
 
     private boolean preciseInputMode = false;
     private TextFieldWidget preciseInputField;
@@ -137,6 +139,14 @@ public class TextDisplayScreen extends Screen {
         scaleCatButton = ButtonWidget.builder(Text.literal("缩放"), b -> selectCategory(Category.SCALE)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
         fontCatButton = ButtonWidget.builder(Text.literal("字体"), b -> selectCategory(Category.FONT)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
         alignCatButton = ButtonWidget.builder(Text.literal("对齐"), b -> selectCategory(Category.ALIGN)).dimensions(catX, catY, catBtnW, 20).build();
+
+        // 图案按钮：与属性分类按钮同行，位置在 recomputeLayout 中跟随「对齐」按钮
+        patternButton = ButtonWidget.builder(Text.translatable("yunbeiuc.gui.button.pattern"), btn -> {
+            PatternAndFontOverlay.targetScreen = this;
+            PatternAndFontOverlay.isVisible = true;
+            PatternAndFontOverlay.selectSidebarTop(PatternAndFontOverlay.SIDEBAR_TOP_HOME);
+        }).dimensions(0, 0, 40, 20).build();
+
         updateCategoryButtonsLocked();
 
         // 行操作按钮靠屏幕右侧排列，正在编辑文本行时显示
@@ -203,6 +213,7 @@ public class TextDisplayScreen extends Screen {
         this.addDrawableChild(scaleCatButton);
         this.addDrawableChild(fontCatButton);
         this.addDrawableChild(alignCatButton);
+        this.addDrawableChild(patternButton);
         this.addDrawableChild(copyLineButton);
         this.addDrawableChild(pasteLineButton);
         this.addDrawableChild(deleteLineButton);
@@ -404,6 +415,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private int currentGizmoMode() {
+        if (PatternAndFontOverlay.isVisible) return -1;
         if (presetSaveMode || presetLoadMode || preciseInputMode || formatPainterMode) return -1;
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return -1;
         return switch (activeCategory) {
@@ -452,7 +464,35 @@ public class TextDisplayScreen extends Screen {
     private static int axis(int handle) { return TextGizmo.handleAxis(handle); }
 
     private boolean isOverUiPanel(double mx, double my) {
+        // 图案浮层覆盖全屏时视为始终处于 UI 上，避免误触世界中的拖拽手柄
+        if (PatternAndFontOverlay.isVisible) return true;
         return my >= (optionsRowVisible ? panelTopY - OPTIONS_ROW_HEIGHT : panelTopY);
+    }
+
+    /**
+     * 供图案与字体选择界面把内容写入当前编辑行。
+     *
+     * <p>未选中任何行时新建一行；写入后刷新面板并同步到客户端与服务端。
+     *
+     * @param text 要写入的文本（可为 -texture / -rect / -json 指令）
+     */
+    public void insertPatternContent(String text) {
+        if (text == null) return;
+        // 退出精准输入模式，让底部面板直接显示写入后的内容
+        preciseInputMode = false;
+        if (textLineWidgets.isEmpty() || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) {
+            TextLineData newData = new TextLineData(text);
+            textLineWidgets.add(new TextLineWidget(newData));
+            blockEntity.getTextLines().add(newData);
+            selectedIndex = textLineWidgets.size() - 1;
+            topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
+        } else {
+            textLineWidgets.get(selectedIndex).data.setText(text);
+        }
+        refreshTopPanel();
+        refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
     }
 
     private boolean trySelectLine(double mouseX, double mouseY) {
@@ -677,6 +717,7 @@ public class TextDisplayScreen extends Screen {
         scaleCatButton.visible = showCategoryButtons;
         fontCatButton.visible = showCategoryButtons;
         alignCatButton.visible = showCategoryButtons;
+        patternButton.visible = showCategoryButtons;
         // 正在编辑文本行时显示行操作按钮（靠屏幕右侧）；无剪贴板内容时粘贴按钮锁定
         boolean showLineActions = !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !formatPainterMode && !presetSelectMode && !presetSaveMode && !presetLoadMode;
         copyLineButton.visible = showLineActions;
@@ -700,6 +741,8 @@ public class TextDisplayScreen extends Screen {
             b.setPosition(catX, rowBtnY);
             catX += 50 + 4;
         }
+        // 图案按钮紧贴「对齐」按钮右侧
+        patternButton.setPosition(catX, rowBtnY);
         int lineActionStartX = width - (45 * 4 + 4 * 3) - 4;
         copyLineButton.setPosition(lineActionStartX, rowBtnY);
         pasteLineButton.setPosition(lineActionStartX + (45 + 4), rowBtnY);
@@ -928,6 +971,13 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // 图案浮层可见时独占键盘：ESC 仅关闭浮层，不影响底层编辑界面
+        if (PatternAndFontOverlay.isVisible) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                PatternAndFontOverlay.isVisible = false;
+            }
+            return true;
+        }
         if (isAnyTextFieldFocused()) {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
@@ -954,6 +1004,9 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (PatternAndFontOverlay.isVisible) {
+            return true;
+        }
         if (isAnyTextFieldFocused()) {
             return super.keyReleased(keyCode, scanCode, modifiers);
         }
@@ -966,6 +1019,11 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // 图案浮层可见时独占鼠标点击，底层编辑界面不响应
+        if (PatternAndFontOverlay.isVisible) {
+            PatternAndFontOverlay.mouseClicked(mouseX, mouseY, button);
+            return true;
+        }
         if (preciseInputMode) { if (backButton != null && backButton.isMouseOver(mouseX, mouseY)) { exitPreciseMode(); return true; } return super.mouseClicked(mouseX, mouseY, button); }
         if (presetSaveMode || presetLoadMode) return super.mouseClicked(mouseX, mouseY, button);
         if (button == 1 && !presetSelectMode) {
@@ -1001,11 +1059,24 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (PatternAndFontOverlay.isVisible) {
+            PatternAndFontOverlay.mouseReleased(mouseX, mouseY, button);
+            return true;
+        }
         if (grabbedGizmo >= 0) {
             releaseGizmo();
             sendUpdateToServer();
         }
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (PatternAndFontOverlay.isVisible) {
+            PatternAndFontOverlay.mouseScrolled(mouseX, mouseY, amount);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
@@ -1206,6 +1277,7 @@ public class TextDisplayScreen extends Screen {
             if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 右键反向切换 | Ctrl+点击打开色盘"));
             if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击打开色盘"));
             if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
+            if (patternButton != null && patternButton.visible && patternButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("图案", "打开图案与字体选择界面", "点击「插入」把图案/字体写入当前文本行"));
             if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));
             if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转", "点击显示 RX/RY/RZ 旋转按钮", "可在世界中拖拽圆环旋转（Shift/Alt 调整步长）"));
             if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放", "点击显示 SX/SY/SZ 缩放按钮", "可拖拽绿框角点等比缩放、边点单轴缩放（Shift/Alt 调整步长）"));
@@ -1216,6 +1288,11 @@ public class TextDisplayScreen extends Screen {
             if (deleteLineButton != null && deleteLineButton.visible && deleteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("删除", "删除该文本行"));
             if (formatPainterButton != null && formatPainterButton.visible && formatPainterButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("格式刷", "将颜色/对齐/加粗/斜体/下划线/阴影/字号", "复制到另一文本行（不含文字、位移、旋转）"));
             if (!tips.isEmpty()) drawTooltip(context, mouseX, mouseY, tips);
+        }
+
+        // 图案与字体选择浮层覆盖整个屏幕，最后绘制以保证在最上层
+        if (PatternAndFontOverlay.isVisible) {
+            PatternAndFontOverlay.render(context, mouseX, mouseY);
         }
     }
 
@@ -1261,6 +1338,7 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public void close() {
+        PatternAndFontOverlay.closeOverlay();
         blockEntity.setEditingLineIndex(-1);
         blockEntity.setEditingGizmoMode(-1);
         TextGizmo.clear();

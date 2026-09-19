@@ -2,10 +2,10 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "yunbeiuc:block/instrument_warning_crossing_fluorescent_red_1",
+		"1": "yunbeiuc:block/instrument_warning_crossing_fluorescent_green_1",
 		"2": "yunbeiuc:block/instrument_strobe_light",
-		"3": "yunbeiuc:block/instrument_warning_crossing_fluorescent_red_2",
-		"particle": "yunbeiuc:block/instrument_warning_crossing_fluorescent_red_1"
+		"3": "yunbeiuc:block/instrument_warning_crossing_fluorescent_green_2",
+		"particle": "yunbeiuc:block/instrument_warning_crossing_fluorescent_green_1"
 	},
 	"elements": [
 		{
