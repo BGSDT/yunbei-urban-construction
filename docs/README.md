@@ -43,14 +43,10 @@ This project is released under the **MIT License**.
 
 ## Local Build
 
-- `versions/1.20.1`: Fabric + Forge, Java 17
-- `versions/1.21.1`: Fabric + NeoForge, Java 21
+- `versions/1.18.2`: Fabric + Forge, Java 17
 
 ```
-cd versions/1.20.1
-./gradlew clean build
-
-cd ../1.21.1
+cd versions/1.18.2
 ./gradlew clean build
 ```
 

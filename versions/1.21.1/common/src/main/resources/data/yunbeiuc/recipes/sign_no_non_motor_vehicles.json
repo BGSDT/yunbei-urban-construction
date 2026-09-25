@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:stonecutting",
-    "ingredient": {
-        "item": "minecraft:white_concrete"
-    },
-    "result": "yunbeiuc:sign_no_non_motor_vehicles",
-    "count": 9
-}
