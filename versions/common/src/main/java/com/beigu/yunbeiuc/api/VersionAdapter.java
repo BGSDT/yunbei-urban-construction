@@ -8,6 +8,6 @@ import com.beigu.yunbeiuc.api.placeholder.PlaceholderResolver;
 public interface VersionAdapter {
     String minecraftVersion();
     GuiPlatform gui();
-    RenderPlatform<?> render();
+    RenderPlatform render();
     PlaceholderResolver placeholders();
 }

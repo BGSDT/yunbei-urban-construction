@@ -3,6 +3,9 @@ package com.beigu.yunbeiuc.screen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
+import com.beigu.yunbeiuc.api.gui.GuiPlatform;
+import com.beigu.yunbeiuc.api.gui.RenderPlatform;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
@@ -19,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TrafficLightsTimingScreen extends Screen {
+    private static final GuiPlatform GUI = VersionServices.gui();
+    private static final RenderPlatform RENDER = VersionServices.render();
+
     private final String groupId;
     private final List<BlockPos> positions;
 
@@ -83,14 +89,12 @@ public class TrafficLightsTimingScreen extends Screen {
         int panelY = panelY();
 
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("-"), button -> changePhaseCount(-1))
-                        .dimensions(panelX + PANEL_WIDTH / 2 - 45, panelY + 30, 20, 20)
-                        .build()
+                GUI.createButton(new TextComponent("-"), panelX + PANEL_WIDTH / 2 - 45,
+                        panelY + 30, 20, 20, button -> changePhaseCount(-1))
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("+"), button -> changePhaseCount(1))
-                        .dimensions(panelX + PANEL_WIDTH / 2 + 25, panelY + 30, 20, 20)
-                        .build()
+                GUI.createButton(new TextComponent("+"), panelX + PANEL_WIDTH / 2 + 25,
+                        panelY + 30, 20, 20, button -> changePhaseCount(1))
         );
 
         for (int i = 0; i < phaseCount; i++) {
@@ -99,14 +103,14 @@ public class TrafficLightsTimingScreen extends Screen {
             int x = panelX + 15 + col * (FIELD_WIDTH + FIELD_GAP_X);
             int y = panelY + FIELDS_START_Y + row * FIELD_GAP_Y + 12;
 
-            TextFieldWidget field = new TextFieldWidget(
+            TextFieldWidget field = GUI.createTextField(
                     this.textRenderer, x, y, FIELD_WIDTH, FIELD_HEIGHT,
                     new TextComponent("相位" + (i + 1))
             );
-            field.setMaxLength(4);
-            field.setText(savedValues.get(i));
+            GUI.setMaxLength(field, 4);
+            GUI.setText(field, savedValues.get(i));
             final int index = i;
-            field.setChangedListener(text -> savedValues.set(index, text));
+            GUI.setChangedListener(field, text -> savedValues.set(index, text));
             this.addDrawableChild(field);
             timingFields.add(field);
         }
@@ -121,14 +125,12 @@ public class TrafficLightsTimingScreen extends Screen {
 
         int buttonY = panelY + panelHeight() - 35;
         this.saveButton = this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_timing.save"), button -> saveAndClose())
-                        .dimensions(panelX + 40, buttonY, 80, 20)
-                        .build()
+                GUI.createButton(new TranslatableComponent("text.yunbeiuc.traffic_lights_timing.save"),
+                        panelX + 40, buttonY, 80, 20, button -> saveAndClose())
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_timing.cancel"), button -> this.close())
-                        .dimensions(panelX + PANEL_WIDTH - 120, buttonY, 80, 20)
-                        .build()
+                GUI.createButton(new TranslatableComponent("text.yunbeiuc.traffic_lights_timing.cancel"),
+                        panelX + PANEL_WIDTH - 120, buttonY, 80, 20, button -> this.close())
         );
 
         if (mountTypeButton != null) {
@@ -140,11 +142,9 @@ public class TrafficLightsTimingScreen extends Screen {
         }
         int mountTypeY = panelY + panelHeight() - 60;
         mountTypeButton = this.addDrawableChild(
-                ButtonWidget.builder(
+                GUI.createButton(
                         new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
-                        button -> toggleMountType())
-                        .dimensions(panelX + PANEL_WIDTH / 2 - 70, mountTypeY, 140, 20)
-                        .build()
+                        panelX + PANEL_WIDTH / 2 - 70, mountTypeY, 140, 20, button -> toggleMountType())
         );
 
         this.setFocused(timingFields.isEmpty() ? null : timingFields.get(0));
@@ -152,7 +152,7 @@ public class TrafficLightsTimingScreen extends Screen {
 
     private void changePhaseCount(int delta) {
         for (int i = 0; i < timingFields.size(); i++) {
-            savedValues.set(i, timingFields.get(i).getText());
+            savedValues.set(i, GUI.getText(timingFields.get(i)));
         }
         int newCount = phaseCount + delta;
         if (newCount < MIN_PHASE_COUNT || newCount > MAX_PHASE_COUNT) return;
@@ -164,7 +164,7 @@ public class TrafficLightsTimingScreen extends Screen {
     private void saveAndClose() {
         int[] timings = new int[phaseCount];
         for (int i = 0; i < phaseCount; i++) {
-            String text = timingFields.get(i).getText();
+            String text = GUI.getText(timingFields.get(i));
             try {
                 timings[i] = Integer.parseInt(text.trim());
             } catch (NumberFormatException e) {
@@ -214,10 +214,11 @@ public class TrafficLightsTimingScreen extends Screen {
         int panelY = panelY();
         int panelHeight = panelHeight();
 
-        context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + panelHeight, 0xAA333333);
-        context.drawBorder(panelX, panelY, PANEL_WIDTH, panelHeight, 0xFFCCCCCC);
+        RENDER.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + panelHeight, 0xAA333333);
+        RENDER.drawBorder(context, panelX, panelY, PANEL_WIDTH, panelHeight, 0xFFCCCCCC);
 
-        context.drawCenteredTextWithShadow(
+        RENDER.drawCenteredText(
+                context,
                 this.textRenderer,
                 this.title,
                 panelX + PANEL_WIDTH / 2,
@@ -225,7 +226,8 @@ public class TrafficLightsTimingScreen extends Screen {
                 0xFFCCCCCC
         );
 
-        context.drawCenteredTextWithShadow(
+        RENDER.drawCenteredText(
+                context,
                 this.textRenderer,
                 new TranslatableComponent("text.yunbeiuc.traffic_lights_timing.phase_count", phaseCount),
                 panelX + PANEL_WIDTH / 2,
@@ -238,11 +240,13 @@ public class TrafficLightsTimingScreen extends Screen {
             int row = i / COLUMNS;
             int x = panelX + 15 + col * (FIELD_WIDTH + FIELD_GAP_X);
             int y = panelY + FIELDS_START_Y + row * FIELD_GAP_Y;
-            context.drawTextWithShadow(this.textRenderer, new TextComponent("相位" + (i + 1)), x, y, 0xFFAAAAAA);
+            RENDER.drawText(context, this.textRenderer, new TextComponent("相位" + (i + 1)),
+                    x, y, 0xFFAAAAAA, true);
         }
 
         if (errorMessage != null) {
-            context.drawCenteredTextWithShadow(
+            RENDER.drawCenteredText(
+                    context,
                     this.textRenderer,
                     errorMessage,
                     panelX + PANEL_WIDTH / 2,
@@ -290,7 +294,8 @@ public class TrafficLightsTimingScreen extends Screen {
                 TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
-            mountTypeButton.setMessage(new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+            GUI.setButtonMessage(mountTypeButton,
+                    new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
         }
     }
 }

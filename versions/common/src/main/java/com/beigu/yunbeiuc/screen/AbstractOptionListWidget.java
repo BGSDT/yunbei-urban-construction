@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.api.gui.RenderPlatform;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -14,6 +16,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class AbstractOptionListWidget<O> extends ElementListWidget<AbstractOptionListWidget<O>.Entry> {
+    private static final RenderPlatform RENDER = VersionServices.render();
+
     /**
      * 列表条目左侧展示的图标（贴图 + 贴图自身的实际像素宽高，用于按原始比例绘制）。
      */
@@ -77,12 +81,12 @@ public abstract class AbstractOptionListWidget<O> extends ElementListWidget<Abst
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int rowLeft = getRowLeft();
-            context.enableScissor(rowLeft, y, rowLeft + getRowWidth(), y + entryHeight);
+            RENDER.enableScissor(context, rowLeft, y, rowLeft + getRowWidth(), y + entryHeight);
 
             if (isSelected.test(option)) {
-                context.fill(x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
+                RENDER.fill(context, x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
             } else if (hovered) {
-                context.fill(x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
+                RENDER.fill(context, x, y, x + entryWidth, y + entryHeight, 0x22FFFFFF);
             }
 
             Icon icon = iconProvider != null ? iconProvider.apply(option) : null;
@@ -90,23 +94,26 @@ public abstract class AbstractOptionListWidget<O> extends ElementListWidget<Abst
             int iconAreaSize = 16;
             int iconAreaY = y + (entryHeight - iconAreaSize) / 2;
             if (icon != null) {
-                context.drawTexture(icon.texture(), iconAreaX, iconAreaY, iconAreaSize, iconAreaSize,
+                RENDER.drawTexture(context, icon.texture(), iconAreaX, iconAreaY, iconAreaSize, iconAreaSize,
                         0, 0, icon.width(), icon.height(), icon.width(), icon.height());
             } else {
-                context.fill(iconAreaX, iconAreaY, iconAreaX + iconAreaSize, iconAreaY + iconAreaSize, 0xFF000000 | colorProvider.apply(option));
-                context.drawBorder(iconAreaX, iconAreaY, iconAreaSize, iconAreaSize, 0xFFCCCCCC);
+                RENDER.fill(context, iconAreaX, iconAreaY, iconAreaX + iconAreaSize, iconAreaY + iconAreaSize,
+                        0xFF000000 | colorProvider.apply(option));
+                RENDER.drawBorder(context, iconAreaX, iconAreaY, iconAreaSize, iconAreaSize, 0xFFCCCCCC);
             }
 
             int textX = iconAreaX + iconAreaSize + 8;
-            context.drawTextWithShadow(
+            RENDER.drawText(
+                    context,
                     client.font,
                     displayTextProvider.apply(option),
                     textX,
                     y + (entryHeight - 8) / 2,
-                    0xFFFFFF
+                    0xFFFFFF,
+                    true
             );
 
-            context.disableScissor();
+            RENDER.disableScissor(context);
         }
 
         @Override

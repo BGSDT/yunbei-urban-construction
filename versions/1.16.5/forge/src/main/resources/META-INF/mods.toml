@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[40,)"
+issueTrackerURL = "https://github.com/BGSDT/yunbei-urban-construction/issues"
+license = "MIT"
+
+[[mods]]
+modId = "yunbeiuc"
+version = "${version}"
+displayName = "Yunbei Urban Construction"
+authors = "北咕, jstxjf_, 潇湘-迷蝎, Tizhengxie, NanGuaQWQ, Yomi_307, 空悦星海"
+logoFile = "icon.png"
+description = '''
+Let's use the mod to decorate your city!
+'''
+
+[[dependencies.yunbeiuc]]
+modId = "forge"
+mandatory = true
+versionRange = "[40,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.yunbeiuc]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18.2]"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.yunbeiuc]]
+modId = "architectury"
+mandatory = true
+versionRange = "[5.2.0,)"
+ordering = "AFTER"
+side = "BOTH"

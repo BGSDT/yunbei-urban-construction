@@ -1,0 +1,59 @@
+architectury {
+    common rootProject.enabled_platforms.split(',')
+}
+
+// Keep the Minecraft/Loom classpath on this module while exposing the shared
+// source tree to Gradle-aware IDEs.
+plugins.withId('idea') {
+    idea {
+        module {
+            sourceDirs += file("$rootProject.projectDir/../common/src/main/java")
+            resourceDirs += file("$rootProject.projectDir/../common/src/main/resources")
+        }
+    }
+}
+
+// Shared sources live in versions/common and are compiled by this project for
+// every platform/version module.
+sourceSets {
+    main {
+        // Add shared/version sources without replacing Loom's generated source roots.
+        java.srcDir "$rootProject.projectDir/../common/src/main/java"
+        java.srcDir "$projectDir/src/main/java"
+        resources.srcDir "$rootProject.projectDir/../common/src/main/resources"
+        resources.srcDir "$projectDir/src/main/resources"
+    }
+}
+
+// Loom creates minecraftLibraries on the common project itself. Keep the
+// repositories local to this project so LWJGL/Minecraft libraries are visible
+// during common configuration as well as on platform projects.
+repositories {
+    maven {
+        name = 'MavenCentralLWJGL'
+        url = 'https://maven.aliyun.com/repository/central/'
+        content { includeGroup 'org.lwjgl' }
+    }
+    maven {
+        name = 'MavenCentralLWJGLFallback'
+        url = 'https://repo.maven.apache.org/maven2/'
+        content { includeGroup 'org.lwjgl' }
+    }
+    maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
+    maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
+    maven { name = 'MinecraftLibraries'; url = 'https://libraries.minecraft.net/' }
+    mavenCentral()
+    maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
+    maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+    maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    // We depend on Fabric Loader here to use the Fabric @Environment annotations,
+    // which get remapped to the correct annotations on each platform.
+    // Do NOT use other classes from Fabric Loader.
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+
+    // Architectury API. This is optional, and you can comment it out if you don't need it.
+    modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
+}

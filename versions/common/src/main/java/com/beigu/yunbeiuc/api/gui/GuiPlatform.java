@@ -1,10 +1,32 @@
 package com.beigu.yunbeiuc.api.gui;
 
-/** Version-neutral GUI operations. Each Minecraft version supplies an implementation. */
+import com.beigu.yunbeiuc.screen.ButtonWidget;
+import com.beigu.yunbeiuc.screen.TextFieldWidget;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+
+import java.util.function.Consumer;
+
+/** Version-sensitive widget construction. Each Minecraft version supplies an implementation. */
 public interface GuiPlatform {
-    Object createButton(String id, String label, int x, int y, int width, int height, Runnable action);
-    Object createTextField(String id, String placeholder, int x, int y, int width, int height);
-    void setPlaceholder(Object textField, String placeholder);
-    void setValue(Object textField, String value);
-    String getValue(Object textField);
+    ButtonWidget createButton(Component label, int x, int y, int width, int height,
+                              Consumer<ButtonWidget> action);
+
+    TextFieldWidget createTextField(Font font, int x, int y, int width, int height, Component label);
+
+    void setPlaceholder(TextFieldWidget textField, Component placeholder);
+
+    void setText(TextFieldWidget textField, String value);
+
+    String getText(TextFieldWidget textField);
+
+    void setMaxLength(TextFieldWidget textField, int maxLength);
+
+    void setChangedListener(TextFieldWidget textField, Consumer<String> listener);
+
+    void setTextFieldPosition(TextFieldWidget textField, int x, int y);
+
+    void setButtonPosition(ButtonWidget button, int x, int y);
+
+    void setButtonMessage(ButtonWidget button, Component message);
 }
