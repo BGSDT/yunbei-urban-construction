@@ -38,7 +38,7 @@ public class RoadPoleLed extends CustomTextDisplayBlock {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.road_pole_led.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.road_pole_led.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
     public RoadPoleLed(BlockBehaviour.Properties properties) {

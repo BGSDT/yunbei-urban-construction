@@ -21,7 +21,7 @@ public class RotatedWand extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag context) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.rotated_wand.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.rotated_wand.tooltip"));
         super .appendHoverText(stack, world, tooltip, context);
     }
 

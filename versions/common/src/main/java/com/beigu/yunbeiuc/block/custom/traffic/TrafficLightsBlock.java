@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.traffic;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+import com.beigu.yunbeiuc.api.mapper.TickingEntityBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -27,13 +29,11 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import java.util.Random;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class  TrafficLightsBlock extends BaseEntityBlock {
+public class TrafficLightsBlock extends TickingEntityBlock {
 
     private static final VoxelShape SHAPE_N = Block.box(0, 4, 0, 16, 12, 8);
     private static final VoxelShape SHAPE_E = Block.box(8, 4, 0, 16, 12, 16);
@@ -92,8 +92,8 @@ public class  TrafficLightsBlock extends BaseEntityBlock {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new TranslatableComponent("block.yunbeiuc.traffic_lights.tooltip"));
-        tooltip.add(new TranslatableComponent("block.yunbeiuc.traffic_lights.tooltip.auto_detect"));
+        tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip"));
+        tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip.auto_detect"));
         super .appendHoverText(stack, world, tooltip, options);
     }
 
@@ -239,7 +239,7 @@ public class  TrafficLightsBlock extends BaseEntityBlock {
                     MountType currentType = state.getValue(TYPE);
                     MountType newType = currentType == MountType.SIMPLE ? MountType.POLE : MountType.SIMPLE;
                     world.setBlock(pos, state.setValue(TYPE, newType), Block.UPDATE_ALL);
-                    player.displayClientMessage(new TextComponent("§a已切换至 " + (newType == MountType.POLE ? "§6路杆模式" : "§6简易模式")), true);
+                    player.displayClientMessage(Text.literal("§a已切换至 " + (newType == MountType.POLE ? "§6路杆模式" : "§6简易模式")), true);
                 }
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
@@ -311,18 +311,18 @@ public class  TrafficLightsBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+    protected void tickCompat(BlockState state, ServerLevel world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
             trafficLightsBE.tick();
-            world.scheduleTick(pos, this, 1);
+            VersionServices.blocks().scheduleBlockTick(world, pos, this, 1);
         }
     }
 
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!world .isClientSide) {
-            world.scheduleTick(pos, this, 1);
+            VersionServices.blocks().scheduleBlockTick(world, pos, this, 1);
         }
         super.onPlace(state, world, pos, oldState, notify);
     }

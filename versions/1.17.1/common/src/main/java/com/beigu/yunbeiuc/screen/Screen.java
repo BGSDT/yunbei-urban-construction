@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 
-/** Maps the shared screen lifecycle onto Minecraft 1.18.2. */
+/** Maps the shared screen lifecycle onto Minecraft 1.17.1. */
 public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     protected Minecraft client;
     protected Font textRenderer;

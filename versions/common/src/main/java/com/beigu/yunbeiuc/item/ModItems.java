@@ -7,7 +7,7 @@ import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.item.custom.*;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.core.Registry;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -19,21 +19,24 @@ import java.util.function.Supplier;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(YunbeiUrbanConstruction.MOD_ID, Registry.ITEM_REGISTRY);
+            VersionServices.registries().items(YunbeiUrbanConstruction.MOD_ID);
 
     public static final List<Supplier<? extends Item>> ALL_MUNICIPAL_ITEMS = new ArrayList<>();
     public static final List<Supplier<? extends Item>> ALL_ROAD_ITEMS = new ArrayList<>();
     public static final List<Supplier<? extends Item>> ALL_SIGN_ITEMS = new ArrayList<>();
+    public static final List<Supplier<? extends Item>> ALL_WAND_ITEMS = new ArrayList<>();
 
     private static <T extends Item> RegistrySupplier<T> registerItem(String name, Supplier<T> supplier) {
-        return ITEMS.register(name, supplier);
+        RegistrySupplier<T> item = ITEMS.register(name, supplier);
+        ALL_WAND_ITEMS.add(item);
+        return item;
     }
 
     private static RegistrySupplier<Item> registerBlockItem(RegistrySupplier<? extends Block> blockSupplier, List<Supplier<? extends Item>> categoryList) {
         RegistrySupplier<Item> item = ITEMS.register(blockSupplier.getId().getPath(),
                 () -> {
                     Block block = blockSupplier.get();
-                    Item.Properties properties = new Item.Properties().tab(
+                    Item.Properties properties = VersionServices.creativeTabs().apply(new Item.Properties(),
                             categoryList == ALL_MUNICIPAL_ITEMS ? ModItemGroups.YUNBEIUC_MUNICIPAL_GROUP :
                             categoryList == ALL_ROAD_ITEMS ? ModItemGroups.YUNBEIUC_ROAD_GROUP :
                                     ModItemGroups.YUNBEIUC_SIGN_GROUP);
@@ -47,17 +50,17 @@ public class ModItems {
 
     // ===== Wand Items =====
     public static final RegistrySupplier<Item> WAND = registerItem("wand",
-            () -> new Item(new Item.Properties().stacksTo(1).tab(ModItemGroups.YUNBEIUC_WAND_GROUP)));
+            () -> new Item(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> TREE_WAND = registerItem("tree_wand",
-            () -> new TreeWand(new Item.Properties().stacksTo(1).durability(9).tab(ModItemGroups.YUNBEIUC_WAND_GROUP)));
+            () -> new TreeWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1).durability(9), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> WATER_WAND = registerItem("water_wand",
-            () -> new WaterWand(new Item.Properties().stacksTo(1).durability(9).tab(ModItemGroups.YUNBEIUC_WAND_GROUP)));
+            () -> new WaterWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1).durability(9), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> ROTATED_WAND = registerItem("rotated_wand",
-            () -> new RotatedWand(new Item.Properties().stacksTo(1).tab(ModItemGroups.YUNBEIUC_WAND_GROUP)));
+            () -> new RotatedWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> LINK_WAND = registerItem("link_wand",
-            () -> new LinkWand(new Item.Properties().stacksTo(1).tab(ModItemGroups.YUNBEIUC_WAND_GROUP)));
+            () -> new LinkWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> TEXT_COPY_WAND = registerItem("text_copy_wand",
-            () -> new TextCopyWand(new Item.Properties().stacksTo(1).tab(ModItemGroups.YUNBEIUC_WAND_GROUP)));
+            () -> new TextCopyWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
 
     // ===== Municipal BlockItems =====
     public static final RegistrySupplier<Item> ROAD_POLE_FOUNDATIONS = registerBlockItem(MunicipalBlocks.ROAD_POLE_FOUNDATIONS, ALL_MUNICIPAL_ITEMS);

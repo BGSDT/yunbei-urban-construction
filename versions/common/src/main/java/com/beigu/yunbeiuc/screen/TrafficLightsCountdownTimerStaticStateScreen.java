@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
@@ -30,7 +29,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
     private static final int PANEL_HEIGHT = 300;
 
     public TrafficLightsCountdownTimerStaticStateScreen(BlockPos pos) {
-        super(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.title"));
+        super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
         this.pos = pos;
 
         // 读取当前颜色
@@ -59,11 +58,11 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
 
         // 显示读秒开关
         this.addDrawableChild(
-                ButtonWidget.builder(
-                        new TextComponent(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"),
+                ButtonWidget.builderCompat(
+                        Text.literal(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"),
                         button -> {
                             shouldShowCountdown = !shouldShowCountdown;
-                            button.setMessage(new TextComponent(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"));
+                            button.setMessage(Text.literal(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"));
                             if (secondsField != null) {
                                 secondsField.setEditable(shouldShowCountdown);
                             }
@@ -73,7 +72,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         );
 
         // 秒数输入框（不显示读秒时锁定）
-        secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, panelY + 90, 160, 20, new TextComponent(""));
+        secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, panelY + 90, 160, 20, Text.literal(""));
         secondsField.setMaxLength(3);
         secondsField.setText(blockEntity != null ? String.valueOf(blockEntity.getFixedSeconds()) : "10");
         secondsField.setEditable(shouldShowCountdown);
@@ -82,19 +81,19 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         // 颜色按钮 - 三个颜色
         int colorButtonY = panelY + 130;
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.red"),
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
                                 button -> this.selectedColor = TrafficLightsBlock.LightState.RED)
                         .dimensions(panelX + 30, colorButtonY, 160, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.yellow"),
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.yellow"),
                                 button -> this.selectedColor = TrafficLightsBlock.LightState.YELLOW)
                         .dimensions(panelX + 30, colorButtonY + 25, 160, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.green"),
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.green"),
                                 button -> this.selectedColor = TrafficLightsBlock.LightState.GREEN)
                         .dimensions(panelX + 30, colorButtonY + 50, 160, 20)
                         .build()
@@ -102,12 +101,12 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
 
         // 保存取消按钮
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
                         .dimensions(panelX + 40, panelY + 260, 60, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
                         .dimensions(panelX + 120, panelY + 260, 60, 20)
                         .build()
         );
@@ -120,8 +119,8 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
             pendingMountType = currentMountType;
         }
         mountTypeButton = this.addDrawableChild(
-                ButtonWidget.builder(
-                        new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                ButtonWidget.builderCompat(
+                        Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
                         button -> toggleMountType())
                         .dimensions(panelX + 30, panelY + 235, 160, 20)
                         .build()
@@ -148,7 +147,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         // 面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.settings_title"),
+                Text.translatable("text.yunbeiuc.traffic_lights_static_state.settings_title"),
                 panelX + PANEL_WIDTH / 2,
                 panelY + 12,
                 0xFFCCCCCC
@@ -157,7 +156,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         // 秒数标签
         context.drawTextWithShadow(
                 this.textRenderer,
-                new TextComponent("固定秒数:"),
+                Text.literal("固定秒数:"),
                 panelX + 30, panelY + 75,
                 0xFFAAAAAA
         );
@@ -165,7 +164,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         // 颜色标签
         context.drawTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color_label"),
+                Text.translatable("text.yunbeiuc.traffic_lights_static_state.color_label"),
                 panelX + 30, panelY + 115,
                 0xFFAAAAAA
         );
@@ -173,7 +172,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         // 警告文本 - 移到底部
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TextComponent("§e设置链接组时间序列后数据将被清除"),
+                Text.literal("§e设置链接组时间序列后数据将被清除"),
                 panelX + PANEL_WIDTH / 2,
                 panelY + PANEL_HEIGHT - 12,
                 0xFFFF00
@@ -249,7 +248,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                 TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
-            mountTypeButton.setMessage(new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
         }
     }
 

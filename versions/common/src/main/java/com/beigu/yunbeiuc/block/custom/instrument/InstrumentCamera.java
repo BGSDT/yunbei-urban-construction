@@ -49,7 +49,7 @@ public class InstrumentCamera extends Block {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.instrument_camera.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.instrument_camera.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
 

@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.util.CustomFlag;
 import com.beigu.yunbeiuc.util.FlagLoader;
@@ -72,7 +71,7 @@ public class FlagSelectionScreen extends Screen {
         // 标题在列表区域内居中
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.flag_selection.title"),
+                Text.translatable("text.yunbeiuc.flag_selection.title"),
                 listAreaLeft + listAreaWidth / 2,
                 10,
                 0xFFFFFF
@@ -82,7 +81,7 @@ public class FlagSelectionScreen extends Screen {
         if (selectedFlag != null) {
             context.drawTextWithShadow(
                     this.textRenderer,
-                    new TranslatableComponent("text.yunbeiuc.flag_selection.current_selection", selectedFlag.getName()),
+                    Text.translatable("text.yunbeiuc.flag_selection.current_selection", selectedFlag.getName()),
                     listAreaLeft + 10,
                     this.height - 55,
                     0xFFFFFF
@@ -110,7 +109,7 @@ public class FlagSelectionScreen extends Screen {
         // 面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.flag_selection.preview_panel"),
+                Text.translatable("text.yunbeiuc.flag_selection.preview_panel"),
                 panelX + panelWidth / 2,
                 panelY + 10,
                 0xFFFFFF
@@ -137,7 +136,7 @@ public class FlagSelectionScreen extends Screen {
             // 旗帜名称
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
-                    new TextComponent(selectedFlag.getName()),
+                    Text.literal(selectedFlag.getName()),
                     panelX + panelWidth / 2,
                     previewY + scaledHeight + 10,
                     0xFFFFFF
@@ -146,7 +145,7 @@ public class FlagSelectionScreen extends Screen {
             // 旗帜ID（颜色较浅）
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
-                    new TextComponent("ID: " + selectedFlag.getId()),
+                    Text.literal("ID: " + selectedFlag.getId()),
                     panelX + panelWidth / 2,
                     previewY + scaledHeight + 25,
                     0xAAAAAA
@@ -165,7 +164,7 @@ public class FlagSelectionScreen extends Screen {
             // 绘制保存按钮文字
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
-                    new TranslatableComponent("text.yunbeiuc.flag_selection.save_button"),
+                    Text.translatable("text.yunbeiuc.flag_selection.save_button"),
                     saveButtonX + saveButtonWidth / 2,
                     saveButtonY + 6,
                     0xFFFFFF
@@ -224,7 +223,7 @@ public class FlagSelectionScreen extends Screen {
             // 错误信息
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
-                    new TranslatableComponent("text.yunbeiuc.flag_selection.load_failed"),
+                    Text.translatable("text.yunbeiuc.flag_selection.load_failed"),
                     x + scaledDimensions[0] / 2,
                     y + scaledDimensions[1] / 2 - 5,
                     0xFFFFFF
@@ -318,7 +317,7 @@ public class FlagSelectionScreen extends Screen {
                                List<FlagOption> flagOptions, Consumer<FlagOption> onSelect) {
             super(client, width, height, top, bottom, itemHeight, flagOptions,
                     option -> option.getFlag() == selectedFlag, onSelect,
-                    option -> new TextComponent(option.getDisplayName()), FlagOption::getColor);
+                    option -> Text.literal(option.getDisplayName()), FlagOption::getColor);
         }
     }
 }

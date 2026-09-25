@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPatternPreset;
 import com.beigu.yunbeiuc.network.ModMessages;
@@ -43,7 +42,7 @@ public class TrafficLightsPatternSelectScreen extends Screen {
     private int panelY;
 
     public TrafficLightsPatternSelectScreen(BlockPos pos, String category, Screen previousScreen) {
-        super(new TextComponent("使用相位分配预设 - " + category));
+        super(Text.literal("使用相位分配预设 - " + category));
         this.pos = pos;
         this.category = category;
         this.previousScreen = previousScreen;
@@ -93,28 +92,28 @@ public class TrafficLightsPatternSelectScreen extends Screen {
 
         int buttonWidth = RIGHT_PANEL_WIDTH - 40;
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("应用到该组"), button -> applyPreset())
+                ButtonWidget.builderCompat(Text.literal("应用到该组"), button -> applyPreset())
                         .dimensions(panelX + 20, panelY + 50, buttonWidth, 20)
                         .build()
         );
-        this.editButton = ButtonWidget.builder(new TextComponent("编辑预设"), button -> openPatternEditor(true))
+        this.editButton = ButtonWidget.builderCompat(Text.literal("编辑预设"), button -> openPatternEditor(true))
                 .dimensions(panelX + 20, panelY + 78, buttonWidth, 20)
                 .build();
         this.editButton.active = selectedName != null && !TrafficLightsPatternPresetLoader.isBuiltIn(selectedName);
         this.addDrawableChild(this.editButton);
-        this.deleteButton = ButtonWidget.builder(new TextComponent("删除预设"), button -> deletePreset())
+        this.deleteButton = ButtonWidget.builderCompat(Text.literal("删除预设"), button -> deletePreset())
                 .dimensions(panelX + 20, panelY + 106, buttonWidth, 20)
                 .build();
         this.deleteButton.active = selectedName != null && !TrafficLightsPatternPresetLoader.isBuiltIn(selectedName);
         this.addDrawableChild(this.deleteButton);
         // 资源包内置分类只承载资源包内置预设，不允许在此新建用户预设
-        this.newButton = ButtonWidget.builder(new TextComponent("新建预设"), button -> openPatternEditor(false))
+        this.newButton = ButtonWidget.builderCompat(Text.literal("新建预设"), button -> openPatternEditor(false))
                 .dimensions(panelX + 20, panelY + 134, buttonWidth, 20)
                 .build();
         this.newButton.active = !isBuiltInCategory;
         this.addDrawableChild(this.newButton);
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("返回"), button -> this.close())
+                ButtonWidget.builderCompat(Text.literal("返回"), button -> this.close())
                         .dimensions(panelX + 20, panelY + 162, buttonWidth, 20)
                         .build()
         );
@@ -147,12 +146,12 @@ public class TrafficLightsPatternSelectScreen extends Screen {
 
     private void applyPreset() {
         if (selectedName == null) {
-            errorMessage = new TextComponent("§c请先在左侧选择一个预设！");
+            errorMessage = Text.literal("§c请先在左侧选择一个预设！");
             return;
         }
         TrafficLightsPatternPreset preset = findPreset(selectedName);
         if (preset == null) {
-            errorMessage = new TextComponent("§c预设不存在！");
+            errorMessage = Text.literal("§c预设不存在！");
             return;
         }
         TrafficLightsPatternApplyPacket packet = new TrafficLightsPatternApplyPacket(pos, preset);
@@ -164,11 +163,11 @@ public class TrafficLightsPatternSelectScreen extends Screen {
 
     private void deletePreset() {
         if (selectedName == null) {
-            errorMessage = new TextComponent("§c请先在左侧选择一个预设！");
+            errorMessage = Text.literal("§c请先在左侧选择一个预设！");
             return;
         }
         if (TrafficLightsPatternPresetLoader.isBuiltIn(selectedName)) {
-            errorMessage = new TextComponent("§c内置预设不可删除！");
+            errorMessage = Text.literal("§c内置预设不可删除！");
             return;
         }
         TrafficLightsPatternPresetManager.removePreset(selectedName);
@@ -179,16 +178,16 @@ public class TrafficLightsPatternSelectScreen extends Screen {
     private void openPatternEditor(boolean editSelected) {
         if (editSelected) {
             if (selectedName == null) {
-                errorMessage = new TextComponent("§c请先在左侧选择一个预设！");
+                errorMessage = Text.literal("§c请先在左侧选择一个预设！");
                 return;
             }
             if (TrafficLightsPatternPresetLoader.isBuiltIn(selectedName)) {
-                errorMessage = new TextComponent("§c内置预设不可编辑！");
+                errorMessage = Text.literal("§c内置预设不可编辑！");
                 return;
             }
             TrafficLightsPatternPreset preset = findPreset(selectedName);
             if (preset == null) {
-                errorMessage = new TextComponent("§c预设不存在！");
+                errorMessage = Text.literal("§c预设不存在！");
                 return;
             }
             Minecraft.getInstance().setScreen(new TrafficLightsPatternEditorScreen(preset, this.pos, this.category, this));
@@ -215,7 +214,7 @@ public class TrafficLightsPatternSelectScreen extends Screen {
 
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TextComponent("已选择: " + (selectedName != null ? selectedName : "无")),
+                Text.literal("已选择: " + (selectedName != null ? selectedName : "无")),
                 panelX + RIGHT_PANEL_WIDTH / 2,
                 panelY + 12,
                 0xFFCCCCCC
@@ -224,7 +223,7 @@ public class TrafficLightsPatternSelectScreen extends Screen {
         if (presetNames.isEmpty()) {
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
-                    new TextComponent("§7该分类暂无预设"),
+                    Text.literal("§7该分类暂无预设"),
                     panelX + RIGHT_PANEL_WIDTH / 2,
                     panelY + 32,
                     0xFF888888
@@ -277,7 +276,7 @@ public class TrafficLightsPatternSelectScreen extends Screen {
             super(client, width, height, top, bottom, itemHeight, names,
                     name -> name.equals(selectedName),
                     TrafficLightsPatternSelectScreen.this::setSelectedName,
-                    TextComponent::new,
+                    Text::literal,
                     name -> {
                         TrafficLightsPatternPreset preset = findPreset(name);
                         return preset != null ? preset.getDisplayColor() : TrafficLightsPatternPreset.hashColor(name);

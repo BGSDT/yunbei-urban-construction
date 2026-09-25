@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
@@ -34,7 +33,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
     private static final int PANEL_HEIGHT = 300;
 
     public TrafficLightsSimpleStaticStateScreen(BlockPos pos) {
-        super(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.title"));
+        super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
         this.pos = pos;
 
         // 判断是否为人行道红绿灯，并读取当前颜色和数据
@@ -71,13 +70,13 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         // 颜色按钮（人行道只有红/绿，读秒器有红/黄/绿）
         if (isPavement) {
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.red"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.RED)
                             .dimensions(panelX + 30, currentY, 160, 20)
                             .build()
             );
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.green"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.green"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.GREEN)
                             .dimensions(panelX + 30, currentY + 25, 160, 20)
                             .build()
@@ -86,11 +85,11 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
 
             // 显示秒数开关
             ButtonWidget showSecondsButton = this.addDrawableChild(
-                    ButtonWidget.builder(
-                            new TextComponent(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
+                    ButtonWidget.builderCompat(
+                            Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
                             button -> {
                                 showSeconds = !showSeconds;
-                                button.setMessage(new TextComponent(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
+                                button.setMessage(Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
                                 if (secondsField != null) {
                                     secondsField.setEditable(showSeconds);
                                 }
@@ -101,7 +100,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             currentY += 40;
 
             // 固定秒数输入框（不显示秒数时锁定）
-            secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, currentY, 160, 20, new TextComponent(""));
+            secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, currentY, 160, 20, Text.literal(""));
             secondsField.setMaxLength(3);
             var blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
             if (blockEntity instanceof TrafficLightsBlockEntity tl) {
@@ -115,19 +114,19 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         } else {
             // 读秒器：三个颜色按钮
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.red"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.RED)
                             .dimensions(panelX + 30, currentY, 160, 20)
                             .build()
             );
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.yellow"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.yellow"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.YELLOW)
                             .dimensions(panelX + 30, currentY + 25, 160, 20)
                             .build()
             );
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.green"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.green"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.GREEN)
                             .dimensions(panelX + 30, currentY + 50, 160, 20)
                             .build()
@@ -136,12 +135,12 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
 
         // 保存取消按钮
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
                         .dimensions(panelX + 40, panelY + PANEL_HEIGHT - 50, 60, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
                         .dimensions(panelX + 120, panelY + PANEL_HEIGHT - 50, 60, 20)
                         .build()
         );
@@ -161,8 +160,8 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
                 pendingMountType = currentMountType;
             }
             mountTypeButton = this.addDrawableChild(
-                    ButtonWidget.builder(
-                            new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                    ButtonWidget.builderCompat(
+                            Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
                             button -> toggleMountType())
                             .dimensions(panelX + 30, panelY + PANEL_HEIGHT - 75, 160, 20)
                             .build()
@@ -190,7 +189,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         // 面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.settings_title"),
+                Text.translatable("text.yunbeiuc.traffic_lights_static_state.settings_title"),
                 panelX + PANEL_WIDTH / 2,
                 panelY + 12,
                 0xFFCCCCCC
@@ -199,7 +198,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         // 颜色标签
         context.drawTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color_label"),
+                Text.translatable("text.yunbeiuc.traffic_lights_static_state.color_label"),
                 panelX + 30, panelY + 45,
                 0xFFAAAAAA
         );
@@ -208,7 +207,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         if (isPavement && secondsField != null) {
             context.drawTextWithShadow(
                     this.textRenderer,
-                    new TextComponent("固定秒数:"),
+                    Text.literal("固定秒数:"),
                     panelX + 30, secondsField.getY() - 15,
                     0xFFAAAAAA
             );
@@ -217,7 +216,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         // 警告文本
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TextComponent("§e设置链接组时间序列后数据将被清除"),
+                Text.literal("§e设置链接组时间序列后数据将被清除"),
                 panelX + PANEL_WIDTH / 2,
                 panelY + PANEL_HEIGHT - 12,
                 0xFFFF00
@@ -285,7 +284,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
                 TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
-            mountTypeButton.setMessage(new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
         }
     }
 }

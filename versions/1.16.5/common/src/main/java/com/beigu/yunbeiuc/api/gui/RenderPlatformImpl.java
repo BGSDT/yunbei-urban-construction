@@ -5,8 +5,24 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-/** Drawing operations for the Minecraft 1.18.2 GUI API. */
+/** Drawing operations for the Minecraft 1.16.5 GUI API. */
 public final class RenderPlatformImpl implements RenderPlatform {
+    @Override
+    public void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
+                            com.mojang.blaze3d.vertex.PoseStack matrices,
+                            net.minecraft.client.renderer.MultiBufferSource buffers, int backgroundColor, int light) {
+        font.drawInBatch(text, x, y, color, shadow, matrices.last().pose(), buffers,
+                false, backgroundColor, light);
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack matrices, float x, float y, float z) {
+        consumer.vertex(matrices.last().pose(), x, y, z);
+    }
+    @Override public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
+        matrices.mulPose(com.mojang.math.Vector3f.YP.rotationDegrees(degrees));
+    }
     @Override
     public void fill(DrawContext context, int left, int top, int right, int bottom, int color) {
         context.fill(left, top, right, bottom, color);

@@ -16,7 +16,7 @@ import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -27,7 +27,7 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderType cutout = RenderType.cutoutMipped();
             RenderType translucent = RenderType.translucent();
 
-            RoadBlocks.BLOCKS.forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
+            RoadBlocks.entries().forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
             
             RenderTypeRegistry.register(cutout, MunicipalBlocks.ROAD_FLOWER_BOX_1.get());
             RenderTypeRegistry.register(cutout, MunicipalBlocks.ROAD_FLOWER_BOX_2.get());
@@ -52,7 +52,7 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get());
             RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get());
 
-            SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
+            SignBlocks.entries().forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
 
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), FlagBlockEntityRenderer::new);
@@ -107,9 +107,8 @@ public class YunbeiUrbanConstructionForgeClient {
         MinecraftForge.EVENT_BUS.addListener(YunbeiUrbanConstructionForgeClient::onRenderLevelStage);
     }
 
-    private static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            LinkWandRenderer.renderLinkedLightsOutline(event.getPoseStack(), event.getCamera());
-        }
+    private static void onRenderLevelStage(RenderWorldLastEvent event) {
+        LinkWandRenderer.renderLinkedLightsOutline(
+                event.getMatrixStack(), Minecraft.getInstance().gameRenderer.getMainCamera());
     }
 }

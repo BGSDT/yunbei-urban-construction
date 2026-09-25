@@ -31,7 +31,7 @@ public class TextCopyWand extends Item {
         if (world.isClientSide || player == null) return false;
         BlockEntity be = world.getBlockEntity(pos);
         if (!(be instanceof CustomSignBlockEntity sign)) {
-            player.displayClientMessage(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.not_supported"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.not_supported"), true);
             return false;
         }
 
@@ -41,19 +41,19 @@ public class TextCopyWand extends Item {
             list.add(line.toNbt());
         }
         stack.getOrCreateTag().put(COPIED_DATA_KEY, list);
-        player.displayClientMessage(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.copied", textLines.size()), true);
+        player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.copied", textLines.size()), true);
         return true;
     }
 
     private static boolean pasteSignText(ItemStack stack, Player player, Level world, BlockPos pos) {
         CompoundTag tag = stack.getTag();
         if (tag == null || !tag.contains(COPIED_DATA_KEY)) {
-            player.displayClientMessage(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.no_data"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.no_data"), true);
             return false;
         }
         BlockEntity be = world.getBlockEntity(pos);
         if (!(be instanceof CustomSignBlockEntity sign)) {
-            player.displayClientMessage(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.not_supported"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.not_supported"), true);
             return false;
         }
 
@@ -65,7 +65,7 @@ public class TextCopyWand extends Item {
         sign.getTextLines().addAll(lines);
         sign.setChanged();
         world.sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), 3);
-        player.displayClientMessage(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.pasted", lines.size()), true);
+        player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.pasted", lines.size()), true);
         return true;
     }
 
@@ -100,15 +100,15 @@ public class TextCopyWand extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.tooltip.copy"));
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.tooltip.paste"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.copy"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.paste"));
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains(COPIED_DATA_KEY)) {
             ListTag list = tag.getList(COPIED_DATA_KEY, 10);
-            tooltip.add(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.text_copy_wand.tooltip.stored", list.size()));
+            tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.stored", list.size()));
             for (int i = 0; i < list.size() && i < 4; i++) {
                 CustomSignBlockEntity.TextLineData line = CustomSignBlockEntity.TextLineData.fromNbt(list.getCompound(i));
-                tooltip.add(new net.minecraft.network.chat.TextComponent("  " + line.getText()).withStyle(ChatFormatting.GRAY));
+                tooltip.add(com.beigu.yunbeiuc.api.text.Text.literal("  " + line.getText()).withStyle(ChatFormatting.GRAY));
             }
         }
     }

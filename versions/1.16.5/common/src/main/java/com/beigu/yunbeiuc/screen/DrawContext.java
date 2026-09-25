@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-/** 1.18.2 GUI drawing bridge for the shared screen layout code. */
+/** 1.16.5 GUI drawing bridge for the shared screen layout code. */
 public final class DrawContext {
     private final PoseStack matrices;
 
@@ -52,7 +52,7 @@ public final class DrawContext {
 
     public void drawTexture(ResourceLocation texture, int x, int y, int width, int height,
                             int u, int v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-        RenderSystem.setShaderTexture(0, texture);
+        Minecraft.getInstance().getTextureManager().bind(texture);
         GuiComponent.blit(matrices, x, y, width, height, (float) u, (float) v,
                 regionWidth, regionHeight, textureWidth, textureHeight);
     }

@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomSignBlockEntity extends BlockEntity {
+public class CustomSignBlockEntity extends BlockEntityMapper {
     private List<TextLineData> textLines = new ArrayList<>();
     private boolean glowingText = false;
     // 客户端UI状态：当前正在编辑的文本行索引，不写入NBT
@@ -70,8 +71,8 @@ public class CustomSignBlockEntity extends BlockEntity {
         glowingText = nbt.getBoolean("GlowingText");
     }
 
-    @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
-    @Override public CompoundTag getUpdateTag() { return saveWithoutMetadata(); }
+    @Nullable @Override public ClientboundBlockEntityDataPacket getUpdatePacket() { return createUpdatePacket(); }
+    @Override public CompoundTag getUpdateTag() { return createUpdateTag(); }
 
     // ==================== 占位符解析 ====================
     // 文本行中的 {字段名} 会在渲染时替换为对应固定 NBT 字段的值；

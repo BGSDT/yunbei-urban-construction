@@ -12,7 +12,7 @@ public final class GuiPlatformImpl implements GuiPlatform {
     @Override
     public ButtonWidget createButton(Component label, int x, int y, int width, int height,
                                      Consumer<ButtonWidget> action) {
-        return ButtonWidget.builder(label, action).dimensions(x, y, width, height).build();
+        return ButtonWidget.builderCompat(label, action).dimensions(x, y, width, height).build();
     }
 
     @Override

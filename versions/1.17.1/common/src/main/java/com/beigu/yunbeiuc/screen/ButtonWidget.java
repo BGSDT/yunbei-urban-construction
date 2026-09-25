@@ -13,7 +13,7 @@ public class ButtonWidget extends Button implements ClickableWidget {
         this.action = action;
     }
 
-    public static Builder builder(Component label, Consumer<ButtonWidget> action) {
+    public static Builder builderCompat(Component label, Consumer<ButtonWidget> action) {
         return new Builder(label, action);
     }
 

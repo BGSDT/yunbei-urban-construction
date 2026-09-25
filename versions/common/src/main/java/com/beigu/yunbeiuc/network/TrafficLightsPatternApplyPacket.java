@@ -83,15 +83,15 @@ public class TrafficLightsPatternApplyPacket {
     public void apply(ServerPlayer player) {
         Level world = player.level;
         if (!(world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity clicked)) {
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c该方块不是红绿灯！"), false);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该方块不是红绿灯！"), false);
             return;
         }
         if (!clicked.isInGroup()) {
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c该红绿灯不在任何链接组中！"), false);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯不在任何链接组中！"), false);
             return;
         }
         if (!clicked.hasTimings()) {
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c该红绿灯所在的链接组还没有设置时间表，请先设置时间表！"), false);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯所在的链接组还没有设置时间表，请先设置时间表！"), false);
             return;
         }
 
@@ -103,13 +103,13 @@ public class TrafficLightsPatternApplyPacket {
                     && groupId.equals(tl.getGroupId())) {
                 members.add(tl);
             } else {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c一些已链接的红绿灯已被破坏，链接组已失效！"), false);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c一些已链接的红绿灯已被破坏，链接组已失效！"), false);
                 return;
             }
         }
 
         if (members.isEmpty()) {
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c链接组为空！"), false);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c链接组为空！"), false);
             return;
         }
 

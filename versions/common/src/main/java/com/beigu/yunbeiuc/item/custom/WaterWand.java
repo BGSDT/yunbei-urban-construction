@@ -22,7 +22,7 @@ public class WaterWand extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag context) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.water_wand.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.water_wand.tooltip"));
         super .appendHoverText(stack, world, tooltip, context);
     }
 
@@ -56,7 +56,7 @@ public class WaterWand extends Item {
         }
 
         if (count > 0) {
-            player.displayClientMessage(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.water_wand.success", count), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.water_wand.success", count), true);
         }
 
         return InteractionResult.PASS;

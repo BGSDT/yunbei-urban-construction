@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
@@ -75,7 +74,7 @@ public class TrafficLightsScreen extends Screen {
     private static final int PAVEMENT_BOTTOM_MARGIN = 30;
 
     public TrafficLightsScreen(BlockPos pos) {
-        super(new TranslatableComponent("text.yunbeiuc.traffic_lights.title"));
+        super(Text.translatable("text.yunbeiuc.traffic_lights.title"));
         this.pos = pos;
         this.blockEntity = (TrafficLightsBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos);
 
@@ -175,11 +174,11 @@ public class TrafficLightsScreen extends Screen {
         if (isCountdownTimer) {
             // 显示模式按钮
             displayModeButton = this.addDrawableChild(
-                    ButtonWidget.builder(
-                            new TextComponent(displayMode == 0 ? "全显" : "半显"),
+                    ButtonWidget.builderCompat(
+                            Text.literal(displayMode == 0 ? "全显" : "半显"),
                             button -> {
                                 displayMode = (displayMode == 0) ? 1 : 0;
-                                button.setMessage(new TextComponent(displayMode == 0 ? "全显" : "半显"));
+                                button.setMessage(Text.literal(displayMode == 0 ? "全显" : "半显"));
                                 if (thresholdField != null) {
                                     thresholdField.setEditable(displayMode != 0);
                                 }
@@ -189,7 +188,7 @@ public class TrafficLightsScreen extends Screen {
             );
 
             // 阈值输入框（全显模式下锁定，不可编辑）
-            thresholdField = new TextFieldWidget(this.textRenderer, panelX + 110, panelY + PREVIEW_Y_OFFSET, 70, 20, new TextComponent(""));
+            thresholdField = new TextFieldWidget(this.textRenderer, panelX + 110, panelY + PREVIEW_Y_OFFSET, 70, 20, Text.literal(""));
             thresholdField.setMaxLength(3);
             thresholdField.setText(String.valueOf(threshold));
             thresholdField.setEditable(displayMode != 0);
@@ -199,11 +198,11 @@ public class TrafficLightsScreen extends Screen {
         // 人行道红绿灯专属控件：显示秒数开关（紧贴相位滑块区域下方）
         if (isPavement) {
             showSecondsButton = this.addDrawableChild(
-                    ButtonWidget.builder(
-                            new TextComponent(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
+                    ButtonWidget.builderCompat(
+                            Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
                             button -> {
                                 showSeconds = !showSeconds;
-                                button.setMessage(new TextComponent(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
+                                button.setMessage(Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
                             })
                             .dimensions(panelX + 30, panelY + getShowSecondsYOffset(), 140, 20)
                             .build()
@@ -215,21 +214,21 @@ public class TrafficLightsScreen extends Screen {
 
         // 保存按钮
         saveButton = this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
                         .dimensions(panelX + 30, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
 
         // 取消按钮
         cancelButton = this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
                         .dimensions(panelX + 110, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
 
         // 使用相位预设按钮：把整组的相位分配一次性应用为某个已保存的预设
         patternPresetButton = this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("相位预设"), button -> openPatternSelectScreen())
+                ButtonWidget.builderCompat(Text.literal("相位预设"), button -> openPatternSelectScreen())
                         .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
                         .build()
         );
@@ -244,8 +243,8 @@ public class TrafficLightsScreen extends Screen {
                     blockEntity.getBlockState().getValue(TrafficLightsBlock.TYPE) : TrafficLightsBlock.MountType.SIMPLE;
             pendingMountType = currentMountType;
             mountTypeButton = this.addDrawableChild(
-                    ButtonWidget.builder(
-                            new TextComponent(currentMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                    ButtonWidget.builderCompat(
+                            Text.literal(currentMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
                             button -> toggleMountType())
                             .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
                             .build()
@@ -264,11 +263,11 @@ public class TrafficLightsScreen extends Screen {
             this.remove(showSecondsButton);
         }
         showSecondsButton = this.addDrawableChild(
-                ButtonWidget.builder(
-                        new TextComponent(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
+                ButtonWidget.builderCompat(
+                        Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
                         button -> {
                             showSeconds = !showSeconds;
-                            button.setMessage(new TextComponent(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
+                            button.setMessage(Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"));
                         })
                         .dimensions(panelX + 30, panelY + getShowSecondsYOffset(), 140, 20)
                         .build()
@@ -280,7 +279,7 @@ public class TrafficLightsScreen extends Screen {
             this.remove(saveButton);
         }
         saveButton = this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
                         .dimensions(panelX + 30, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
@@ -289,7 +288,7 @@ public class TrafficLightsScreen extends Screen {
             this.remove(cancelButton);
         }
         cancelButton = this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
                         .dimensions(panelX + 110, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
@@ -298,7 +297,7 @@ public class TrafficLightsScreen extends Screen {
             this.remove(patternPresetButton);
         }
         patternPresetButton = this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("相位预设"), button -> openPatternSelectScreen())
+                ButtonWidget.builderCompat(Text.literal("相位预设"), button -> openPatternSelectScreen())
                         .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
                         .build()
         );
@@ -317,8 +316,8 @@ public class TrafficLightsScreen extends Screen {
                 pendingMountType = currentMountType;
             }
             mountTypeButton = this.addDrawableChild(
-                    ButtonWidget.builder(
-                            new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                    ButtonWidget.builderCompat(
+                            Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
                             button -> toggleMountType())
                             .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
                             .build()
@@ -333,7 +332,7 @@ public class TrafficLightsScreen extends Screen {
                 TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
-            mountTypeButton.setMessage(new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
         }
     }
 
@@ -381,7 +380,7 @@ public class TrafficLightsScreen extends Screen {
             // 标题
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
-                    new TranslatableComponent("text.yunbeiuc.traffic_lights.title"),
+                    Text.translatable("text.yunbeiuc.traffic_lights.title"),
                     listAreaWidth / 2,
                     10,
                     0xFFFFFF
@@ -391,8 +390,8 @@ public class TrafficLightsScreen extends Screen {
             if (selectedOption != null) {
                 context.drawTextWithShadow(
                         this.textRenderer,
-                        new TranslatableComponent("text.yunbeiuc.traffic_lights.current_selection",
-                                new TranslatableComponent(selectedOption.getTranslationKey())),
+                        Text.translatable("text.yunbeiuc.traffic_lights.current_selection",
+                                Text.translatable(selectedOption.getTranslationKey())),
                         10,
                         this.height - 55,
                         0xFFFFFF
@@ -406,7 +405,7 @@ public class TrafficLightsScreen extends Screen {
             // 居中标题
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
-                    new TranslatableComponent("text.yunbeiuc.traffic_lights.title"),
+                    Text.translatable("text.yunbeiuc.traffic_lights.title"),
                     this.width / 2,
                     10,
                     0xFFFFFF
@@ -421,7 +420,7 @@ public class TrafficLightsScreen extends Screen {
         // 右侧面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights.settings_title"),
+                Text.translatable("text.yunbeiuc.traffic_lights.settings_title"),
                 panelX + RIGHT_PANEL_WIDTH / 2,
                 panelY + 12,
                 0xFFCCCCCC
@@ -430,7 +429,7 @@ public class TrafficLightsScreen extends Screen {
         // 相位标签
         context.drawTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights.phase_label"),
+                Text.translatable("text.yunbeiuc.traffic_lights.phase_label"),
                 panelX + 20, panelY + 42,
                 0xFFAAAAAA
         );
@@ -438,7 +437,7 @@ public class TrafficLightsScreen extends Screen {
         // 当前相位显示
         context.drawTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights.phase_value",
+                Text.translatable("text.yunbeiuc.traffic_lights.phase_value",
                         formatPhaseIndicesText(), phaseCount),
                 panelX + 20, panelY + 52,
                 0xFFFFFF00
@@ -448,13 +447,13 @@ public class TrafficLightsScreen extends Screen {
         if (isCountdownTimer) {
             context.drawTextWithShadow(
                     this.textRenderer,
-                    new TextComponent("显示模式:"),
+                    Text.literal("显示模式:"),
                     panelX + 20, panelY + PREVIEW_Y_OFFSET - 15,
                     0xFFAAAAAA
             );
             context.drawTextWithShadow(
                     this.textRenderer,
-                    new TextComponent("阈值(秒):"),
+                    Text.literal("阈值(秒):"),
                     panelX + 110, panelY + PREVIEW_Y_OFFSET - 15,
                     0xFFAAAAAA
             );
@@ -477,7 +476,7 @@ public class TrafficLightsScreen extends Screen {
 
             context.drawTextWithShadow(
                     this.textRenderer,
-                    new TranslatableComponent(selectedOption.getTranslationKey()),
+                    Text.translatable(selectedOption.getTranslationKey()),
                     previewX + previewSize + 8,
                     previewY + 10,
                     0xFFFFFF
@@ -485,7 +484,7 @@ public class TrafficLightsScreen extends Screen {
 
             context.drawTextWithShadow(
                     this.textRenderer,
-                    new TranslatableComponent("text.yunbeiuc.traffic_lights.current_phase",
+                    Text.translatable("text.yunbeiuc.traffic_lights.current_phase",
                             formatPhaseIndicesText(), phaseCount),
                     previewX + previewSize + 8,
                     previewY + 30,
@@ -593,7 +592,7 @@ public class TrafficLightsScreen extends Screen {
 
             if (i > 0) {
                 ButtonWidget removeButton = this.addDrawableChild(
-                        ButtonWidget.builder(new TextComponent("×"), button -> removePhaseSlider(slotIndex))
+                        ButtonWidget.builderCompat(Text.literal("×"), button -> removePhaseSlider(slotIndex))
                                 .dimensions(panelX + 165, y, 15, 20)
                                 .build()
                 );
@@ -604,7 +603,7 @@ public class TrafficLightsScreen extends Screen {
         if (phaseSliders.size() < maxSliders) {
             int firstRowY = panelY + PHASE_SLIDER_START_Y;
             addPhaseButton = this.addDrawableChild(
-                    ButtonWidget.builder(new TextComponent("+"), button -> addPhaseSlider())
+                    ButtonWidget.builderCompat(Text.literal("+"), button -> addPhaseSlider())
                             .dimensions(panelX + 165, firstRowY, 15, 20)
                             .build()
             );
@@ -685,7 +684,7 @@ public class TrafficLightsScreen extends Screen {
 
         public PhaseSliderWidget(int x, int y, int width, int height, int initialPhase, int phaseCount, int slotIndex) {
             super(x, y, width, height,
-                    new TextComponent("相位: " + (initialPhase + 1) + " / " + phaseCount),
+                    Text.literal("相位: " + (initialPhase + 1) + " / " + phaseCount),
                     (double) initialPhase / Math.max(1, phaseCount - 1));
             this.phaseCount = phaseCount;
             this.slotIndex = slotIndex;
@@ -695,7 +694,7 @@ public class TrafficLightsScreen extends Screen {
 
         @Override
         protected void updateMessage() {
-            this.setMessage(new TextComponent("相位: " + (currentPhase + 1) + " / " + phaseCount));
+            this.setMessage(Text.literal("相位: " + (currentPhase + 1) + " / " + phaseCount));
         }
 
         @Override
@@ -793,7 +792,7 @@ public class TrafficLightsScreen extends Screen {
                                     List<DirectionOption> directionOptions, Consumer<DirectionOption> onSelect) {
             super(client, width, height, top, bottom, itemHeight, directionOptions,
                     option -> option == selectedOption, onSelect,
-                    option -> new TranslatableComponent(option.getTranslationKey()), DirectionOption::getColor,
+                    option -> Text.translatable(option.getTranslationKey()), DirectionOption::getColor,
                     option -> com.beigu.yunbeiuc.util.TrafficLightsDirectionIcons.get(option.getDirectionType()));
         }
     }

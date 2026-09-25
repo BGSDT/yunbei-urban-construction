@@ -5,7 +5,7 @@ import com.beigu.yunbeiuc.entity.SignExpresswayEntranceAdvance10Entity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Direction;
-import com.mojang.math.Vector3f;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 public class SignExpresswayEntranceAdvance10EntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayEntranceAdvance10Entity> {
 
@@ -17,7 +17,7 @@ public class SignExpresswayEntranceAdvance10EntityRenderer extends AbstractTextD
     protected void applyTransforms(PoseStack matrices, SignExpresswayEntranceAdvance10Entity entity) {
         Direction facing = entity.getBlockState().getValue(SignExpresswayEntranceAdvance10.FACING);
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.mulPose(Vector3f.YP.rotationDegrees(-facing.toYRot()));
+        VersionServices.render().rotateY(matrices, -facing.toYRot());
     }
 
     @Override

@@ -9,7 +9,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Matrix4f;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -244,7 +244,6 @@ public class CustomFontRenderer {
                 break;
         }
 
-        Matrix4f positionMatrix = matrices.last().pose();
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.text(renderer.fontAtlas));
 
         for (int i = 0; i < text.length(); i++) {
@@ -261,16 +260,20 @@ public class CustomFontRenderer {
             float charWidth = info.width * scale;
             float charHeight = info.height * scale;
 
-            vertexConsumer.vertex(positionMatrix, currentX, y + charHeight, z)
+            VersionServices.render().vertex(vertexConsumer, matrices, currentX, y + charHeight, z);
+            vertexConsumer
                     .color(red, green, blue, alpha).uv(info.u1, info.v2)
                     .uv2(light).endVertex();
-            vertexConsumer.vertex(positionMatrix, currentX + charWidth, y + charHeight, z)
+            VersionServices.render().vertex(vertexConsumer, matrices, currentX + charWidth, y + charHeight, z);
+            vertexConsumer
                     .color(red, green, blue, alpha).uv(info.u2, info.v2)
                     .uv2(light).endVertex();
-            vertexConsumer.vertex(positionMatrix, currentX + charWidth, y, z)
+            VersionServices.render().vertex(vertexConsumer, matrices, currentX + charWidth, y, z);
+            vertexConsumer
                     .color(red, green, blue, alpha).uv(info.u2, info.v1)
                     .uv2(light).endVertex();
-            vertexConsumer.vertex(positionMatrix, currentX, y, z)
+            VersionServices.render().vertex(vertexConsumer, matrices, currentX, y, z);
+            vertexConsumer
                     .color(red, green, blue, alpha).uv(info.u1, info.v1)
                     .uv2(light).endVertex();
 

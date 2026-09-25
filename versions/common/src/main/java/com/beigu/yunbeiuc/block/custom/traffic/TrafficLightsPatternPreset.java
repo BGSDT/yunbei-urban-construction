@@ -426,8 +426,8 @@ public class TrafficLightsPatternPreset {
     }
 
     private static void send(@Nullable Player player, String message) {
-        if (player != null && !player.getLevel() .isClientSide) {
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent(message), false);
+        if (player != null && !player.level.isClientSide) {
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal(message), false);
         }
     }
 }

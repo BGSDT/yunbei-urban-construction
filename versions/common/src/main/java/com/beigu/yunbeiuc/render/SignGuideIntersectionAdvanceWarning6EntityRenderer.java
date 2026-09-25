@@ -5,7 +5,7 @@ import com.beigu.yunbeiuc.entity.SignGuideIntersectionAdvanceWarning6Entity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Direction;
-import com.mojang.math.Vector3f;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 public class SignGuideIntersectionAdvanceWarning6EntityRenderer extends AbstractTextDisplayEntityRenderer<SignGuideIntersectionAdvanceWarning6Entity> {
 
@@ -17,7 +17,7 @@ public class SignGuideIntersectionAdvanceWarning6EntityRenderer extends Abstract
     protected void applyTransforms(PoseStack matrices, SignGuideIntersectionAdvanceWarning6Entity entity) {
         Direction facing = entity.getBlockState().getValue(SignGuideIntersectionAdvanceWarning6.FACING);
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.mulPose(Vector3f.YP.rotationDegrees(-facing.toYRot()));
+        VersionServices.render().rotateY(matrices, -facing.toYRot());
     }
 
     @Override

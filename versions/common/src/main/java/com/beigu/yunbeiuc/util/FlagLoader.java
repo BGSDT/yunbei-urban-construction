@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.util;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -27,17 +28,18 @@ public class FlagLoader {
             for (String namespace : resourceManager.getNamespaces()) {
                 ResourceLocation fileId = new ResourceLocation(namespace, "flags_yunbeiuc.json");
 
-                if (resourceManager.hasResource(fileId)) {
-                    var resource = resourceManager.getResource(fileId);
-                    try (InputStream stream = resource.getInputStream();
+                try (InputStream stream = VersionServices.resources().openIfPresent(resourceManager, fileId)) {
+                    if (stream != null) {
+                    try (
                          InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
 
-                        JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                        JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
                         JsonObject customFlags = json.getAsJsonObject("custom_flags");
 
                         int count = 0;
 
-                        for (String flagId : customFlags.keySet()) {
+                        for (Map.Entry<String, com.google.gson.JsonElement> entry : customFlags.entrySet()) {
+                            String flagId = entry.getKey();
                             JsonObject flagData = customFlags.getAsJsonObject(flagId);
 
                             String name = flagData.get("name").getAsString();
@@ -68,6 +70,9 @@ public class FlagLoader {
                     } catch (Exception e) {
                         System.err.println("加载旗帜文件失败 [" + fileId + "]: " + e.getMessage());
                     }
+                    }
+                } catch (Exception e) {
+                    System.err.println("打开旗帜文件失败 [" + fileId + "]: " + e.getMessage());
                 }
             }
 

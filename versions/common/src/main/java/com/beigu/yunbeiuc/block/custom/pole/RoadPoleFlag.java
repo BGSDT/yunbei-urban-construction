@@ -51,7 +51,7 @@ public class RoadPoleFlag extends BaseEntityBlock {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.road_pole_flag.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.road_pole_flag.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
 
@@ -109,7 +109,7 @@ public class RoadPoleFlag extends BaseEntityBlock {
 
     @Environment(EnvType.CLIENT)
     private void openFlagScreen(BlockPos pos) {
-        Minecraft.getInstance().setScreen(new FlagSelectionScreen(new net.minecraft.network.chat.TextComponent("选择旗帜"), pos));
+        Minecraft.getInstance().setScreen(new FlagSelectionScreen(com.beigu.yunbeiuc.api.text.Text.literal("选择旗帜"), pos));
     }
 
     @Override

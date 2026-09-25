@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
 import net.minecraft.client.Minecraft;
@@ -32,7 +31,7 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
     private int panelY;
 
     public TrafficLightsPatternCategorySelectScreen(BlockPos pos) {
-        super(new TextComponent("选择相位预设分类"));
+        super(Text.literal("选择相位预设分类"));
         this.pos = pos;
     }
 
@@ -63,27 +62,27 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
         this.panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
 
         int buttonWidth = RIGHT_PANEL_WIDTH - 40;
-        this.enterButton = ButtonWidget.builder(new TextComponent("进入分类"), button -> enterCategory())
+        this.enterButton = ButtonWidget.builderCompat(Text.literal("进入分类"), button -> enterCategory())
                 .dimensions(panelX + 20, panelY + 50, buttonWidth, 20)
                 .build();
         this.enterButton.active = selectedCategory != null;
         this.addDrawableChild(this.enterButton);
 
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("新建分类"), button ->
+                ButtonWidget.builderCompat(Text.literal("新建分类"), button ->
                         Minecraft.getInstance().setScreen(new TrafficLightsPatternCategoryEditorScreen(this)))
                         .dimensions(panelX + 20, panelY + 78, buttonWidth, 20)
                         .build()
         );
 
-        this.deleteButton = ButtonWidget.builder(new TextComponent("删除分类"), button -> deleteCategory())
+        this.deleteButton = ButtonWidget.builderCompat(Text.literal("删除分类"), button -> deleteCategory())
                 .dimensions(panelX + 20, panelY + 106, buttonWidth, 20)
                 .build();
         this.deleteButton.active = selectedCategory != null && TrafficLightsPatternCategoryManager.canDelete(selectedCategory);
         this.addDrawableChild(this.deleteButton);
 
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("取消"), button -> this.close())
+                ButtonWidget.builderCompat(Text.literal("取消"), button -> this.close())
                         .dimensions(panelX + 20, panelY + 134, buttonWidth, 20)
                         .build()
         );
@@ -107,7 +106,7 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
 
     private void enterCategory() {
         if (selectedCategory == null) {
-            errorMessage = new TextComponent("§c请先在左侧选择一个分类！");
+            errorMessage = Text.literal("§c请先在左侧选择一个分类！");
             return;
         }
         Minecraft.getInstance().setScreen(new TrafficLightsPatternSelectScreen(pos, selectedCategory, this));
@@ -125,11 +124,11 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
 
     private void deleteCategory() {
         if (selectedCategory == null) {
-            errorMessage = new TextComponent("§c请先在左侧选择一个分类！");
+            errorMessage = Text.literal("§c请先在左侧选择一个分类！");
             return;
         }
         if (!TrafficLightsPatternCategoryManager.canDelete(selectedCategory)) {
-            errorMessage = new TextComponent("§c该分类不可删除（固定分类或分类内仍有预设）！");
+            errorMessage = Text.literal("§c该分类不可删除（固定分类或分类内仍有预设）！");
             return;
         }
         TrafficLightsPatternCategoryManager.removeCategory(selectedCategory);
@@ -155,7 +154,7 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
 
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TextComponent("已选择: " + (selectedCategory != null ? selectedCategory : "无")),
+                Text.literal("已选择: " + (selectedCategory != null ? selectedCategory : "无")),
                 panelX + RIGHT_PANEL_WIDTH / 2,
                 panelY + 12,
                 0xFFCCCCCC
@@ -194,7 +193,7 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
             super(client, width, height, top, bottom, itemHeight, names,
                     name -> name.equals(selectedCategory),
                     TrafficLightsPatternCategorySelectScreen.this::setSelectedCategory,
-                    TextComponent::new,
+                    Text::literal,
                     TrafficLightsPatternCategoryManager::getColor);
         }
     }

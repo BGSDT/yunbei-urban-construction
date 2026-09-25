@@ -3,12 +3,11 @@ package com.beigu.yunbeiuc.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 
-/** Maps the shared screen lifecycle onto Minecraft 1.18.2. */
+/** Maps the shared screen lifecycle onto Minecraft 1.16.5. */
 public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     protected Minecraft client;
     protected Font textRenderer;
@@ -34,19 +33,26 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         super.renderBackground(context.getMatrices());
     }
 
-    protected <T extends GuiEventListener & Widget & NarratableEntry> T addDrawableChild(T widget) {
-        return addRenderableWidget(widget);
+    protected <T extends AbstractWidget> T addDrawableChild(T widget) {
+        return addButton(widget);
     }
 
-    protected <T extends GuiEventListener & NarratableEntry> T addSelectableChild(T widget) {
+    protected <T extends GuiEventListener> T addSelectableChild(T widget) {
         return addWidget(widget);
     }
 
     protected void remove(GuiEventListener widget) {
-        if (widget != null) removeWidget(widget);
+        if (widget == null) return;
+        children.remove(widget);
+        if (widget instanceof AbstractWidget) {
+            buttons.remove(widget);
+        }
     }
 
-    protected void clearChildren() { clearWidgets(); }
+    protected void clearChildren() {
+        children.clear();
+        buttons.clear();
+    }
 
     public void close() { onClose(); }
 

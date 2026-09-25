@@ -2,9 +2,8 @@ package com.beigu.yunbeiuc.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
     @Override
     protected int getScrollbarPosition() { return getScrollbarPositionX(); }
 
-    public abstract static class Entry<E extends Entry<E>> extends ObjectSelectionList.Entry<E> {
+    public abstract static class Entry<E extends Entry<E>> extends AbstractSelectionList.Entry<E> {
         @Override
         public final void render(PoseStack matrices, int index, int y, int x, int entryWidth,
                                  int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
@@ -45,7 +44,5 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
             return false;
         }
 
-        @Override
-        public Component getNarration() { return new TextComponent(""); }
     }
 }

@@ -5,7 +5,7 @@ import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.core.Registry;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 public class ModBlockEntities {
 
     public static final DeferredRegister<BlockEntityType<?>> BES =
-            DeferredRegister.create(YunbeiUrbanConstruction.MOD_ID, Registry.BLOCK_ENTITY_TYPE_REGISTRY);
+            VersionServices.registries().blockEntityTypes(YunbeiUrbanConstruction.MOD_ID);
 
     public static final RegistrySupplier<BlockEntityType<TrafficLightsBlockEntity>> TRAFFIC_LIGHTS_BLOCK_ENTITY =
             BES.register("traffic_lights_block_entity",

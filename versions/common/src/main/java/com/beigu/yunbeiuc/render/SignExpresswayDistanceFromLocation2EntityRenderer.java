@@ -5,7 +5,7 @@ import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation2Entity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Direction;
-import com.mojang.math.Vector3f;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 public class SignExpresswayDistanceFromLocation2EntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayDistanceFromLocation2Entity> {
 
@@ -17,7 +17,7 @@ public class SignExpresswayDistanceFromLocation2EntityRenderer extends AbstractT
     protected void applyTransforms(PoseStack matrices, SignExpresswayDistanceFromLocation2Entity entity) {
         Direction facing = entity.getBlockState().getValue(SignExpresswayDistanceFromLocation2.FACING);
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.mulPose(Vector3f.YP.rotationDegrees(-facing.toYRot()));
+        VersionServices.render().rotateY(matrices, -facing.toYRot());
     }
 
     @Override

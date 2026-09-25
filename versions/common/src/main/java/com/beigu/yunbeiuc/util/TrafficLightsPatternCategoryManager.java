@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.util;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPatternPreset;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.Gson;
 import dev.architectury.platform.Platform;
 
@@ -116,7 +117,8 @@ public class TrafficLightsPatternCategoryManager {
         try (Reader reader = new FileReader(file)) {
             JsonObject obj = GSON.fromJson(reader, JsonObject.class);
             if (obj == null) return;
-            for (String key : obj.keySet()) {
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                String key = entry.getKey();
                 if (isFixedCategory(key)) continue;
                 userCategories.put(key, obj.get(key).getAsInt());
             }

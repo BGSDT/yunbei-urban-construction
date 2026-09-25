@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.util.StringRepresentable;
@@ -41,7 +41,7 @@ public class TrafficBarrierDoubleBlock extends Block {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new TranslatableComponent("block.yunbeiuc.traffic_barrier.tooltip"));
+        tooltip.add(Text.translatable("block.yunbeiuc.traffic_barrier.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
 

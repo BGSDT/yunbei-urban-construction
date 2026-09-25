@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[36,)"
 issueTrackerURL = "https://github.com/BGSDT/yunbei-urban-construction/issues"
 license = "MIT"
 
@@ -16,20 +16,20 @@ Let's use the mod to decorate your city!
 [[dependencies.yunbeiuc]]
 modId = "forge"
 mandatory = true
-versionRange = "[40,)"
+versionRange = "[36,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.yunbeiuc]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.18.2]"
+versionRange = "[1.16.5]"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.yunbeiuc]]
 modId = "architectury"
 mandatory = true
-versionRange = "[5.2.0,)"
+versionRange = "[1.32.66,)"
 ordering = "AFTER"
 side = "BOTH"

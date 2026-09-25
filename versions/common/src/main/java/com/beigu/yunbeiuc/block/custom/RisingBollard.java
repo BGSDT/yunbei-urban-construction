@@ -33,7 +33,7 @@ import java.util.List;
 public class RisingBollard extends Block {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.rising_bollard.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.rising_bollard.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
     private static final VoxelShape SHAPE_ON = Block.box(2, 0, 2, 14, 16, 14);

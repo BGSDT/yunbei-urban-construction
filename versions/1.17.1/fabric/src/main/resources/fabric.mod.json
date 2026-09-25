@@ -33,15 +33,15 @@
     "yunbeiuc.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.10",
-    "minecraft": "1.18.2",
+    "fabricloader": ">=0.18.4",
+    "minecraft": "1.17.1",
     "java": ">=17",
-    "architectury": ">=5.2.0",
+    "architectury": ">=2.8.67",
     "fabric-api": "*"
   },
   "suggests": {
     "another-mod": "*",
-    "modmenu": ">=3.2.5"
+    "modmenu": "*"
   },
   "custom": {
     "modmenu": {

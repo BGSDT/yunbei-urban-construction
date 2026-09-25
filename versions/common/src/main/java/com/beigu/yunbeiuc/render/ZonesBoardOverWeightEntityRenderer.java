@@ -5,7 +5,7 @@ import com.beigu.yunbeiuc.entity.ZonesBoardOverWeightEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Direction;
-import com.mojang.math.Vector3f;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 public class ZonesBoardOverWeightEntityRenderer extends AbstractTextDisplayEntityRenderer<ZonesBoardOverWeightEntity> {
 
@@ -17,7 +17,7 @@ public class ZonesBoardOverWeightEntityRenderer extends AbstractTextDisplayEntit
     protected void applyTransforms(PoseStack matrices, ZonesBoardOverWeightEntity entity) {
         Direction facing = entity.getBlockState().getValue(ZonesBoardOverWeight.FACING);
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.mulPose(Vector3f.YP.rotationDegrees(-facing.toYRot()));
+        VersionServices.render().rotateY(matrices, -facing.toYRot());
     }
 
     @Override

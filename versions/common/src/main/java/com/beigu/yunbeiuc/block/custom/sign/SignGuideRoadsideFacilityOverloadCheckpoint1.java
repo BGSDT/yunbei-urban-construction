@@ -65,7 +65,7 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1 extends BaseEntityBloc
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.sign_guide_roadside_facility_overload_checkpoint_1.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.sign_guide_roadside_facility_overload_checkpoint_1.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
 

@@ -2,8 +2,7 @@ package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.api.gui.RenderPlatform;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;

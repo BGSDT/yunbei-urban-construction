@@ -4,6 +4,9 @@ import com.beigu.yunbeiuc.screen.DrawContext;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 /** Version-neutral rendering operations for text, textures and primitives. */
 public interface RenderPlatform {
@@ -21,4 +24,11 @@ public interface RenderPlatform {
     void enableScissor(DrawContext context, int left, int top, int right, int bottom);
 
     void disableScissor(DrawContext context);
+
+    void rotateY(PoseStack matrices, float degrees);
+
+    void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
+                     PoseStack matrices, MultiBufferSource buffers, int backgroundColor, int light);
+
+    void vertex(VertexConsumer consumer, PoseStack matrices, float x, float y, float z);
 }

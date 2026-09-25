@@ -63,7 +63,7 @@ public class SignExpresswayDistanceFromLocation3 extends BaseEntityBlock {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.sign_text.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.sign_text.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
 

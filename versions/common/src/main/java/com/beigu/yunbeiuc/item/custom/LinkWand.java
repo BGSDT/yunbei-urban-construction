@@ -28,7 +28,7 @@ public class LinkWand extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("item.yunbeiuc.link_wand.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.link_wand.tooltip"));
         super .appendHoverText(stack, world, tooltip, context);
     }
 
@@ -58,7 +58,7 @@ public class LinkWand extends Item {
         }
 
         if (!(blockEntity instanceof TrafficLightsBlockEntity)) {
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c这不是一个红绿灯！"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c这不是一个红绿灯！"), true);
             return InteractionResult.FAIL;
         }
 
@@ -67,18 +67,18 @@ public class LinkWand extends Item {
 
         if (player.isShiftKeyDown()) {
             if (linkedLights.size() < 2) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c你需要链接至少2个红绿灯！"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c你需要链接至少2个红绿灯！"), true);
                 return InteractionResult.FAIL;
             }
 
             for (BlockPos linkedPos : linkedLights) {
                 if (!(world.getBlockEntity(linkedPos) instanceof TrafficLightsBlockEntity tl)) {
-                    player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c一些已链接的红绿灯不再有效！"), true);
+                    player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c一些已链接的红绿灯不再有效！"), true);
                     PLAYER_LINKING.remove(playerId);
                     return InteractionResult.FAIL;
                 }
                 if (tl.isInGroup()) {
-                    player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c红绿灯 §6" + linkedPos.toShortString() + " §c已有相位序列！"), true);
+                    player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c红绿灯 §6" + linkedPos.toShortString() + " §c已有相位序列！"), true);
                     PLAYER_LINKING.remove(playerId);
                     return InteractionResult.FAIL;
                 }
@@ -94,8 +94,8 @@ public class LinkWand extends Item {
                 }
             }
 
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§a已成功链接 §6§l" + finalPositions.size() + " §a个红绿灯"), true);
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§7请用 §e普通魔杖 §7右键任意已链接的红绿灯以设置时间"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§a已成功链接 §6§l" + finalPositions.size() + " §a个红绿灯"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§7请用 §e普通魔杖 §7右键任意已链接的红绿灯以设置时间"), true);
 
             PLAYER_LINKING.remove(playerId);
             return InteractionResult.SUCCESS;
@@ -104,17 +104,17 @@ public class LinkWand extends Item {
         if (linkedLights.contains(pos)) {
             linkedLights.remove(pos);
             if (linkedLights.isEmpty()) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c已清空链接组"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c已清空链接组"), true);
             } else {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§a已成功链接 §6§l" + linkedLights.size() + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§a已成功链接 §6§l" + linkedLights.size() + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
             }
         } else {
             if (blockEntity instanceof TrafficLightsBlockEntity tl && tl.isInGroup()) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c该红绿灯已有相位序列，无法链接！"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯已有相位序列，无法链接！"), true);
                 return InteractionResult.FAIL;
             }
             linkedLights.add(pos);
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§a已成功链接 §6§l" + linkedLights.size() + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§a已成功链接 §6§l" + linkedLights.size() + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
         }
 
         return InteractionResult.SUCCESS;

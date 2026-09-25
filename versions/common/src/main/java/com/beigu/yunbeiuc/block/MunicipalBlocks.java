@@ -33,7 +33,7 @@ import com.beigu.yunbeiuc.block.custom.waring.WarningNetwork;
 import com.beigu.yunbeiuc.block.custom.waring.WarningNetworkPole;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.core.Registry;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -41,7 +41,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 public class MunicipalBlocks {
-public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(YunbeiUrbanConstruction.MOD_ID, Registry.BLOCK_REGISTRY);
+public static final DeferredRegister<Block> BLOCKS = VersionServices.registries().blocks(YunbeiUrbanConstruction.MOD_ID);
     public static final RegistrySupplier<Block> ROAD_POLE_FOUNDATIONS = BLOCKS.register("road_pole_foundations", () -> new RoadPoleFoundations(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> ROAD_POLE_FOUNDATIONS_SLAB = BLOCKS.register("road_pole_foundations_slab", () -> new RoadPoleFoundationsSlab(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> ROAD_POLE_LONGITUDINAL = BLOCKS.register("road_pole_longitudinal", () -> new RoadPoleLongitudinal(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));

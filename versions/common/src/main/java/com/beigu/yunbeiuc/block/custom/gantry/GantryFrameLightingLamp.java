@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 public class GantryFrameLightingLamp extends Block {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.lighting_lamp.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.lighting_lamp.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
     public static final BooleanProperty LIT = BlockStateProperties.LIT;

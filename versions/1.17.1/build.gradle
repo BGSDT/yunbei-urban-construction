@@ -71,6 +71,12 @@ subprojects {
         it.options.compilerArgs.add('800')
     }
 
+    tasks.withType(ProcessResources).configureEach {
+        filesMatching('pack.mcmeta') {
+            filter { line -> line.replace('"pack_format": 15', '"pack_format": ' + rootProject.resource_pack_format) }
+        }
+    }
+
     // Configure Maven publishing.
     publishing {
         publications {

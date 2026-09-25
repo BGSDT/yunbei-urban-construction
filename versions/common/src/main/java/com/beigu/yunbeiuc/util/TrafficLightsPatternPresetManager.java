@@ -48,7 +48,8 @@ public class TrafficLightsPatternPresetManager {
         try (Reader reader = new FileReader(file)) {
             JsonObject obj = GSON.fromJson(reader, JsonObject.class);
             if (obj == null) return;
-            for (String key : obj.keySet()) {
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                String key = entry.getKey();
                 JsonObject d = obj.getAsJsonObject(key);
                 TrafficLightsPatternPreset preset = new TrafficLightsPatternPreset();
                 preset.setName(key);

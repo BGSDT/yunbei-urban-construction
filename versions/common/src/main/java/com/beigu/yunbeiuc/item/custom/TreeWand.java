@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.item.custom;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.grower.OakTreeGrower;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -12,10 +13,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.BlockPos;
-import java.util.Random;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class TreeWand extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag context) {
-        tooltip.add(new TranslatableComponent("item.yunbeiuc.tree_wand.tooltip"));
+        tooltip.add(Text.translatable("item.yunbeiuc.tree_wand.tooltip"));
         super.appendHoverText(stack, world, tooltip, context);
     }
 
@@ -54,23 +54,14 @@ public class TreeWand extends Item {
                     boolean success = false;
 
                     // 尝试使用OakTreeGrower生成树木
-                    OakTreeGrower generator = new OakTreeGrower();
-                    Random random = serverWorld.getRandom();
-
                     // 不直接放置树苗，使用生成器在上方位置生成完整的树
-                    success = generator.growTree(
-                            serverWorld,
-                            serverWorld.getChunkSource().getGenerator(),
-                            abovePos,  // 改为上方位置，而不是原来的位置
-                            Blocks.OAK_SAPLING.defaultBlockState(),
-                            random
-                    );
+                    success = VersionServices.blocks().growOakTree(serverWorld, abovePos);
 
                     if (success) {
                         // 播放音效和显示消息
                         serverWorld.playSound(null, abovePos, SoundEvents.GRASS_PLACE,
                                 SoundSource.BLOCKS, 1.0F, 1.0F);
-                        player.displayClientMessage(new TranslatableComponent("item.yunbeiuc.tree_wand.success"), true);
+                        player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.success"), true);
 
                         // 非创造模式消耗耐久
                         if (!player.getAbilities().instabuild) {
@@ -87,14 +78,14 @@ public class TreeWand extends Item {
                             serverWorld.setBlock(abovePos, originalAboveState, 3);
                         }
 
-                        player.displayClientMessage(new TranslatableComponent("item.yunbeiuc.tree_wand.failed"), true);
+                        player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.failed"), true);
                         return InteractionResult.FAIL;
                     }
                 } else {
-                    player.displayClientMessage(new TranslatableComponent("item.yunbeiuc.tree_wand.no_space"), true);
+                    player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.no_space"), true);
                 }
             } else {
-                player.displayClientMessage(new TranslatableComponent("item.yunbeiuc.tree_wand.invalid_block"), true);
+                player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.invalid_block"), true);
             }
         }
 

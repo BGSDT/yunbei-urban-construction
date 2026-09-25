@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
@@ -99,7 +98,7 @@ public class TextDisplayScreen extends Screen {
     private float grabAnglePrev, grabAccumDeg;
 
     public TextDisplayScreen(CustomSignBlockEntity blockEntity) {
-        super(new TranslatableComponent("gui.yunbeiuc.custom_sign"));
+        super(Text.translatable("gui.yunbeiuc.custom_sign"));
         this.blockEntity = blockEntity;
         this.blockPos = blockEntity.getBlockPos();
     }
@@ -120,7 +119,7 @@ public class TextDisplayScreen extends Screen {
         panelTopY = panelBottomY - panelTopHeight - SAVE_BTN_ROW_HEIGHT;
         panelTopWidth = sw - ADD_BUTTON_WIDTH;
 
-        savePresetButton = ButtonWidget.builder(new TextComponent("保存为预设"), btn -> {
+        savePresetButton = ButtonWidget.builderCompat(Text.literal("保存为预设"), btn -> {
             if (selectedPresetIndices.isEmpty()) return;
             presetSaveMode = true; presetSelectMode = false;
             refreshBottomPanel(); refreshTopPanel();
@@ -131,11 +130,11 @@ public class TextDisplayScreen extends Screen {
         int catBtnW = 50, catBtnGap = 4;
         int catX = 5;
         int catY = panelTopY + panelTopHeight + 1;
-        posCatButton = ButtonWidget.builder(new TextComponent("位移"), b -> selectCategory(Category.POSITION)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
-        rotCatButton = ButtonWidget.builder(new TextComponent("旋转"), b -> selectCategory(Category.ROTATION)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
-        scaleCatButton = ButtonWidget.builder(new TextComponent("缩放"), b -> selectCategory(Category.SCALE)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
-        fontCatButton = ButtonWidget.builder(new TextComponent("字体"), b -> selectCategory(Category.FONT)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
-        alignCatButton = ButtonWidget.builder(new TextComponent("对齐"), b -> selectCategory(Category.ALIGN)).dimensions(catX, catY, catBtnW, 20).build();
+        posCatButton = ButtonWidget.builderCompat(Text.literal("位移"), b -> selectCategory(Category.POSITION)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        rotCatButton = ButtonWidget.builderCompat(Text.literal("旋转"), b -> selectCategory(Category.ROTATION)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        scaleCatButton = ButtonWidget.builderCompat(Text.literal("缩放"), b -> selectCategory(Category.SCALE)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        fontCatButton = ButtonWidget.builderCompat(Text.literal("字体"), b -> selectCategory(Category.FONT)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
+        alignCatButton = ButtonWidget.builderCompat(Text.literal("对齐"), b -> selectCategory(Category.ALIGN)).dimensions(catX, catY, catBtnW, 20).build();
         updateCategoryButtonsLocked();
 
         // 行操作按钮靠屏幕右侧排列，正在编辑文本行时显示
@@ -144,7 +143,7 @@ public class TextDisplayScreen extends Screen {
         int lineActionStartX = sw - lineActionTotalW - 4;
         int lineActionY = panelTopY + panelTopHeight + 1;
 
-        copyLineButton = ButtonWidget.builder(new TextComponent("复制"), btn -> {
+        copyLineButton = ButtonWidget.builderCompat(Text.literal("复制"), btn -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 clipboardData = textLineWidgets.get(selectedIndex).data.copy();
                 refreshTopPanel();
@@ -152,7 +151,7 @@ public class TextDisplayScreen extends Screen {
         }).dimensions(lineActionStartX, lineActionY, lineActionBtnW, 20).build();
         copyLineButton.visible = false;
 
-        pasteLineButton = ButtonWidget.builder(new TextComponent("粘贴"), btn -> {
+        pasteLineButton = ButtonWidget.builderCompat(Text.literal("粘贴"), btn -> {
             if (clipboardData != null && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 textLineWidgets.get(selectedIndex).data.applyFrom(clipboardData);
                 updateBottomPanelDisplay();
@@ -164,14 +163,14 @@ public class TextDisplayScreen extends Screen {
         pasteLineButton.visible = false;
         pasteLineButton.active = false;
 
-        deleteLineButton = ButtonWidget.builder(new TextComponent("删除"), btn -> {
+        deleteLineButton = ButtonWidget.builderCompat(Text.literal("删除"), btn -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 requestDeleteLine(selectedIndex);
             }
         }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap) * 2, lineActionY, lineActionBtnW, 20).build();
         deleteLineButton.visible = false;
 
-        formatPainterButton = ButtonWidget.builder(new TextComponent("格式刷"), btn -> {
+        formatPainterButton = ButtonWidget.builderCompat(Text.literal("格式刷"), btn -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
                 formatPainterMode = true;
                 formatPainterSourceIndex = selectedIndex;
@@ -180,7 +179,7 @@ public class TextDisplayScreen extends Screen {
         }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap) * 3, lineActionY, lineActionBtnW, 20).build();
         formatPainterButton.visible = false;
 
-        addLineButton = ButtonWidget.builder(new TextComponent("+"), button -> {
+        addLineButton = ButtonWidget.builderCompat(Text.literal("+"), button -> {
             if (presetSelectMode || presetSaveMode || presetLoadMode) return;
             TextLineData newData = new TextLineData("Text");
             textLineWidgets.add(new TextLineWidget(newData));
@@ -209,7 +208,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private void createBottomPanelWidgets() {
-        textField = new TextFieldWidget(this.textRenderer, 0, 0, panelBottomWidth - 10 - INFO_PANEL_WIDTH, 16, new TextComponent("Text"));
+        textField = new TextFieldWidget(this.textRenderer, 0, 0, panelBottomWidth - 10 - INFO_PANEL_WIDTH, 16, Text.literal("Text"));
         textField.setMaxLength(Integer.MAX_VALUE);
         textField.setChangedListener(text -> {
             if (suppressTextFieldListener) return;
@@ -225,7 +224,7 @@ public class TextDisplayScreen extends Screen {
         xButton = makeXYZButton("X", 0); yButton = makeXYZButton("Y", 1); zButton = makeXYZButton("Z", 4);
         rxButton = makeRotButton("RX", 5); ryButton = makeRotButton("RY", 6); rzButton = makeRotButton("RZ", 7);
         sxButton = makeScaleButton("SX", 8); syButton = makeScaleButton("SY", 9); szButton = makeScaleButton("SZ", 10);
-        fontSizeButton = ButtonWidget.builder(new TextComponent("S"), button -> {
+        fontSizeButton = ButtonWidget.builderCompat(Text.literal("S"), button -> {
             if (hasControlDown()) enterPreciseMode(2);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
@@ -244,35 +243,35 @@ public class TextDisplayScreen extends Screen {
         outlineButton = makeToggle("O", s -> s.withBold(true), d -> { d.setOutline(!d.isOutline()); syncAndUpdateClient(); });
         outlineColorButton = makeColorCycleButton(12);
 
-        hAlignButton = ButtonWidget.builder(new TextComponent("水平居中"), button -> {
+        hAlignButton = ButtonWidget.builderCompat(Text.literal("水平居中"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
                 int nh = (d.getAlignment().hAlign + 1) % 3;
                 d.setAlignment(getAlignment(nh, d.getAlignment().vAlign));
-                hAlignButton.setMessage(new TextComponent(getHAlignText(nh)));
+                hAlignButton.setMessage(Text.literal(getHAlignText(nh)));
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
         }).dimensions(0, 0, BTN_SIZE + 40, BTN_SIZE).build();
 
-        vAlignButton = ButtonWidget.builder(new TextComponent("垂直居中"), button -> {
+        vAlignButton = ButtonWidget.builderCompat(Text.literal("垂直居中"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
                 int nv = (d.getAlignment().vAlign + 1) % 3;
                 d.setAlignment(getAlignment(d.getAlignment().hAlign, nv));
-                vAlignButton.setMessage(new TextComponent(getVAlignText(nv)));
+                vAlignButton.setMessage(Text.literal(getVAlignText(nv)));
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
         }).dimensions(0, 0, BTN_SIZE + 40, BTN_SIZE).build();
 
-        clearFormatButton = ButtonWidget.builder(new TextComponent("✕"), button -> {
+        clearFormatButton = ButtonWidget.builderCompat(Text.literal("✕"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
                 d.setBold(false); d.setItalic(false); d.setUnderline(false); d.setShadow(false); d.setOutline(false);
                 d.setColor(0xFFFFFF); d.setFontSize(1.0f); d.setAlignment(CustomSignBlockEntity.TextAlignment.CENTER_CENTER);
                 colorButton.setMessage(colorMsg(0xFFFFFF));
-                hAlignButton.setMessage(new TextComponent("水平居中")); vAlignButton.setMessage(new TextComponent("垂直居中"));
+                hAlignButton.setMessage(Text.literal("水平居中")); vAlignButton.setMessage(Text.literal("垂直居中"));
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
@@ -280,7 +279,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private ButtonWidget makeXYZButton(String label, int type) {
-        return ButtonWidget.builder(new TextComponent(label), button -> {
+        return ButtonWidget.builderCompat(Text.literal(label), button -> {
             if (hasControlDown()) enterPreciseMode(type);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
@@ -293,7 +292,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private ButtonWidget makeRotButton(String label, int type) {
-        return ButtonWidget.builder(new TextComponent(label), button -> {
+        return ButtonWidget.builderCompat(Text.literal(label), button -> {
             if (hasControlDown()) enterPreciseMode(type);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
@@ -306,7 +305,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private ButtonWidget makeScaleButton(String label, int type) {
-        return ButtonWidget.builder(new TextComponent(label), button -> {
+        return ButtonWidget.builderCompat(Text.literal(label), button -> {
             if (hasControlDown()) enterPreciseMode(type);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
@@ -323,7 +322,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private ButtonWidget makeToggle(String label, java.util.function.UnaryOperator<net.minecraft.network.chat.Style> sf, java.util.function.Consumer<TextLineData> action) {
-        return ButtonWidget.builder(new TextComponent(label).withStyle(sf), btn -> {
+        return ButtonWidget.builderCompat(Text.literal(label).withStyle(sf), btn -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 action.accept(textLineWidgets.get(selectedIndex).data);
                 sendUpdateToServer();
@@ -332,7 +331,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private ButtonWidget makeColorCycleButton(final int type) {
-        return ButtonWidget.builder(new TextComponent("■"), button -> {
+        return ButtonWidget.builderCompat(Text.literal("■"), button -> {
             if (hasControlDown()) {
                 if (type == 3 || type == 12) {
                     openColorPickerForType(type);
@@ -377,7 +376,7 @@ public class TextDisplayScreen extends Screen {
         }
     }
 
-    private static Component colorMsg(int c) { return new TextComponent("■").withStyle(s -> s.withColor(c)); }
+    private static Component colorMsg(int c) { return Text.literal("■").withStyle(s -> s.withColor(c)); }
 
     private static Integer tryParseHex(String t) {
         String hex = t.replace("#", "").trim();
@@ -538,7 +537,7 @@ public class TextDisplayScreen extends Screen {
     private void exitPreciseMode() { preciseInputMode = false; refreshBottomPanel(); }
 
     private void createPreciseInputWidgets() {
-        preciseInputField = new TextFieldWidget(textRenderer, 0, 0, panelBottomWidth - 60, 16, new TextComponent(""));
+        preciseInputField = new TextFieldWidget(textRenderer, 0, 0, panelBottomWidth - 60, 16, Text.literal(""));
         preciseInputField.setMaxLength(Integer.MAX_VALUE);
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             var d = textLineWidgets.get(selectedIndex).data;
@@ -575,7 +574,7 @@ public class TextDisplayScreen extends Screen {
                 sendUpdateToServer();
             }
         });
-        backButton = ButtonWidget.builder(new TextComponent("←"), btn -> exitPreciseMode()).dimensions(0, 0, 20, 20).build();
+        backButton = ButtonWidget.builderCompat(Text.literal("←"), btn -> exitPreciseMode()).dimensions(0, 0, 20, 20).build();
     }
 
     private void initializeTextLines() {
@@ -633,11 +632,11 @@ public class TextDisplayScreen extends Screen {
 
             if (count > MAX_VISIBLE_TABS) {
                 startX += SCROLL_BTN_WIDTH + 4;
-                topScrollLeft = ButtonWidget.builder(new TextComponent("◀"), b -> {
+                topScrollLeft = ButtonWidget.builderCompat(Text.literal("◀"), b -> {
                     if (topScrollOffset > 0) { topScrollOffset--; refreshTopPanel(); }
                 }).dimensions(panelTopX + 2, panelTopY + panelTopHeight / 2 - 10, SCROLL_BTN_WIDTH, 20).build();
                 this.addDrawableChild(topScrollLeft);
-                topScrollRight = ButtonWidget.builder(new TextComponent("▶"), b -> {
+                topScrollRight = ButtonWidget.builderCompat(Text.literal("▶"), b -> {
                     if (topScrollOffset < count - MAX_VISIBLE_TABS) { topScrollOffset++; refreshTopPanel(); }
                 }).dimensions(panelTopX + panelTopWidth - SCROLL_BTN_WIDTH - 2, panelTopY + panelTopHeight / 2 - 10, SCROLL_BTN_WIDTH, 20).build();
                 this.addDrawableChild(topScrollRight);
@@ -649,7 +648,7 @@ public class TextDisplayScreen extends Screen {
                 String displayText = blockEntity.resolvePlaceholders(textLineWidgets.get(idx).data.getText());
                 if (displayText.isEmpty()) displayText = "(empty)";
 
-                ButtonWidget btn = ButtonWidget.builder(new TextComponent(displayText), button -> {
+                ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(displayText), button -> {
                     if (formatPainterMode) {
                         applyFormatPainter(idx);
                     } else if (presetSelectMode && !presetSaveMode && !presetLoadMode) {
@@ -735,7 +734,7 @@ public class TextDisplayScreen extends Screen {
                 for (var opt : group.options()) {
                     int w = Math.max(20, textRenderer.width(opt.label()) + 8);
                     if (x + w > width - 5) return;
-                    ButtonWidget btn = ButtonWidget.builder(new TextComponent(opt.label()), b -> applyOption(group.field(), opt.value()))
+                    ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(opt.label()), b -> applyOption(group.field(), opt.value()))
                             .dimensions(x, y, w, 20).build();
                     btn.active = !opt.current();
                     optionButtons.add(btn);
@@ -804,8 +803,8 @@ public class TextDisplayScreen extends Screen {
         suppressTextFieldListener = false;
         colorButton.setMessage(colorMsg(d.getColor()));
         outlineColorButton.setMessage(colorMsg(d.getOutlineColor()));
-        hAlignButton.setMessage(new TextComponent(getHAlignText(d.getAlignment().hAlign)));
-        vAlignButton.setMessage(new TextComponent(getVAlignText(d.getAlignment().vAlign)));
+        hAlignButton.setMessage(Text.literal(getHAlignText(d.getAlignment().hAlign)));
+        vAlignButton.setMessage(Text.literal(getVAlignText(d.getAlignment().vAlign)));
     }
 
     private void addBottomWidgets() {
@@ -858,10 +857,10 @@ public class TextDisplayScreen extends Screen {
     }
 
     private void addPresetSaveWidgets() {
-        presetNameField = new TextFieldWidget(textRenderer, panelBottomX + 5, panelBottomY + 10, panelBottomWidth - 10, 16, new TextComponent("预设名称"));
+        presetNameField = new TextFieldWidget(textRenderer, panelBottomX + 5, panelBottomY + 10, panelBottomWidth - 10, 16, Text.literal("预设名称"));
         presetNameField.setMaxLength(Integer.MAX_VALUE);
         this.addDrawableChild(presetNameField);
-        confirmSaveButton = ButtonWidget.builder(new TextComponent("保存"), btn -> {
+        confirmSaveButton = ButtonWidget.builderCompat(Text.literal("保存"), btn -> {
             String name = presetNameField.getText().trim();
             if (name.isEmpty()) return;
             List<TextLineData> lines = new ArrayList<>();
@@ -871,7 +870,7 @@ public class TextDisplayScreen extends Screen {
             refreshTopPanel(); refreshBottomPanel();
         }).dimensions(panelBottomX + panelBottomWidth / 2 - 40, panelBottomY + 35, 35, 20).build();
         this.addDrawableChild(confirmSaveButton);
-        cancelPresetButton = ButtonWidget.builder(new TextComponent("取消"), btn -> {
+        cancelPresetButton = ButtonWidget.builderCompat(Text.literal("取消"), btn -> {
             selectedPresetIndices.clear(); presetSaveMode = false; refreshTopPanel(); refreshBottomPanel();
         }).dimensions(panelBottomX + panelBottomWidth / 2 + 5, panelBottomY + 35, 35, 20).build();
         this.addDrawableChild(cancelPresetButton);
@@ -880,7 +879,7 @@ public class TextDisplayScreen extends Screen {
     private void addPresetLoadWidgets() {
         var presets = PresetManager.getPresets();
         if (presets.isEmpty()) {
-            cancelLoadButton = ButtonWidget.builder(new TextComponent("返回"), btn -> { presetLoadMode = false; refreshBottomPanel(); })
+            cancelLoadButton = ButtonWidget.builderCompat(Text.literal("返回"), btn -> { presetLoadMode = false; refreshBottomPanel(); })
                     .dimensions(panelBottomX + panelBottomWidth / 2 - 20, panelBottomY + panelBottomHeight / 2 + 10, 40, 20).build();
             this.addDrawableChild(cancelLoadButton);
             return;
@@ -897,7 +896,7 @@ public class TextDisplayScreen extends Screen {
         for (int i = 0; i < Math.min(perPage, names.size() - presetScrollOffset); i++) {
             String name = names.get(presetScrollOffset + i);
             int col = i % columns, row = i / columns;
-            ButtonWidget btn = ButtonWidget.builder(new TextComponent(name), b -> {
+            ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(name), b -> {
                 List<TextLineData> loaded = new ArrayList<>();
                 for (var d : presets.get(name)) loaded.add(d.copy());
                 blockEntity.getTextLines().addAll(loaded);
@@ -913,13 +912,13 @@ public class TextDisplayScreen extends Screen {
         }
 
         if (names.size() > perPage) {
-            presetScrollUp = ButtonWidget.builder(new TextComponent("◀"), b -> { if (presetScrollOffset > 0) { presetScrollOffset--; refreshBottomPanel(); } })
+            presetScrollUp = ButtonWidget.builderCompat(Text.literal("◀"), b -> { if (presetScrollOffset > 0) { presetScrollOffset--; refreshBottomPanel(); } })
                     .dimensions(panelBottomX + 2, panelBottomY + panelBottomHeight - 25, 12, 20).build();
-            presetScrollDown = ButtonWidget.builder(new TextComponent("▶"), b -> { if (presetScrollOffset < maxOffset) { presetScrollOffset++; refreshBottomPanel(); } })
+            presetScrollDown = ButtonWidget.builderCompat(Text.literal("▶"), b -> { if (presetScrollOffset < maxOffset) { presetScrollOffset++; refreshBottomPanel(); } })
                     .dimensions(panelBottomX + panelBottomWidth - 14, panelBottomY + panelBottomHeight - 25, 12, 20).build();
             this.addDrawableChild(presetScrollUp); this.addDrawableChild(presetScrollDown);
         }
-        cancelLoadButton = ButtonWidget.builder(new TextComponent("返回"), btn -> { presetLoadMode = false; refreshBottomPanel(); })
+        cancelLoadButton = ButtonWidget.builderCompat(Text.literal("返回"), btn -> { presetLoadMode = false; refreshBottomPanel(); })
                 .dimensions(panelBottomX + panelBottomWidth / 2 - 20, panelBottomY + panelBottomHeight - 25, 40, 20).build();
         this.addDrawableChild(cancelLoadButton);
     }
@@ -1040,10 +1039,10 @@ public class TextDisplayScreen extends Screen {
                     if (confirmed) deleteTextLine(idx);
                     Minecraft.getInstance().setScreen(this);
                 },
-                new TextComponent("删除文本行"),
-                new TextComponent("该行为系统生成或包含占位符/图片指令，删除后不会自动恢复，且将失去枚举按钮、字段联动、图片自动更新等功能。"),
-                new TextComponent("确定删除"),
-                new TextComponent("取消")));
+                Text.literal("删除文本行"),
+                Text.literal("该行为系统生成或包含占位符/图片指令，删除后不会自动恢复，且将失去枚举按钮、字段联动、图片自动更新等功能。"),
+                Text.literal("确定删除"),
+                Text.literal("取消")));
     }
 
     private void deleteTextLine(int actualIdx) {
@@ -1119,7 +1118,7 @@ public class TextDisplayScreen extends Screen {
             context.fill(0, oy, width, panelBottomY - SAVE_BTN_ROW_HEIGHT, 0xAA333333);
             context.drawBorder(0, oy, width, OPTIONS_ROW_HEIGHT, 0xFF888888);
             for (Object[] t : optionGroupTitles) {
-                context.drawText(textRenderer, new TextComponent((String) t[0]), (Integer) t[1], (Integer) t[2], 0xFF66FFCC, false);
+                context.drawText(textRenderer, Text.literal((String) t[0]), (Integer) t[1], (Integer) t[2], 0xFF66FFCC, false);
             }
         }
 
@@ -1133,7 +1132,7 @@ public class TextDisplayScreen extends Screen {
         context.fill(0, panelBottomY - SAVE_BTN_ROW_HEIGHT, width, panelBottomY, 0xAA222233);
         if (formatPainterMode) {
             String h = "格式刷模式：点击目标文本行标签应用格式（不含文字、位移/旋转）";
-            context.drawText(textRenderer, new TextComponent(h), (width - textRenderer.width(h)) / 2,
+            context.drawText(textRenderer, Text.literal(h), (width - textRenderer.width(h)) / 2,
                     panelBottomY - SAVE_BTN_ROW_HEIGHT + (SAVE_BTN_ROW_HEIGHT - textRenderer.lineHeight) / 2, 0xFFFFDD55, false);
         }
 
@@ -1155,25 +1154,25 @@ public class TextDisplayScreen extends Screen {
                 }
                 int statusY = y1 + 4;
                 for (String line : getCategoryStatusLines(d)) {
-                    context.drawText(textRenderer, new TextComponent(line), panelBottomX + panelBottomWidth - INFO_PANEL_WIDTH + 5, statusY, 0xFF66FFCC, false);
+                    context.drawText(textRenderer, Text.literal(line), panelBottomX + panelBottomWidth - INFO_PANEL_WIDTH + 5, statusY, 0xFF66FFCC, false);
                     statusY += textRenderer.lineHeight + 1;
                 }
             }
             if (textLineWidgets.isEmpty()) {
                 String h = "点击 + 添加文本, 按P加载预设";
-                context.drawText(textRenderer, new TextComponent(h), panelTopX + (panelTopWidth - textRenderer.width(h))/2, panelTopY + (panelTopHeight - textRenderer.lineHeight)/2, 0xFFAAAAAA, false);
+                context.drawText(textRenderer, Text.literal(h), panelTopX + (panelTopWidth - textRenderer.width(h))/2, panelTopY + (panelTopHeight - textRenderer.lineHeight)/2, 0xFFAAAAAA, false);
             }
             if (selectedIndex < 0 && !textLineWidgets.isEmpty()) {
                 String h = "选择文本, 按住Ctrl多选保存预设, 按P加载预设";
-                context.drawText(textRenderer, new TextComponent(h), panelBottomX + (panelBottomWidth - textRenderer.width(h))/2, panelBottomY + (panelBottomHeight - textRenderer.lineHeight)/2, 0xFFAAAAAA, false);
+                context.drawText(textRenderer, Text.literal(h), panelBottomX + (panelBottomWidth - textRenderer.width(h))/2, panelBottomY + (panelBottomHeight - textRenderer.lineHeight)/2, 0xFFAAAAAA, false);
             }
-        } else if (presetSaveMode) context.drawText(textRenderer, new TextComponent("输入预设名称并保存"), panelBottomX + 5, panelBottomY + 2, 0xFFAAAAAA, false);
+        } else if (presetSaveMode) context.drawText(textRenderer, Text.literal("输入预设名称并保存"), panelBottomX + 5, panelBottomY + 2, 0xFFAAAAAA, false);
         else if (presetLoadMode && PresetManager.getPresets().isEmpty()) {
             String h = "暂无预设，请先保存预设";
-            context.drawText(textRenderer, new TextComponent(h), panelBottomX + (panelBottomWidth - textRenderer.width(h))/2, panelBottomY + (panelBottomHeight - textRenderer.lineHeight)/2 - 10, 0xFFAAAAAA, false);
+            context.drawText(textRenderer, Text.literal(h), panelBottomX + (panelBottomWidth - textRenderer.width(h))/2, panelBottomY + (panelBottomHeight - textRenderer.lineHeight)/2 - 10, 0xFFAAAAAA, false);
         } else if (preciseInputMode) {
             String l = switch (preciseInputType) { case 0 -> "输入 X 坐标"; case 1 -> "输入 Y 坐标"; case 2 -> "输入字号"; case 3 -> "输入颜色 (#RRGGBB)"; case 4 -> "输入 Z 坐标"; case 5 -> "输入 X 轴旋转角度"; case 6 -> "输入 Y 轴旋转角度"; case 7 -> "输入 Z 轴旋转角度"; case 8 -> "输入 X 轴缩放"; case 9 -> "输入 Y 轴缩放"; case 10 -> "输入 Z 轴缩放"; case 12 -> "输入描边颜色 (#RRGGBB)"; default -> ""; };
-            context.drawText(textRenderer, new TextComponent(l), panelBottomX + 5, panelBottomY + 5, 0xFFAAAAAA, false);
+            context.drawText(textRenderer, Text.literal(l), panelBottomX + 5, panelBottomY + 5, 0xFFAAAAAA, false);
         }
 
         super.render(context, mouseX, mouseY, delta);
@@ -1236,7 +1235,7 @@ public class TextDisplayScreen extends Screen {
         context.fill(tx, ty, tx + mw + 8, ty + th, 0xFF1E1E2E);
         context.drawBorder(tx, ty, mw + 8, th, 0xFF6B6B8A);
         int ty2 = ty + 2;
-        for (TooltipLine line : lines) { context.drawText(textRenderer, new TextComponent(line.text), tx + 4, ty2, line.color, false); ty2 += lh; }
+        for (TooltipLine line : lines) { context.drawText(textRenderer, Text.literal(line.text), tx + 4, ty2, line.color, false); ty2 += lh; }
         context.getMatrices().popPose();
     }
 

@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -10,7 +11,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
-public class RoadNameSignBlockEntity extends BlockEntity {
+public class RoadNameSignBlockEntity extends BlockEntityMapper {
     private String chineseText = "";
     private String englishText = "";
 
@@ -34,13 +35,13 @@ public class RoadNameSignBlockEntity extends BlockEntity {
 
     @Nullable
     @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return createUpdatePacket();
     }
 
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        return createUpdateTag();
     }
 
     public String getChineseText() {

@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -28,7 +27,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
     private ButtonWidget cancelButton;
 
     public TrafficLightsPhaseMultiSelectScreen(Screen previousScreen, int phaseCount, List<Integer> currentPhases, Consumer<List<Integer>> onConfirm) {
-        super(new TextComponent("选择相位"));
+        super(Text.literal("选择相位"));
         this.previousScreen = previousScreen;
         this.phaseCount = phaseCount;
         this.selectedPhases = new ArrayList<>(currentPhases);
@@ -79,7 +78,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
 
             if (i > 0) {
                 ButtonWidget removeBtn = this.addDrawableChild(
-                    ButtonWidget.builder(new TextComponent("×"), button -> removePhase(slotIndex))
+                    ButtonWidget.builderCompat(Text.literal("×"), button -> removePhase(slotIndex))
                         .dimensions(panelX + 165, y, 15, 20)
                         .build()
                 );
@@ -89,7 +88,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
 
         if (sliders.size() < MAX_SLIDERS) {
             addButton = this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("+"), button -> addPhase())
+                ButtonWidget.builderCompat(Text.literal("+"), button -> addPhase())
                     .dimensions(panelX + 165, sliderStartY, 15, 20)
                     .build()
             );
@@ -97,12 +96,12 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
 
         int buttonY = sliderStartY + Math.max(1, selectedPhases.size()) * SLIDER_HEIGHT + 20;
         confirmButton = this.addDrawableChild(
-            ButtonWidget.builder(new TextComponent("确认"), button -> confirm())
+            ButtonWidget.builderCompat(Text.literal("确认"), button -> confirm())
                 .dimensions(this.width / 2 - 100, buttonY, 80, 20)
                 .build()
         );
         cancelButton = this.addDrawableChild(
-            ButtonWidget.builder(new TextComponent("取消"), button -> this.close())
+            ButtonWidget.builderCompat(Text.literal("取消"), button -> this.close())
                 .dimensions(this.width / 2 + 20, buttonY, 80, 20)
                 .build()
         );
@@ -157,7 +156,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
         context.drawBorder(panelX, panelY, PANEL_WIDTH, 300, 0xFFCCCCCC);
 
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, panelY + 12, 0xFFCCCCCC);
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("已选相位:"), panelX + 20, panelY + 25, 0xFFAAAAAA);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("已选相位:"), panelX + 20, panelY + 25, 0xFFAAAAAA);
 
         super.render(context, mouseX, mouseY, delta);
     }
@@ -179,7 +178,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
 
         public PhaseSliderWidget(int x, int y, int width, int height, int initialPhase, int phaseCount, int slotIndex) {
             super(x, y, width, height,
-                    new TextComponent("相位: " + (initialPhase + 1) + " / " + phaseCount),
+                    Text.literal("相位: " + (initialPhase + 1) + " / " + phaseCount),
                     (double) initialPhase / Math.max(1, phaseCount - 1));
             this.phaseCount = phaseCount;
             this.slotIndex = slotIndex;
@@ -189,7 +188,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
 
         @Override
         protected void updateMessage() {
-            this.setMessage(new TextComponent("相位: " + (currentPhase + 1) + " / " + phaseCount));
+            this.setMessage(Text.literal("相位: " + (currentPhase + 1) + " / " + phaseCount));
         }
 
         @Override

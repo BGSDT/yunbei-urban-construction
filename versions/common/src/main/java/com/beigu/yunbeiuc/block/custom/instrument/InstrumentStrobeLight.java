@@ -1,6 +1,8 @@
 package com.beigu.yunbeiuc.block.custom.instrument;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.world.level.block.Block;
+import com.beigu.yunbeiuc.api.mapper.TickingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -16,12 +18,11 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import java.util.Random;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 
-public class InstrumentStrobeLight extends Block {
+public class InstrumentStrobeLight extends TickingBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<State> STATE = EnumProperty.create("state", State.class);
 
@@ -108,12 +109,12 @@ public class InstrumentStrobeLight extends Block {
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!world.isClientSide) {
             // 从当前序列位置开始，安排下一次 tick
-            world.scheduleTick(pos, this, STATE_DURATIONS[state.getValue(INDEX)]);
+            VersionServices.blocks().scheduleBlockTick(world, pos, this, STATE_DURATIONS[state.getValue(INDEX)]);
         }
     }
 
     @Override
-    public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+    protected void tickCompat(BlockState state, ServerLevel world, BlockPos pos) {
         if (!world.isClientSide) {
             // 直接读取当前序列索引，推进到下一步
             int currentIndex = state.getValue(INDEX);
@@ -124,7 +125,7 @@ public class InstrumentStrobeLight extends Block {
             world.setBlock(pos, nextState, Block.UPDATE_ALL);
 
             // 安排下一个tick
-            world.scheduleTick(pos, this, STATE_DURATIONS[nextIndex]);
+            VersionServices.blocks().scheduleBlockTick(world, pos, this, STATE_DURATIONS[nextIndex]);
         }
     }
 

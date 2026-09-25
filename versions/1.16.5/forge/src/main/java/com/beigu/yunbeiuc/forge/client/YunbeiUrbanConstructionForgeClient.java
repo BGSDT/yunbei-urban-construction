@@ -16,7 +16,7 @@ import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -107,9 +107,8 @@ public class YunbeiUrbanConstructionForgeClient {
         MinecraftForge.EVENT_BUS.addListener(YunbeiUrbanConstructionForgeClient::onRenderLevelStage);
     }
 
-    private static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            LinkWandRenderer.renderLinkedLightsOutline(event.getPoseStack(), event.getCamera());
-        }
+    private static void onRenderLevelStage(RenderWorldLastEvent event) {
+        LinkWandRenderer.renderLinkedLightsOutline(
+                event.getMatrixStack(), Minecraft.getInstance().gameRenderer.getMainCamera());
     }
 }

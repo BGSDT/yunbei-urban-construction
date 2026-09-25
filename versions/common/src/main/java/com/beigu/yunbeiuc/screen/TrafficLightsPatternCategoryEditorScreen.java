@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
 import net.minecraft.client.Minecraft;
@@ -31,7 +30,7 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
     private int colorSwatchY;
 
     public TrafficLightsPatternCategoryEditorScreen(Screen previousScreen) {
-        super(new TextComponent("新建分类"));
+        super(Text.literal("新建分类"));
         this.previousScreen = previousScreen;
         this.categoryColor = RANDOM.nextInt(0x1000000);
     }
@@ -44,19 +43,19 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
         colorSwatchX = panelX + 20;
         colorSwatchY = panelY + 50;
 
-        nameField = new TextFieldWidget(this.textRenderer, panelX + 20, panelY + 26, PANEL_WIDTH - 40, 20, new TextComponent(""));
+        nameField = new TextFieldWidget(this.textRenderer, panelX + 20, panelY + 26, PANEL_WIDTH - 40, 20, Text.literal(""));
         nameField.setMaxLength(24);
         nameField.setChangedListener(text -> errorMessage = null);
         this.addDrawableChild(nameField);
         this.setInitialFocus(nameField);
 
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("保存"), button -> saveAndClose())
+                ButtonWidget.builderCompat(Text.literal("保存"), button -> saveAndClose())
                         .dimensions(panelX + 20, panelY + PANEL_HEIGHT - 30, (PANEL_WIDTH - 50) / 2, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("取消"), button -> this.close())
+                ButtonWidget.builderCompat(Text.literal("取消"), button -> this.close())
                         .dimensions(panelX + 30 + (PANEL_WIDTH - 50) / 2, panelY + PANEL_HEIGHT - 30, (PANEL_WIDTH - 50) / 2, 20)
                         .build()
         );
@@ -66,7 +65,7 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
         String name = nameField.getText().trim();
         String error = TrafficLightsPatternCategoryManager.addCategory(name, categoryColor);
         if (error != null) {
-            errorMessage = new TextComponent("§c" + error);
+            errorMessage = Text.literal("§c" + error);
             return;
         }
         Minecraft.getInstance().setScreen(previousScreen);
@@ -81,7 +80,7 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
 
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, panelX + PANEL_WIDTH / 2, panelY + 8, 0xFFCCCCCC);
 
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("颜色:"), colorSwatchX, colorSwatchY + 4, 0xFFAAAAAA);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("颜色:"), colorSwatchX, colorSwatchY + 4, 0xFFAAAAAA);
         context.fill(colorSwatchX + 34, colorSwatchY, colorSwatchX + 34 + COLOR_SWATCH_SIZE, colorSwatchY + COLOR_SWATCH_SIZE, 0xFF000000 | categoryColor);
         context.drawBorder(colorSwatchX + 34, colorSwatchY, COLOR_SWATCH_SIZE, COLOR_SWATCH_SIZE, 0xFF888888);
 

@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
@@ -37,7 +36,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
     private static final int RIGHT_PANEL_HEIGHT = 270;
 
     public TrafficLightsStaticStateScreen(BlockPos pos) {
-        super(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.title"));
+        super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
         this.pos = pos;
 
         this.options = createDirectionOptions();
@@ -101,32 +100,32 @@ public class TrafficLightsStaticStateScreen extends Screen {
 
         if (isPavement) {
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.red"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.RED)
                             .dimensions(panelX + 20, colorButtonY, 160, 20)
                             .build()
             );
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.green"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.green"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.GREEN)
                             .dimensions(panelX + 20, colorButtonY + 25, 160, 20)
                             .build()
             );
         } else {
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.red"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.RED)
                             .dimensions(panelX + 20, colorButtonY, 160, 20)
                             .build()
             );
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.yellow"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.yellow"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.YELLOW)
                             .dimensions(panelX + 20, colorButtonY + 25, 160, 20)
                             .build()
             );
             this.addDrawableChild(
-                    ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color.green"),
+                    ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.green"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.GREEN)
                             .dimensions(panelX + 20, colorButtonY + 50, 160, 20)
                             .build()
@@ -134,12 +133,12 @@ public class TrafficLightsStaticStateScreen extends Screen {
         }
 
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
                         .dimensions(panelX + 30, panelY + 210, 60, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
+                ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.cancel"), button -> this.close())
                         .dimensions(panelX + 110, panelY + 210, 60, 20)
                         .build()
         );
@@ -152,8 +151,8 @@ public class TrafficLightsStaticStateScreen extends Screen {
             pendingMountType = currentMountType;
         }
         mountTypeButton = this.addDrawableChild(
-                ButtonWidget.builder(
-                        new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                ButtonWidget.builderCompat(
+                        Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
                         button -> toggleMountType())
                         .dimensions(panelX + 30, panelY + 185, 140, 20)
                         .build()
@@ -186,8 +185,8 @@ public class TrafficLightsStaticStateScreen extends Screen {
             if (selectedOption != null) {
                 context.drawTextWithShadow(
                         this.textRenderer,
-                        new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.current_selection",
-                                new TranslatableComponent(selectedOption.getTranslationKey())),
+                        Text.translatable("text.yunbeiuc.traffic_lights_static_state.current_selection",
+                                Text.translatable(selectedOption.getTranslationKey())),
                         10,
                         this.height - 55,
                         0xFFFFFF
@@ -208,7 +207,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
 
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.settings_title"),
+                Text.translatable("text.yunbeiuc.traffic_lights_static_state.settings_title"),
                 panelX + RIGHT_PANEL_WIDTH / 2,
                 panelY + 12,
                 0xFFCCCCCC
@@ -216,7 +215,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
 
         context.drawTextWithShadow(
                 this.textRenderer,
-                new TranslatableComponent("text.yunbeiuc.traffic_lights_static_state.color_label"),
+                Text.translatable("text.yunbeiuc.traffic_lights_static_state.color_label"),
                 panelX + 20, panelY + 40,
                 0xFFAAAAAA
         );
@@ -233,7 +232,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
         // 警告文本 - 移到底部
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TextComponent("§e设置链接组时间序列后数据将被清除"),
+                Text.literal("§e设置链接组时间序列后数据将被清除"),
                 panelX + RIGHT_PANEL_WIDTH / 2,
                 panelY + RIGHT_PANEL_HEIGHT - 12,
                 0xFFFF00
@@ -375,7 +374,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
                                     List<DirectionOption> directionOptions, Consumer<DirectionOption> onSelect) {
             super(client, width, height, top, bottom, itemHeight, directionOptions,
                     option -> option == selectedOption, onSelect,
-                    option -> new TranslatableComponent(option.getTranslationKey()), DirectionOption::getColor,
+                    option -> Text.translatable(option.getTranslationKey()), DirectionOption::getColor,
                     DirectionOption::getIcon);
         }
     }
@@ -399,7 +398,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
                 TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
-            mountTypeButton.setMessage(new TextComponent(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import net.minecraft.world.level.block.Block;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class TrafficLightsBlockEntity extends BlockEntity {
+public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private static final int MAX_PHASE_INDICES = 4;
 
     private List<Integer> phaseIndices = new ArrayList<>();
@@ -340,33 +341,33 @@ public class TrafficLightsBlockEntity extends BlockEntity {
     public boolean setPhaseIndices(List<Integer> indices, Player player) {
         if (phaseTimes == null || phaseCount <= 0) {
             if (player != null && !level .isClientSide) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c请先使用命令设置时间！"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c请先使用命令设置时间！"), true);
             }
             return false;
         }
         if (groupId == null) {
             if (player != null && !level .isClientSide) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c此红绿灯未链接到任何组！"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c此红绿灯未链接到任何组！"), true);
             }
             return false;
         }
         int maxAllowed = Math.min(MAX_PHASE_INDICES, phaseCount);
         if (indices.size() > maxAllowed) {
             if (player != null && !level .isClientSide) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c最多只能设置 " + maxAllowed + " 个相位！"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c最多只能设置 " + maxAllowed + " 个相位！"), true);
             }
             return false;
         }
         if (new HashSet<>(indices).size() != indices.size()) {
             if (player != null && !level .isClientSide) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c相位不可以重复！"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c相位不可以重复！"), true);
             }
             return false;
         }
         for (int index : indices) {
             if (index < 0 || index >= phaseCount) {
                 if (player != null && !level .isClientSide) {
-                    player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c无效的相位索引！范围：1-" + phaseCount), true);
+                    player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c无效的相位索引！范围：1-" + phaseCount), true);
                 }
                 return false;
             }
@@ -378,7 +379,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
                 if (i > 0) sb.append(", ");
                 sb.append(indices.get(i) + 1);
             }
-            player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§a相位已设置为 §6" + sb + " §7(共" + phaseCount + "个相位)"), true);
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§a相位已设置为 §6" + sb + " §7(共" + phaseCount + "个相位)"), true);
         }
         markDirtyAndUpdate();
         return true;
@@ -460,7 +461,7 @@ public class TrafficLightsBlockEntity extends BlockEntity {
                                    boolean showSeconds, int fixedSeconds, Player player) {
         if (isInGroup()) {
             if (player != null && !level .isClientSide) {
-                player.displayClientMessage(new net.minecraft.network.chat.TextComponent("§c该红绿灯已加入相位组，无法单独设置静态状态！"), true);
+                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯已加入相位组，无法单独设置静态状态！"), true);
             }
             return false;
         }
@@ -640,13 +641,13 @@ public class TrafficLightsBlockEntity extends BlockEntity {
 
     @Nullable
     @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return createUpdatePacket();
     }
 
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        return createUpdateTag();
     }
 
     public void markDirtyAndUpdate() {

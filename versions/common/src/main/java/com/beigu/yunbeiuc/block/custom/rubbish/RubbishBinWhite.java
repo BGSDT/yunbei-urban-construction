@@ -32,7 +32,7 @@ import java.util.List;
 public class RubbishBinWhite extends Block {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
-        tooltip.add(new net.minecraft.network.chat.TranslatableComponent("block.yunbeiuc.rubbish_bin.tooltip"));
+        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.rubbish_bin.tooltip"));
         super .appendHoverText(stack, world, tooltip, options);
     }
 

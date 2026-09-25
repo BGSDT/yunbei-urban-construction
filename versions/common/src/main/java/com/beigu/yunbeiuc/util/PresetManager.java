@@ -33,7 +33,8 @@ public class PresetManager {
         try (Reader reader = new FileReader(file)) {
             JsonObject obj = GSON.fromJson(reader, JsonObject.class);
             if (obj == null) return;
-            for (String key : obj.keySet()) {
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                String key = entry.getKey();
                 JsonArray arr = obj.getAsJsonArray(key);
                 List<TextLineData> lines = new ArrayList<>();
                 for (JsonElement elem : arr) {

@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.RenderType;
 public final class YunbeiUrbanConstructionFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        RoadBlocks.BLOCKS.forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderType.cutout()));
+        RoadBlocks.entries().forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderType.cutout()));
 
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.ROAD_FLOWER_BOX_1.get(), RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.ROAD_FLOWER_BOX_2.get(), RenderType.cutout());
@@ -50,7 +50,7 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get(), RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get(), RenderType.cutout());
 
-        SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderType.cutout()));
+        SignBlocks.entries().forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderType.cutout()));
 
         BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), FlagBlockEntityRenderer::new);

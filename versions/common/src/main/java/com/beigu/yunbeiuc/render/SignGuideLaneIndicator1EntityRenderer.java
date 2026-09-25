@@ -5,7 +5,7 @@ import com.beigu.yunbeiuc.entity.SignGuideLaneIndicator1Entity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Direction;
-import com.mojang.math.Vector3f;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 public class SignGuideLaneIndicator1EntityRenderer extends AbstractTextDisplayEntityRenderer<SignGuideLaneIndicator1Entity> {
 
@@ -17,7 +17,7 @@ public class SignGuideLaneIndicator1EntityRenderer extends AbstractTextDisplayEn
     protected void applyTransforms(PoseStack matrices, SignGuideLaneIndicator1Entity entity) {
         Direction facing = entity.getBlockState().getValue(SignGuideLaneIndicator1.FACING);
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.mulPose(Vector3f.YP.rotationDegrees(-facing.toYRot()));
+        VersionServices.render().rotateY(matrices, -facing.toYRot());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.util;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPatternPreset;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.google.gson.JsonElement;
@@ -40,20 +41,22 @@ public class TrafficLightsPatternPresetLoader {
             for (String namespace : resourceManager.getNamespaces()) {
                 ResourceLocation fileId = new ResourceLocation(namespace, "traffic_lights_yunbeiuc.json");
 
-                if (resourceManager.hasResource(fileId)) {
-                    var resource = resourceManager.getResource(fileId);
-                    try (InputStream stream = resource.getInputStream();
+                try (InputStream stream = VersionServices.resources().openIfPresent(resourceManager, fileId)) {
+                    if (stream != null) {
+                    try (
                          InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
 
-                        JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                        JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
                         int count = 0;
-                        for (String categoryName : json.keySet()) {
+                        for (Map.Entry<String, JsonElement> categoryEntry : json.entrySet()) {
+                            String categoryName = categoryEntry.getKey();
                             JsonObject categoryObj = json.getAsJsonObject(categoryName);
                             if (categoryObj.has("color") && categoryObj.get("color").isJsonPrimitive()) {
                                 BUILT_IN_CATEGORY_COLORS.put(categoryName, categoryObj.get("color").getAsInt());
                             }
                             List<String> names = BUILT_IN_CATEGORY_PRESET_NAMES.computeIfAbsent(categoryName, k -> new ArrayList<>());
-                            for (String name : categoryObj.keySet()) {
+                            for (Map.Entry<String, JsonElement> presetEntry : categoryObj.entrySet()) {
+                                String name = presetEntry.getKey();
                                 // "color" 是分类自身的颜色字段，不是预设名
                                 if ("color".equals(name)) continue;
                                 JsonObject d = categoryObj.getAsJsonObject(name);
@@ -68,6 +71,9 @@ public class TrafficLightsPatternPresetLoader {
                     } catch (Exception e) {
                         System.err.println("加载红绿灯相位预设文件失败 [" + fileId + "]: " + e.getMessage());
                     }
+                    }
+                } catch (Exception e) {
+                    System.err.println("打开红绿灯相位预设文件失败 [" + fileId + "]: " + e.getMessage());
                 }
             }
 

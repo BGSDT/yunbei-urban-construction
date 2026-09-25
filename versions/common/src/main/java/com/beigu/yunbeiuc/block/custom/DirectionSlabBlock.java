@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -75,7 +76,8 @@ public class DirectionSlabBlock extends Block implements SimpleWaterloggedBlock 
             return blockState.setValue(TYPE, SlabType.DOUBLE).setValue(WATERLOGGED, false).setValue(FACING, blockState.getValue(FACING)); // 保持原有朝向
         } else {
             FluidState fluidState = ctx.getLevel().getFluidState(blockPos);
-            BlockState blockState2 = this.defaultBlockState().setValue(FACING, facing).setValue(WATERLOGGED, fluidState.is(Fluids.WATER));
+            BlockState blockState2 = this.defaultBlockState().setValue(FACING, facing)
+                    .setValue(WATERLOGGED, VersionServices.blocks().isWater(fluidState));
             
             Direction direction = ctx.getClickedFace();
             if (direction != Direction.DOWN && (direction == Direction.UP ||
@@ -139,7 +141,7 @@ public class DirectionSlabBlock extends Block implements SimpleWaterloggedBlock 
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, 
                                                   LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+            VersionServices.blocks().scheduleFluidTick(world, pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
         return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
     }

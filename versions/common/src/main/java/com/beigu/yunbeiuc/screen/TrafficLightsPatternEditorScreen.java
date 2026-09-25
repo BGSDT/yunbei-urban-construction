@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPatternPreset;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
@@ -75,7 +74,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     }
 
     public TrafficLightsPatternEditorScreen(BlockPos returnPos, String category, Screen previousScreen) {
-        super(new TextComponent("相位分配预设编辑器"));
+        super(Text.literal("相位分配预设编辑器"));
         this.returnPos = returnPos;
         this.category = category;
         this.previousScreen = previousScreen;
@@ -83,7 +82,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     }
 
     public TrafficLightsPatternEditorScreen(TrafficLightsPatternPreset existing, BlockPos returnPos, String category, Screen previousScreen) {
-        super(new TextComponent("相位分配预设编辑器"));
+        super(Text.literal("相位分配预设编辑器"));
         this.returnPos = returnPos;
         this.category = category;
         this.previousScreen = previousScreen;
@@ -112,7 +111,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         this.colorSwatchX = panelX + 50;
         this.colorSwatchY = panelY + 54;
 
-        nameField = new TextFieldWidget(this.textRenderer, panelX + 50, panelY + 28, 150, 20, new TextComponent(""));
+        nameField = new TextFieldWidget(this.textRenderer, panelX + 50, panelY + 28, 150, 20, Text.literal(""));
         nameField.setMaxLength(24);
         nameField.setText(savedName);
         nameField.setChangedListener(text -> {
@@ -122,12 +121,12 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         this.addDrawableChild(nameField);
 
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("-"), button -> changePhaseCount(-1))
+                ButtonWidget.builderCompat(Text.literal("-"), button -> changePhaseCount(-1))
                         .dimensions(panelX + 210, panelY + 28, 20, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("+"), button -> changePhaseCount(1))
+                ButtonWidget.builderCompat(Text.literal("+"), button -> changePhaseCount(1))
                         .dimensions(panelX + 255, panelY + 28, 20, 20)
                         .build()
         );
@@ -143,7 +142,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
 
         if (slots.size() < MAX_SLOTS) {
             this.addDrawableChild(
-                    ButtonWidget.builder(new TextComponent("添加槽位"), button -> addSlot())
+                    ButtonWidget.builderCompat(Text.literal("添加槽位"), button -> addSlot())
                             .dimensions(panelX + 10, listBottom + 4, 80, 20)
                             .build()
             );
@@ -151,12 +150,12 @@ public class TrafficLightsPatternEditorScreen extends Screen {
 
         int buttonY = panelY + FIXED_PANEL_HEIGHT - 32;
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("保存"), button -> saveAndClose())
+                ButtonWidget.builderCompat(Text.literal("保存"), button -> saveAndClose())
                         .dimensions(panelX + 40, buttonY, 80, 20)
                         .build()
         );
         this.addDrawableChild(
-                ButtonWidget.builder(new TextComponent("取消"), button -> this.close())
+                ButtonWidget.builderCompat(Text.literal("取消"), button -> this.close())
                         .dimensions(panelX + 160, buttonY, 80, 20)
                         .build()
         );
@@ -282,15 +281,15 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     private void saveAndClose() {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
-            errorMessage = new TextComponent("§c请输入预设名称！");
+            errorMessage = Text.literal("§c请输入预设名称！");
             return;
         }
         if (slots.isEmpty()) {
-            errorMessage = new TextComponent("§c至少需要一个槽位！");
+            errorMessage = Text.literal("§c至少需要一个槽位！");
             return;
         }
         if (!findCollidingSlots().isEmpty()) {
-            errorMessage = new TextComponent("§c存在同方位同类型的顺序重复，请先调整顺序！");
+            errorMessage = Text.literal("§c存在同方位同类型的顺序重复，请先调整顺序！");
             return;
         }
         TrafficLightsPatternPreset preset = new TrafficLightsPatternPreset(name, phaseCount, new ArrayList<>(slots));
@@ -405,30 +404,30 @@ public class TrafficLightsPatternEditorScreen extends Screen {
                 0xFFCCCCCC
         );
 
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("名称:"), panelX + 12, panelY + 34, 0xFFAAAAAA);
-        context.drawCenteredTextWithShadow(this.textRenderer, new TextComponent("" + phaseCount), panelX + 240, panelY + 34, 0xFFFFFF00);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("名称:"), panelX + 12, panelY + 34, 0xFFAAAAAA);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("" + phaseCount), panelX + 240, panelY + 34, 0xFFFFFF00);
 
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("颜色:"), panelX + 12, colorSwatchY + 6, 0xFFAAAAAA);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("颜色:"), panelX + 12, colorSwatchY + 6, 0xFFAAAAAA);
         context.fill(colorSwatchX, colorSwatchY, colorSwatchX + COLOR_SWATCH_SIZE, colorSwatchY + COLOR_SWATCH_SIZE, 0xFF000000 | presetColor);
         context.drawBorder(colorSwatchX, colorSwatchY, COLOR_SWATCH_SIZE, COLOR_SWATCH_SIZE, 0xFF888888);
 
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("方位"), panelX + 20, panelY + 84, 0xFF888888);
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("类型"), panelX + 70, panelY + 84, 0xFF888888);
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("图案"), panelX + 132, panelY + 84, 0xFF888888);
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("相位"), panelX + 198, panelY + 84, 0xFF888888);
-        context.drawTextWithShadow(this.textRenderer, new TextComponent("顺序"), panelX + 245, panelY + 84, 0xFF888888);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("方位"), panelX + 20, panelY + 84, 0xFF888888);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("类型"), panelX + 70, panelY + 84, 0xFF888888);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("图案"), panelX + 132, panelY + 84, 0xFF888888);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("相位"), panelX + 198, panelY + 84, 0xFF888888);
+        context.drawTextWithShadow(this.textRenderer, Text.literal("顺序"), panelX + 245, panelY + 84, 0xFF888888);
 
         int listBottom = panelY + 96 + LIST_AREA_HEIGHT;
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TextComponent("方位为相对路口中心的方位；同方位同类型"),
+                Text.literal("方位为相对路口中心的方位；同方位同类型"),
                 panelX + PANEL_WIDTH / 2,
                 listBottom + 30,
                 0xFF777777
         );
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
-                new TextComponent("有多个时用顺序区分（面朝该方位，从左到右为第1、2...个）"),
+                Text.literal("有多个时用顺序区分（面朝该方位，从左到右为第1、2...个）"),
                 panelX + PANEL_WIDTH / 2,
                 listBottom + 40,
                 0xFF777777
@@ -516,7 +515,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         context.drawBorder(tx, ty, mw + 8, th, 0xFF6B6B8A);
         int ty2 = ty + 2;
         for (TooltipLine line : lines) {
-            context.drawText(textRenderer, new TextComponent(line.text), tx + 4, ty2, line.color, false);
+            context.drawText(textRenderer, Text.literal(line.text), tx + 4, ty2, line.color, false);
             ty2 += lh;
         }
         context.getMatrices().popPose();
@@ -584,48 +583,48 @@ public class TrafficLightsPatternEditorScreen extends Screen {
             public SlotEntry(TrafficLightsPatternPreset.Slot slot) {
                 this.slot = slot;
 
-                this.directionButton = ButtonWidget.builder(new TextComponent(slot.getDirection().getLabel()), button -> {
+                this.directionButton = ButtonWidget.builderCompat(Text.literal(slot.getDirection().getLabel()), button -> {
                             cycleDirection(slot);
                             rebuild();
                         })
                         .dimensions(0, 0, 45, 20)
                         .build();
 
-                this.kindButton = ButtonWidget.builder(new TextComponent(slot.getKind().getLabel()), button -> {
+                this.kindButton = ButtonWidget.builderCompat(Text.literal(slot.getKind().getLabel()), button -> {
                             cycleKind(slot);
                             rebuild();
                         })
                         .dimensions(0, 0, 52, 20)
                         .build();
 
-                this.directionTypeButton = ButtonWidget.builder(new TextComponent(directionTypeLabel(slot.getDirectionType())), button -> {
+                this.directionTypeButton = ButtonWidget.builderCompat(Text.literal(directionTypeLabel(slot.getDirectionType())), button -> {
                             cycleDirectionType(slot);
                             rebuild();
                         })
                         .dimensions(0, 0, 76, 20)
                         .build();
 
-                this.phaseButton = ButtonWidget.builder(new TextComponent("相位" + formatPhaseIndices(slot.getPhaseIndices())), button -> {
+                this.phaseButton = ButtonWidget.builderCompat(Text.literal("相位" + formatPhaseIndices(slot.getPhaseIndices())), button -> {
                             openPhaseMultiSelect(slot);
                         })
                         .dimensions(0, 0, 44, 20)
                         .build();
 
-                this.orderLeftButton = ButtonWidget.builder(new TextComponent("←"), button -> {
+                this.orderLeftButton = ButtonWidget.builderCompat(Text.literal("←"), button -> {
                             decreaseOrder(slot);
                             rebuild();
                         })
                         .dimensions(0, 0, 14, 20)
                         .build();
 
-                this.orderRightButton = ButtonWidget.builder(new TextComponent("→"), button -> {
+                this.orderRightButton = ButtonWidget.builderCompat(Text.literal("→"), button -> {
                             increaseOrder(slot);
                             rebuild();
                         })
                         .dimensions(0, 0, 14, 20)
                         .build();
 
-                this.removeButton = ButtonWidget.builder(new TextComponent("×"), button -> {
+                this.removeButton = ButtonWidget.builderCompat(Text.literal("×"), button -> {
                             slots.remove(slot);
                             rebuild();
                         })
@@ -656,7 +655,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
                 orderLeftButton.render(context, mouseX, mouseY, tickDelta);
                 context.drawCenteredTextWithShadow(
                         client.font,
-                        new TextComponent("" + slot.getOrder()),
+                        Text.literal("" + slot.getOrder()),
                         panelX + 256,
                         y + 6,
                         0xFFFFFF00

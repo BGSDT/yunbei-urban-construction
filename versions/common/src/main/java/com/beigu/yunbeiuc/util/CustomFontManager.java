@@ -174,7 +174,7 @@ public class CustomFontManager {
                 int g = (color >> 8) & 0xFF;
                 int b = color & 0xFF;
 
-                nativeImage.setPixelRGBA(x, y, NativeImage.combine(a, b, g, r));
+                nativeImage.setPixelRGBA(x, y, (a << 24) | (b << 16) | (g << 8) | r);
             }
         }
 

@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.beigu.yunbeiuc.api.text.Text;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -50,7 +49,7 @@ public class ColorPickerScreen extends Screen {
     private boolean syncingFields = false;
 
     public ColorPickerScreen(Screen previousScreen, int initialColor, Consumer<Integer> callback) {
-        super(new TextComponent("选择颜色"));
+        super(Text.literal("选择颜色"));
         this.previousScreen = previousScreen;
         this.initialColor = initialColor & 0xFFFFFF;
         this.callback = callback;
@@ -79,7 +78,7 @@ public class ColorPickerScreen extends Screen {
         int rightColX = hueStripX + HUE_STRIP_WIDTH + PANEL_PADDING;
         int rightColY = squareY;
 
-        hexField = new TextFieldWidget(this.textRenderer, rightColX, rightColY + 2, HEX_FIELD_WIDTH, 16, new TextComponent(""));
+        hexField = new TextFieldWidget(this.textRenderer, rightColX, rightColY + 2, HEX_FIELD_WIDTH, 16, Text.literal(""));
         hexField.setMaxLength(7);
         hexField.setText("#" + String.format("%06X", getCurrentColor()));
         hexField.setChangedListener(text -> {
@@ -96,13 +95,13 @@ public class ColorPickerScreen extends Screen {
         int btnY = panelY + panelHeight - PANEL_PADDING - BUTTON_HEIGHT;
         int btnWidth = (panelWidth - PANEL_PADDING * 3) / 2;
 
-        ButtonWidget confirmButton = ButtonWidget.builder(new TextComponent("确定"), button -> {
+        ButtonWidget confirmButton = ButtonWidget.builderCompat(Text.literal("确定"), button -> {
             callback.accept(getCurrentColor());
             Minecraft.getInstance().setScreen(previousScreen);
         }).dimensions(panelX + PANEL_PADDING, btnY, btnWidth, BUTTON_HEIGHT).build();
         this.addDrawableChild(confirmButton);
 
-        ButtonWidget cancelButton = ButtonWidget.builder(new TextComponent("取消"), button -> {
+        ButtonWidget cancelButton = ButtonWidget.builderCompat(Text.literal("取消"), button -> {
             Minecraft.getInstance().setScreen(previousScreen);
         }).dimensions(panelX + PANEL_PADDING * 2 + btnWidth, btnY, btnWidth, BUTTON_HEIGHT).build();
         this.addDrawableChild(cancelButton);
