@@ -41,18 +41,14 @@ English ([Standard](README.md)) | **中文** ([简体](README_zh.md))
 
 ## 本地构建
 
-- `versions/1.20.1`：Fabric + Forge，Java 17
-- `versions/1.21.1`：Fabric + NeoForge，Java 21
+- `versions/1.18.2`：Fabric + Forge，Java 17
 
 ```bash
-cd versions/1.20.1
-./gradlew clean build
-
-cd ../1.21.1
+cd versions/1.18.2
 ./gradlew clean build
 ```
 
-GitHub Actions 会分别构建两个目录，并上传四个平台的可分发 JAR。
+GitHub Actions 会构建 Fabric 和 Forge，并上传可分发 JAR。
 
 ## 联系与交流
 
