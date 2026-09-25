@@ -64,8 +64,8 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
         float directionLogoX = direction6 ? 8.5f : -8.5f;
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", centerX, 7f, 0.85f));
-        lines.add(SignTextLinesHelper.centered("济南", centerX, -7f, 0.05f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centeredWithZ("G3", centerX, 6.5f, 0.06f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centered("济南", centerX, -7f, 0.05f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centeredWithZ("G3", centerX, 6.5f, 0.06f, 0xFFFFFF, 0.002f, "b"));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{direction1}.png", directionLogoX, 8.5f, 0.5f));
         setTextLines(lines);
     }

@@ -25,7 +25,7 @@ public class CustomSignBlockEntityRenderer extends AbstractTextDisplayEntityRend
         return switch (type) {
             case POLE_L -> -0.75f;
             case POLE_H -> -0.81f;
-            case NORMAL -> -0.46f;
+            case NORMAL -> -0.45f;
         };
     }
 }

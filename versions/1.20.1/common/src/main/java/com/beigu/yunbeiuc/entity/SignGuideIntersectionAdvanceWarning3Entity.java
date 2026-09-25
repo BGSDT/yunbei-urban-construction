@@ -85,30 +85,30 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
         boolean isWarning3 = getCachedState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning3) {
-            lines.add(SignTextLinesHelper.centered("新吴路", 0f, 8f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Xinwu Rd.", 0f, 4f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("锡山路", -14f, 4f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Xishan Rd.", -14f, 0f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("梁溪路", -14f, -4f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Liangxi Rd.", -14f, -8f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("滨湖路", 14f, 4f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Binhu Rd.", 14f, 0f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("惠山路", 14f, -4f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Huishan Rd", 14f, -8f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("新吴路", 0f, 8f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Xinwu Rd.", 0f, 4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("锡山路", -14f, 4f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Xishan Rd.", -14f, 0f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("梁溪路", -14f, -4f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Liangxi Rd.", -14f, -8f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("滨湖路", 14f, 4f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Binhu Rd.", 14f, 0f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("惠山路", 14f, -4f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Huishan Rd", 14f, -8f, 0.023f, 0xFFFFFF, "b"));
         } else {
-            lines.add(SignTextLinesHelper.centered("江苏路", 0f, -9f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("语文路", 0f, 6f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("97/120", 0f, 3f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("数学路", 0f, 13f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("93/120", 0f, 10f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("英语路", -14f, 8f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("121/130", -14f, 4f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("道法路", -14f, 0f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("50/50", -14f, -4f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("历史", 14f, 8f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("45/50", 14f, 4f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("地理路", 14f, 0f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("I don't know", 14f, -4f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("江苏路", 0f, -9f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("语文路", 0f, 6f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("97/120", 0f, 3f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("数学路", 0f, 13f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("93/120", 0f, 10f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("英语路", -14f, 8f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("121/130", -14f, 4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("道法路", -14f, 0f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("50/50", -14f, -4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("历史", 14f, 8f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("45/50", 14f, 4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("地理路", 14f, 0f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("I don't know", 14f, -4f, 0.023f, 0xFFFFFF, "b"));
         }
         setTextLines(lines);
     }

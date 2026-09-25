@@ -64,10 +64,10 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("白涧", -10f, 10f + text1AndY, 0.03f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("三和", 10f, 10f + text2AndY, 0.03f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("唐山", -10f, -10f + text3AndY, 0.03f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("双塔", 10f, -10f + text4AndY, 0.03f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("白涧", -10f, 10f + text1AndY, 0.03f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("三和", 10f, 10f + text2AndY, 0.03f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("唐山", -10f, -10f + text3AndY, 0.03f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("双塔", 10f, -10f + text4AndY, 0.03f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

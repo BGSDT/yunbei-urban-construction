@@ -136,6 +136,9 @@ public class CustomSignBlockEntity extends BlockEntity {
         private boolean outline;
         private int outlineColor = 0x000000;
         private float fontSize;
+        // ABC 交通字体标识："a" / "b" / "c"（由 SignTextLinesHelper 工厂方法写入）；
+        // 空串表示未指定，渲染端应回退到默认字体
+        private String abcFont = "";
         private float scaleX, scaleY, scaleZ;
         // 是否为实体默认布局生成的系统行（SignTextLinesHelper 工厂方法置 true）；
         // 删除确认依据之一：文本被用户改写（占位符消失）后仍需提示，与 NBT 持久化
@@ -149,6 +152,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             this.bold = false; this.italic = false; this.underline = false; this.shadow = false;
             this.outline = false; this.outlineColor = 0x000000;
             this.fontSize = 1.0f;
+            this.abcFont = "";
             this.scaleX = 1.0f; this.scaleY = 1.0f; this.scaleZ = 1.0f;
         }
 
@@ -160,6 +164,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             c.bold = bold; c.italic = italic; c.underline = underline; c.shadow = shadow;
             c.outline = outline; c.outlineColor = outlineColor;
             c.fontSize = fontSize;
+            c.abcFont = abcFont;
             c.scaleX = scaleX; c.scaleY = scaleY; c.scaleZ = scaleZ;
             c.builtin = builtin;
             return c;
@@ -173,6 +178,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             this.bold = other.bold; this.italic = other.italic; this.underline = other.underline; this.shadow = other.shadow;
             this.outline = other.outline; this.outlineColor = other.outlineColor;
             this.fontSize = other.fontSize;
+            this.abcFont = other.abcFont;
             this.scaleX = other.scaleX; this.scaleY = other.scaleY; this.scaleZ = other.scaleZ;
             this.builtin = other.builtin;
         }
@@ -194,6 +200,7 @@ public class CustomSignBlockEntity extends BlockEntity {
             nbt.putBoolean("underline", underline); nbt.putBoolean("shadow", shadow);
             nbt.putBoolean("outline", outline);; nbt.putInt("outlineColor", outlineColor);
             nbt.putFloat("fontSize", fontSize);
+            nbt.putString("abcFont", abcFont);
             nbt.putFloat("scaleX", scaleX); nbt.putFloat("scaleY", scaleY); nbt.putFloat("scaleZ", scaleZ);
             nbt.putBoolean("builtin", builtin);
             return nbt;
@@ -210,6 +217,8 @@ public class CustomSignBlockEntity extends BlockEntity {
             data.underline = nbt.getBoolean("underline"); data.shadow = nbt.getBoolean("shadow");
             data.outline = nbt.getBoolean("outline");data.outlineColor = nbt.contains("outlineColor") ? nbt.getInt("outlineColor") : 0x000000;
             data.fontSize = nbt.contains("fontSize") ? nbt.getFloat("fontSize") : 1.0f;
+            // 旧存档无该字段：默认空串（未指定字体）
+            data.abcFont = nbt.contains("abcFont") ? nbt.getString("abcFont") : "";
             data.scaleX = nbt.contains("scaleX") ? nbt.getFloat("scaleX") : 1.0f;
             data.scaleY = nbt.contains("scaleY") ? nbt.getFloat("scaleY") : 1.0f;
             data.scaleZ = nbt.contains("scaleZ") ? nbt.getFloat("scaleZ") : 1.0f;
@@ -233,6 +242,8 @@ public class CustomSignBlockEntity extends BlockEntity {
         public boolean isOutline() { return outline; } public void setOutline(boolean o) { this.outline = o; }
         public int getOutlineColor() { return outlineColor; } public void setOutlineColor(int c) { this.outlineColor = c; }
         public float getFontSize() { return fontSize; } public void setFontSize(float s) { this.fontSize = s; }
+        /** ABC 交通字体标识："a" / "b" / "c"；null 归一为空串（NbtCompound.putString 不接受 null） */
+        public String getAbcFont() { return abcFont; } public void setAbcFont(String f) { this.abcFont = f != null ? f : ""; }
         public float getScaleX() { return scaleX; } public void setScaleX(float s) { this.scaleX = s; }
         public float getScaleY() { return scaleY; } public void setScaleY(float s) { this.scaleY = s; }
         public float getScaleZ() { return scaleZ; } public void setScaleZ(float s) { this.scaleZ = s; }

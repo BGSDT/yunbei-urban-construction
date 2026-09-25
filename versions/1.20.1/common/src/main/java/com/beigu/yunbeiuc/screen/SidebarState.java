@@ -1,34 +1,63 @@
 package com.beigu.yunbeiuc.screen;
 
 /**
- * 侧边栏顶层项互斥选择逻辑
+ * 侧边栏导航状态管理
  *
- * <p>本界面只保留「主页」一个顶层项，其余内容（图案、字体）均为 H2 分类，
- * 因此互斥逻辑简化为「顶层项与 H2/H3 选中状态二者只存其一」。
+ * <p>控制导航栏的展开/收起状态以及导航项的互斥选中逻辑。
  *
  * @see PatternAndFontOverlay
  */
 public final class SidebarState {
 
     /** 无选中项 */
-    public static final int SIDEBAR_NONE = -1;
-    /** 主页 */
-    public static final int SIDEBAR_HOME = 0;
+    public static final int NAV_NONE = -1;
+    /** 主页导航项 */
+    public static final int NAV_HOME = 0;
+
+    private static boolean collapsed = false;
 
     private SidebarState() {
     }
 
     /**
-     * 统一设置侧边栏顶层项并强制互斥。
+     * 判断侧边栏是否处于收起状态。
+     */
+    public static boolean isCollapsed() {
+        return collapsed;
+    }
+
+    /**
+     * 切换侧边栏展开/收起状态。
+     */
+    public static void toggleCollapse() {
+        collapsed = !collapsed;
+    }
+
+    /**
+     * 设置侧边栏展开/收起状态。
+     */
+    public static void setCollapsed(boolean value) {
+        collapsed = value;
+    }
+
+    /**
+     * 获取当前侧边栏的有效宽度。
+     */
+    public static int getEffectiveWidth() {
+        return collapsed ? UIConstants.SIDEBAR_COLLAPSED_WIDTH : UIConstants.SIDEBAR_FULL_WIDTH;
+    }
+
+    /**
+     * 选中导航栏顶层项并强制互斥。
      *
-     * <p>清空滚动位置，清理 H2/H3 选中状态。
+     * <p>清空滚动位置，清理分类选中状态。
      *
      * @param which 顶层项索引
      */
-    public static void selectSidebarTop(int which) {
-        PatternAndFontOverlay.sidebarSelection = which;
-        PatternAndFontOverlay.isHomeSelected = (which == SIDEBAR_HOME);
-        if (which != SIDEBAR_NONE) {
+    public static void selectNavTop(int which) {
+        PatternAndFontOverlay.navSelection = which;
+        PatternAndFontOverlay.isHomeSelected = (which == NAV_HOME);
+        if (which != NAV_NONE) {
             PatternAndFontOverlay.selectedH2 = null;
             PatternAndFontOverlay.selectedH3 = null;
         }
@@ -36,10 +65,10 @@ public final class SidebarState {
     }
 
     /**
-     * 选中 H2/H3 分类时清空顶层项标志。
+     * 选中分类时清空顶层导航标志。
      */
-    public static void clearSidebarTop() {
-        PatternAndFontOverlay.sidebarSelection = SIDEBAR_NONE;
+    public static void clearNavTop() {
+        PatternAndFontOverlay.navSelection = NAV_NONE;
         PatternAndFontOverlay.isHomeSelected = false;
     }
 
@@ -48,14 +77,13 @@ public final class SidebarState {
      *
      * <p>每帧渲染前调用。若 selectedH2/H3 与顶层项同时存在，优先保留顶层项。
      */
-    public static void enforceSidebarMutualExclusion() {
+    public static void enforceNavMutualExclusion() {
         if (PatternAndFontOverlay.isHomeSelected) {
             PatternAndFontOverlay.selectedH2 = null;
             PatternAndFontOverlay.selectedH3 = null;
-        } else if (PatternAndFontOverlay.sidebarSelection == SIDEBAR_HOME
+        } else if (PatternAndFontOverlay.navSelection == NAV_HOME
                 && PatternAndFontOverlay.selectedH2 == null
                 && PatternAndFontOverlay.selectedH3 == null) {
-            // 顶层项索引存在但标志位丢失（异常状态）时按索引补回
             PatternAndFontOverlay.isHomeSelected = true;
         }
     }

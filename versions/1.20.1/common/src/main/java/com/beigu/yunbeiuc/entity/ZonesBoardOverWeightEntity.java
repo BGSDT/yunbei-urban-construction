@@ -50,17 +50,17 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
         Block block = getCachedState().getBlock();
         List<TextLineData> lines = new ArrayList<>();
         if (block == SignBlocks.ZONES_BOARD_OVER_WEIGHT.get() || block == SignBlocks.ZONES_BOARD_TIME_LIMIT.get()) {
-            lines.add(SignTextLinesHelper.left("{text1}", -5f, 5.5f, 0.03f, 0x000000));
+            lines.add(SignTextLinesHelper.left("{text1}", -5f, 5.5f, 0.03f, 0x000000, "b"));
         } else if (block == SignBlocks.ZONES_BOARD_SUGGESTED_SPEED.get()) {
-            lines.add(SignTextLinesHelper.left("{text1}", -6f, 0f, 0.04f, 0x000000));
+            lines.add(SignTextLinesHelper.left("{text1}", -6f, 0f, 0.04f, 0x000000, "b"));
         } else if (block == SignBlocks.ZONES_BOARD_LENGTH.get()) {
-            lines.add(SignTextLinesHelper.centered("{text1}", 1f, 0f, 0.04f, 0x000000));
+            lines.add(SignTextLinesHelper.centered("{text1}", 1f, 0f, 0.04f, 0x000000, "b"));
         } else if (block == SignBlocks.ZONES_BOARD_DISTANCE_LENGTH.get()) {
-            lines.add(SignTextLinesHelper.centered("{text1}", 0f, 0f, 0.04f, 0x000000));
+            lines.add(SignTextLinesHelper.centered("{text1}", 0f, 0f, 0.04f, 0x000000, "b"));
         } else if (block == SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_LEFT.get()) {
-            lines.add(SignTextLinesHelper.centered("{text1}", 0f, 1f, 0.03f, 0x000000));
+            lines.add(SignTextLinesHelper.centered("{text1}", 0f, 1f, 0.03f, 0x000000, "b"));
         } else if (block == SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_RIGHT.get()) {
-            lines.add(SignTextLinesHelper.centered("{text1}", -2f, 1f, 0.03f, 0x000000));
+            lines.add(SignTextLinesHelper.centered("{text1}", -2f, 1f, 0.03f, 0x000000, "b"));
         }
         setTextLines(lines);
     }

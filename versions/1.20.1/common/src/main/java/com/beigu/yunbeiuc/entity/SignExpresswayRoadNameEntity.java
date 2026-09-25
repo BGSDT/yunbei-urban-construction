@@ -39,7 +39,7 @@ public class SignExpresswayRoadNameEntity extends CustomSignBlockEntity {
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("北四环", 0f, 0f, 0.045f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("北四环", 0f, 0f, 0.045f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

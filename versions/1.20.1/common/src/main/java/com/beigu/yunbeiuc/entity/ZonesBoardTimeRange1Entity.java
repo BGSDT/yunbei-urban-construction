@@ -42,7 +42,7 @@ public class ZonesBoardTimeRange1Entity extends CustomSignBlockEntity {
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("{time1}-{time2}", 0f, 5.5f, 0.02f, 0x000000));
+        lines.add(SignTextLinesHelper.centered("6:00-20:00", 0f, 5.5f, 0.02f, 0x000000, "b"));
         setTextLines(lines);
     }
 

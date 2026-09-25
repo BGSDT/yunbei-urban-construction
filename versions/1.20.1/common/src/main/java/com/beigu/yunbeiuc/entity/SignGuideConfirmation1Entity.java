@@ -64,15 +64,15 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
         float lengthX = main ? 13f : 11f;
         float unitX = main ? 17f : 15f;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.left("如皋", textX, 9f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("海安", textX, 0f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("盐城", textX, -9f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("5", lengthX, 9f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("40", lengthX, 0f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("105", lengthX, -9f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", unitX, 8.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", unitX, -0.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", unitX, -9.5f, 0.025f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("如皋", textX, 9f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("海安", textX, 0f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("盐城", textX, -9f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("5", lengthX, 9f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("40", lengthX, 0f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("105", lengthX, -9f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", unitX, 8.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", unitX, -0.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", unitX, -9.5f, 0.025f, 0xFFFFFF, "b"));
         setTextLines(lines);
     }
 

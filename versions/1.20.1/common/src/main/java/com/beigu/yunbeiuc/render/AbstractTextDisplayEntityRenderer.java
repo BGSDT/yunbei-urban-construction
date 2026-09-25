@@ -48,13 +48,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.pop();
     }
 
-    // 子类实现前置变换（平移/旋转）
     protected abstract void applyTransforms(MatrixStack matrices, T entity);
 
-    // 子类实现 Z 轴偏移
     protected abstract float getZOffset(T entity);
 
-    // 子类可选渲染固定内容（枚举驱动的 logo 纹理等），在动态文本行之前执行；默认不渲染
     protected void renderFixedContent(T entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers,
                                       float tickDelta, int light, int overlay, float zOffset) {
     }
@@ -72,32 +69,30 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (lineData.getText().isEmpty()) return;
         String text = lineData.getText().trim();
 
-        if (text.startsWith("-rect")) {
-            String[] parts = text.split("\\s+");
-            if (parts.length >= 3) {
+        int firstSpace = text.indexOf(' ');
+        String directive = firstSpace < 0 ? text : text.substring(0, firstSpace);
+        String rest = firstSpace < 0 ? "" : text.substring(firstSpace + 1).trim();
+
+        if ("-rect".equals(directive)) {
+            String[] parts = rest.split("\\s+");
+            if (parts.length >= 2) {
                 try {
-                    float w = Float.parseFloat(parts[1]);
-                    float h = Float.parseFloat(parts[2]);
+                    float w = Float.parseFloat(parts[0]);
+                    float h = Float.parseFloat(parts[1]);
                     renderRect(matrices, zOffset, lineData, w, h, editing, gizmoMode, baseFrame);
                     return;
                 } catch (NumberFormatException ignored) {}
             }
         }
 
-        if (text.startsWith("-texture")) {
-            String[] parts = text.split("\\s+", 3);
-            if (parts.length >= 2) {
-                // 路径支持 {字段名} 占位符（如按枚举/编号选择 logo 纹理），与 -json 分支一致先解析；
-                // Identifier 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
-                Identifier textureId = Identifier.tryParse(entity.resolvePlaceholders(parts[1]).trim().toLowerCase(Locale.ROOT));
-                // 仅当路径以 .png 结尾且资源真实存在时才按贴图渲染；
-                // 目录条目会被 getResource 误判为存在（jar 内含目录项），必须用后缀过滤掉，否则输入过程会反复报错；
-                // 无效路径（占位符按字段条件返回空、资源不存在、格式错误）静默跳过整行，不回退为文本渲染
+        if ("-texture".equals(directive)) {
+            String[] parts = rest.split("\\s+", 2);
+            if (parts.length >= 1) {
+                Identifier textureId = Identifier.tryParse(entity.resolvePlaceholders(parts[0]).trim().toLowerCase(Locale.ROOT));
                 if (textureId != null && textureId.getPath().endsWith(".png") && textureExists(textureId)) {
-                    // 可选第三参数：x 偏移占位符（单位同 xOffset，如窄/宽版 logo 联动的 ±1px），叠加到行 xOffset
                     float xShift = 0f;
-                    if (parts.length >= 3) {
-                        try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[2]).trim()); }
+                    if (parts.length >= 2) {
+                        try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[1]).trim()); }
                         catch (NumberFormatException ignored) {}
                     }
                     CustomSignBlockEntity.TextLineData shifted = lineData;
@@ -111,11 +106,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             }
         }
 
-        if (text.startsWith("-json")) {
-            String[] parts = text.split("\\s+", 2);
-            if (parts.length >= 2) {
+        if ("-json".equals(directive)) {
+            if (!rest.isEmpty()) {
                 try {
-                    Text jsonText = Text.Serializer.fromLenientJson(entity.resolvePlaceholders(parts[1]));
+                    Text jsonText = Text.Serializer.fromLenientJson(entity.resolvePlaceholders(rest));
                     if (jsonText != null) {
                         renderJsonText(matrices, vertexConsumers, light, zOffset, lineData, jsonText, editing, gizmoMode, baseFrame);
                         return;
@@ -170,8 +164,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.peek().getPositionMatrix(), vertexConsumers, light);
 
-        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
-        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
             immediate.draw();
         }
@@ -202,7 +194,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 .withUnderline(lineData.isUnderline())
                 .withFont(new Identifier("minecraft", "uniform"));
 
-        // 渲染时解析 {字段名} 占位符为固定 NBT 字段的值
         Text renderText = Text.literal(entity.resolvePlaceholders(lineData.getText())).setStyle(style);
         int textWidth = this.textRenderer.getWidth(renderText);
         int textHeight = this.textRenderer.fontHeight;
@@ -220,8 +211,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.peek().getPositionMatrix(), vertexConsumers, light);
 
-        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
-        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
             immediate.draw();
         }
@@ -254,7 +243,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
         float zPos = lineData.getZOffset() / 16f + zOffset;
-        // 矩形大小乘以 fontSize 及 XY 缩放；矩形本身在局部 z=0 平面上，scaleZ 对其无可见效果
         float scale = lineData.getFontSize();
         float halfW = width / 16f / 2f * scale * lineData.getScaleX();
         float halfH = height / 16f / 2f * scale * lineData.getScaleY();
@@ -337,7 +325,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.translate(offsetX, offsetY, 0);
         applyRotation(matrices, lineData);
 
-        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(textureId));
+        // 关键改动：cutout -> translucent，支持带 alpha 通道的 PNG
+        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(textureId));
         Matrix4f positionMatrix = matrices.peek().getPositionMatrix();
         org.joml.Vector3f normalVec = matrices.peek().getNormalMatrix().transform(new org.joml.Vector3f(0, 0, 1));
 
@@ -346,8 +335,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.vertex(positionMatrix, halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
         consumer.vertex(positionMatrix, -halfWidth, halfHeight, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(overlay).light(light).normal(normalVec.x, normalVec.y, normalVec.z).next();
 
-        // 图片顶点在缓冲层，gizmo 轴/描边为立即模式——编辑行先 flush 贴图层，
-        // 否则帧末绘制图片时会覆盖 gizmo 轴与编辑描边
+        // 编辑行先 flush 贴图层，避免帧末绘制图片时覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
             immediate.draw();
         }
@@ -362,9 +350,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.pop();
     }
 
-    // 在当前矩阵局部坐标系内绘制一个包住 (left,top)-(left+w,top+h) 区域的绿色描边矩形框，用于标注正在编辑的文本行
-    // unitScale：局部坐标 1 单位对应的方块尺寸（1 像素 = 1/16 方块）；scaleX/scaleY 为矩阵所含缩放，
-    // 用于抵消厚度被放大，保证描边在世界空间中恒为 0.25px 粗
     private void renderEditingOutline(MatrixStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY) {
         float px = 0.25f / 16f / Math.max(1e-5f, unitScale);
         float thicknessX = px / Math.max(0.01f, scaleX);

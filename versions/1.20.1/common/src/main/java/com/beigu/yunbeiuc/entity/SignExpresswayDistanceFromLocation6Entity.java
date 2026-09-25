@@ -82,19 +82,19 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.left("南通", -7f, 8f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("扬州", -7f, -3f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.left("南京", -7f, -10f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("25", 13.5f, 8f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("92", 13.5f, -3f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("115", 13.5f, -10f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 17.5f, 7.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 17.5f, -3.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 17.5f, -10.5f, 0.025f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("南通", -7f, 8f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("扬州", -7f, -3f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("南京", -7f, -10f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("25", 13.5f, 8f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("92", 13.5f, -3f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("115", 13.5f, -10f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 17.5f, 7.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 17.5f, -3.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 17.5f, -10.5f, 0.025f, 0xFFFFFF, "b"));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -14f, 8f, 0.65f));
-        lines.add(SignTextLinesHelper.centeredWithZ("G15", -14f, 7.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centeredWithZ("G15", -14f, 7.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", -14f, -5.5f, 0.65f));
-        lines.add(SignTextLinesHelper.centeredWithZ("G25", -14f, -6f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centeredWithZ("G25", -14f, -6f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         setTextLines(lines);
     }
 

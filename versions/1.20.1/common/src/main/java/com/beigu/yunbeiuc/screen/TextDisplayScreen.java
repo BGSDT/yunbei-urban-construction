@@ -5,6 +5,7 @@ import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.beigu.yunbeiuc.network.CustomSignFieldUpdatePacket;
 import com.beigu.yunbeiuc.network.CustomSignUpdatePacket;
 import com.beigu.yunbeiuc.render.TextGizmo;
+import com.beigu.yunbeiuc.util.GlobalFontSettings;
 import com.beigu.yunbeiuc.util.PresetManager;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
@@ -15,7 +16,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 
@@ -35,11 +38,15 @@ public class TextDisplayScreen extends Screen {
     private static final int SCROLL_BTN_WIDTH = 14;
     private static final int SAVE_BTN_ROW_HEIGHT = 22;
     private static final int INFO_PANEL_WIDTH = 100;
+    // 「设置」属性面板内「原版字体 / ABC字体」两个全局选项按钮的宽度（容纳中英文标签 + 选中勾）
+    private static final int FONT_OPTION_BTN_WIDTH = 88;
     private static final float SCALE_DISPLAY_FACTOR = 16f;
     private static final int[] COLOR_PALETTE = {0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFA500, 0x000000};
 
     private final CustomSignBlockEntity blockEntity;
     private final BlockPos blockPos;
+    /** 当前方块是否为 sign 类方块：只有标志牌显示「设置」按钮，构造时确定一次。 */
+    private final boolean signBlock;
     private final List<TextLineWidget> textLineWidgets = new ArrayList<>();
     private int selectedIndex = -1;
 
@@ -54,11 +61,15 @@ public class TextDisplayScreen extends Screen {
     private ButtonWidget outlineButton, outlineColorButton;
     private ButtonWidget hAlignButton, vAlignButton, clearFormatButton;
 
-    private enum Category { POSITION, ROTATION, SCALE, FONT, ALIGN }
+    private enum Category { POSITION, ROTATION, SCALE, FONT, ALIGN, SETTINGS }
     private Category activeCategory = Category.POSITION;
     private ButtonWidget posCatButton, rotCatButton, scaleCatButton, fontCatButton, alignCatButton;
     // 图案按钮：紧贴「对齐」分类按钮右侧，点击打开图案与字体选择界面
     private ButtonWidget patternButton;
+    // 设置按钮：紧贴图案按钮右侧，点击锁定「设置」分类并在底部属性面板内显示全局字体选项
+    private ButtonWidget settingsButton;
+    // 全局字体选项：位于「设置」属性面板内，由 addBottomWidgets 布局（与其它分类控件同样跟随面板显示）
+    private ButtonWidget fontVanillaButton, fontAbcButton;
 
     private boolean preciseInputMode = false;
     private TextFieldWidget preciseInputField;
@@ -84,6 +95,13 @@ public class TextDisplayScreen extends Screen {
     private int topScrollOffset = 0;
     private ButtonWidget topScrollLeft, topScrollRight;
 
+    // 保存按钮行（属性分类/图案/设置 + 行操作）：整行放不下时按索引分页并显示左右滚动按钮
+    private int rowScrollIndex = 0;
+    private ButtonWidget rowScrollLeft, rowScrollRight;
+    // 底部属性面板控件行：与右侧状态显示区一起放不下时按索引分页并显示左右滚动按钮
+    private int bottomRowScrollIndex = 0;
+    private ButtonWidget bottomRowScrollLeft, bottomRowScrollRight;
+
     private int panelTopX, panelTopY, panelTopWidth, panelTopHeight;
     private int panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight;
 
@@ -105,6 +123,24 @@ public class TextDisplayScreen extends Screen {
         super(Text.translatable("gui.yunbeiuc.custom_sign"));
         this.blockEntity = blockEntity;
         this.blockPos = blockEntity.getPos();
+        this.signBlock = computeSignBlock(blockEntity);
+    }
+
+    /**
+     * 判断方块是否为 sign 类（决定「设置」按钮是否显示）。
+     *
+     * <p>依据方块注册名（{@code yunbeiuc:<path>} 的 path）中是否包含 {@code sign}：
+     * <ul>
+     *     <li>内建标志牌（{@code AbstractEditableSignBlock} 族的 {@code sign_*}）→ 显示；</li>
+     *     <li>自定义标志牌（{@code CustomSignTypeBlock} 的 {@code sign_custom_*}）→ 显示；</li>
+     *     <li>路杆文本显示 / 路杆 LED / 龙门架 LED（{@code road_pole_text_display}、{@code road_pole_led}、
+     *         {@code gantry_frame_led*}）→ 隐藏；</li>
+     *     <li>区域信息板 {@code zones_board_*}（虽属标志牌类族，但注册名不含 sign）→ 隐藏。</li>
+     * </ul>
+     */
+    private static boolean computeSignBlock(CustomSignBlockEntity blockEntity) {
+        Identifier id = Registries.BLOCK.getId(blockEntity.getCachedState().getBlock());
+        return id.getPath().contains("sign");
     }
 
     @Override
@@ -144,8 +180,23 @@ public class TextDisplayScreen extends Screen {
         patternButton = ButtonWidget.builder(Text.translatable("yunbeiuc.gui.button.pattern"), btn -> {
             PatternAndFontOverlay.targetScreen = this;
             PatternAndFontOverlay.isVisible = true;
-            PatternAndFontOverlay.selectSidebarTop(PatternAndFontOverlay.SIDEBAR_TOP_HOME);
-        }).dimensions(0, 0, 40, 20).build();
+            PatternAndFontOverlay.selectSidebarTop(PatternAndFontOverlay.NAV_TOP_HOME);
+        }).dimensions(0, 0, catBtnW, 20).build();
+
+        // 设置按钮：紧贴图案按钮右侧；点击后与属性分类按钮同样锁定，并打开对应的「设置」属性面板
+        settingsButton = ButtonWidget.builder(Text.translatable("yunbeiuc.gui.button.settings"), btn -> selectCategory(Category.SETTINGS))
+                .dimensions(0, 0, catBtnW, 20).build();
+        // 原版字体 / ABC字体：全局字体开关（对新放置方块生效），显示在「设置」属性面板的控件行内
+        fontVanillaButton = ButtonWidget.builder(Text.translatable("yunbeiuc.gui.font.vanilla"), btn -> {
+            GlobalFontSettings.setAbcMode(false);
+            updateFontSettingButtons();
+        }).dimensions(0, 0, FONT_OPTION_BTN_WIDTH, 20).build();
+        fontVanillaButton.visible = false;
+        fontAbcButton = ButtonWidget.builder(Text.translatable("yunbeiuc.gui.font.abc"), btn -> {
+            GlobalFontSettings.setAbcMode(true);
+            updateFontSettingButtons();
+        }).dimensions(0, 0, FONT_OPTION_BTN_WIDTH, 20).build();
+        fontAbcButton.visible = false;
 
         updateCategoryButtonsLocked();
 
@@ -214,6 +265,7 @@ public class TextDisplayScreen extends Screen {
         this.addDrawableChild(fontCatButton);
         this.addDrawableChild(alignCatButton);
         this.addDrawableChild(patternButton);
+        this.addDrawableChild(settingsButton);
         this.addDrawableChild(copyLineButton);
         this.addDrawableChild(pasteLineButton);
         this.addDrawableChild(deleteLineButton);
@@ -409,6 +461,8 @@ public class TextDisplayScreen extends Screen {
     private void selectCategory(Category c) {
         activeCategory = c;
         preciseInputMode = false;
+        // 切换分类后控件组不同，底部控件行分页位置归零
+        bottomRowScrollIndex = 0;
         releaseGizmo();
         updateCategoryButtonsLocked();
         refreshBottomPanel();
@@ -560,6 +614,7 @@ public class TextDisplayScreen extends Screen {
         scaleCatButton.active = activeCategory != Category.SCALE;
         fontCatButton.active = activeCategory != Category.FONT;
         alignCatButton.active = activeCategory != Category.ALIGN;
+        settingsButton.active = activeCategory != Category.SETTINGS;
     }
 
     private String[] getCategoryStatusLines(TextLineData d) {
@@ -572,6 +627,7 @@ public class TextDisplayScreen extends Screen {
                     String.format("阴影:%s", d.isShadow() ? "开" : "关"),
                     String.format("描边:#%06X %s", d.getOutlineColor(), d.isOutline() ? "开" : "关")};
             case ALIGN -> new String[]{getHAlignText(d.getAlignment().hAlign), getVAlignText(d.getAlignment().vAlign)};
+            case SETTINGS -> new String[]{"全局字体", GlobalFontSettings.isAbcMode() ? "ABC字体" : "原版字体"};
         };
     }
 
@@ -711,20 +767,43 @@ public class TextDisplayScreen extends Screen {
         if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
         savePresetButton.visible = presetSelectMode && !selectedPresetIndices.isEmpty() && !presetSaveMode && !presetLoadMode;
         // 属性分类按钮：非预设/格式刷模式下显示
-        boolean showCategoryButtons = !presetSelectMode && !presetSaveMode && !presetLoadMode && !formatPainterMode;
+        boolean showCategoryButtons = isCategoryRowShown();
         posCatButton.visible = showCategoryButtons;
         rotCatButton.visible = showCategoryButtons;
         scaleCatButton.visible = showCategoryButtons;
         fontCatButton.visible = showCategoryButtons;
         alignCatButton.visible = showCategoryButtons;
         patternButton.visible = showCategoryButtons;
+        // 设置按钮：仅 sign 类方块显示（全局字体设置对路杆文本显示/LED、龙门架 LED 无意义）
+        settingsButton.visible = showCategoryButtons && signBlock;
+        updateFontSettingButtons();
         // 正在编辑文本行时显示行操作按钮（靠屏幕右侧）；无剪贴板内容时粘贴按钮锁定
-        boolean showLineActions = !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !formatPainterMode && !presetSelectMode && !presetSaveMode && !presetLoadMode;
+        boolean showLineActions = isLineActionRowShown();
         copyLineButton.visible = showLineActions;
         pasteLineButton.visible = showLineActions;
         pasteLineButton.active = showLineActions && clipboardData != null;
         deleteLineButton.visible = showLineActions;
         formatPainterButton.visible = showLineActions;
+        // 分类/行操作按钮的可见性确定后再排版：分页滚动会在这里进一步隐藏放不下的按钮，
+        // 必须在上面所有 visible 赋值之后执行，否则会被覆盖成"全部可见"而与滚动按钮重叠
+        layoutSaveButtonRow(panelBottomY - SAVE_BTN_ROW_HEIGHT + 1);
+    }
+
+    // ==================== 全局字体设置 ====================
+
+    /**
+     * 刷新全局字体选项的选中标记：当前生效的模式在标签后打勾。
+     *
+     * <p>不使用 active=false 表示选中，那是禁用点击会让按钮点不动；按钮的显隐由
+     * 「设置」属性面板（addBottomWidgets）统一控制，与此处无关。
+     */
+    private void updateFontSettingButtons() {
+        if (fontVanillaButton == null || fontAbcButton == null) return;
+        boolean abc = GlobalFontSettings.isAbcMode();
+        Text vanilla = Text.translatable("yunbeiuc.gui.font.vanilla");
+        Text abcLabel = Text.translatable("yunbeiuc.gui.font.abc");
+        fontVanillaButton.setMessage(abc ? vanilla : vanilla.copy().append(" ✔"));
+        fontAbcButton.setMessage(abc ? abcLabel.copy().append(" ✔") : abcLabel);
     }
 
     // ==================== 选项行布局 ====================
@@ -736,21 +815,156 @@ public class TextDisplayScreen extends Screen {
         panelTopY = panelBottomY - SAVE_BTN_ROW_HEIGHT - optionsH - panelTopHeight;
         int rowBtnY = panelBottomY - SAVE_BTN_ROW_HEIGHT + 1;
         savePresetButton.setPosition(width / 2 - 40, rowBtnY);
-        int catX = 5;
-        for (ButtonWidget b : new ButtonWidget[]{posCatButton, rotCatButton, scaleCatButton, fontCatButton, alignCatButton}) {
-            b.setPosition(catX, rowBtnY);
-            catX += 50 + 4;
-        }
-        // 图案按钮紧贴「对齐」按钮右侧
-        patternButton.setPosition(catX, rowBtnY);
-        int lineActionStartX = width - (45 * 4 + 4 * 3) - 4;
-        copyLineButton.setPosition(lineActionStartX, rowBtnY);
-        pasteLineButton.setPosition(lineActionStartX + (45 + 4), rowBtnY);
-        deleteLineButton.setPosition(lineActionStartX + (45 + 4) * 2, rowBtnY);
-        formatPainterButton.setPosition(lineActionStartX + (45 + 4) * 3, rowBtnY);
+        // 分类/行操作按钮行的排版放在 refreshTopPanel 末尾（需在 visible 确定之后），此处只定位本行其它控件
         addLineButton.setPosition(panelTopX + panelTopWidth, panelTopY);
         refreshOptionButtons();
     }
+
+    /** 属性分类按钮行是否显示（预设/格式刷等模式下整行隐藏） */
+    private boolean isCategoryRowShown() {
+        return !presetSelectMode && !presetSaveMode && !presetLoadMode && !formatPainterMode;
+    }
+
+    /** 行操作按钮是否显示（需选中文本行，预设/格式刷等模式下隐藏） */
+    private boolean isLineActionRowShown() {
+        return !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()
+                && !formatPainterMode && !presetSelectMode && !presetSaveMode && !presetLoadMode;
+    }
+
+    /**
+     * 保存按钮行布局：内容顺序为「属性分类 → 图案 → 设置 → 行操作」。
+     *
+     * <p>宽度足够时保持原有外观（分类按钮靠左依次排列、行操作按钮靠右依次排列）；
+     * 放不下时整行合并为一条**按索引分页**的内容：只摆放并显示完整落在内容区内的按钮，
+     * 其余按钮隐藏（不绘制、不响应点击），行两端显示 ◀ ▶ 滚动按钮。
+     * 与文本行标签行的分页做法一致，因此滚动按钮不会被溢出的内容按钮压住。
+     */
+    private void layoutSaveButtonRow(int rowBtnY) {
+        if (rowScrollLeft != null) { this.remove(rowScrollLeft); rowScrollLeft = null; }
+        if (rowScrollRight != null) { this.remove(rowScrollRight); rowScrollRight = null; }
+
+        boolean showCategory = isCategoryRowShown();
+        boolean showLineActions = isLineActionRowShown();
+        List<ButtonWidget> categories = new ArrayList<>();
+        if (showCategory) addVisible(categories,
+                posCatButton, rotCatButton, scaleCatButton, fontCatButton, alignCatButton, patternButton, settingsButton);
+        List<ButtonWidget> lineActions = new ArrayList<>();
+        if (showLineActions) addVisible(lineActions,
+                copyLineButton, pasteLineButton, deleteLineButton, formatPainterButton);
+        if (categories.isEmpty() && lineActions.isEmpty()) { rowScrollIndex = 0; return; }
+
+        final int leftMargin = 5, rightMargin = 4, gap = 4, splitGap = 12;
+        int categoryW = rowWidth(categories, gap);
+        int lineActionW = rowWidth(lineActions, gap);
+
+        // 能否维持原有外观：分类按钮靠左依次排列、行操作按钮靠右依次排列，且两组不重叠
+        boolean fits = categories.isEmpty() || lineActions.isEmpty()
+                ? leftMargin + categoryW + lineActionW + rightMargin <= width
+                : leftMargin + categoryW + 8 <= width - rightMargin - lineActionW;
+
+        if (fits) {
+            // 宽度足够：分类按钮靠左、行操作按钮靠右，维持原有布局
+            rowScrollIndex = 0;
+            int x = leftMargin;
+            for (ButtonWidget b : categories) { b.setPosition(x, rowBtnY); x += b.getWidth() + gap; }
+            x = width - rightMargin - lineActionW;
+            for (ButtonWidget b : lineActions) { b.setPosition(x, rowBtnY); x += b.getWidth() + gap; }
+            return;
+        }
+
+        // 放不下：整行合并分页滚动，两端留出左右滚动按钮的位置
+        List<ButtonWidget> items = new ArrayList<>(categories);
+        int splitIndex = items.size();
+        items.addAll(lineActions);
+
+        int contentLeft = leftMargin + SCROLL_BTN_WIDTH + 4;
+        int contentRight = width - rightMargin - SCROLL_BTN_WIDTH - 4;
+        if (contentRight - contentLeft < widestButton(items)) {
+            // 极端窄窗口：内容区放不下任何一个按钮，此时显示滚动按钮必然重叠，改为平铺（按钮可能超出屏幕右边缘）
+            rowScrollIndex = 0;
+            int x = leftMargin;
+            for (ButtonWidget b : items) { b.visible = true; b.setPosition(x, rowBtnY); x += b.getWidth() + gap; }
+            return;
+        }
+
+        PagedRowInfo info = layoutPagedRow(items, splitIndex, rowScrollIndex, contentLeft, contentRight, gap, splitGap, rowBtnY);
+        rowScrollIndex = info.start();
+        final int lastIndex = items.size() - 1;
+
+        rowScrollLeft = ButtonWidget.builder(Text.literal("◀"), b -> {
+            rowScrollIndex = Math.max(0, rowScrollIndex - 1);
+            refreshTopPanel();
+        }).dimensions(leftMargin, rowBtnY, SCROLL_BTN_WIDTH, 20).build();
+        rowScrollLeft.active = info.start() > 0;
+        this.addDrawableChild(rowScrollLeft);
+        rowScrollRight = ButtonWidget.builder(Text.literal("▶"), b -> {
+            rowScrollIndex = Math.min(lastIndex, rowScrollIndex + 1);
+            refreshTopPanel();
+        }).dimensions(width - rightMargin - SCROLL_BTN_WIDTH, rowBtnY, SCROLL_BTN_WIDTH, 20).build();
+        rowScrollRight.active = info.lastShown() < lastIndex;
+        this.addDrawableChild(rowScrollRight);
+    }
+
+    /** 一行按钮按固定间隔排列后的总宽度（0 个按钮时为 0） */
+    private static int rowWidth(List<ButtonWidget> buttons, int gap) {
+        if (buttons.isEmpty()) return 0;
+        int w = gap * (buttons.size() - 1);
+        for (ButtonWidget b : buttons) w += b.getWidth();
+        return w;
+    }
+
+    /** 一行中单个按钮的最大宽度 */
+    private static int widestButton(List<ButtonWidget> buttons) {
+        int w = 0;
+        for (ButtonWidget b : buttons) w = Math.max(w, b.getWidth());
+        return w;
+    }
+
+    /**
+     * 按给定顺序收集其中当前可见的按钮。
+     *
+     * <p>排版时会按需设置 {@code visible}（分页隐藏放不下的按钮），因此必须先把本就应当隐藏的按钮
+     * 排除在外——否则它会被排版逻辑重新置为可见（例如非 sign 方块上的「设置」按钮）。
+     */
+    private static void addVisible(List<ButtonWidget> target, ButtonWidget... buttons) {
+        for (ButtonWidget b : buttons) {
+            if (b.visible) target.add(b);
+        }
+    }
+
+    /**
+     * 按索引分页摆放一行按钮：从第 {@code index} 个开始向右依次排列，只保留完整落在
+     * [{@code contentLeft}, {@code contentRight}] 内的按钮可见，其余一律隐藏。
+     *
+     * <p>隐藏而非整体平移，是滚动按钮不被内容压住的关键：滚动按钮占用了内容区两侧的位置，
+     * 溢出的按钮若继续绘制就会与它们重叠。调用方需保证内容区至少能容纳最宽的按钮，
+     * 因此本页第一个按钮必定显示。
+     *
+     * @param splitIndex 两组内容之间的间隔索引（间隔取 {@code splitGap}），没有分组时传 -1
+     * @return 本页实际显示的索引区间
+     */
+    private PagedRowInfo layoutPagedRow(List<ButtonWidget> items, int splitIndex, int index,
+                                        int contentLeft, int contentRight, int gap, int splitGap, int rowY) {
+        int start = Math.max(0, Math.min(index, items.size() - 1));
+        int x = contentLeft;
+        int lastShown = start - 1;
+        for (int i = start; i < items.size(); i++) {
+            if (i > start) x += (i == splitIndex) ? splitGap : gap;
+            ButtonWidget b = items.get(i);
+            if (i > start && x + b.getWidth() > contentRight) break;
+            b.visible = true;
+            b.setPosition(x, rowY);
+            x += b.getWidth();
+            lastShown = i;
+        }
+        for (int i = 0; i < items.size(); i++) {
+            if (i < start || i > lastShown) items.get(i).visible = false;
+        }
+        return new PagedRowInfo(start, lastShown);
+    }
+
+    /** 分页行本页显示的索引区间（start 为起始索引，lastShown 为最后一个显示的索引） */
+    private record PagedRowInfo(int start, int lastShown) {}
 
     private boolean computeOptionsRowVisible() {
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return false;
@@ -813,6 +1027,9 @@ public class TextDisplayScreen extends Screen {
         this.remove(underlineButton); this.remove(shadowButton); this.remove(hAlignButton); this.remove(vAlignButton);
         this.remove(clearFormatButton);
         this.remove(outlineButton); this.remove(outlineColorButton);
+        this.remove(fontVanillaButton); this.remove(fontAbcButton);
+        if (bottomRowScrollLeft != null) { this.remove(bottomRowScrollLeft); bottomRowScrollLeft = null; }
+        if (bottomRowScrollRight != null) { this.remove(bottomRowScrollRight); bottomRowScrollRight = null; }
         if (preciseInputField != null) this.remove(preciseInputField);
         if (backButton != null) this.remove(backButton);
         if (presetNameField != null) this.remove(presetNameField);
@@ -826,7 +1043,7 @@ public class TextDisplayScreen extends Screen {
         for (ButtonWidget b : new ButtonWidget[]{xButton, yButton, zButton, rxButton, ryButton, rzButton,
                 sxButton, syButton, szButton, fontSizeButton, colorButton, boldButton, italicButton,
                 underlineButton, shadowButton, hAlignButton, vAlignButton, clearFormatButton,
-                outlineButton, outlineColorButton}) {
+                outlineButton, outlineColorButton, fontVanillaButton, fontAbcButton}) {
             b.visible = false;
         }
 
@@ -855,44 +1072,81 @@ public class TextDisplayScreen extends Screen {
 
     private void addBottomWidgets() {
         int lh = (panelBottomHeight - 10) / 2;
-        int y1 = panelBottomY + 5, y2 = panelBottomY + 5 + lh, cx = panelBottomX + 5;
+        int y1 = panelBottomY + 5, y2 = panelBottomY + 5 + lh;
         // 缩短输入框，为右侧当前值状态留出空间
         textField.setWidth(panelBottomWidth - 10 - INFO_PANEL_WIDTH);
-        textField.setPosition(cx, y1);
+        textField.setPosition(panelBottomX + 5, y1);
         this.addDrawableChild(textField);
-        cx = panelBottomX + 5;
+        // 控件按分类收集（列表顺序即从左到右顺序），位置与溢出滚动统一由 layoutBottomControlRow 处理
+        List<ButtonWidget> row = new ArrayList<>();
         switch (activeCategory) {
-            case POSITION -> {
-                xButton.setPosition(cx, y2); xButton.visible = true; this.addDrawableChild(xButton); cx += BTN_SIZE + BTN_GAP;
-                yButton.setPosition(cx, y2); yButton.visible = true; this.addDrawableChild(yButton); cx += BTN_SIZE + BTN_GAP;
-                zButton.setPosition(cx, y2); zButton.visible = true; this.addDrawableChild(zButton);
-            }
-            case ROTATION -> {
-                rxButton.setPosition(cx, y2); rxButton.visible = true; this.addDrawableChild(rxButton); cx += ROT_BTN_WIDTH + BTN_GAP;
-                ryButton.setPosition(cx, y2); ryButton.visible = true; this.addDrawableChild(ryButton); cx += ROT_BTN_WIDTH + BTN_GAP;
-                rzButton.setPosition(cx, y2); rzButton.visible = true; this.addDrawableChild(rzButton);
-            }
-            case SCALE -> {
-                sxButton.setPosition(cx, y2); sxButton.visible = true; this.addDrawableChild(sxButton); cx += BTN_SIZE + BTN_GAP;
-                syButton.setPosition(cx, y2); syButton.visible = true; this.addDrawableChild(syButton); cx += BTN_SIZE + BTN_GAP;
-                szButton.setPosition(cx, y2); szButton.visible = true; this.addDrawableChild(szButton); cx += BTN_SIZE + BTN_GAP;
-                fontSizeButton.setPosition(cx, y2); fontSizeButton.visible = true; this.addDrawableChild(fontSizeButton);
-            }
+            case POSITION -> { row.add(xButton); row.add(yButton); row.add(zButton); }
+            case ROTATION -> { row.add(rxButton); row.add(ryButton); row.add(rzButton); }
+            case SCALE -> { row.add(sxButton); row.add(syButton); row.add(szButton); row.add(fontSizeButton); }
             case FONT -> {
-                colorButton.setPosition(cx, y2); colorButton.visible = true; this.addDrawableChild(colorButton); cx += BTN_SIZE + BTN_GAP;
-                boldButton.setPosition(cx, y2); boldButton.visible = true; this.addDrawableChild(boldButton); cx += BTN_SIZE + BTN_GAP;
-                italicButton.setPosition(cx, y2); italicButton.visible = true; this.addDrawableChild(italicButton); cx += BTN_SIZE + BTN_GAP;
-                underlineButton.setPosition(cx, y2); underlineButton.visible = true; this.addDrawableChild(underlineButton); cx += BTN_SIZE + BTN_GAP;
-                shadowButton.setPosition(cx, y2); shadowButton.visible = true; this.addDrawableChild(shadowButton); cx += BTN_SIZE + BTN_GAP;
-                outlineButton.setPosition(cx, y2); outlineButton.visible = true; this.addDrawableChild(outlineButton); cx += BTN_SIZE + BTN_GAP;
-                outlineColorButton.setPosition(cx, y2); outlineColorButton.visible = true; this.addDrawableChild(outlineColorButton); cx += BTN_SIZE + BTN_GAP;
-                clearFormatButton.setPosition(cx, y2); clearFormatButton.visible = true; this.addDrawableChild(clearFormatButton);
+                row.add(colorButton); row.add(boldButton); row.add(italicButton); row.add(underlineButton);
+                row.add(shadowButton); row.add(outlineButton); row.add(outlineColorButton); row.add(clearFormatButton);
             }
-            case ALIGN -> {
-                hAlignButton.setPosition(cx, y2); hAlignButton.visible = true; this.addDrawableChild(hAlignButton); cx += BTN_SIZE + 40 + BTN_GAP;
-                vAlignButton.setPosition(cx, y2); vAlignButton.visible = true; this.addDrawableChild(vAlignButton);
+            case ALIGN -> { row.add(hAlignButton); row.add(vAlignButton); }
+            case SETTINGS -> {
+                // 全局字体设置：与其它分类控件同一行，选中项在标签后打勾
+                updateFontSettingButtons();
+                row.add(fontVanillaButton); row.add(fontAbcButton);
             }
         }
+        layoutBottomControlRow(row, y2);
+    }
+
+    /**
+     * 底部属性面板控件行布局：控件靠左依次排列，右端留出 INFO_PANEL_WIDTH 作为当前值状态显示区。
+     *
+     * <p>放不下时按索引分页：只摆放并显示完整落在内容区内的控件，其余隐藏，行两端显示 ◀ ▶
+     * （与文本行标签行一致），因此滚动按钮不会与控件重叠。
+     */
+    private void layoutBottomControlRow(List<ButtonWidget> items, int rowY) {
+        if (bottomRowScrollLeft != null) { this.remove(bottomRowScrollLeft); bottomRowScrollLeft = null; }
+        if (bottomRowScrollRight != null) { this.remove(bottomRowScrollRight); bottomRowScrollRight = null; }
+        if (items.isEmpty()) { bottomRowScrollIndex = 0; return; }
+
+        for (ButtonWidget b : items) this.addDrawableChild(b);
+
+        final int leftMargin = panelBottomX + 5;
+        final int rightLimit = panelBottomX + panelBottomWidth - 5 - INFO_PANEL_WIDTH;
+
+        if (rowWidth(items, BTN_GAP) <= rightLimit - leftMargin) {
+            // 放得下：与改动前一致，从左依次排列
+            bottomRowScrollIndex = 0;
+            int x = leftMargin;
+            for (ButtonWidget b : items) { b.visible = true; b.setPosition(x, rowY); x += b.getWidth() + BTN_GAP; }
+            return;
+        }
+
+        int contentLeft = leftMargin + SCROLL_BTN_WIDTH + 4;
+        int contentRight = rightLimit - SCROLL_BTN_WIDTH - 4;
+        if (contentRight - contentLeft < widestButton(items)) {
+            // 极端窄窗口：内容区放不下任何一个控件，此时显示滚动按钮必然重叠，改为平铺
+            bottomRowScrollIndex = 0;
+            int x = leftMargin;
+            for (ButtonWidget b : items) { b.visible = true; b.setPosition(x, rowY); x += b.getWidth() + BTN_GAP; }
+            return;
+        }
+
+        PagedRowInfo info = layoutPagedRow(items, -1, bottomRowScrollIndex, contentLeft, contentRight, BTN_GAP, BTN_GAP, rowY);
+        bottomRowScrollIndex = info.start();
+        final int lastIndex = items.size() - 1;
+
+        bottomRowScrollLeft = ButtonWidget.builder(Text.literal("◀"), b -> {
+            bottomRowScrollIndex = Math.max(0, bottomRowScrollIndex - 1);
+            refreshBottomPanel();
+        }).dimensions(leftMargin, rowY, SCROLL_BTN_WIDTH, 20).build();
+        bottomRowScrollLeft.active = info.start() > 0;
+        this.addDrawableChild(bottomRowScrollLeft);
+        bottomRowScrollRight = ButtonWidget.builder(Text.literal("▶"), b -> {
+            bottomRowScrollIndex = Math.min(lastIndex, bottomRowScrollIndex + 1);
+            refreshBottomPanel();
+        }).dimensions(rightLimit - SCROLL_BTN_WIDTH, rowY, SCROLL_BTN_WIDTH, 20).build();
+        bottomRowScrollRight.active = info.lastShown() < lastIndex;
+        this.addDrawableChild(bottomRowScrollRight);
     }
 
     private void addPreciseInputWidgets() {
@@ -1183,6 +1437,15 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        // 图案与字体选择浮层打开时，隐藏底层文本编辑界面：不绘制任何面板/控件，
+        // 并把世界中的编辑高亮与拖拽手柄一并隐藏（置 -1），只渲染浮层
+        if (PatternAndFontOverlay.isVisible) {
+            blockEntity.setEditingLineIndex(-1);
+            blockEntity.setEditingGizmoMode(-1);
+            PatternAndFontOverlay.render(context, mouseX, mouseY);
+            return;
+        }
+
         blockEntity.setEditingLineIndex(selectedIndex);
         blockEntity.setEditingGizmoMode(currentGizmoMode());
 
@@ -1278,6 +1541,9 @@ public class TextDisplayScreen extends Screen {
             if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击打开色盘"));
             if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
             if (patternButton != null && patternButton.visible && patternButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("图案", "打开图案与字体选择界面", "点击「插入」把图案/字体写入当前文本行"));
+            if (settingsButton != null && settingsButton.visible && settingsButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("设置", "点击打开「设置」属性面板", "面板内为全局字体设置：原版字体 / ABC字体"));
+            if (fontVanillaButton != null && fontVanillaButton.visible && fontVanillaButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("原版字体", "全局字体设置为原版字体", "对新放置的标识方块生效"));
+            if (fontAbcButton != null && fontAbcButton.visible && fontAbcButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("ABC字体", "全局字体设置为 ABC 交通字体", "对新放置的标识方块生效"));
             if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));
             if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转", "点击显示 RX/RY/RZ 旋转按钮", "可在世界中拖拽圆环旋转（Shift/Alt 调整步长）"));
             if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放", "点击显示 SX/SY/SZ 缩放按钮", "可拖拽绿框角点等比缩放、边点单轴缩放（Shift/Alt 调整步长）"));
@@ -1288,11 +1554,6 @@ public class TextDisplayScreen extends Screen {
             if (deleteLineButton != null && deleteLineButton.visible && deleteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("删除", "删除该文本行"));
             if (formatPainterButton != null && formatPainterButton.visible && formatPainterButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("格式刷", "将颜色/对齐/加粗/斜体/下划线/阴影/字号", "复制到另一文本行（不含文字、位移、旋转）"));
             if (!tips.isEmpty()) drawTooltip(context, mouseX, mouseY, tips);
-        }
-
-        // 图案与字体选择浮层覆盖整个屏幕，最后绘制以保证在最上层
-        if (PatternAndFontOverlay.isVisible) {
-            PatternAndFontOverlay.render(context, mouseX, mouseY);
         }
     }
 

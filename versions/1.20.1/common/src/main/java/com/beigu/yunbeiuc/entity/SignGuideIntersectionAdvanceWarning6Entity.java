@@ -65,13 +65,13 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
             float text2X = direction2 == SignTurnDirection.RIGHT ? -6f : 6f;
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", logo1X, 6f, 0.4f));
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", logo2X, -6f, 0.4f));
-            lines.add(SignTextLinesHelper.centered("大厂", text1X, 6f, 0.035f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("燕郊", text2X, -6f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("大厂", text1X, 6f, 0.035f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("燕郊", text2X, -6f, 0.035f, 0xFFFFFF, "a"));
         } else {
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -9f, -3f, 0.4f));
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", 9f, -3f, 0.4f));
-            lines.add(SignTextLinesHelper.centered("东菀", -9f, 6f, 0.035f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("深圳", 9f, 6f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("东菀", -9f, 6f, 0.035f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("深圳", 9f, 6f, 0.035f, 0xFFFFFF, "a"));
         }
         setTextLines(lines);
     }

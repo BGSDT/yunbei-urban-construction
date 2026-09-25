@@ -44,9 +44,9 @@ public class SignExpresswayEntranceAdvance7Entity extends CustomSignBlockEntity 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("九水路", 0f, 8f, 0.035f, 0x2D9B47));
-        lines.add(SignTextLinesHelper.centered("李沧", -7f, -2f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("崂山", 7f, -2f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("九水路", 0f, 8f, 0.035f, 0x2D9B47, "a"));
+        lines.add(SignTextLinesHelper.centered("李沧", -7f, -2f, 0.035f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("崂山", 7f, -2f, 0.035f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

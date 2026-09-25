@@ -13,30 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 图案与字体选择界面的 UI 渲染与交互组合入口
+ * 图案与字体选择器 — 海燕蓝主题 UI
  *
- * <p>界面只保留三个内容：主页、图案、字体。渲染在 {@link TextDisplayScreen} 之上，
- * 由该屏幕转发渲染与鼠标/键盘事件。
+ * <p>界面结构：左侧导航栏（卡片分组式，可收起）+ 右侧内容区。
  *
  * @see PatternRegistry
  * @see SidebarState
- * @see YunbeiUCIntegration
  * @see HomepageRenderer
  */
 public final class PatternAndFontOverlay {
 
-    // ==================== 数据类 ====================
+    // ==================== 数据模型 ====================
 
     public enum FilterMode {
-        /** 白名单：仅保留列表中的文件名 */
         WHITELIST,
-        /** 黑名单：排除列表中的文件名 */
         BLACKLIST,
-        /** 前缀白名单：仅保留以列表中任一前缀开头的文件名 */
         PREFIX,
-        /** 前缀黑名单：排除以列表中任一前缀开头的文件名 */
         PREFIX_EXCLUDE,
-        /** 不过滤 */
         NONE
     }
 
@@ -62,9 +55,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /**
-     * 字体条目。
-     */
     public static class FontItem {
         public final String fontId;
         public final Text displayName;
@@ -75,9 +65,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /**
-     * H4 级分区，承载一组图案/字体的展示配置。
-     */
     public static class H4Section {
         public final Text title;
         public final Text description;
@@ -91,8 +78,16 @@ public final class PatternAndFontOverlay {
         public int activeStyleIndex = 0;
         public boolean isExpanded = true;
 
+        /** 子分区（树形嵌套，父分区只作容器、可整体收起；与 useStyles 的标签切换不同） */
+        public boolean useChildSections = false;
+        public final List<H4Section> childSections = new ArrayList<>();
+
         public FilterMode extFilterMode = FilterMode.NONE;
         public final List<String> extFilterList = new ArrayList<>();
+        /** 附加排除前缀：主过滤器通过后，文件名命中任一前缀即剔除（默认空，不影响原有过滤行为） */
+        public final List<String> extExcludePrefixes = new ArrayList<>();
+        /** 附加精确排除：主过滤器通过后，文件名与之完全相同即剔除（默认空） */
+        public final List<String> extExcludeNames = new ArrayList<>();
 
         public int activeTabIndex = 0;
         public final java.util.Map<String, List<Identifier>> cachedTextures = new java.util.HashMap<>();
@@ -127,6 +122,17 @@ public final class PatternAndFontOverlay {
             return this;
         }
 
+        /** 开启子分区模式：本分区作为容器，内容全部由 {@link #addChildSection} 添加的子分区承载。 */
+        public H4Section enableChildSections() {
+            this.useChildSections = true;
+            return this;
+        }
+
+        public H4Section addChildSection(H4Section child) {
+            this.childSections.add(child);
+            return this;
+        }
+
         public H4Section addStyle(H4Section styleSection) {
             this.subSections.add(styleSection);
             return this;
@@ -136,6 +142,20 @@ public final class PatternAndFontOverlay {
             this.extFilterMode = mode;
             this.extFilterList.clear();
             for (String ext : exts) this.extFilterList.add(ext);
+            return this;
+        }
+
+        /** 在主过滤器之上追加排除前缀（例如"sign_guide 全部，但去掉 sign_guide_roadside_facility"）。 */
+        public H4Section setExtensionExclude(String... prefixes) {
+            this.extExcludePrefixes.clear();
+            for (String prefix : prefixes) this.extExcludePrefixes.add(prefix);
+            return this;
+        }
+
+        /** 在主过滤器之上追加精确排除的文件名（含扩展名），用于剔除已归入其它分类的素材。 */
+        public H4Section setExtensionExcludeNames(String... fileNames) {
+            this.extExcludeNames.clear();
+            for (String fileName : fileNames) this.extExcludeNames.add(fileName);
             return this;
         }
 
@@ -170,9 +190,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /**
-     * H3 级分类。
-     */
     public static class H3Category {
         public final Text title;
         public Text headerText = null;
@@ -195,9 +212,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /**
-     * H2 级分类。
-     */
     public static class H2Category {
         public final Text title;
         public final List<H3Category> subCategories = new ArrayList<>();
@@ -213,59 +227,37 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    // ==================== 公开状态字段 ====================
+    // ==================== 全局状态 ====================
 
-    /** 分类注册列表。 */
     public static final List<H2Category> REGISTRY = new ArrayList<>();
 
-    /** 当前选中的 H2 分类。 */
     public static H2Category selectedH2 = null;
-    /** 当前选中的 H3 分类。 */
     public static H3Category selectedH3 = null;
 
-    /** 浮层是否可见。 */
     public static boolean isVisible = false;
-    /** 主区域滚动位置。 */
     public static double scrollY = 0;
-    /** 主区域最大滚动位置。 */
     public static double maxScrollY = 0;
 
-    /** 侧边栏滚动位置。 */
     public static double sidebarScrollY = 0;
-    /** 侧边栏最大滚动位置。 */
     public static double maxSidebarScrollY = 0;
 
-    /** 主滚动条是否正在拖动。 */
     public static boolean isDraggingMainScrollbar = false;
-    /** 侧边栏滚动条是否正在拖动。 */
     public static boolean isDraggingSidebarScrollbar = false;
 
-    /** 拖动起始鼠标 Y 坐标。 */
     public static double dragStartMouseY = 0;
-    /** 拖动起始主区域滚动位置。 */
     public static double dragStartScrollY = 0;
-    /** 拖动起始侧边栏滚动位置。 */
     public static double dragStartSidebarScrollY = 0;
 
-    /** 主页是否选中。 */
     public static boolean isHomeSelected = false;
 
-    /** 侧边栏选中索引。 */
-    public static int sidebarSelection = 0;
-    /** 侧边栏顶层项：无。 */
-    public static final int SIDEBAR_TOP_NONE = SidebarState.SIDEBAR_NONE;
-    /** 侧边栏顶层项：主页。 */
-    public static final int SIDEBAR_TOP_HOME = SidebarState.SIDEBAR_HOME;
+    public static int navSelection = 0;
+    public static final int NAV_TOP_NONE = SidebarState.NAV_NONE;
+    public static final int NAV_TOP_HOME = SidebarState.NAV_HOME;
 
-    /** 注册中心数据是否已加载。 */
     public static boolean isDataLoaded = false;
 
-    // ==================== 互斥逻辑转发 ====================
+    // ==================== 导航逻辑代理 ====================
 
-    /**
-     * 清除注册表数据，准备重新加载。
-     * <p>在资源包刷新时调用，清空所有缓存数据以便重新构建。
-     */
     public static void resetForReload() {
         REGISTRY.clear();
         isDataLoaded = false;
@@ -273,35 +265,19 @@ public final class PatternAndFontOverlay {
         selectedH3 = null;
     }
 
-    /**
-     * 关闭浮层并清理目标界面引用。
-     */
     public static void closeOverlay() {
         isVisible = false;
         targetScreen = null;
     }
 
-    /**
-     * 选中侧边栏顶层项。
-     *
-     * @param which 顶层项索引
-     */
     public static void selectSidebarTop(int which) {
-        SidebarState.selectSidebarTop(which);
+        SidebarState.selectNavTop(which);
     }
 
-    /**
-     * 清除侧边栏顶层选中状态。
-     */
     public static void clearSidebarTop() {
-        SidebarState.clearSidebarTop();
+        SidebarState.clearNavTop();
     }
 
-    /**
-     * 当前选中的 H3 是否为「云北城建内置」插入方式说明页。
-     *
-     * @return 是则返回 {@code true}
-     */
     public static boolean isYunbeiucBuiltinSelected() {
         if (selectedH3 == null) return false;
         String key = Text.translatable("yunbeiuc.gui.categories.yunbeiuc_builtin").getString();
@@ -310,409 +286,535 @@ public final class PatternAndFontOverlay {
 
     // ==================== 主渲染入口 ====================
 
-    /**
-     * 渲染图案与字体选择浮层。
-     *
-     * @param context 绘制上下文
-     * @param mouseX 鼠标 X 坐标
-     * @param mouseY 鼠标 Y 坐标
-     */
-    public static void render(DrawContext context, int mouseX, int mouseY) {
+    public static void render(DrawContext ctx, int mouseX, int mouseY) {
         if (!isVisible) return;
 
         YunbeiUCIntegration.clearHovered();
-        // 每帧清空悬停 URL，防止残留
         clearLastHoveredUrl();
 
-        int width = LayoutHelper.getScreenWidth();
-        int height = LayoutHelper.getScreenHeight();
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        int mainWidth = width - UIConstants.SIDEBAR_WIDTH;
+        int winW = LayoutHelper.getScreenWidth();
+        int winH = LayoutHelper.getScreenHeight();
+        TextRenderer tr = MinecraftClient.getInstance().textRenderer;
+        int navW = SidebarState.getEffectiveWidth();
+        int paneW = winW - navW;
 
-        int scrollWindowStartY = UIConstants.HEADER_HEIGHT + 1;
-        int scrollWindowEndY = height - UIConstants.FOOTER_HEIGHT;
-        int scrollWindowHeight = scrollWindowEndY - scrollWindowStartY;
-        int sidebarScrollWindowHeight = height - UIConstants.HEADER_HEIGHT - UIConstants.FOOTER_HEIGHT;
+        int clipTop = UIConstants.TOP_BAR_HEIGHT + 1;
+        int clipBottom = winH - UIConstants.BOTTOM_BAR_HEIGHT;
+        int clipHeight = clipBottom - clipTop;
+        int navClipH = winH - UIConstants.TOP_BAR_HEIGHT - UIConstants.BOTTOM_BAR_HEIGHT;
 
         PatternRegistry.registerBuiltInPatterns();
 
-        // 防御性自愈
-        SidebarState.enforceSidebarMutualExclusion();
+        SidebarState.enforceNavMutualExclusion();
 
-        updateScrollValues(textRenderer, mainWidth, sidebarScrollWindowHeight, scrollWindowHeight);
-        handleScrollbarDragging(mouseX, mouseY, scrollWindowHeight, sidebarScrollWindowHeight);
+        refreshScrollBounds(tr, paneW, navClipH, clipHeight);
+        processScrollbarDrag(mouseY, clipHeight, navClipH);
 
-        context.getMatrices().push();
-        context.getMatrices().translate(0.0f, 0.0f, UIConstants.LAYER_Z_OFFSET);
+        ctx.getMatrices().push();
+        ctx.getMatrices().translate(0.0f, 0.0f, UIConstants.Z_LAYER);
 
-        renderSidebar(context, textRenderer, mouseX, mouseY, sidebarScrollWindowHeight);
-        renderMainArea(context, textRenderer, mouseX, mouseY, width, height, mainWidth, scrollWindowStartY, scrollWindowEndY);
+        paintNavPanel(ctx, tr, mouseX, mouseY, navW, navClipH);
+        paintContentPane(ctx, tr, mouseX, mouseY, winW, winH, paneW, clipTop, clipBottom);
 
-        renderReturnButton(context, textRenderer, mouseX, mouseY, width, mainWidth, height);
+        // 内容区边框（与侧边栏同风格；左边界与侧边栏右边框共用，不重复绘制）
+        ctx.fill(navW, 0, winW, 1, UIConstants.CLR_CONTENT_BORDER);
+        ctx.fill(navW, winH - 1, winW, winH, UIConstants.CLR_CONTENT_BORDER);
+        ctx.fill(winW - 1, 0, winW, winH, UIConstants.CLR_CONTENT_BORDER);
 
-        context.getMatrices().pop();
+        paintCloseButton(ctx, tr, mouseX, mouseY, winW, paneW, winH);
+
+        ctx.getMatrices().pop();
     }
 
-    // 更新滚动位置最大值与钳位
-    private static void updateScrollValues(TextRenderer textRenderer, int mainWidth, int sidebarScrollWindowHeight, int scrollWindowHeight) {
-        // 侧边栏顶层固定 1 项（主页）
-        int totalSidebarHeight = UIConstants.HEADER_HEIGHT + 12
-                + LayoutHelper.getSidebarTopItemHeight(Text.translatable("yunbeiuc.gui.sidebar.home"), textRenderer);
+    private static void refreshScrollBounds(TextRenderer tr, int paneW, int navClipH, int clipHeight) {
+        int totalNavH = UIConstants.TOP_BAR_HEIGHT + UIConstants.NAV_PAD
+                + LayoutHelper.getHomeCardHeight() + UIConstants.CARD_GAP;
         for (H2Category h2 : REGISTRY) {
-            String h2Prefix = h2.isExpanded ? "[-] " : "[+] ";
-            totalSidebarHeight += LayoutHelper.getCategoryHeight(h2.title, h2Prefix, 12, textRenderer);
-            if (h2.isExpanded) {
-                for (H3Category h3 : h2.subCategories) {
-                    totalSidebarHeight += LayoutHelper.calculateH3Height(h3, 24, textRenderer);
-                }
-            }
+            totalNavH += LayoutHelper.calculateH2CardHeight(h2, tr) + UIConstants.CARD_GAP;
         }
-        maxSidebarScrollY = Math.max(0, totalSidebarHeight - sidebarScrollWindowHeight);
+        totalNavH += UIConstants.NAV_PAD;
+        maxSidebarScrollY = Math.max(0, totalNavH - navClipH);
         sidebarScrollY = MathHelper.clamp(sidebarScrollY, 0, maxSidebarScrollY);
 
-        int totalMainHeight = LayoutHelper.getTotalMainContentHeight(mainWidth, textRenderer);
-        maxScrollY = Math.max(0, totalMainHeight - scrollWindowHeight);
+        int totalPaneH = LayoutHelper.getTotalMainContentHeight(paneW, tr);
+        maxScrollY = Math.max(0, totalPaneH - clipHeight);
         scrollY = MathHelper.clamp(scrollY, 0, maxScrollY);
     }
 
-    // 处理滚动条拖动
-    private static void handleScrollbarDragging(double mouseX, double mouseY, int scrollWindowHeight, int sidebarScrollWindowHeight) {
+    private static void processScrollbarDrag(double mouseY, int clipHeight, int navClipH) {
         if (isDraggingMainScrollbar && maxScrollY > 0) {
-            float trackRatio = (float) scrollWindowHeight / (float) (scrollWindowHeight + maxScrollY);
-            int thumbHeight = Math.max(UIConstants.SCROLLBAR_MIN_HEIGHT, (int) (scrollWindowHeight * trackRatio));
-            int trackRange = scrollWindowHeight - thumbHeight;
-            if (trackRange > 0) {
-                double scrollDelta = ((mouseY - dragStartMouseY) / trackRange) * maxScrollY;
-                scrollY = MathHelper.clamp(dragStartScrollY + scrollDelta, 0, maxScrollY);
+            float ratio = (float) clipHeight / (float) (clipHeight + maxScrollY);
+            int thumb = Math.max(UIConstants.THUMB_MIN_SIZE, (int) (clipHeight * ratio));
+            int track = clipHeight - thumb;
+            if (track > 0) {
+                double delta = ((mouseY - dragStartMouseY) / track) * maxScrollY;
+                scrollY = MathHelper.clamp(dragStartScrollY + delta, 0, maxScrollY);
             }
         }
 
         if (isDraggingSidebarScrollbar && maxSidebarScrollY > 0) {
-            float trackRatio = (float) sidebarScrollWindowHeight / (float) (sidebarScrollWindowHeight + maxSidebarScrollY);
-            int thumbHeight = Math.max(UIConstants.SCROLLBAR_MIN_HEIGHT, (int) (sidebarScrollWindowHeight * trackRatio));
-            int trackRange = sidebarScrollWindowHeight - thumbHeight;
-            if (trackRange > 0) {
-                double scrollDelta = ((mouseY - dragStartMouseY) / trackRange) * maxSidebarScrollY;
-                sidebarScrollY = MathHelper.clamp(dragStartSidebarScrollY + scrollDelta, 0, maxSidebarScrollY);
+            float ratio = (float) navClipH / (float) (navClipH + maxSidebarScrollY);
+            int thumb = Math.max(UIConstants.THUMB_MIN_SIZE, (int) (navClipH * ratio));
+            int track = navClipH - thumb;
+            if (track > 0) {
+                double delta = ((mouseY - dragStartMouseY) / track) * maxSidebarScrollY;
+                sidebarScrollY = MathHelper.clamp(dragStartSidebarScrollY + delta, 0, maxSidebarScrollY);
             }
         }
     }
 
-    // 渲染侧边栏
-    private static void renderSidebar(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY, int sidebarScrollWindowHeight) {
-        context.fill(0, 0, UIConstants.SIDEBAR_WIDTH, LayoutHelper.getScreenHeight(), UIConstants.COLOR_SIDEBAR_BG);
-        context.fill(0, 0, UIConstants.SIDEBAR_WIDTH, UIConstants.HEADER_HEIGHT, UIConstants.COLOR_SIDEBAR_HEADER);
-        context.fill(0, UIConstants.HEADER_HEIGHT - 1, UIConstants.SIDEBAR_WIDTH, UIConstants.HEADER_HEIGHT, UIConstants.COLOR_SIDEBAR_BORDER);
+    // ==================== 导航栏渲染（卡片分组式） ====================
 
-        Text sidebarTitle = Text.translatable("yunbeiuc.gui.sidebar.title");
-        int titleWidth = textRenderer.getWidth(sidebarTitle);
-        context.drawText(textRenderer, sidebarTitle, (UIConstants.SIDEBAR_WIDTH - titleWidth) / 2, (UIConstants.HEADER_HEIGHT - 8) / 2, 0xFFFFFFFF, false);
+    private static void paintNavPanel(DrawContext ctx, TextRenderer tr, int mx, int my, int navW, int clipH) {
+        int winH = LayoutHelper.getScreenHeight();
 
-        context.enableScissor(0, UIConstants.HEADER_HEIGHT, UIConstants.SIDEBAR_WIDTH, LayoutHelper.getScreenHeight() - UIConstants.HEADER_HEIGHT);
+        // 背景
+        ctx.fill(0, 0, navW, winH, UIConstants.CLR_NAV_BG);
+        ctx.fill(0, 0, navW, UIConstants.TOP_BAR_HEIGHT, UIConstants.CLR_NAV_TOPBAR);
+        ctx.fill(0, UIConstants.TOP_BAR_HEIGHT - 1, navW, UIConstants.TOP_BAR_HEIGHT, UIConstants.CLR_NAV_DIVIDER);
 
-        int currentY = UIConstants.HEADER_HEIGHT + 12 - (int) sidebarScrollY;
+        // 顶栏：收起按钮 + 标题
+        boolean isToggleHover = LayoutHelper.isMouseInRect(mx, my, 4, 5, 22, 22);
+        if (isToggleHover) {
+            ctx.fill(4, 5, 26, 27, UIConstants.CLR_NAV_ITEM_HOVER);
+        }
+        drawHamburger(ctx, 9, 10, UIConstants.CLR_NAVTextPri);
 
-        // 主页
-        Text homeText = Text.translatable("yunbeiuc.gui.sidebar.home");
-        currentY = renderSidebarTopItem(context, textRenderer, mouseX, mouseY, homeText, currentY, isHomeSelected);
+        if (!SidebarState.isCollapsed()) {
+            Text navTitle = Text.translatable("yunbeiuc.gui.sidebar.title");
+            ctx.drawText(tr, navTitle, 34, (UIConstants.TOP_BAR_HEIGHT - 8) / 2, UIConstants.CLR_NAVTextPri, false);
+        }
 
-        // H2 分类
-        for (H2Category h2 : REGISTRY) {
-            String prefix = h2.isExpanded ? "[-] " : "[+] ";
-            int itemHeight = LayoutHelper.getCategoryHeight(h2.title, prefix, 12, textRenderer);
-            boolean hoverH2 = LayoutHelper.isMouseInRect(mouseX, mouseY, 0, currentY, UIConstants.SIDEBAR_WIDTH, itemHeight);
+        ctx.enableScissor(0, UIConstants.TOP_BAR_HEIGHT, navW, winH - UIConstants.BOTTOM_BAR_HEIGHT);
 
-            List<OrderedText> lines = textRenderer.wrapLines(Text.literal(prefix + h2.title.getString()), UIConstants.SIDEBAR_WIDTH - 20);
-            int textY = currentY + (itemHeight - lines.size() * 10) / 2 + 1;
+        int curY = UIConstants.TOP_BAR_HEIGHT + UIConstants.NAV_PAD - (int) sidebarScrollY;
 
-            for (int i = 0; i < lines.size(); i++) {
-                context.drawText(textRenderer, lines.get(i), 12, textY + i * 10, hoverH2 ? 0xFFFFFFFF : UIConstants.COLOR_H2_TEXT, true);
+        if (SidebarState.isCollapsed()) {
+            // ---- 收起模式：图标方块 ----
+            curY = paintCollapsedIcon(ctx, tr, mx, my, navW, curY, "\u2302", isHomeSelected);
+            for (H2Category h2 : REGISTRY) {
+                String abbr = getH2Abbreviation(h2);
+                boolean active = !isHomeSelected && selectedH2 == h2;
+                curY = paintCollapsedIcon(ctx, tr, mx, my, navW, curY, abbr, active);
             }
-            currentY += itemHeight;
+        } else {
+            // ---- 展开模式：主页卡片 ----
+            curY = paintHomeCard(ctx, tr, mx, my, navW, curY);
+            curY += UIConstants.CARD_GAP;
 
-            if (h2.isExpanded) {
-                for (H3Category h3 : h2.subCategories) {
-                    currentY = LayoutHelper.renderH3CategoryDynamic(context, textRenderer, mouseX, mouseY, h3, 24, currentY);
-                }
+            // ---- H2 分组卡片 ----
+            for (H2Category h2 : REGISTRY) {
+                curY = paintH2Card(ctx, tr, mx, my, navW, curY, h2);
+                curY += UIConstants.CARD_GAP;
             }
         }
 
-        context.disableScissor();
+        ctx.disableScissor();
 
-        LayoutHelper.renderScrollbar(context, 0, UIConstants.HEADER_HEIGHT, UIConstants.SIDEBAR_WIDTH,
-                sidebarScrollWindowHeight, sidebarScrollY, maxSidebarScrollY, sidebarScrollWindowHeight, mouseX, mouseY);
+        LayoutHelper.renderScrollbar(ctx, 0, UIConstants.TOP_BAR_HEIGHT, navW,
+                clipH, sidebarScrollY, maxSidebarScrollY, clipH, mx, my);
+
+        // 侧边栏边框：最后绘制，压在滚动条与内容之上
+        ctx.drawBorder(0, 0, navW, winH, UIConstants.CLR_NAV_BORDER);
     }
 
-    // 渲染侧边栏顶层项
-    private static int renderSidebarTopItem(DrawContext context, TextRenderer textRenderer,
-                                           double mouseX, double mouseY,
-                                           Text text, int currentY, boolean isSelected) {
-        int maxWidth = UIConstants.SIDEBAR_WIDTH - 24;
-        if (maxWidth < 20) maxWidth = 20;
-        List<OrderedText> lines = textRenderer.wrapLines(text, maxWidth);
-        int itemHeight = Math.max(UIConstants.DOC_LIST_ITEM_HEIGHT, lines.size() * 10 + 6);
+    // 汉堡图标
+    private static void drawHamburger(DrawContext ctx, int x, int y, int color) {
+        ctx.fill(x, y, x + 14, y + 2, color);
+        ctx.fill(x, y + 5, x + 14, y + 7, color);
+        ctx.fill(x, y + 10, x + 14, y + 12, color);
+    }
 
-        boolean isHover = LayoutHelper.isMouseInRect(mouseX, mouseY, 0, currentY, UIConstants.SIDEBAR_WIDTH, itemHeight);
+    // 主页卡片
+    private static int paintHomeCard(DrawContext ctx, TextRenderer tr,
+                                     int mx, int my, int navW, int curY) {
+        int x = UIConstants.NAV_PAD;
+        int w = navW - UIConstants.NAV_PAD * 2;
+        int h = UIConstants.CARD_HEADER_H;
+
+        boolean hov = LayoutHelper.isMouseInRect(mx, my, x, curY, w, h);
+        int bg = isHomeSelected ? UIConstants.CLR_NAVItemSelected
+                : (hov ? UIConstants.CLR_CARD_HEADER_BG_HOVER : UIConstants.CLR_CARD_HEADER_BG);
+        int border = isHomeSelected ? UIConstants.CLR_ACCENT : UIConstants.CLR_CARD_BORDER;
+
+        // 直角卡片：直接铺底 + 描边
+        ctx.fill(x, curY, x + w, curY + h, bg);
+        ctx.drawBorder(x, curY, w, h, border);
+
+        // 左侧强调竖条（选中态）
+        if (isHomeSelected) {
+            ctx.fill(x + 1, curY + 6, x + 1 + UIConstants.NAV_ACCENT_BAR_W, curY + h - 6,
+                    UIConstants.CLR_ACCENT);
+        }
+
+        int iconX = x + 12;
+        int iconY = curY + (h - 8) / 2;
+        // 房子图标（用像素块拼）
+        ctx.fill(iconX + 3, iconY, iconX + 5, iconY + 2, UIConstants.CLR_NAVTextPri);
+        ctx.fill(iconX + 1, iconY + 2, iconX + 7, iconY + 4, UIConstants.CLR_NAVTextPri);
+        ctx.fill(iconX + 1, iconY + 4, iconX + 7, iconY + 8, UIConstants.CLR_NAVTextPri);
+
+        Text label = Text.translatable("yunbeiuc.gui.sidebar.home");
+        int txtClr = isHomeSelected ? 0xFFFFFFFF : (hov ? UIConstants.CLR_NAVTextPri : UIConstants.CLR_NAVTextSec);
+        ctx.drawText(tr, label, iconX + 16, curY + (h - 8) / 2, txtClr, false);
+
+        return curY + h;
+    }
+
+    // H2 分组卡片
+    private static int paintH2Card(DrawContext ctx, TextRenderer tr,
+                                   int mx, int my, int navW, int curY, H2Category h2) {
+        int x = UIConstants.NAV_PAD;
+        int w = navW - UIConstants.NAV_PAD * 2;
+        int headerH = UIConstants.CARD_HEADER_H;
+
+        int totalH = LayoutHelper.calculateH2CardHeight(h2, tr);
+
+        // 卡片底（整卡背景，直角）
+        ctx.fill(x, curY, x + w, curY + totalH, UIConstants.CLR_CARD_BG);
+        ctx.drawBorder(x, curY, w, totalH, UIConstants.CLR_CARD_BORDER);
+
+        // 头部（单独一层底色，与整卡顶部对齐）
+        boolean headerHov = LayoutHelper.isMouseInRect(mx, my, x, curY, w, headerH);
+        int headerBg = headerHov ? UIConstants.CLR_CARD_HEADER_BG_HOVER : UIConstants.CLR_CARD_HEADER_BG;
+        ctx.fill(x + 1, curY + 1, x + w - 1, curY + headerH, headerBg);
+
+        // 箭头
+        String arrow = h2.isExpanded ? "\u25BE" : "\u25B8";
+        ctx.drawText(tr, arrow, x + 10, curY + (headerH - 8) / 2,
+                headerHov ? UIConstants.CLR_NAVTextPri : UIConstants.CLR_NAVTextSec, false);
+
+        // 标题
+        ctx.drawText(tr, h2.title.getString(), x + 24, curY + (headerH - 8) / 2,
+                UIConstants.CLR_NAVTextPri, false);
+
+        // 计数徽章
+        int count = h2.subCategories.size();
+        if (count > 0 && h2.isExpanded) {
+            String cs = String.valueOf(count);
+            int cw = tr.getWidth(cs) + 8;
+            int badgeX = x + w - cw - 10;
+            int badgeY = curY + (headerH - 14) / 2;
+            ctx.fill(badgeX, badgeY, badgeX + cw, badgeY + 14, 0x40FFFFFF);
+            ctx.drawText(tr, cs, badgeX + 4, badgeY + 3, UIConstants.CLR_NAVTextSec, false);
+        }
+
+        int bodyY = curY + headerH;
+
+        // 子项胶囊
+        if (h2.isExpanded && !h2.subCategories.isEmpty()) {
+            bodyY += UIConstants.CARD_INNER_TOP;
+            for (H3Category h3 : h2.subCategories) {
+                paintH3Pill(ctx, tr, mx, my, x, w, bodyY, h3);
+                bodyY += UIConstants.CARD_ITEM_H;
+            }
+        }
+
+        return curY + totalH;
+    }
+
+    // H3 胶囊项
+    private static void paintH3Pill(DrawContext ctx, TextRenderer tr,
+                                    int mx, int my, int cardX, int cardW, int y, H3Category h3) {
+        int inset = UIConstants.CARD_ITEM_INSET;
+        int px = cardX + inset;
+        int pw = cardW - inset * 2;
+        int ph = UIConstants.CARD_ITEM_H - 4;
+
+        boolean isSelected = !isHomeSelected && selectedH3 == h3;
+        boolean isHov = LayoutHelper.isMouseInRect(mx, my, px, y, pw, ph);
+
         if (isSelected) {
-            context.fill(0, currentY, UIConstants.SIDEBAR_WIDTH, currentY + itemHeight, UIConstants.COLOR_H3_BG_SELECTED);
+            ctx.fill(px, y, px + pw, y + ph, UIConstants.CLR_NAV_PILL_SEL);
+            // 左侧强调竖条
+            ctx.fill(px + 2, y + 5, px + 2 + UIConstants.NAV_ACCENT_BAR_W, y + ph - 5,
+                    UIConstants.CLR_ACCENT);
+        } else if (isHov) {
+            ctx.fill(px, y, px + pw, y + ph, UIConstants.CLR_NAV_PILL_HOVER);
         }
-        int textColor = isSelected ? 0xFFFFFFFF : (isHover ? 0xFFFFFFFF : UIConstants.COLOR_H3_TEXT);
-        int textY = currentY + (itemHeight - lines.size() * 10) / 2 + 1;
-        for (int i = 0; i < lines.size(); i++) {
-            context.drawText(textRenderer, lines.get(i), 12, textY + i * 10, textColor, false);
-        }
-        return currentY + itemHeight;
+
+        int txtClr = isSelected ? 0xFFFFFFFF
+                : (isHov ? UIConstants.CLR_NAVTextPri : UIConstants.CLR_NAVTextSec);
+        ctx.drawText(tr, h3.title.getString(), px + 12, y + (ph - 8) / 2, txtClr, false);
     }
 
-    // 渲染主区域
-    private static void renderMainArea(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY,
-                                       int width, int height, int mainWidth, int scrollWindowStartY, int scrollWindowEndY) {
-        context.fill(UIConstants.SIDEBAR_WIDTH, 0, width, height, UIConstants.COLOR_MAIN_BG);
-        context.fill(UIConstants.SIDEBAR_WIDTH, 0, width, UIConstants.HEADER_HEIGHT, UIConstants.COLOR_MAIN_HEADER);
-        context.fill(UIConstants.SIDEBAR_WIDTH, UIConstants.HEADER_HEIGHT, width, UIConstants.HEADER_HEIGHT + 1, UIConstants.COLOR_MAIN_BORDER);
+    // 收起模式图标方块
+    private static int paintCollapsedIcon(DrawContext ctx, TextRenderer tr,
+                                          int mx, int my, int navW, int curY,
+                                          String iconText, boolean isSelected) {
+        int btnSize = UIConstants.NAV_ICON_SIZE;
+        int btnX = (navW - btnSize) / 2;
+        int rowH = UIConstants.NAV_ICON_ROW_H;
 
-        Text currentTitle = isHomeSelected
+        boolean hov = LayoutHelper.isMouseInRect(mx, my, 0, curY, navW, rowH);
+        int bg = isSelected ? UIConstants.CLR_NAVItemSelected
+                : (hov ? UIConstants.CLR_CARD_HEADER_BG_HOVER : 0x00000000);
+        if (bg != 0x00000000) {
+            ctx.fill(btnX, curY + 3, btnX + btnSize, curY + 3 + btnSize, bg);
+        }
+
+        int iconClr = isSelected ? 0xFFFFFFFF : (hov ? UIConstants.CLR_NAVTextPri : UIConstants.CLR_NAVTextSec);
+        int iw = tr.getWidth(iconText);
+        ctx.drawText(tr, iconText, btnX + (btnSize - iw) / 2, curY + 3 + (btnSize - 8) / 2, iconClr, false);
+
+        return curY + rowH;
+    }
+
+    private static String getH2Abbreviation(H2Category h2) {
+        String title = h2.title.getString();
+        return title.length() >= 2 ? title.substring(0, 2) : title;
+    }
+
+    // ==================== 内容区渲染 ====================
+
+    private static void paintContentPane(DrawContext ctx, TextRenderer tr, int mx, int my,
+                                         int winW, int winH, int paneW, int clipTop, int clipBottom) {
+        int navW = SidebarState.getEffectiveWidth();
+
+        ctx.fill(navW, 0, winW, winH, UIConstants.CLR_CONTENT_BG);
+        ctx.fill(navW, 0, winW, UIConstants.TOP_BAR_HEIGHT, UIConstants.CLR_CONTENT_TOPBAR);
+        ctx.fill(navW, UIConstants.TOP_BAR_HEIGHT - 1, winW, UIConstants.TOP_BAR_HEIGHT, UIConstants.CLR_CONTENT_DIVIDER);
+
+        Text paneTitle = isHomeSelected
                 ? Text.translatable("yunbeiuc.gui.sidebar.home")
                 : (selectedH3 != null ? selectedH3.title : Text.literal(""));
-        int h2Width = textRenderer.getWidth(currentTitle);
-        context.drawTextWithShadow(textRenderer, currentTitle, UIConstants.SIDEBAR_WIDTH + (mainWidth - h2Width) / 2, (UIConstants.HEADER_HEIGHT - 8) / 2, 0xFFFFFFFF);
+        int titleW = tr.getWidth(paneTitle);
+        ctx.drawTextWithShadow(tr, paneTitle, navW + (paneW - titleW) / 2, (UIConstants.TOP_BAR_HEIGHT - 8) / 2, UIConstants.CLR_NAVTextPri);
 
-        context.enableScissor(UIConstants.SIDEBAR_WIDTH, scrollWindowStartY, width, scrollWindowEndY);
+        ctx.enableScissor(navW, clipTop, winW, clipBottom);
 
-        int contentStartY = scrollWindowStartY + 15 - (int) scrollY;
+        int contentY = clipTop + 15 - (int) scrollY;
 
         if (isHomeSelected) {
-            HomepageRenderer.render(context, textRenderer, mouseX, mouseY, mainWidth, contentStartY, scrollWindowStartY, scrollWindowEndY);
-        } else if (selectedH3 != null) {
+            HomepageRenderer.render(ctx, tr, mx, my, paneW, contentY, clipTop, clipBottom);
+        } else if (PatternAndFontOverlay.selectedH3 != null) {
             if (isYunbeiucBuiltinSelected()) {
-                YunbeiUCIntegration.render(context, textRenderer, width, height, mouseX, mouseY, UIConstants.SIDEBAR_WIDTH);
-                context.disableScissor();
+                YunbeiUCIntegration.render(ctx, tr, winW, winH, mx, my, navW);
+                ctx.disableScissor();
                 return;
             }
-            renderSectionContent(context, textRenderer, mouseX, mouseY, width, mainWidth, contentStartY, scrollWindowStartY, scrollWindowEndY);
+            paintSectionBody(ctx, tr, mx, my, winW, paneW, contentY, clipTop, clipBottom);
         }
 
-        context.disableScissor();
+        ctx.disableScissor();
 
-        LayoutHelper.renderScrollbar(context, UIConstants.SIDEBAR_WIDTH, scrollWindowStartY, width - UIConstants.SIDEBAR_WIDTH,
-                scrollWindowEndY - scrollWindowStartY, scrollY, maxScrollY, scrollWindowEndY - scrollWindowStartY, mouseX, mouseY);
+        LayoutHelper.renderScrollbar(ctx, navW, clipTop, winW - navW,
+                clipBottom - clipTop, scrollY, maxScrollY, clipBottom - clipTop, mx, my);
     }
 
-    // 渲染分区内容
-    private static void renderSectionContent(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY,
-                                             int width, int mainWidth, int contentStartY, int scrollWindowStartY, int scrollWindowEndY) {
-        int currentContentY = contentStartY;
+    // ==================== 分区内容渲染 ====================
+
+    private static void paintSectionBody(DrawContext ctx, TextRenderer tr, int mx, int my,
+                                         int winW, int paneW, int contentY, int clipTop, int clipBottom) {
+        int navW = SidebarState.getEffectiveWidth();
         H3Category h3 = selectedH3;
 
+        // 分类说明文字（整行蓝色底色条）
         if (h3.headerText != null) {
-            renderHeaderText(context, textRenderer, h3.headerText, mainWidth, currentContentY);
-            int lines = textRenderer.wrapLines(h3.headerText, mainWidth - 48).size();
-            currentContentY += lines * 12 + 16 + 15;
-        }
+            int descMaxW = paneW - 48;
+            List<OrderedText> wrapped = tr.wrapLines(h3.headerText, descMaxW);
+            int bannerH = wrapped.size() * 12 + 12;
+            int bannerX = navW + 16;
 
-        // 字体渲染警告框（与 headerText 性质相同，只在最顶部出现一次）
-        if (LayoutHelper.hasAnyFontSection(h3)) {
-            int warningBoxTopY = currentContentY + 8;
-            currentContentY = warningBoxTopY + renderWarningBox(context, textRenderer, mainWidth, warningBoxTopY,
-                    scrollWindowStartY, scrollWindowEndY);
-        }
-
-        for (H4Section section : h3.sections) {
-            H4Section effectiveSection = LayoutHelper.effective(section);
-
-            context.drawText(textRenderer, effectiveSection.title, UIConstants.SIDEBAR_WIDTH + 24, currentContentY, UIConstants.COLOR_SECTION_TITLE, false);
-            currentContentY += 12;
-
-            context.drawText(textRenderer, effectiveSection.description, UIConstants.SIDEBAR_WIDTH + 24, currentContentY, UIConstants.COLOR_DESC_TEXT, false);
-            List<OrderedText> descLines = textRenderer.wrapLines(effectiveSection.description, mainWidth - 48);
-            currentContentY += descLines.size() * 12 + 10;
-
-            // 子文件夹筛选按钮
-            if (section.useSubfolders && !section.subFolders.isEmpty()) {
-                renderFilterButtons(context, textRenderer, mouseX, mouseY, width, section.subFolders, section.activeTabIndex, currentContentY);
-                currentContentY += 20;
-            }
-
-            // 样式切换按钮
-            if (section.useStyles && !section.subSections.isEmpty()) {
-                List<SubFolderDef> styleTabs = new ArrayList<>();
-                for (H4Section child : section.subSections) {
-                    styleTabs.add(new SubFolderDef(child.title.getString(), child.title));
+            if (contentY + bannerH >= clipTop && contentY <= clipBottom) {
+                ctx.fill(bannerX, contentY, bannerX + descMaxW, contentY + bannerH, UIConstants.CLR_ACCENT);
+                for (int i = 0; i < wrapped.size(); i++) {
+                    ctx.drawText(tr, wrapped.get(i), bannerX + 8, contentY + 6 + i * 12, 0xFFFFFFFF, false);
                 }
-                renderFilterButtons(context, textRenderer, mouseX, mouseY, width, styleTabs, section.activeStyleIndex, currentContentY);
-                currentContentY += 20;
             }
-
-            if (!section.useSubfolders && !section.useStyles) {
-                currentContentY += 20;
-            }
-
-            currentContentY = renderSectionItems(context, textRenderer, mouseX, mouseY, mainWidth, scrollWindowStartY, scrollWindowEndY, effectiveSection, currentContentY);
-            currentContentY += 12;
+            contentY += bannerH + 16;
         }
-    }
 
-    // 渲染头部说明文本
-    private static void renderHeaderText(DrawContext context, TextRenderer textRenderer, Text headerText, int mainWidth, int currentY) {
-        int descWidth = mainWidth - 48;
-        List<OrderedText> wrappedLines = textRenderer.wrapLines(headerText, descWidth);
-        int totalDescHeight = wrappedLines.size() * 12 + 16;
+        // 遍历每个分区
+        for (int secIdx = 0; secIdx < h3.sections.size(); secIdx++) {
+            contentY = paintSectionNode(ctx, tr, mx, my, winW, paneW, clipTop, clipBottom,
+                    h3.sections.get(secIdx), contentY, 0);
 
-        context.fill(UIConstants.SIDEBAR_WIDTH + 20, currentY + 2, UIConstants.SIDEBAR_WIDTH + 28 + descWidth, currentY + 2 + totalDescHeight, UIConstants.COLOR_HEADER_BG_HELP);
-
-        for (int i = 0; i < wrappedLines.size(); i++) {
-            context.drawText(textRenderer, wrappedLines.get(i), UIConstants.SIDEBAR_WIDTH + 24, currentY + 10 + i * 12, UIConstants.COLOR_HEADER_TEXT, false);
+            // ---- 分区间隔线 ----
+            if (secIdx < h3.sections.size() - 1) {
+                contentY += 6;
+                if (contentY >= clipTop && contentY <= clipBottom) {
+                    ctx.fill(navW + 24, contentY, navW + paneW - 24, contentY + 1, UIConstants.CLR_CONTENT_DIVIDER);
+                }
+                contentY += 10;
+            } else {
+                contentY += 8;
+            }
         }
     }
 
     /**
-     * 渲染字体渲染兼容性警告框。
+     * 渲染单个分区（含其子分区），返回推进后的 contentY。
      *
-     * @param context 绘制上下文
-     * @param textRenderer 文本渲染器
-     * @param mainWidth 主区域宽度
-     * @param currentY 当前 Y 坐标
-     * @param scrollWindowStartY 滚动窗口起始 Y
-     * @param scrollWindowEndY 滚动窗口结束 Y
-     * @return 警告框总高度（含尾部间距）
+     * <p>分区标题行始终可点击收起；{@code useChildSections} 的分区自身不承载内容，
+     * 而是按 {@code indent} 逐层缩进渲染子分区，每个子分区各自独立折叠。
+     *
+     * @param indent 子分区缩进层级，顶层为 0
      */
-    private static int renderWarningBox(DrawContext context, TextRenderer textRenderer, int mainWidth, int currentY,
-                                       int scrollWindowStartY, int scrollWindowEndY) {
-        Text warningTitle = Text.translatable("yunbeiuc.gui.sections.font_rendering_warning.title");
-        Text warningText = Text.translatable("yunbeiuc.gui.sections.font_rendering_warning");
+    private static int paintSectionNode(DrawContext ctx, TextRenderer tr, int mx, int my,
+                                        int winW, int paneW, int clipTop, int clipBottom,
+                                        H4Section section, int contentY, int indent) {
+        int navW = SidebarState.getEffectiveWidth();
+        H4Section eff = LayoutHelper.effective(section);
+        int indentPx = indent * 14;
+        int secX = navW + 16 + indentPx;
+        int secMaxW = paneW - 32 - indentPx;
+        int titleY = contentY;
+        boolean expanded = section.isExpanded;
 
-        int boxX = UIConstants.SIDEBAR_WIDTH + 20;
-        int boxWidth = mainWidth - 40;
-        int paddingX = 8;
-        int paddingY = 8;
-        int titleHeight = 14;
-        int lineHeight = 12;
-        int gap = 4;
-
-        List<OrderedText> textLines = textRenderer.wrapLines(warningText, boxWidth - paddingX * 2);
-        int textHeight = textLines.size() * lineHeight;
-        int totalBoxHeight = paddingY + titleHeight + gap + textHeight + paddingY;
-
-        if (currentY + totalBoxHeight >= scrollWindowStartY && currentY <= scrollWindowEndY) {
-            // 背景
-            context.fill(boxX, currentY, boxX + boxWidth, currentY + totalBoxHeight, UIConstants.COLOR_HEADER_BG_WARNING);
-            // 顶部边框
-            context.fill(boxX, currentY, boxX + boxWidth, currentY + 1, UIConstants.COLOR_WARNING_BAR);
-            // 底部边框
-            context.fill(boxX, currentY + totalBoxHeight - 1, boxX + boxWidth, currentY + totalBoxHeight, UIConstants.COLOR_WARNING_BAR);
-            // 右侧边框
-            context.fill(boxX + boxWidth - 1, currentY, boxX + boxWidth, currentY + totalBoxHeight, UIConstants.COLOR_WARNING_BAR);
-            // 左侧橙色竖线
-            context.fill(boxX, currentY, boxX + 3, currentY + totalBoxHeight, UIConstants.COLOR_WARNING_BAR);
-
-            // 标题
-            context.drawText(textRenderer, warningTitle, boxX + paddingX + 8, currentY + paddingY, UIConstants.COLOR_WARNING_TEXT, false);
-
-            // 内容
-            int textY = currentY + paddingY + titleHeight + gap;
-            for (int i = 0; i < textLines.size(); i++) {
-                context.drawText(textRenderer, textLines.get(i), boxX + paddingX + 8, textY + i * lineHeight, UIConstants.COLOR_HEADER_TEXT, false);
-            }
+        // 描述行先解析出来：左侧装饰竖条要一直延伸到底，与介绍文字底边对齐
+        List<OrderedText> descLines = null;
+        int descMaxW = secMaxW - 10;
+        if (expanded && eff.description != null && !eff.description.getString().isEmpty()) {
+            descLines = tr.wrapLines(eff.description, descMaxW);
+        }
+        // 竖条底边：收起或无描述时只包住标题行，展开且有描述时包住标题行 + 全部描述行
+        int accentBottom = titleY + 16;
+        if (descLines != null && !descLines.isEmpty()) {
+            accentBottom = titleY + 20 + descLines.size() * 12;
         }
 
-        return totalBoxHeight + 8;
+        if (titleY + accentBottom >= clipTop && titleY <= clipBottom) {
+            ctx.fill(secX, titleY + 2, secX + 3, accentBottom, UIConstants.CLR_ACCENT);
+        }
+        if (titleY + 18 >= clipTop && titleY <= clipBottom) {
+            boolean titleHov = LayoutHelper.isMouseInRect(mx, my, secX, titleY, secMaxW, 20);
+            String arrow = expanded ? "▾" : "▸";
+            ctx.drawText(tr, arrow, secX + 8, titleY + 4,
+                    titleHov ? UIConstants.CLR_ACCENT : UIConstants.CLR_MUTED, false);
+            ctx.drawText(tr, eff.title, secX + 20, titleY + 4, UIConstants.CLR_HEADING, false);
+        }
+        contentY += 20;
+
+        // 收起时只保留标题行，描述/子分区/内容全部隐藏
+        if (expanded) {
+            // ---- 分区描述（小字灰色） ----
+            if (descLines != null) {
+                for (int i = 0; i < descLines.size(); i++) {
+                    if (contentY + 12 >= clipTop && contentY <= clipBottom) {
+                        ctx.drawText(tr, descLines.get(i), secX + 10, contentY, UIConstants.CLR_MUTED, false);
+                    }
+                    contentY += 12;
+                }
+                contentY += 4;
+            }
+
+            if (section.useChildSections && !section.childSections.isEmpty()) {
+                // ---- 子分区：递归渲染，逐层缩进 ----
+                for (int i = 0; i < section.childSections.size(); i++) {
+                    contentY = paintSectionNode(ctx, tr, mx, my, winW, paneW, clipTop, clipBottom,
+                            section.childSections.get(i), contentY, indent + 1);
+                    if (i < section.childSections.size() - 1) contentY += 10;
+                }
+                contentY += 4;
+            } else {
+                // ---- 筛选标签栏 ----
+                if (section.useSubfolders && !section.subFolders.isEmpty()) {
+                    contentY = paintTabBar(ctx, tr, mx, my, winW, section.subFolders, section.activeTabIndex, contentY);
+                }
+
+                if (section.useStyles && !section.subSections.isEmpty()) {
+                    List<SubFolderDef> styleTabs = new ArrayList<>();
+                    for (H4Section child : section.subSections) {
+                        styleTabs.add(new SubFolderDef(child.title.getString(), child.title));
+                    }
+                    contentY = paintTabBar(ctx, tr, mx, my, winW, styleTabs, section.activeStyleIndex, contentY);
+                }
+
+                // ---- 内容网格/列表 ----
+                contentY = paintSectionItems(ctx, tr, mx, my, paneW, clipTop, clipBottom, eff, contentY);
+            }
+        }
+        return contentY;
     }
 
-    // 渲染筛选按钮
-    private static void renderFilterButtons(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY,
-                                           int width, List<SubFolderDef> items, int activeIndex, int currentY) {
-        int filterAreaWidth = items.size() * UIConstants.FILTER_BUTTON_WIDTH
-                + (items.size() - 1) * UIConstants.FILTER_BUTTON_GAP;
-        int filterStartX = width - 24 - filterAreaWidth;
+    private static int paintTabBar(DrawContext ctx, TextRenderer tr, int mx, int my,
+                                   int winW, List<SubFolderDef> items, int activeIdx, int curY) {
+        int tabW = UIConstants.FILTER_PILL_WIDTH;
+        int tabH = UIConstants.FILTER_PILL_HEIGHT;
+        int gap = UIConstants.FILTER_PILL_SPACING;
+        int totalW = items.size() * tabW + (items.size() - 1) * gap;
+        int startX = winW - 24 - totalW;
 
         for (int i = 0; i < items.size(); i++) {
-            SubFolderDef subDef = items.get(i);
-            int bx = filterStartX + i * (UIConstants.FILTER_BUTTON_WIDTH + UIConstants.FILTER_BUTTON_GAP);
+            SubFolderDef def = items.get(i);
+            int tx = startX + i * (tabW + gap);
 
-            if (currentY + UIConstants.FILTER_BUTTON_HEIGHT < UIConstants.HEADER_HEIGHT + 1 || currentY > LayoutHelper.getScreenHeight() - UIConstants.FOOTER_HEIGHT) continue;
+            if (curY + tabH < UIConstants.TOP_BAR_HEIGHT + 1 || curY > LayoutHelper.getScreenHeight() - UIConstants.BOTTOM_BAR_HEIGHT) continue;
 
-            boolean isFltHover = LayoutHelper.isMouseInRect(mouseX, mouseY, bx, currentY, UIConstants.FILTER_BUTTON_WIDTH, UIConstants.FILTER_BUTTON_HEIGHT);
-            boolean isActive = (activeIndex == i);
+            boolean isHov = LayoutHelper.isMouseInRect(mx, my, tx, curY, tabW, tabH);
+            boolean isActive = (activeIdx == i);
 
-            int bgColor = isActive ? 0xFFAAAAAA : (isFltHover ? UIConstants.COLOR_BTN_BG_HOVER : UIConstants.COLOR_BTN_BG);
-            int borderColor = isActive ? 0xFF000000 : UIConstants.COLOR_BTN_BORDER;
-
-            context.fill(bx, currentY, bx + UIConstants.FILTER_BUTTON_WIDTH, currentY + UIConstants.FILTER_BUTTON_HEIGHT, bgColor);
-            context.drawBorder(bx, currentY, UIConstants.FILTER_BUTTON_WIDTH, UIConstants.FILTER_BUTTON_HEIGHT, borderColor);
-
+            int bg;
+            int txtClr;
             if (isActive) {
-                context.fill(bx, currentY + UIConstants.FILTER_BUTTON_HEIGHT - 2,
-                        bx + UIConstants.FILTER_BUTTON_WIDTH, currentY + UIConstants.FILTER_BUTTON_HEIGHT,
-                        0xFF00AAFF);
+                bg = UIConstants.CLR_ACCENT;
+                txtClr = 0xFFFFFFFF;
+            } else if (isHov) {
+                bg = UIConstants.CLR_BTN_HOVER;
+                txtClr = UIConstants.CLR_BTN_LABEL;
+            } else {
+                bg = UIConstants.CLR_BTN_FILL;
+                txtClr = UIConstants.CLR_MUTED;
             }
 
-            String tabName = subDef.displayName.getString();
-            int textColor = isActive ? 0xFF000000 : UIConstants.COLOR_BTN_TEXT;
-            List<OrderedText> lines = textRenderer.wrapLines(Text.literal(tabName), UIConstants.FILTER_BUTTON_WIDTH - 4);
-            int totalTextHeight = lines.size() * textRenderer.fontHeight;
-            int textStartY = currentY + (UIConstants.FILTER_BUTTON_HEIGHT - totalTextHeight) / 2;
+            ctx.fill(tx, curY, tx + tabW, curY + tabH, bg);
 
-            for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-                OrderedText line = lines.get(lineIdx);
-                int lineWidth = textRenderer.getWidth(line);
-                int textX = bx + (UIConstants.FILTER_BUTTON_WIDTH - lineWidth) / 2;
-                context.drawText(textRenderer, line, textX, textStartY + lineIdx * textRenderer.fontHeight, textColor, false);
+            String name = def.displayName.getString();
+            List<OrderedText> lines = tr.wrapLines(Text.literal(name), tabW - 4);
+            int totalTxtH = lines.size() * tr.fontHeight;
+            int txtY = curY + (tabH - totalTxtH) / 2;
+
+            for (int li = 0; li < lines.size(); li++) {
+                OrderedText line = lines.get(li);
+                int lw = tr.getWidth(line);
+                int lx = tx + (tabW - lw) / 2;
+                ctx.drawText(tr, line, lx, txtY + li * tr.fontHeight, txtClr, false);
             }
         }
+        return curY + tabH + 8;
     }
 
-    // 渲染分区条目
-    private static int renderSectionItems(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY,
-                                         int mainWidth, int scrollWindowStartY, int scrollWindowEndY,
-                                         H4Section section, int currentY) {
+    private static int paintSectionItems(DrawContext ctx, TextRenderer tr, int mx, int my,
+                                         int paneW, int clipTop, int clipBottom,
+                                         H4Section section, int curY) {
+        int navW = SidebarState.getEffectiveWidth();
         if (section.isFontMode) {
-            return currentY + GridRenderer.renderFontList(context, textRenderer, mouseX, mouseY, mainWidth, scrollWindowStartY, scrollWindowEndY,
-                    section.fontItems, UIConstants.SIDEBAR_WIDTH + 30, currentY);
+            return curY + GridRenderer.renderFontList(ctx, tr, mx, my, paneW, clipTop, clipBottom,
+                    section.fontItems, navW + 24, curY);
         } else if (section.isWhitelistMode) {
-            return currentY + GridRenderer.renderWhitelistGrid(context, textRenderer, mouseX, mouseY, mainWidth, scrollWindowStartY, scrollWindowEndY,
-                    section.whitelistItems, UIConstants.SIDEBAR_WIDTH + 24, currentY);
+            return curY + GridRenderer.renderWhitelistGrid(ctx, tr, mx, my, paneW, clipTop, clipBottom,
+                    section.whitelistItems, navW + 24, curY);
         } else {
             String tabKey = section.useSubfolders && !section.subFolders.isEmpty()
                     ? section.subFolders.get(section.activeTabIndex).dirName : "root";
             var textures = section.cachedTextures.get(tabKey);
-            return currentY + GridRenderer.renderCachedTextureGrid(context, textRenderer, mouseX, mouseY, mainWidth, scrollWindowStartY, scrollWindowEndY,
-                    textures != null ? textures : List.of(), UIConstants.SIDEBAR_WIDTH + 24, currentY);
+            return curY + GridRenderer.renderCachedTextureGrid(ctx, tr, mx, my, paneW, clipTop, clipBottom,
+                    textures != null ? textures : List.of(), navW + 24, curY);
         }
     }
 
-    // 渲染返回按钮
-    private static void renderReturnButton(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY,
-                                          int width, int mainWidth, int height) {
-        int returnBtnX = UIConstants.SIDEBAR_WIDTH + (mainWidth - UIConstants.RETURN_BUTTON_WIDTH) / 2;
-        int returnBtnY = height - 35;
-        boolean hoverRet = LayoutHelper.isMouseInRect(mouseX, mouseY, returnBtnX, returnBtnY, UIConstants.RETURN_BUTTON_WIDTH, UIConstants.RETURN_BUTTON_HEIGHT);
+    // 关闭按钮
+    private static void paintCloseButton(DrawContext ctx, TextRenderer tr, int mx, int my,
+                                         int winW, int paneW, int winH) {
+        int navW = SidebarState.getEffectiveWidth();
+        int btnX = navW + (paneW - UIConstants.CLOSE_BTN_WIDTH) / 2;
+        int btnY = winH - 38;
+        boolean hov = LayoutHelper.isMouseInRect(mx, my, btnX, btnY, UIConstants.CLOSE_BTN_WIDTH, UIConstants.CLOSE_BTN_HEIGHT);
 
-        int bgColor = hoverRet ? UIConstants.COLOR_BTN_BG_HOVER : UIConstants.COLOR_BTN_BG;
-        context.fill(returnBtnX, returnBtnY, returnBtnX + UIConstants.RETURN_BUTTON_WIDTH, returnBtnY + UIConstants.RETURN_BUTTON_HEIGHT, bgColor);
-        context.drawBorder(returnBtnX, returnBtnY, UIConstants.RETURN_BUTTON_WIDTH, UIConstants.RETURN_BUTTON_HEIGHT, UIConstants.COLOR_BTN_BORDER);
+        int bg = hov ? UIConstants.CLR_BTN_HOVER : UIConstants.CLR_BTN_FILL;
+        ctx.fill(btnX, btnY, btnX + UIConstants.CLOSE_BTN_WIDTH, btnY + UIConstants.CLOSE_BTN_HEIGHT, bg);
+        ctx.drawBorder(btnX, btnY, UIConstants.CLOSE_BTN_WIDTH, UIConstants.CLOSE_BTN_HEIGHT, UIConstants.CLR_BTN_STROKE);
 
-        Text returnText = Text.translatable("yunbeiuc.gui.button.back");
-        int rtw = textRenderer.getWidth(returnText);
-        context.drawText(textRenderer, returnText, returnBtnX + (UIConstants.RETURN_BUTTON_WIDTH - rtw) / 2, returnBtnY + 7, UIConstants.COLOR_BTN_TEXT, false);
+        Text label = Text.translatable("yunbeiuc.gui.button.back");
+        int lw = tr.getWidth(label);
+        ctx.drawText(tr, label, btnX + (UIConstants.CLOSE_BTN_WIDTH - lw) / 2, btnY + 7, UIConstants.CLR_BTN_LABEL, false);
     }
 
     // ==================== 插入代理 ====================
 
-    /**
-     * 打开浮层时记录的目标编辑界面。
-     *
-     * <p>浮层直接叠加在 {@link TextDisplayScreen} 上时当前屏幕即为目标；
-     * 由 {@link PatternAndFontBlankScreen} 承载浮层时用本字段把内容写回原编辑界面。
-     */
     public static TextDisplayScreen targetScreen = null;
 
-    /**
-     * 将内容写入当前正在编辑的文本行，并关闭浮层。
-     *
-     * <p>找不到目标编辑界面时仅关闭浮层，不写入。
-     *
-     * @param text 要写入的文本（可为 -texture / -rect / -json 指令）
-     */
     public static void insertToCurrentLine(String text) {
         MinecraftClient client = MinecraftClient.getInstance();
         TextDisplayScreen target = null;
@@ -729,77 +831,34 @@ public final class PatternAndFontOverlay {
 
     // ==================== 事件代理 ====================
 
-    /**
-     * 鼠标点击事件处理。
-     *
-     * @param mouseX 鼠标 X 坐标
-     * @param mouseY 鼠标 Y 坐标
-     * @param button 鼠标按钮
-     * @return 是否处理了事件
-     */
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
         return MouseEventHandler.mouseClicked(mouseX, mouseY, button);
     }
 
-    /**
-     * 鼠标滚轮事件处理。
-     *
-     * @param mouseX 鼠标 X 坐标
-     * @param mouseY 鼠标 Y 坐标
-     * @param amount 滚动量
-     */
     public static void mouseScrolled(double mouseX, double mouseY, double amount) {
         MouseEventHandler.mouseScrolled(mouseX, mouseY, amount);
     }
 
-    /**
-     * 鼠标释放事件处理。
-     *
-     * @param mouseX 鼠标 X 坐标
-     * @param mouseY 鼠标 Y 坐标
-     * @param button 鼠标按钮
-     * @return 是否处理了事件
-     */
     public static boolean mouseReleased(double mouseX, double mouseY, int button) {
         return MouseEventHandler.mouseReleased(mouseX, mouseY, button);
     }
 
     // ==================== URL 悬停状态 ====================
 
-    /** 上一次悬停的 URL。 */
     private static String lastHoveredUrl = null;
 
-    /**
-     * 获取上一次悬停的 URL。
-     *
-     * @return 悬停的 URL
-     */
     public static String getLastHoveredUrl() {
         return lastHoveredUrl;
     }
 
-    /**
-     * 设置上一次悬停的 URL。
-     *
-     * @param url 悬停的 URL
-     */
     public static void setLastHoveredUrl(String url) {
         lastHoveredUrl = url;
     }
 
-    /**
-     * 清除上一次悬停的 URL。
-     */
     public static void clearLastHoveredUrl() {
         lastHoveredUrl = null;
     }
 
-    /**
-     * 打开主页链接。
-     *
-     * @param url 链接地址
-     * @return 是否成功打开
-     */
     public static boolean openHomepageLink(String url) {
         if (url != null && !url.isEmpty()) {
             Util.getOperatingSystem().open(url);

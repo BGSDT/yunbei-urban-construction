@@ -50,19 +50,19 @@ public class SignGuideIntersectionWarning1Entity extends CustomSignBlockEntity {
         Block block = getCachedState().getBlock();
         List<TextLineData> lines = new ArrayList<>();
         if (block == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_1.get() || block == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_6.get()) {
-            lines.add(SignTextLinesHelper.centered("南京路", 0f, 0f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("南京路", 0f, 0f, 0.035f, 0xFFFFFF, "a"));
         } else if (block == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_2.get()) {
-            lines.add(SignTextLinesHelper.centered("福宁路", -2.5f, 0f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("福宁路", -2.5f, 0f, 0.035f, 0xFFFFFF, "a"));
         } else if (block == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_3.get()) {
-            lines.add(SignTextLinesHelper.centered("西土城路", 0f, 0f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("西土城路", 0f, 0f, 0.035f, 0xFFFFFF, "a"));
         } else if (block == SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_1.get() || block == SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_2.get() || block == SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_3.get()) {
-            lines.add(SignTextLinesHelper.right("1", 5f, 0f, 0.045f, 0x275aa8));
-            lines.add(SignTextLinesHelper.right("km", 9f, -0.5f, 0.03f, 0x275aa8));
+            lines.add(SignTextLinesHelper.right("1", 5f, 0f, 0.045f, 0x275aa8, "b"));
+            lines.add(SignTextLinesHelper.right("km", 9f, -0.5f, 0.03f, 0x275aa8, "b"));
         } else if (block == SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_4.get() || block == SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_5.get() || block == SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_6.get()) {
-            lines.add(SignTextLinesHelper.right("1", -0.5f, -4f, 0.045f, 0x275aa8));
-            lines.add(SignTextLinesHelper.right("km", 3.5f, -4.5f, 0.03f, 0x275aa8));
+            lines.add(SignTextLinesHelper.right("1", -0.5f, -4f, 0.045f, 0x275aa8, "b"));
+            lines.add(SignTextLinesHelper.right("km", 3.5f, -4.5f, 0.03f, 0x275aa8, "b"));
         } else if (block == SignBlocks.SIGN_GUIDE_ODOMETER.get()) {
-            lines.add(SignTextLinesHelper.centered("220", 0f, 3f, 0.055f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("220", 0f, 3f, 0.055f, 0xFFFFFF, "b"));
         }
         setTextLines(lines);
     }

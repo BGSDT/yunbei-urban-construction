@@ -68,16 +68,16 @@ public class SignExpresswayDistanceFromLocation2Entity extends CustomSignBlockEn
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.left("璜塘", -15f, 11f, 0.04f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.left("璜塘", -15f, 11f, 0.04f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -11f, 0f, 0.65f));
-        lines.add(SignTextLinesHelper.centeredWithZ("G42", -11f, -1f, 0.045f, 0xFFFFFF, 0.002f));
-        lines.add(SignTextLinesHelper.left("上海", -15f, -11f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("8", 10f, 11f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("17", 10f, 0f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("25", 10f, -11f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 14f, 10.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 14f, -0.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 14f, -11.5f, 0.025f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centeredWithZ("G42", -11f, -1f, 0.045f, 0xFFFFFF, 0.002f, "b"));
+        lines.add(SignTextLinesHelper.left("上海", -15f, -11f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("8", 10f, 11f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("17", 10f, 0f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("25", 10f, -11f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 14f, 10.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 14f, -0.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 14f, -11.5f, 0.025f, 0xFFFFFF, "b"));
         setTextLines(lines);
     }
 

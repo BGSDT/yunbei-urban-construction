@@ -65,7 +65,7 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
         float y = 4f + andY;
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/{logo}.png", x, y, logoSize));
-        lines.add(SignTextLinesHelper.centeredWithZ("{text1}", x, y, textScale, color, 0.01f));
+        lines.add(SignTextLinesHelper.centeredWithZ("{text1}", x, y, textScale, color, 0.01f, "a"));
         setTextLines(lines);
     }
 

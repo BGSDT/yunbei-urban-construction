@@ -45,8 +45,8 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("G2", 0f, 1.5f, 0.08f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("京 沪 高 速", 0f, -6.5f, 0.02f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("G2", 0f, 1.5f, 0.08f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.centered("京 沪 高 速", 0f, -6.5f, 0.02f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

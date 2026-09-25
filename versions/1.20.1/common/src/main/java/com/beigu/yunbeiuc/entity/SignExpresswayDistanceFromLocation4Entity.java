@@ -83,25 +83,26 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.addAll(buildRow(roadType1, "人民路", "logo1", 12f));
-        lines.addAll(buildRow(roadType2, "东环路", "logo2", 0f));
-        lines.addAll(buildRow(roadType3, "苏州新区", "logo3", -12f));
-        lines.add(SignTextLinesHelper.right("7", 13f, 12f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("17", 13f, 0f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("30", 13f, -12f, 0.04f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 17f, 11.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 17f, -0.5f, 0.025f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.right("km", 17f, -12.5f, 0.025f, 0xFFFFFF));
+        lines.addAll(buildRow(roadType1, "人民路", "logo1", 12f, "a"));
+        lines.addAll(buildRow(roadType2, "东环路", "logo2", 0f, "a"));
+        lines.addAll(buildRow(roadType3, "苏州新区", "logo3", -12f, "a"));
+        lines.add(SignTextLinesHelper.right("7", 13f, 12f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("17", 13f, 0f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("30", 13f, -12f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 17f, 11.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 17f, -0.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("km", 17f, -12.5f, 0.025f, 0xFFFFFF, "b"));
         setTextLines(lines);
     }
 
-    private List<TextLineData> buildRow(RoadType roadType, String textPlaceholder, String logoKey, float y) {
+    private List<TextLineData> buildRow(RoadType roadType, String textPlaceholder, String logoKey, float y, String abcFont) {
         List<TextLineData> lines = new ArrayList<>();
-        // 原 renderLogo：仅 ORDINARY_MUNICIPAL（普通公路/省道盾牌）渲染 logo
+        // 原 renderLogo：仅 ORDINARY_MUNICIPAL（普通公路/省道盾牌）渲染 logo；
+        // logo() 为 -texture 纹理行，不接收字体参数
         if (roadType == RoadType.ORDINARY_MUNICIPAL) {
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{" + logoKey + "}.png", -8f, y, 1.55f));
         }
-        TextLineData text = SignTextLinesHelper.left(textPlaceholder, -17f, y, 0.04f, 0xFFFFFF);
+        TextLineData text = SignTextLinesHelper.left(textPlaceholder, -17f, y, 0.04f, 0xFFFFFF, abcFont);
         text.setZOffset(roadTextZOffset(roadType));
         lines.add(text);
         return lines;

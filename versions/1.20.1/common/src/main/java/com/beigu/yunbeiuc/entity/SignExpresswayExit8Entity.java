@@ -83,11 +83,11 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 8f, 9f, 0.65f));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{dir1}.png", -18.5f, 9.25f, 0.4f));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{dir2}.png", 18.5f, 9.25f, 0.4f));
-        lines.add(SignTextLinesHelper.centered("汕头", -14f, -2f, 0.03f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("贺州", 14.5f, -2f, 0.03f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("133", 19.75f, 20.5f, 0.03f, 0x2D9B47));
-        lines.add(SignTextLinesHelper.centeredWithZ("G78", -7.5f, 8.5f, 0.045f, 0xFFFFFF, 0.002f));
-        lines.add(SignTextLinesHelper.centeredWithZ("G78", 7.5f, 8.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centered("汕头", -14f, -2f, 0.03f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("贺州", 14.5f, -2f, 0.03f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("133", 19.75f, 20.5f, 0.03f, 0x2D9B47, "b"));
+        lines.add(SignTextLinesHelper.centeredWithZ("G78", -7.5f, 8.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
+        lines.add(SignTextLinesHelper.centeredWithZ("G78", 7.5f, 8.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         setTextLines(lines);
     }
 

@@ -40,7 +40,7 @@ public class SignExpresswayDirection1Entity extends CustomSignBlockEntity {
         if (!getTextLines().isEmpty()) return;
         float x = getCachedState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2.get() ? -4.5f : 4.5f;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("合肥", x, 0f, 0.05f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("合肥", x, 0f, 0.05f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

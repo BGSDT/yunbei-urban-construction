@@ -70,9 +70,9 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", logo1X, 12f, 0.4f));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo2}.png", logo2X, 0f, 0.4f));
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo3}.png", logo3X, -12f, 0.4f));
-        lines.add(SignTextLinesHelper.centered("学府路", text1X, 12f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("公滨路", text2X, 0f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("黄河路", text3X, -12f, 0.035f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("学府路", text1X, 12f, 0.035f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("公滨路", text2X, 0f, 0.035f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("黄河路", text3X, -12f, 0.035f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

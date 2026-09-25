@@ -38,13 +38,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) return 0.16f;
         if (mountType == TrafficLightsBlock.MountType.POLE) {
             if (isPavementBlock(currentBlock)) return -0.46f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.68f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.75f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.74f;
             else return -0.53f;
         }
         if (mountType == TrafficLightsBlock.MountType.SIMPLE) {
             if (isPavementBlock(currentBlock)) return -0.33f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.36f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.41f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.38f;
             else return -0.33f;
         }
@@ -55,6 +55,31 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         return currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
+    }
+
+    /** 图案边长默认值（方块单位，1.0 = 一个方块）：雾灯以外的红绿灯统一使用，改动前所有方块均为此值。 */
+    private static final float DEFAULT_LOGO_SIZE = 0.4f;
+
+    /**
+     * 雾灯图案边长（方块单位，按模型像素直接换算：4.1 像素 = 4.1/16 方块 ≈ 0.25625）。
+     *
+     * <p>雾灯灯箱（{@code traffic_lights_foggy} / {@code traffic_lights_foggy_simple}）的灯罩面为
+     * 3.65~12.25 像素（8.6/16 方块），此值远小于灯罩，图案居中显示不留溢出。
+     */
+    private static final float FOGGY_LOGO_SIZE = 4.1f / 16f;
+
+    /**
+     * 图案（箭头/圆形等贴图四边形）的边长，单位为方块。
+     *
+     * <p>雾灯因使用单个大灯罩，图案尺寸单独设置；其余方块仍用 {@link #DEFAULT_LOGO_SIZE}。
+     * 需要给其它方块单独定制时，在这里加分支即可。
+     *
+     * @param currentBlock 当前渲染的方块
+     * @return 图案边长（方块单位）
+     */
+    private float getLogoSize(Block currentBlock) {
+        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return FOGGY_LOGO_SIZE;
+        return DEFAULT_LOGO_SIZE;
     }
 
     private static final Identifier LEFT_TURN_RED = new Identifier(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
@@ -295,7 +320,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
 
-        float arrowSize = 0.4f;
+        float arrowSize = getLogoSize(currentBlock);
         float halfSize = arrowSize / 2f;
         float x = 0;
         float y = 0;

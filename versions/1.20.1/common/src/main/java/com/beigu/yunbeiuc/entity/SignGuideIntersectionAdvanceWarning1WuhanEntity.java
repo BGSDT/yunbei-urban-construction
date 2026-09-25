@@ -67,23 +67,23 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
         boolean isRight = getCachedState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isRight) {
-            lines.add(SignTextLinesHelper.centered("沌阳大道", 16.5f, 12f, 0.023f, 0x275aa8));
-            lines.add(SignTextLinesHelper.centered("东风大道", 16.5f, -12f, 0.023f, 0x275aa8));
-            lines.add(SignTextLinesHelper.centered("枫树六路", -6f, 12f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", -6f, 8f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("枫树三路", -6f, 1f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", -6f, -3f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("车城南路", -6f, -10f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", -6f, -14f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("沌阳大道", 16.5f, 12f, 0.023f, 0x275aa8, "a"));
+            lines.add(SignTextLinesHelper.centered("东风大道", 16.5f, -12f, 0.023f, 0x275aa8, "a"));
+            lines.add(SignTextLinesHelper.centered("枫树六路", -6f, 12f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", -6f, 8f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("枫树三路", -6f, 1f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", -6f, -3f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("车城南路", -6f, -10f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", -6f, -14f, 0.023f, 0xFFFFFF, "a"));
         } else {
-            lines.add(SignTextLinesHelper.centered("沌阳大道", -16.5f, 12f, 0.023f, 0x275aa8));
-            lines.add(SignTextLinesHelper.centered("东风大道", -16.5f, -12f, 0.023f, 0x275aa8));
-            lines.add(SignTextLinesHelper.centered("枫树六路", 6f, 12f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", 6f, 8f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("枫树三路", 6f, 1f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", 6f, -3f, 0.023f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("车城南路", 6f, -10f, 0.03f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", 6f, -14f, 0.023f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.centered("沌阳大道", -16.5f, 12f, 0.023f, 0x275aa8, "a"));
+            lines.add(SignTextLinesHelper.centered("东风大道", -16.5f, -12f, 0.023f, 0x275aa8, "a"));
+            lines.add(SignTextLinesHelper.centered("枫树六路", 6f, 12f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", 6f, 8f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("枫树三路", 6f, 1f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", 6f, -3f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("车城南路", 6f, -10f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", 6f, -14f, 0.023f, 0xFFFFFF, "a"));
         }
         setTextLines(lines);
     }

@@ -57,9 +57,9 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", 0f, 7f, 0.65f));
-        lines.add(SignTextLinesHelper.centered("汕头", -7f, -2f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("深圳", 7f, -2f, 0.035f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centeredWithZ("G15", 0f, 6.5f, 0.045f, 0xFFFFFF, 0.002f));
+        lines.add(SignTextLinesHelper.centered("汕头", -7f, -2f, 0.035f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("深圳", 7f, -2f, 0.035f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centeredWithZ("G15", 0f, 6.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         setTextLines(lines);
     }
 
