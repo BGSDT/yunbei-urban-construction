@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.Rotation;
@@ -90,10 +92,10 @@ public class GantryFrameLightingLamp extends Block {
         ItemStack heldItem = player.getItemInHand(hand);
         // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world .isClientSide) {
-            if (heldItem.is(ModItems.WAND.get())) {
+            if (heldItem.getItem() == ModItems.WAND.get()) {
                 boolean newLitState = !state.getValue(LIT);
                 LightTFState newLightState = state.getValue(LIGHT_TF_STATE).next();
-                world.setBlock(pos, state.setValue(LIT, newLitState).setValue(LIGHT_TF_STATE, newLightState), Block.UPDATE_ALL);
+                world.setBlock(pos, state.setValue(LIT, newLitState).setValue(LIGHT_TF_STATE, newLightState), VersionServices.blocks().updateAll());
             }
         }
         return InteractionResult.SUCCESS;

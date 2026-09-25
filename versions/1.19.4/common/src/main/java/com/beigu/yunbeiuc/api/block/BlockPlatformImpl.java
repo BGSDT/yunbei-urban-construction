@@ -9,6 +9,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.grower.OakTreeGrower;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MaterialColor;
 
 public final class BlockPlatformImpl implements BlockPlatform {
     @Override public boolean isWater(FluidState state) { return state.getType() == Fluids.WATER; }
@@ -18,4 +20,9 @@ public final class BlockPlatformImpl implements BlockPlatform {
         return new OakTreeGrower().growTree(level, level.getChunkSource().getGenerator(), pos,
                 Blocks.OAK_SAPLING.defaultBlockState(), level.getRandom());
     }
+    @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, MaterialColor color) { return properties.mapColor(color); }
+    @Override public int updateAll() { return Block.UPDATE_ALL; }
+    @Override public int updateImmediate() { return Block.UPDATE_IMMEDIATE; }
+    @Override public int updateNeighbors() { return Block.UPDATE_NEIGHBORS; }
+    @Override public int updateClients() { return Block.UPDATE_CLIENTS; }
 }

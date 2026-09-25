@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import com.beigu.yunbeiuc.item.ModItems;
@@ -71,10 +73,10 @@ public class RoadLightHighMast extends Block {
         ItemStack heldItem = player.getItemInHand(hand);
         // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world .isClientSide) {
-            if (heldItem.is(ModItems.WAND.get())) {
+            if (heldItem.getItem() == ModItems.WAND.get()) {
                 boolean newLitState = !state.getValue(LIT);
                 TFType newLightState = state.getValue(TF_TYPE).next();
-                world.setBlock(pos, state.setValue(LIT, newLitState).setValue(TF_TYPE, newLightState), Block.UPDATE_ALL);
+                world.setBlock(pos, state.setValue(LIT, newLitState).setValue(TF_TYPE, newLightState), VersionServices.blocks().updateAll());
             }
         }
         return InteractionResult.SUCCESS;

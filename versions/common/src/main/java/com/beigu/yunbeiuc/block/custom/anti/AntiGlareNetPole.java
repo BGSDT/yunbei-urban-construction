@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.anti;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -99,7 +101,7 @@ public class AntiGlareNetPole extends Block {
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onPlace(state, world, pos, oldState, notify);
-        world.setBlock(pos, updatePoleType(state, world, pos), Block.UPDATE_ALL);
+        world.setBlock(pos, updatePoleType(state, world, pos), VersionServices.blocks().updateAll());
     }
 
     private BlockState updatePoleType(BlockState state, LevelAccessor world, BlockPos pos) {
@@ -136,7 +138,7 @@ public class AntiGlareNetPole extends Block {
 
     private boolean hasAntiGlareNet(LevelAccessor world, BlockPos pos) {
         // 替换 ModBlocks.ANTI_GLARE_NET 为您的实际防眩网方块
-        return world.getBlockState(pos).getBlock() == MunicipalBlocks.ANTI_GLARE_NET;
+        return world.getBlockState(pos).getBlock() == MunicipalBlocks.ANTI_GLARE_NET.get();
     }
 
     public enum AntiGlareNetPoleType implements StringRepresentable {

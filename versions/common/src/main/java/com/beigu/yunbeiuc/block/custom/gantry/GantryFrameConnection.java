@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.world.level.block.Block;
@@ -82,7 +84,7 @@ public class GantryFrameConnection extends Block {
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onPlace(state, world, pos, oldState, notify);
         if (!isManualUpdate) {
-            world.setBlock(pos, updateConnectionType(state, world, pos), Block.UPDATE_ALL);
+            world.setBlock(pos, updateConnectionType(state, world, pos), VersionServices.blocks().updateAll());
         }
     }
 
@@ -102,7 +104,7 @@ public class GantryFrameConnection extends Block {
                     case GANTRY_FRAME_CONNECTION_4 -> GantryFrameConnectionType.GANTRY_FRAME_CONNECTION_2;
                 };
 
-                world.setBlock(pos, state.setValue(CONNECTION_TYPE, newType), Block.UPDATE_ALL);
+                world.setBlock(pos, state.setValue(CONNECTION_TYPE, newType), VersionServices.blocks().updateAll());
                 isManualUpdate = false;
             }
             return InteractionResult.SUCCESS;

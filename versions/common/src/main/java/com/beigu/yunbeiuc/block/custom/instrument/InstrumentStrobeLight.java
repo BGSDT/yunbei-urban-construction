@@ -122,7 +122,7 @@ public class InstrumentStrobeLight extends TickingBlock {
 
             // 更新方块状态
             BlockState nextState = getStateForSequenceIndex(nextIndex, state);
-            world.setBlock(pos, nextState, Block.UPDATE_ALL);
+            world.setBlock(pos, nextState, VersionServices.blocks().updateAll());
 
             // 安排下一个tick
             VersionServices.blocks().scheduleBlockTick(world, pos, this, STATE_DURATIONS[nextIndex]);

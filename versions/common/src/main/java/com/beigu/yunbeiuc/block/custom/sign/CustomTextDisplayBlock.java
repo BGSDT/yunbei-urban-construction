@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
+import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
+
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -36,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class CustomTextDisplayBlock extends BaseEntityBlock {
+public class CustomTextDisplayBlock extends EntityBlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_NORTH = Block.box(0, 0, 15, 16, 16, 16);
@@ -95,7 +97,7 @@ public class CustomTextDisplayBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         return new CustomSignBlockEntity(pos, state);
     }
 
@@ -107,19 +109,6 @@ public class CustomTextDisplayBlock extends BaseEntityBlock {
                 openScreen(world, pos);
             }
             return InteractionResult.SUCCESS;
-        }
-        if (stack.getItem() == Items.GLOW_INK_SAC) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof CustomSignBlockEntity signEntity && !signEntity.isGlowingText()) {
-                if (!world.isClientSide) {
-                    signEntity.setGlowingText(true);
-                    if (!player.getAbilities().instabuild) {
-                        stack.shrink(1);
-                    }
-                }
-                world.playSound(player, pos, SoundEvents.GLOW_INK_SAC_USE, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
-                return InteractionResult.SUCCESS;
-            }
         }
         return InteractionResult.PASS;
     }

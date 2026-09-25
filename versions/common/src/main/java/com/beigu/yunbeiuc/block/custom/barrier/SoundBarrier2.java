@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.barrier;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.level.material.PushReaction;
@@ -68,11 +70,11 @@ public class SoundBarrier2 extends DirectionalBlock {
 
             world.setBlock(pos.above(),
                     this.defaultBlockState().setValue(FACING, direction).setValue(LAYER, 1),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
 
             world.setBlock(pos.above(2),
                     this.defaultBlockState().setValue(FACING, direction).setValue(LAYER, 2),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
         }
     }
 
@@ -100,7 +102,7 @@ public class SoundBarrier2 extends DirectionalBlock {
         BlockState state = world.getBlockState(pos);
         if (state.is(this)) {
             world.setBlock(pos, Blocks.AIR.defaultBlockState(),
-                    Block.UPDATE_ALL | Block.UPDATE_NEIGHBORS);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateNeighbors());
             world.levelEvent(player, 2001, pos,
                     Block.getId(state));
         }
@@ -150,7 +152,7 @@ public class SoundBarrier2 extends DirectionalBlock {
                     BlockPos otherPos = pos.relative(Direction.UP, i - layer);
                     if (!world.getBlockState(otherPos).is(this)) {
                         world.setBlock(pos, Blocks.AIR.defaultBlockState(),
-                                Block.UPDATE_ALL | Block.UPDATE_NEIGHBORS);
+                                VersionServices.blocks().updateAll() | VersionServices.blocks().updateNeighbors());
                         break;
                     }
                 }

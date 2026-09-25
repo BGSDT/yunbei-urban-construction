@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.instrument;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.Rotation;
@@ -89,7 +91,7 @@ public class InstrumentLaneIndicator extends Block {
             if (!world.isClientSide) {
                 TFType current = state.getValue(TF_TYPE);
                 TFType next = current.next();
-                world.setBlock(pos, state.setValue(TF_TYPE, next), Block.UPDATE_ALL);
+                world.setBlock(pos, state.setValue(TF_TYPE, next), VersionServices.blocks().updateAll());
                 return InteractionResult.SUCCESS;
             }
         }

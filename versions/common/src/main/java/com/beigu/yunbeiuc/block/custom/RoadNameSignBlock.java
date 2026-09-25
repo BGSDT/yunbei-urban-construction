@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom;
 
+import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
+
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -36,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class RoadNameSignBlock extends BaseEntityBlock {
+public class RoadNameSignBlock extends EntityBlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<BGType> BG_TYPE = EnumProperty.create("bg_type", BGType.class);
 
@@ -110,7 +112,7 @@ public class RoadNameSignBlock extends BaseEntityBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         return new RoadNameSignBlockEntity(pos, state);
     }
 

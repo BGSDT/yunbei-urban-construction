@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.FriendlyByteBuf;
@@ -32,7 +34,7 @@ public class TrafficLightsMountTypeUpdatePacket {
 
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof TrafficLightsBlock && state.hasProperty(TrafficLightsBlock.TYPE)) {
-            world.setBlock(pos, state.setValue(TrafficLightsBlock.TYPE, mountType), net.minecraft.world.level.block.Block.UPDATE_ALL);
+            world.setBlock(pos, state.setValue(TrafficLightsBlock.TYPE, mountType), VersionServices.blocks().updateAll());
         }
     }
 }

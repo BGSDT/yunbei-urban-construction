@@ -7,13 +7,13 @@ import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.network.ModMessages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class
 YunbeiUrbanConstruction {
     public static final String MOD_ID = "yunbeiuc";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static void init() {
         // First register blocks, then items (which depend on blocks via BlockItem)

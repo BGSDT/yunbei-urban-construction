@@ -140,7 +140,7 @@ public final class TextGizmo {
     public static float halfHeightBlocks() { return halfHbBlocks; }
 
     public static void updateAndRender(int mode, Matrix4f baseFrame, Matrix4f lineFrame, TextLineData d, float zOffsetBlocks, float halfWBlocks, float halfHBlocks) {
-        Matrix4f pm = RenderSystem.getProjectionMatrix();
+        Matrix4f pm = new Matrix4f();
         if (pm == null || d == null || lineFrame == null || baseFrame == null) return;
         bs = 0.05f * d.getFontSize();
         if (bs <= 1e-6f) return;
@@ -307,11 +307,10 @@ public final class TextGizmo {
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buf = tessellator.getBuilder();
-        buf.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        buf.begin(4, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f m = new Matrix4f();
         m.setIdentity();

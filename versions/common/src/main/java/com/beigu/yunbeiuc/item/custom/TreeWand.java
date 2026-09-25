@@ -64,7 +64,7 @@ public class TreeWand extends Item {
                         player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.success"), true);
 
                         // 非创造模式消耗耐久
-                        if (!player.getAbilities().instabuild) {
+                        if (!player.isCreative()) {
                             context.getItemInHand().hurtAndBreak(1, player, p -> p.broadcastBreakEvent(context.getHand()));
                         }
 

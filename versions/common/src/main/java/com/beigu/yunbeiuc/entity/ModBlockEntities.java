@@ -17,7 +17,7 @@ public class ModBlockEntities {
 
     public static final RegistrySupplier<BlockEntityType<TrafficLightsBlockEntity>> TRAFFIC_LIGHTS_BLOCK_ENTITY =
             BES.register("traffic_lights_block_entity",
-                    () -> BlockEntityType.Builder.of(TrafficLightsBlockEntity::new,
+                    () -> VersionServices.blockEntities().create(TrafficLightsBlockEntity::new,
                             MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_YELLOW_VERTICAL.get(),
@@ -34,78 +34,78 @@ public class ModBlockEntities {
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get(),
-                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()).build(null));
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()));
 
     public static final RegistrySupplier<BlockEntityType<TrafficLightsPavementIntegrationBlockEntity>> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLOCK_ENTITY =
             BES.register("traffic_lights_pavement_integration_block_entity",
-                    () -> BlockEntityType.Builder.of(TrafficLightsPavementIntegrationBlockEntity::new,
+                    () -> VersionServices.blockEntities().create(TrafficLightsPavementIntegrationBlockEntity::new,
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get(),
-                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get()).build(null));
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get()));
 
     public static final RegistrySupplier<BlockEntityType<RoadPoleTextDisplayEntity>> ROAD_POLE_TEXT_DISPLAY_ENTITY =
             BES.register("road_pole_text_display_entity",
-                    () -> BlockEntityType.Builder.of(RoadPoleTextDisplayEntity::new,
-                            MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY.get()).build(null));
+                    () -> VersionServices.blockEntities().create(RoadPoleTextDisplayEntity::new,
+                            MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY.get()));
 
     public static final RegistrySupplier<BlockEntityType<RoadPoleLedEntity>> ROAD_POLE_LED_ENTITY =
             BES.register("road_pole_led_entity",
-                    () -> BlockEntityType.Builder.of(RoadPoleLedEntity::new,
-                            MunicipalBlocks.ROAD_POLE_LED.get()).build(null));
+                    () -> VersionServices.blockEntities().create(RoadPoleLedEntity::new,
+                            MunicipalBlocks.ROAD_POLE_LED.get()));
 
     public static final RegistrySupplier<BlockEntityType<FlagBlockEntity>> FLAG_BLOCK_ENTITY =
             BES.register("flag_block_entity",
-                    () -> BlockEntityType.Builder.of(FlagBlockEntity::new,
-                            MunicipalBlocks.ROAD_POLE_FLAG.get()).build(null));
+                    () -> VersionServices.blockEntities().create(FlagBlockEntity::new,
+                            MunicipalBlocks.ROAD_POLE_FLAG.get()));
 
     public static final RegistrySupplier<BlockEntityType<RoadNameSignBlockEntity>> ROAD_NAME_SIGN_BLOCK_ENTITY =
             BES.register("road_name_sign_block_entity",
-                    () -> BlockEntityType.Builder.of(RoadNameSignBlockEntity::new,
+                    () -> VersionServices.blockEntities().create(RoadNameSignBlockEntity::new,
                             MunicipalBlocks.ROAD_NAME_SIGN_RC.get(),
-                            MunicipalBlocks.ROAD_NAME_SIGN_RA.get()).build(null));
+                            MunicipalBlocks.ROAD_NAME_SIGN_RA.get()));
 
     public static final RegistrySupplier<BlockEntityType<GantryFrameLedEntity>> GANTRY_FRAME_LED_ENTITY =
             BES.register("gantry_frame_led_entity",
-                    () -> BlockEntityType.Builder.of(GantryFrameLedEntity::new,
-                            MunicipalBlocks.GANTRY_FRAME_LED.get()).build(null));
+                    () -> VersionServices.blockEntities().create(GantryFrameLedEntity::new,
+                            MunicipalBlocks.GANTRY_FRAME_LED.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionAdvanceWarning1WuhanEntity>> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY =
             BES.register("sign_guide_intersection_advance_warning_1_wuhan_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionAdvanceWarning1WuhanEntity::new,
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionAdvanceWarning1WuhanEntity::new,
                             SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_LEFT.get(),
                             SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_STRAIGHT.get(),
-                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get()).build(null));
+                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionAdvanceWarning1Entity>> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_ENTITY =
             BES.register("sign_guide_intersection_advance_warning_1_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionAdvanceWarning1Entity::new,
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionAdvanceWarning1Entity::new,
                             SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1.get(),
-                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2.get()).build(null));
+                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionAdvanceWarning3Entity>> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY =
             BES.register("sign_guide_intersection_advance_warning_3_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionAdvanceWarning3Entity::new,
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionAdvanceWarning3Entity::new,
                             SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3.get(),
-                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4.get()).build(null));
+                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_4.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionAdvanceWarning5Entity>> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5_ENTITY =
             BES.register("sign_guide_intersection_advance_warning_5_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionAdvanceWarning5Entity::new,
-                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionAdvanceWarning5Entity::new,
+                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionAdvanceWarning6Entity>> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6_ENTITY =
             BES.register("sign_guide_intersection_advance_warning_6_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionAdvanceWarning6Entity::new,
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionAdvanceWarning6Entity::new,
                             SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get(),
-                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8.get()).build(null));
+                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionAdvanceWarning7Entity>> SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7_ENTITY =
             BES.register("sign_guide_intersection_advance_warning_7_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionAdvanceWarning7Entity::new,
-                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionAdvanceWarning7Entity::new,
+                            SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionWarning1Entity>> SIGN_GUIDE_INTERSECTION_WARNING_1_ENTITY =
             BES.register("sign_guide_intersection_warning_1_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionWarning1Entity::new,
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionWarning1Entity::new,
                             SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_1.get(),
                             SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_2.get(),
                             SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_3.get(),
@@ -116,165 +116,165 @@ public class ModBlockEntities {
                             SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_4.get(),
                             SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_5.get(),
                             SignBlocks.SIGN_GUIDE_DISTANCE_TO_TUNNEL_EXIT_6.get(),
-                            SignBlocks.SIGN_GUIDE_ODOMETER.get()).build(null));
+                            SignBlocks.SIGN_GUIDE_ODOMETER.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideIntersectionWarning4Entity>> SIGN_GUIDE_INTERSECTION_WARNING_4_ENTITY =
             BES.register("sign_guide_intersection_warning_4_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideIntersectionWarning4Entity::new,
+                    () -> VersionServices.blockEntities().create(SignGuideIntersectionWarning4Entity::new,
                             SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4.get(),
-                            SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_5.get()).build(null));
+                            SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_5.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideConfirmation1Entity>> SIGN_GUIDE_CONFIRMATION_1_ENTITY =
             BES.register("sign_guide_confirmation_1_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideConfirmation1Entity::new,
+                    () -> VersionServices.blockEntities().create(SignGuideConfirmation1Entity::new,
                             SignBlocks.SIGN_GUIDE_CONFIRMATION_1.get(),
-                            SignBlocks.SIGN_GUIDE_CONFIRMATION_2.get()).build(null));
+                            SignBlocks.SIGN_GUIDE_CONFIRMATION_2.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideLaneIndicator1Entity>> SIGN_GUIDE_LANE_INDICATOR_1_ENTITY =
             BES.register("sign_guide_lane_indicator_1_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideLaneIndicator1Entity::new,
-                            SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignGuideLaneIndicator1Entity::new,
+                            SignBlocks.SIGN_GUIDE_LANE_INDICATOR_1.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignGuideRoadsideFacilityOverloadCheckpoint1Entity>> SIGN_GUIDE_ROADSIDE_FACILITY_OVERLOAD_CHECKPOINT_1_ENTITY =
             BES.register("sign_guide_roadside_facility_overload_checkpoint_1_entity",
-                    () -> BlockEntityType.Builder.of(SignGuideRoadsideFacilityOverloadCheckpoint1Entity::new,
-                            SignBlocks.SIGN_GUIDE_ROADSIDE_FACILITY_OVERLOAD_CHECKPOINT_1.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignGuideRoadsideFacilityOverloadCheckpoint1Entity::new,
+                            SignBlocks.SIGN_GUIDE_ROADSIDE_FACILITY_OVERLOAD_CHECKPOINT_1.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayEntranceAdvance1Entity>> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_1_ENTITY =
             BES.register("sign_expressway_entrance_advance_1_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayEntranceAdvance1Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayEntranceAdvance1Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_1.get(),
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_2.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_3.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_3.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayEntranceAdvance4Entity>> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_4_ENTITY =
             BES.register("sign_expressway_entrance_advance_4_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayEntranceAdvance4Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayEntranceAdvance4Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_4.get(),
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_5.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_6.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_6.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayEntranceAdvance7Entity>> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_7_ENTITY =
             BES.register("sign_expressway_entrance_advance_7_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayEntranceAdvance7Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayEntranceAdvance7Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_7.get(),
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_8.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_9.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_9.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayEntranceAdvance10Entity>> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_10_ENTITY =
             BES.register("sign_expressway_entrance_advance_10_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayEntranceAdvance10Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayEntranceAdvance10Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_10.get(),
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_11.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_12.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_12.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayEntranceAdvance13Entity>> SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13_ENTITY =
             BES.register("sign_expressway_entrance_advance_13_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayEntranceAdvance13Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayEntranceAdvance13Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13.get(),
                             SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_14.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_15.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection1Entity>> SIGN_EXPRESSWAY_DIRECTION_1_ENTITY =
             BES.register("sign_expressway_direction_1_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDirection1Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayDirection1Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_DIRECTION_1.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_2.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection3Entity>> SIGN_EXPRESSWAY_DIRECTION_3_ENTITY =
             BES.register("sign_expressway_direction_3_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDirection3Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayDirection3Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_DIRECTION_3.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDirection5Entity>> SIGN_EXPRESSWAY_DIRECTION_5_ENTITY =
             BES.register("sign_expressway_direction_5_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDirection5Entity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayDirection5Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_DIRECTION_5.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayNamingNumberEntity>> SIGN_EXPRESSWAY_NAMING_NUMBER_ENTITY =
             BES.register("sign_expressway_naming_number_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayNamingNumberEntity::new,
+                    () -> VersionServices.blockEntities().create(SignExpresswayNamingNumberEntity::new,
                             SignBlocks.SIGN_EXPRESSWAY_NAMING_NUMBER_1.get(),
-                            SignBlocks.SIGN_EXPRESSWAY_NAMING_NUMBER_2.get()).build(null));
+                            SignBlocks.SIGN_EXPRESSWAY_NAMING_NUMBER_2.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayRoadNameEntity>> SIGN_EXPRESSWAY_ROAD_NAME_ENTITY =
             BES.register("sign_expressway_road_name_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayRoadNameEntity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_ROAD_NAME.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayRoadNameEntity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_ROAD_NAME.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation1Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1_ENTITY =
             BES.register("sign_expressway_distance_from_location_1_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDistanceFromLocation1Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayDistanceFromLocation1Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation2Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2_ENTITY =
             BES.register("sign_expressway_distance_from_location_2_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDistanceFromLocation2Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayDistanceFromLocation2Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_2.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation3Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3_ENTITY =
             BES.register("sign_expressway_distance_from_location_3_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDistanceFromLocation3Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayDistanceFromLocation3Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_3.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation4Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4_ENTITY =
             BES.register("sign_expressway_distance_from_location_4_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDistanceFromLocation4Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayDistanceFromLocation4Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation5Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5_ENTITY =
             BES.register("sign_expressway_distance_from_location_5_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDistanceFromLocation5Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayDistanceFromLocation5Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayDistanceFromLocation6Entity>> SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6_ENTITY =
             BES.register("sign_expressway_distance_from_location_6_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayDistanceFromLocation6Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayDistanceFromLocation6Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6.get()));
 
     public static final RegistrySupplier<BlockEntityType<SignExpresswayExit8Entity>> SIGN_EXPRESSWAY_EXIT_8_ENTITY =
             BES.register("sign_expressway_exit_8_entity",
-                    () -> BlockEntityType.Builder.of(SignExpresswayExit8Entity::new,
-                            SignBlocks.SIGN_EXPRESSWAY_EXIT_8.get()).build(null));
+                    () -> VersionServices.blockEntities().create(SignExpresswayExit8Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_EXIT_8.get()));
 
     public static final RegistrySupplier<BlockEntityType<ZonesBoard1Entity>> ZONES_BOARD_1_ENTITY =
             BES.register("zones_board_1_entity",
-                    () -> BlockEntityType.Builder.of(ZonesBoard1Entity::new,
+                    () -> VersionServices.blockEntities().create(ZonesBoard1Entity::new,
                             SignBlocks.ZONES_BOARD_RED.get(),
                             SignBlocks.ZONES_BOARD_YELLOW.get(),
-                            SignBlocks.ZONES_BOARD_WHITE.get()).build(null));
+                            SignBlocks.ZONES_BOARD_WHITE.get()));
 
     public static final RegistrySupplier<BlockEntityType<ZonesBoardImageEntity>> ZONES_BOARD_IMAGE_ENTITY =
             BES.register("zones_board_image_entity",
-                    () -> BlockEntityType.Builder.of(ZonesBoardImageEntity::new,
-                            SignBlocks.ZONES_BOARD_IMAGE.get()).build(null));
+                    () -> VersionServices.blockEntities().create(ZonesBoardImageEntity::new,
+                            SignBlocks.ZONES_BOARD_IMAGE.get()));
 
     public static final RegistrySupplier<BlockEntityType<ZonesBoardTimeRange1Entity>> ZONES_BOARD_TIME_RANGE_1_ENTITY =
             BES.register("zones_board_time_range_1_entity",
-                    () -> BlockEntityType.Builder.of(ZonesBoardTimeRange1Entity::new,
-                            SignBlocks.ZONES_BOARD_TIME_RANGE_1.get()).build(null));
+                    () -> VersionServices.blockEntities().create(ZonesBoardTimeRange1Entity::new,
+                            SignBlocks.ZONES_BOARD_TIME_RANGE_1.get()));
 
     public static final RegistrySupplier<BlockEntityType<ZonesBoardTimeRange2Entity>> ZONES_BOARD_TIME_RANGE_2_ENTITY =
             BES.register("zones_board_time_range_2_entity",
-                    () -> BlockEntityType.Builder.of(ZonesBoardTimeRange2Entity::new,
-                            SignBlocks.ZONES_BOARD_TIME_RANGE_2.get()).build(null));
+                    () -> VersionServices.blockEntities().create(ZonesBoardTimeRange2Entity::new,
+                            SignBlocks.ZONES_BOARD_TIME_RANGE_2.get()));
 
     public static final RegistrySupplier<BlockEntityType<ZonesBoardOverWeightEntity>> ZONES_BOARD_OVER_WEIGHT_ENTITY =
             BES.register("zones_board_over_weight_entity",
-                    () -> BlockEntityType.Builder.of(ZonesBoardOverWeightEntity::new,
+                    () -> VersionServices.blockEntities().create(ZonesBoardOverWeightEntity::new,
                             SignBlocks.ZONES_BOARD_OVER_WEIGHT.get(),
                             SignBlocks.ZONES_BOARD_TIME_LIMIT.get(),
                             SignBlocks.ZONES_BOARD_SUGGESTED_SPEED.get(),
                             SignBlocks.ZONES_BOARD_LENGTH.get(),
                             SignBlocks.ZONES_BOARD_DISTANCE_LENGTH.get(),
                             SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_LEFT.get(),
-                            SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_RIGHT.get()).build(null));
+                            SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_RIGHT.get()));
 
     public static final RegistrySupplier<BlockEntityType<CustomSignBlockEntity>> CUSTOM_SIGN_BLOCK_ENTITY =
             BES.register("custom_sign_block_entity",
-                    () -> BlockEntityType.Builder.of(CustomSignBlockEntity::new,
+                    () -> VersionServices.blockEntities().create(CustomSignBlockEntity::new,
                             SignBlocks.SIGN_CUSTOM_EXPRESSWAY_1.get(),
                             SignBlocks.SIGN_CUSTOM_EXPRESSWAY_2.get(),
                             SignBlocks.SIGN_CUSTOM_EXPRESSWAY_3.get(),
@@ -392,7 +392,7 @@ public class ModBlockEntities {
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_2.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_3.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_4.get(),
-                            SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_FLUORESCENCE.get()).build(null));
+                            SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_FLUORESCENCE.get()));
 
     public static void init() {
         BES.register();

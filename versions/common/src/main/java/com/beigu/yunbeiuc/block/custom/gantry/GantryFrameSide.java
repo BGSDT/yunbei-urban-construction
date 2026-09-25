@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -135,21 +137,21 @@ public class GantryFrameSide extends Block {
         // 更新当前方块
         BlockState currentState = world.getBlockState(pos);
         if (currentState.getBlock() instanceof GantryFrameSide) {
-            world.setBlock(pos, updateFrameType(currentState, world, pos), Block.UPDATE_ALL);
+            world.setBlock(pos, updateFrameType(currentState, world, pos), VersionServices.blocks().updateAll());
         }
 
         // 更新上方的相同方块
         BlockPos abovePos = pos.above();
         BlockState aboveState = world.getBlockState(abovePos);
         if (aboveState.getBlock() instanceof GantryFrameSide) {
-            world.setBlock(abovePos, updateFrameType(aboveState, world, abovePos), Block.UPDATE_ALL);
+            world.setBlock(abovePos, updateFrameType(aboveState, world, abovePos), VersionServices.blocks().updateAll());
         }
 
         // 更新下方的相同方块
         BlockPos belowPos = pos.below();
         BlockState belowState = world.getBlockState(belowPos);
         if (belowState.getBlock() instanceof GantryFrameSide) {
-            world.setBlock(belowPos, updateFrameType(belowState, world, belowPos), Block.UPDATE_ALL);
+            world.setBlock(belowPos, updateFrameType(belowState, world, belowPos), VersionServices.blocks().updateAll());
         }
     }
 

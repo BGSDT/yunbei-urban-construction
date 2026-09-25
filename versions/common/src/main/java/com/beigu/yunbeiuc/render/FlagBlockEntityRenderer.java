@@ -5,7 +5,6 @@ import com.beigu.yunbeiuc.entity.FlagBlockEntity;
 import com.beigu.yunbeiuc.util.CustomFlag;
 import com.beigu.yunbeiuc.util.FlagLoader;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-public class FlagBlockEntityRenderer implements BlockEntityRenderer<FlagBlockEntity> {
+public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlockEntity> {
 
     public FlagBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
     }
 
     @Override

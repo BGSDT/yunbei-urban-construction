@@ -33,8 +33,13 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         super.renderBackground(context.getMatrices());
     }
 
-    protected <T extends AbstractWidget> T addDrawableChild(T widget) {
-        return addButton(widget);
+    protected <T extends GuiEventListener> T addDrawableChild(T widget) {
+        if (widget instanceof AbstractWidget abstractWidget) {
+            addButton(abstractWidget);
+        } else {
+            addWidget(widget);
+        }
+        return widget;
     }
 
     protected <T extends GuiEventListener> T addSelectableChild(T widget) {

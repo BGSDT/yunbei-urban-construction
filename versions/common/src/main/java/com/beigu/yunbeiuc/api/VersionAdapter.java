@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.api;
 
 import com.beigu.yunbeiuc.api.block.BlockPlatform;
+import com.beigu.yunbeiuc.api.block.BlockEntityPlatform;
 import com.beigu.yunbeiuc.api.gui.GuiPlatform;
 import com.beigu.yunbeiuc.api.gui.RenderPlatform;
 import com.beigu.yunbeiuc.api.placeholder.PlaceholderResolver;
@@ -13,6 +14,7 @@ import com.beigu.yunbeiuc.api.resource.ResourcePlatform;
 public interface VersionAdapter {
     String minecraftVersion();
     BlockPlatform blocks();
+    BlockEntityPlatform blockEntities();
     GuiPlatform gui();
     RenderPlatform render();
     PlaceholderResolver placeholders();

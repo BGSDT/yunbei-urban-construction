@@ -7,7 +7,6 @@ import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Style;
@@ -19,11 +18,12 @@ import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import java.util.Map;
 
-public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<RoadNameSignBlockEntity> {
+public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<RoadNameSignBlockEntity> {
     private final Font textRenderer;
     private Block currentBlock;
 
     public RoadNameSignBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
         this.textRenderer = ctx.getFont();
     }
 
@@ -175,12 +175,10 @@ public class RoadNameSignBlockEntityRenderer implements BlockEntityRenderer<Road
         matrices.popPose();
     }
 
-    @Override
     public boolean shouldRenderOffScreen(RoadNameSignBlockEntity blockEntity) {
         return true;
     }
 
-    @Override
     public int getViewDistance() {
         return 256;
     }

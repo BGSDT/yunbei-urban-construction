@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.waring;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -99,7 +101,7 @@ public class WarningNetworkPole extends Block {
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onPlace(state, world, pos, oldState, notify);
-        world.setBlock(pos, updatePoleType(state, world, pos), Block.UPDATE_ALL);
+        world.setBlock(pos, updatePoleType(state, world, pos), VersionServices.blocks().updateAll());
     }
 
     private BlockState updatePoleType(BlockState state, LevelAccessor world, BlockPos pos) {

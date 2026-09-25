@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
@@ -53,7 +55,7 @@ public class CustomSignUpdatePacket {
             sign.setChanged();
 
             // 通知客户端重新读取方块实体数据
-            player.level.sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), net.minecraft.world.level.block.Block.UPDATE_ALL);
+            player.level.sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), VersionServices.blocks().updateAll());
 
         }
     }
