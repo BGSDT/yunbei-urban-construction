@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/iron_horse_gray",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/iron_horse_gray"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/iron_horse_gray",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/iron_horse_gray",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+	"variants": {
+		"facing=east,direction_type=left": {
+			"model": "yunbeiuc:block/instrument_camera_left",
+			"y": 90
+		},
+		"facing=north,direction_type=left": {
+			"model": "yunbeiuc:block/instrument_camera_left"
+		},
+		"facing=south,direction_type=left": {
+			"model": "yunbeiuc:block/instrument_camera_left",
+			"y": 180
+		},
+		"facing=west,direction_type=left": {
+			"model": "yunbeiuc:block/instrument_camera_left",
+			"y": 270
+		},
+		"facing=east,direction_type=right": {
+			"model": "yunbeiuc:block/instrument_camera_right",
+			"y": 90
+		},
+		"facing=north,direction_type=right": {
+			"model": "yunbeiuc:block/instrument_camera_right"
+		},
+		"facing=south,direction_type=right": {
+			"model": "yunbeiuc:block/instrument_camera_right",
+			"y": 180
+		},
+		"facing=west,direction_type=right": {
+			"model": "yunbeiuc:block/instrument_camera_right",
+			"y": 270
+		},
+		"facing=east,direction_type=middle": {
+			"model": "yunbeiuc:block/instrument_camera_middle",
+			"y": 90
+		},
+		"facing=north,direction_type=middle": {
+			"model": "yunbeiuc:block/instrument_camera_middle"
+		},
+		"facing=south,direction_type=middle": {
+			"model": "yunbeiuc:block/instrument_camera_middle",
+			"y": 180
+		},
+		"facing=west,direction_type=middle": {
+			"model": "yunbeiuc:block/instrument_camera_middle",
+			"y": 270
+		}
+	}
+}

@@ -1,0 +1,39 @@
+{
+  "variants": {
+    "facing=north,type=single,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal" },
+    "facing=north,type=single,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal" },
+    "facing=north,type=left,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal" },
+    "facing=north,type=left,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal" },
+    "facing=north,type=middle,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal" },
+    "facing=north,type=middle,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal" },
+    "facing=north,type=right,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal" },
+    "facing=north,type=right,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal" },
+
+    "facing=south,type=single,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal", "y": 180 },
+    "facing=south,type=single,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal", "y": 180 },
+    "facing=south,type=left,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal", "y": 180 },
+    "facing=south,type=left,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal", "y": 180 },
+    "facing=south,type=middle,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal", "y": 180 },
+    "facing=south,type=middle,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal", "y": 180 },
+    "facing=south,type=right,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal", "y": 180 },
+    "facing=south,type=right,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal", "y": 180 },
+
+    "facing=east,type=single,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal", "y": 90 },
+    "facing=east,type=single,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal", "y": 90 },
+    "facing=east,type=left,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal", "y": 90 },
+    "facing=east,type=left,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal", "y": 90 },
+    "facing=east,type=middle,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal", "y": 90 },
+    "facing=east,type=middle,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal", "y": 90 },
+    "facing=east,type=right,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal", "y": 90 },
+    "facing=east,type=right,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal", "y": 90 },
+
+    "facing=west,type=single,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal", "y": 270 },
+    "facing=west,type=single,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal", "y": 270 },
+    "facing=west,type=left,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_offset_horizontal", "y": 270 },
+    "facing=west,type=left,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_offset_horizontal", "y": 270 },
+    "facing=west,type=middle,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal", "y": 270 },
+    "facing=west,type=middle,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal", "y": 270 },
+    "facing=west,type=right,gate_type=normal": { "model": "yunbeiuc:block/barrier_gate_1_pole_horizontal", "y": 270 },
+    "facing=west,type=right,gate_type=slab": { "model": "yunbeiuc:block/barrier_gate_1_pole_slab_horizontal", "y": 270 }
+  }
+}

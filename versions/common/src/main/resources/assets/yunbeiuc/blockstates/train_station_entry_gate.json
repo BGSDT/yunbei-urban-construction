@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=north,tf_type=true": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 0
+    },
+    "facing=east,tf_type=true": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 90
+    },
+    "facing=south,tf_type=true": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 180
+    },
+    "facing=west,tf_type=false": {
+      "model": "yunbeiuc:block/anti_glare_net_pole",
+      "y": 270
+    },
+    "facing=north,tf_type=false": {
+      "model": "yunbeiuc:block/anti_glare_net",
+      "y": 0
+    },
+    "facing=east,tf_type=false": {
+      "model": "yunbeiuc:block/anti_glare_net",
+      "y": 90
+    },
+    "facing=south,tf_type=false": {
+      "model": "yunbeiuc:block/anti_glare_net",
+      "y": 180
+    },
+    "facing=west,tf_type=true": {
+      "model": "yunbeiuc:block/anti_glare_net",
+      "y": 270
+    }
+  }
+}

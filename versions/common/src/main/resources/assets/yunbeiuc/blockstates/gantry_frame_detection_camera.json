@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_detection_camera",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_detection_camera"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_detection_camera",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_detection_camera",
+      "y": 270
+    }
+  }
+}

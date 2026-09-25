@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "yunbeiuc:block/sign/normal/sign_custom_expressway_5"
+    },
+    "facing=east": {
+      "model": "yunbeiuc:block/sign/normal/sign_custom_expressway_5",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/sign/normal/sign_custom_expressway_5",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/sign/normal/sign_custom_expressway_5",
+      "y": 270
+    }
+  }
+}

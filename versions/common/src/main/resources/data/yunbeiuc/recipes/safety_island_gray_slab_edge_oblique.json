@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "result": "yunbeiuc:safety_island_gray_slab_edge_oblique",
+    "ingredient": {
+        "item": "minecraft:gray_concrete"
+    },
+    "count": 2
+}

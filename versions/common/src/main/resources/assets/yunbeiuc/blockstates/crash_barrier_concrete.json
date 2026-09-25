@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "facing=north,crash_barrier_concrete=crash_barrier_concrete": { "model": "yunbeiuc:block/crash_barrier_concrete" },
+    "facing=east,crash_barrier_concrete=crash_barrier_concrete":  { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 90 },
+    "facing=south,crash_barrier_concrete=crash_barrier_concrete": { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 180 },
+    "facing=west,crash_barrier_concrete=crash_barrier_concrete":  { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 270 },
+
+    "facing=north,crash_barrier_concrete=crash_barrier_concrete_left": { "model": "yunbeiuc:block/crash_barrier_concrete" },
+    "facing=east,crash_barrier_concrete=crash_barrier_concrete_left":  { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 90 },
+    "facing=south,crash_barrier_concrete=crash_barrier_concrete_left": { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 180 },
+    "facing=west,crash_barrier_concrete=crash_barrier_concrete_left":  { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 270 },
+
+    "facing=north,crash_barrier_concrete=crash_barrier_concrete_right": { "model": "yunbeiuc:block/crash_barrier_concrete" },
+    "facing=east,crash_barrier_concrete=crash_barrier_concrete_right":  { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 90 },
+    "facing=south,crash_barrier_concrete=crash_barrier_concrete_right": { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 180 },
+    "facing=west,crash_barrier_concrete=crash_barrier_concrete_right":  { "model": "yunbeiuc:block/crash_barrier_concrete", "y": 270 }
+  }
+}

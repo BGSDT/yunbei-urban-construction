@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/safety_island_yellow_1",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/safety_island_yellow_1"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/safety_island_yellow_1",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/safety_island_yellow_1",
+      "y": 270
+    }
+  }
+}

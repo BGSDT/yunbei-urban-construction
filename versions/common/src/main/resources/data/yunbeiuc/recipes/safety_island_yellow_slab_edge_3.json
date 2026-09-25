@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "building",
+    "ingredients": [
+        {
+            "item": "yunbeiuc:safety_island_yellow_slab_edge_1"
+        },
+        {
+            "item": "yunbeiuc:safety_island_yellow_slab_edge_2"
+        }
+    ],
+    "result": {
+        "count": 2,
+        "item": "yunbeiuc:safety_island_yellow_slab_edge_3"
+    }
+}

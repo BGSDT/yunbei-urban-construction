@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "yunbeiuc:block/road_construction_barrier_blue" },
+    "facing=east":  { "model": "yunbeiuc:block/road_construction_barrier_blue", "y": 90 },
+    "facing=south": { "model": "yunbeiuc:block/road_construction_barrier_blue", "y": 180 },
+    "facing=west":  { "model": "yunbeiuc:block/road_construction_barrier_blue", "y": 270 }
+  }
+}

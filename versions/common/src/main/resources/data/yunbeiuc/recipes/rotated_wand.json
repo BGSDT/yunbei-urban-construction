@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+        "#": {
+            "item": "yunbeiuc:wand"
+        },
+        "X": {
+            "item": "minecraft:white_concrete"
+        }
+    },
+    "pattern": [
+        "X",
+        "X",
+        "#"
+    ],
+    "result": {
+        "item": "yunbeiuc:rotated_wand"
+    }
+}

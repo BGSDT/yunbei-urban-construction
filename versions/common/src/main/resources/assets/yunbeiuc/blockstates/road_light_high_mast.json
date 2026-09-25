@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "tf_type=off": {
+      "model": "yunbeiuc:block/road_light_high_mast_off"
+    },
+    "tf_type=on": {
+      "model": "yunbeiuc:block/road_light_high_mast_on"
+    }
+  }
+}

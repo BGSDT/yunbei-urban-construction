@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "building",
+    "ingredients": [
+        {
+            "item": "minecraft:white_concrete"
+        },
+        {
+            "item": "minecraft:torch"
+        },
+        {
+            "item": "minecraft:stick"
+        }
+    ],
+    "result": {
+        "count": 1,
+        "item": "yunbeiuc:gantry_frame_lighting_lamp"
+    }
+}

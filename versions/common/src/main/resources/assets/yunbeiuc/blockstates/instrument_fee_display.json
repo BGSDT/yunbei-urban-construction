@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "facing=north,direction_type=middle": {
+      "model": "yunbeiuc:block/instrument_fee_display_middle",
+      "y": 0
+    },
+    "facing=north,direction_type=left": {
+      "model": "yunbeiuc:block/instrument_fee_display_left",
+      "y": 0
+    },
+    "facing=north,direction_type=right": {
+      "model": "yunbeiuc:block/instrument_fee_display_right",
+      "y": 0
+    },
+    "facing=south,direction_type=middle": {
+      "model": "yunbeiuc:block/instrument_fee_display_middle",
+      "y": 180
+    },
+    "facing=south,direction_type=left": {
+      "model": "yunbeiuc:block/instrument_fee_display_left",
+      "y": 180
+    },
+    "facing=south,direction_type=right": {
+      "model": "yunbeiuc:block/instrument_fee_display_right",
+      "y": 180
+    },
+    "facing=east,direction_type=middle": {
+      "model": "yunbeiuc:block/instrument_fee_display_middle",
+      "y": 90
+    },
+    "facing=east,direction_type=left": {
+      "model": "yunbeiuc:block/instrument_fee_display_left",
+      "y": 90
+    },
+    "facing=east,direction_type=right": {
+      "model": "yunbeiuc:block/instrument_fee_display_right",
+      "y": 90
+    },
+    "facing=west,direction_type=middle": {
+      "model": "yunbeiuc:block/instrument_fee_display_middle",
+      "y": 270
+    },
+    "facing=west,direction_type=left": {
+      "model": "yunbeiuc:block/instrument_fee_display_left",
+      "y": 270
+    },
+    "facing=west,direction_type=right": {
+      "model": "yunbeiuc:block/instrument_fee_display_right",
+      "y": 270
+    }
+  }
+}

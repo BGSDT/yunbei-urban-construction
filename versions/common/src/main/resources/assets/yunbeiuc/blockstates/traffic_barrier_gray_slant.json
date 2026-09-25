@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/traffic_barrier_gray_slant",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/traffic_barrier_gray_slant"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/traffic_barrier_gray_slant",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/traffic_barrier_gray_slant",
+      "y": 270
+    }
+  }
+}

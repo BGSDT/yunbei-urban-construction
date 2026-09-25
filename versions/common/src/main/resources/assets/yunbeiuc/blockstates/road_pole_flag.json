@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=north,pole_type=road_pole": {
+      "model": "yunbeiuc:block/road_pole_flag",
+      "y": 0
+    },
+    "facing=east,pole_type=road_pole": {
+      "model": "yunbeiuc:block/road_pole_flag",
+      "y": 90
+    },
+    "facing=south,pole_type=road_pole": {
+      "model": "yunbeiuc:block/road_pole_flag",
+      "y": 180
+    },
+    "facing=west,pole_type=road_pole": {
+      "model": "yunbeiuc:block/road_pole_flag",
+      "y": 270
+    },
+    "facing=north,pole_type=road_pole_light": {
+      "model": "yunbeiuc:block/road_pole_light_flag",
+      "y": 0
+    },
+    "facing=east,pole_type=road_pole_light": {
+      "model": "yunbeiuc:block/road_pole_light_flag",
+      "y": 90
+    },
+    "facing=south,pole_type=road_pole_light": {
+      "model": "yunbeiuc:block/road_pole_light_flag",
+      "y": 180
+    },
+    "facing=west,pole_type=road_pole_light": {
+      "model": "yunbeiuc:block/road_pole_light_flag",
+      "y": 270
+    }
+  }
+}

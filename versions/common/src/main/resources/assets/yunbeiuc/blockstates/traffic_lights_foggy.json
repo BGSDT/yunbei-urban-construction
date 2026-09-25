@@ -1,0 +1,132 @@
+{
+  "variants": {
+    "facing=north,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 0
+    },
+    "facing=east,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 90
+    },
+    "facing=south,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 180
+    },
+    "facing=west,light_state=red,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 270
+    },
+    "facing=north,light_state=red,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 0
+    },
+    "facing=east,light_state=red,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 90
+    },
+    "facing=south,light_state=red,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 180
+    },
+    "facing=west,light_state=red,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 270
+    },
+    "facing=north,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 0
+    },
+    "facing=east,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 90
+    },
+    "facing=south,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 180
+    },
+    "facing=west,light_state=yellow,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 270
+    },
+    "facing=north,light_state=yellow,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 0
+    },
+    "facing=east,light_state=yellow,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 90
+    },
+    "facing=south,light_state=yellow,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 180
+    },
+    "facing=west,light_state=yellow,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 270
+    },
+    "facing=north,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 0
+    },
+    "facing=east,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 90
+    },
+    "facing=south,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 180
+    },
+    "facing=west,light_state=green,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 270
+    },
+    "facing=north,light_state=green,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 0
+    },
+    "facing=east,light_state=green,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 90
+    },
+    "facing=south,light_state=green,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 180
+    },
+    "facing=west,light_state=green,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 270
+    },
+    "facing=north,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 0
+    },
+    "facing=east,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 90
+    },
+    "facing=south,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 180
+    },
+    "facing=west,light_state=gray,type=simple": {
+      "model": "yunbeiuc:block/traffic_lights_foggy_simple",
+      "y": 270
+    },
+    "facing=north,light_state=gray,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 0
+    },
+    "facing=east,light_state=gray,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 90
+    },
+    "facing=south,light_state=gray,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 180
+    },
+    "facing=west,light_state=gray,type=pole": {
+      "model": "yunbeiuc:block/traffic_lights_foggy",
+      "y": 270
+    }
+  }
+}

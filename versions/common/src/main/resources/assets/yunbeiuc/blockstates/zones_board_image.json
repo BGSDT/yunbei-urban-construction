@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/zones_board_image",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/zones_board_image"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/zones_board_image",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/zones_board_image",
+      "y": 270
+    }
+  }
+}

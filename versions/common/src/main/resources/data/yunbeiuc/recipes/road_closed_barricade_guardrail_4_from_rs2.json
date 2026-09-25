@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "yunbeiuc:reflective_sign_red_all_2"
+        },
+        "B": {
+            "item": "minecraft:white_concrete"
+        }
+    },
+    "pattern": [
+        " A ",
+        "BAB"
+    ],
+    "result": {
+        "item": "yunbeiuc:road_closed_barricade_guardrail_3",
+        "count": 2
+    }
+}

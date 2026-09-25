@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "frame_type=gantry_frame_side_1,facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_side_1",
+      "y": 0
+    },
+    "frame_type=gantry_frame_side_1,facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_side_1",
+      "y": 90
+    },
+    "frame_type=gantry_frame_side_1,facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_side_1",
+      "y": 180
+    },
+    "frame_type=gantry_frame_side_1,facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_side_1",
+      "y": 270
+    },
+    "frame_type=gantry_frame_side_2,facing=north": {
+      "model": "yunbeiuc:block/gantry_frame_side_2",
+      "y": 0
+    },
+    "frame_type=gantry_frame_side_2,facing=east": {
+      "model": "yunbeiuc:block/gantry_frame_side_2",
+      "y": 90
+    },
+    "frame_type=gantry_frame_side_2,facing=south": {
+      "model": "yunbeiuc:block/gantry_frame_side_2",
+      "y": 180
+    },
+    "frame_type=gantry_frame_side_2,facing=west": {
+      "model": "yunbeiuc:block/gantry_frame_side_2",
+      "y": 270
+    }
+  }
+}

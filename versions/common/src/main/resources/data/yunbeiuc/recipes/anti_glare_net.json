@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:green_concrete"
+        },
+        "B": {
+            "item": "minecraft:green_stained_glass"
+        }
+    },
+    "pattern": [
+        "AAA",
+        "BBB",
+        "AAA"
+    ],
+    "result": {
+        "count": 9,
+        "item": "yunbeiuc:anti_glare_net"
+    }
+}

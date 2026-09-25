@@ -1,0 +1,68 @@
+{
+	"variants": {
+		"facing=north,type=bottom": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 0
+		},
+		"facing=east,type=bottom": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 90
+		},
+		"facing=south,type=bottom": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 180
+		},
+		"facing=west,type=bottom": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 270
+		},
+		"facing=north,type=up": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 0
+		},
+		"facing=east,type=up": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 90
+		},
+		"facing=south,type=up": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 180
+		},
+		"facing=west,type=up": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 270
+		},
+		"facing=north,type=middle": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 0
+		},
+		"facing=east,type=middle": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 90
+		},
+		"facing=south,type=middle": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 180
+		},
+		"facing=west,type=middle": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow_up",
+			"y": 270
+		},
+		"facing=north,type=single": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 0
+		},
+		"facing=east,type=single": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 90
+		},
+		"facing=south,type=single": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 180
+		},
+		"facing=west,type=single": {
+			"model": "yunbeiuc:block/traffic_barrier_gray_yellow",
+			"y": 270
+		}
+	}
+}

@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "building",
+    "key": {
+        "A": {
+            "item": "minecraft:flowering_azalea_leaves"
+        },
+        "B": {
+            "item": "minecraft:iron_block"
+        },
+        "C": {
+            "item": "minecraft:white_concrete"
+        }
+    },
+    "pattern": [
+        " A ",
+        "CBC"
+    ],
+    "result": {
+        "item": "yunbeiuc:road_flower_box_2",
+        "count": 2
+    }
+}

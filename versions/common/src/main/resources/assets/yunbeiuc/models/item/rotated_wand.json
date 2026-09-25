@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "yunbeiuc:item/rotated_wand"
+  }
+}
