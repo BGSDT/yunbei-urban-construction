@@ -1,6 +1,8 @@
 package com.beigu.yunbeiuc.api;
 
 import com.beigu.yunbeiuc.api.block.BlockPlatform;
+import com.beigu.yunbeiuc.api.block.BlockEntityPlatform;
+import com.beigu.yunbeiuc.api.block.BlockEntityPlatformImpl;
 import com.beigu.yunbeiuc.api.block.BlockPlatformImpl;
 import com.beigu.yunbeiuc.api.gui.GuiPlatform;
 import com.beigu.yunbeiuc.api.gui.GuiPlatformImpl;
@@ -19,6 +21,7 @@ import com.beigu.yunbeiuc.api.resource.ResourcePlatformImpl;
 /** Minecraft 1.18.2 implementation loaded by the shared VersionServices facade. */
 public final class VersionAdapterImpl implements VersionAdapter {
     private static final BlockPlatform BLOCKS = new BlockPlatformImpl();
+    private static final BlockEntityPlatform BLOCK_ENTITIES = new BlockEntityPlatformImpl();
     private static final GuiPlatform GUI = new GuiPlatformImpl();
     private static final RenderPlatform RENDER = new RenderPlatformImpl();
     private static final PlaceholderResolver PLACEHOLDERS = key -> key;
@@ -33,6 +36,7 @@ public final class VersionAdapterImpl implements VersionAdapter {
     }
 
     @Override public BlockPlatform blocks() { return BLOCKS; }
+    @Override public BlockEntityPlatform blockEntities() { return BLOCK_ENTITIES; }
 
     @Override
     public GuiPlatform gui() {

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
+import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
+
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -40,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class RoadPoleFlag extends BaseEntityBlock {
+public class RoadPoleFlag extends EntityBlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<PoleType> POLE_TYPE = EnumProperty.create("pole_type", PoleType.class);
 
@@ -88,9 +90,9 @@ public class RoadPoleFlag extends BaseEntityBlock {
 
     private PoleType getPoleTypeForPosition(Level world, BlockPos pos) {
         Block blockBelow = world.getBlockState(pos.below()).getBlock();
-        if (blockBelow == MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS ||
-                blockBelow == MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB ||
-                blockBelow == MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL) {
+        if (blockBelow == MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS.get() ||
+                blockBelow == MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB.get() ||
+                blockBelow == MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL.get()) {
             return PoleType.ROAD_POLE_LIGHT;
         }
         return PoleType.ROAD_POLE;
@@ -133,7 +135,7 @@ public class RoadPoleFlag extends BaseEntityBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         return new FlagBlockEntity(pos, state);
     }
 

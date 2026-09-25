@@ -376,7 +376,7 @@ public class TextDisplayScreen extends Screen {
         }
     }
 
-    private static Component colorMsg(int c) { return Text.literal("■").withStyle(s -> s.withColor(c)); }
+    private static Component colorMsg(int c) { return Text.literal("■").withStyle(s -> s.withColor(net.minecraft.network.chat.TextColor.fromRgb(c))); }
 
     private static Integer tryParseHex(String t) {
         String hex = t.replace("#", "").trim();

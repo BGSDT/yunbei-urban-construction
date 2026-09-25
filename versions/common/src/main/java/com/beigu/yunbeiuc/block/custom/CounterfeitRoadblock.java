@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -83,7 +85,7 @@ public class CounterfeitRoadblock extends Block {
         ItemStack heldItem = player.getItemInHand(hand);
 
         // 检查玩家是否手持 ModItem.Wand
-        if (heldItem.is(ModItems.WAND.get()) && !world .isClientSide) {
+        if (heldItem.getItem() == ModItems.WAND.get() && !world .isClientSide) {
             // 切换整个连接组的状态
             toggleConnectedGroup(world, pos, state.getValue(FACING), !state.getValue(ACTIVE));
             return InteractionResult.SUCCESS;
@@ -109,7 +111,7 @@ public class CounterfeitRoadblock extends Block {
 
         // 切换当前方块
         if (state.getValue(ACTIVE) != newActiveState) {
-            world.setBlock(pos, state.setValue(ACTIVE, newActiveState), Block.UPDATE_ALL);
+            world.setBlock(pos, state.setValue(ACTIVE, newActiveState), VersionServices.blocks().updateAll());
             world.playSound(null, pos,
                     newActiveState ? SoundEvents.METAL_PRESSURE_PLATE_CLICK_ON : SoundEvents.METAL_PRESSURE_PLATE_CLICK_OFF,
                     SoundSource.BLOCKS, 1.0F, 1.0F);

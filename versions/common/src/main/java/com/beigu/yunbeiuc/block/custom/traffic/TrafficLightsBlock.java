@@ -223,7 +223,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         return new TrafficLightsBlockEntity(pos, state);
     }
 
@@ -232,13 +232,13 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         ItemStack heldItem = player.getItemInHand(hand);
 
         // 魔杖交互
-        if (heldItem.is(ModItems.WAND.get())) {
+        if (heldItem.getItem() == ModItems.WAND.get()) {
             // Shift + 右键切换 type 状态
             if (player.isShiftKeyDown()) {
                 if (!world .isClientSide) {
                     MountType currentType = state.getValue(TYPE);
                     MountType newType = currentType == MountType.SIMPLE ? MountType.POLE : MountType.SIMPLE;
-                    world.setBlock(pos, state.setValue(TYPE, newType), Block.UPDATE_ALL);
+                    world.setBlock(pos, state.setValue(TYPE, newType), VersionServices.blocks().updateAll());
                     player.displayClientMessage(Text.literal("§a已切换至 " + (newType == MountType.POLE ? "§6路杆模式" : "§6简易模式")), true);
                 }
                 return InteractionResult.sidedSuccess(world.isClientSide);

@@ -58,7 +58,7 @@ public class RoadPoleLed extends CustomTextDisplayBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         return new RoadPoleLedEntity(pos, state);
     }
 

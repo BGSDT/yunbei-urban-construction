@@ -63,7 +63,7 @@ public class RoadPoleTextDisplay extends CustomTextDisplayBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         return new RoadPoleTextDisplayEntity(pos, state);
     }
 

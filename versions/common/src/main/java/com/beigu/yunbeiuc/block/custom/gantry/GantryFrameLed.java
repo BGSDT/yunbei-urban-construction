@@ -111,7 +111,7 @@ public class GantryFrameLed extends CustomTextDisplayBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         return new GantryFrameLedEntity(pos, state);
     }
 

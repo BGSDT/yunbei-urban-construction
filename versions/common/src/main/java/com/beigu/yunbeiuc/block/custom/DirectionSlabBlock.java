@@ -94,7 +94,7 @@ public class DirectionSlabBlock extends Block implements SimpleWaterloggedBlock 
         ItemStack itemStack = context.getItemInHand();
         SlabType slabType = state.getValue(TYPE);
         
-        if (slabType != SlabType.DOUBLE && itemStack.is(this.asItem())) {
+        if (slabType != SlabType.DOUBLE && itemStack.getItem() == this.asItem()) {
             if (context.replacingClickedOnBlock()) {
                 boolean bl = context.getClickLocation().y - (double) context.getClickedPos().getY() > 0.5;
                 Direction direction = context.getClickedFace();

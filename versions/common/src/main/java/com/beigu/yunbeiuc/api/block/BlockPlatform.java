@@ -3,6 +3,8 @@ package com.beigu.yunbeiuc.api.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.server.level.ServerLevel;
@@ -16,5 +18,15 @@ public interface BlockPlatform {
     void scheduleFluidTick(LevelAccessor level, BlockPos pos, Fluid fluid, int delay);
 
     boolean growOakTree(ServerLevel level, BlockPos pos);
+
+    BlockBehaviour.Properties color(BlockBehaviour.Properties properties, MaterialColor color);
+
+    int updateAll();
+
+    int updateImmediate();
+
+    int updateNeighbors();
+
+    int updateClients();
 
 }

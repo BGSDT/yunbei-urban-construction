@@ -10,7 +10,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Style;
@@ -21,7 +20,7 @@ import net.minecraft.core.Direction;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Matrix4f;
 
-public class TrafficLightsPavementIntegrationBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsPavementIntegrationBlockEntity> {
+public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEntityRendererCompat<TrafficLightsPavementIntegrationBlockEntity> {
 
     private static final ResourceLocation PAVEMENT_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
     private static final ResourceLocation PAVEMENT_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
@@ -29,6 +28,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
     private final Font textRenderer;
 
     public TrafficLightsPavementIntegrationBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
         this.textRenderer = ctx.getFont();
     }
 
@@ -247,12 +247,10 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
         matrices.popPose();
     }
 
-    @Override
     public boolean shouldRenderOffScreen(TrafficLightsPavementIntegrationBlockEntity blockEntity) {
         return true;
     }
 
-    @Override
     public int getViewDistance() {
         return 256;
     }

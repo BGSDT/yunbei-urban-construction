@@ -11,7 +11,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Style;
@@ -26,11 +25,12 @@ import com.mojang.math.Matrix4f;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBlockEntity> implements BlockEntityRenderer<T> {
+public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBlockEntity> extends BlockEntityRendererCompat<T> {
     protected final Font textRenderer;
     private int gizmoLineIndex;
 
     protected AbstractTextDisplayEntityRenderer(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
         this.textRenderer = ctx.getFont();
     }
 
@@ -40,7 +40,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         applyTransforms(matrices, entity);
         Matrix4f baseFrame = new Matrix4f(matrices.last().pose());
         float zOffset = getZOffset(entity);
-        int effectiveLight = entity.isGlowingText() ? LightTexture.FULL_BRIGHT : light;
+        int effectiveLight = entity.isGlowingText() ? 0xF000F0 : light;
 
         // 子类渲染固定内容（如枚举驱动的 logo 纹理），在动态文本行之前
         renderFixedContent(entity, matrices, vertexConsumers, tickDelta, light, overlay, zOffset);
@@ -250,8 +250,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), true,
                         matrix, vertexConsumers, false, 0, light);
             }
-            this.textRenderer.drawInBatch8xOutline(renderText.getVisualOrderText(), x, y, lineData.getColor(), lineData.getOutlineColor(),
-                    matrix, vertexConsumers, light);
+            this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), false,
+                    matrix, vertexConsumers, false, 0, light);
         } else {
             this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), shadow,
                     matrix, vertexConsumers, false, 0, light);
@@ -293,11 +293,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        buffer.begin(4, DefaultVertexFormat.POSITION_COLOR);
         buffer.vertex(matrix, -halfW, -halfH, 0).color(r, g, b, a).endVertex();
         buffer.vertex(matrix, halfW, -halfH, 0).color(r, g, b, a).endVertex();
         buffer.vertex(matrix, halfW, halfH, 0).color(r, g, b, a).endVertex();
@@ -388,11 +387,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        buffer.begin(4, DefaultVertexFormat.POSITION_COLOR);
         addOutlineBar(buffer, matrix, x0, y0, x1, y0 + thicknessY, r, g, b, a);
         addOutlineBar(buffer, matrix, x0, y1 - thicknessY, x1, y1, r, g, b, a);
         addOutlineBar(buffer, matrix, x0, y0, x0 + thicknessX, y1, r, g, b, a);
@@ -413,12 +411,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         buffer.vertex(matrix, x0, y1, 0).color(r, g, b, a).endVertex();
     }
 
-    @Override
     public boolean shouldRenderOffScreen(T blockEntity) {
         return true;
     }
 
-    @Override
     public int getViewDistance() {
         return 256;
     }

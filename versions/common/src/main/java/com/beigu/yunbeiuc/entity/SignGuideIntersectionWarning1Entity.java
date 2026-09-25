@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.block.SignBlocks;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -87,7 +89,7 @@ public class SignGuideIntersectionWarning1Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), net.minecraft.world.level.block.Block.UPDATE_ALL);
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
         }
     }
 }

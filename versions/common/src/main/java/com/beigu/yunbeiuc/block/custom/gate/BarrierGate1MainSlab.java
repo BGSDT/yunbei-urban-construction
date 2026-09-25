@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gate;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.item.ModItems;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -74,9 +76,9 @@ public class BarrierGate1MainSlab extends Block {
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!world.isClientSide && player.getItemInHand(hand).is(ModItems.WAND.get())) {
+        if (!world.isClientSide && player.getItemInHand(hand).getItem() == ModItems.WAND.get()) {
             PoleType next = state.getValue(POLE_TYPE) == PoleType.LONGITUDINAL ? PoleType.HORIZONTAL : PoleType.LONGITUDINAL;
-            world.setBlock(pos, state.setValue(POLE_TYPE, next), Block.UPDATE_ALL);
+            world.setBlock(pos, state.setValue(POLE_TYPE, next), VersionServices.blocks().updateAll());
         }
         return InteractionResult.SUCCESS;
     }
@@ -93,7 +95,7 @@ public class BarrierGate1MainSlab extends Block {
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onPlace(state, world, pos, oldState, notify);
         if (!world.isClientSide) {
-            world.setBlock(pos, getAutoState(state, world, pos), Block.UPDATE_ALL);
+            world.setBlock(pos, getAutoState(state, world, pos), VersionServices.blocks().updateAll());
         }
     }
 

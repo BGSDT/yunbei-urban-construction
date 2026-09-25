@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.guardrail;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.level.material.PushReaction;
@@ -68,7 +70,7 @@ public class RoadClosedBarricadeGuardrail4 extends DirectionalBlock {
 
             world.setBlock(rightPos,
                     state.setValue(PART, BedPart.HEAD),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
         }
     }
 
@@ -87,7 +89,7 @@ public class RoadClosedBarricadeGuardrail4 extends DirectionalBlock {
         BlockState otherState = world.getBlockState(otherPos);
         if (otherState.is(this) && otherState.getValue(PART) != part) {
             world.setBlock(otherPos, Blocks.AIR.defaultBlockState(),
-                    Block.UPDATE_ALL | Block.UPDATE_NEIGHBORS);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateNeighbors());
             world.levelEvent(player, 2001, otherPos,
                     Block.getId(otherState));
         }
@@ -147,7 +149,7 @@ public class RoadClosedBarricadeGuardrail4 extends DirectionalBlock {
 
             if (!otherState.is(this)) {
                 world.setBlock(pos, Blocks.AIR.defaultBlockState(),
-                        Block.UPDATE_ALL | Block.UPDATE_NEIGHBORS);
+                        VersionServices.blocks().updateAll() | VersionServices.blocks().updateNeighbors());
             }
         }
     }

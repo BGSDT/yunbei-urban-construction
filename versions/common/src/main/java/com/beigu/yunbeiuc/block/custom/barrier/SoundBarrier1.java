@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.barrier;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.level.material.PushReaction;
@@ -73,23 +75,23 @@ public class SoundBarrier1 extends DirectionalBlock {
             // 放置右侧同层方块 (HEAD)
             world.setBlock(rightPos,
                     state.setValue(PART, BedPart.HEAD).setValue(LAYER, 0),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
 
             // 放置 FOOT 和 HEAD 的中层
             world.setBlock(pos.above(),
                     state.setValue(PART, BedPart.FOOT).setValue(LAYER, 1),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
             world.setBlock(rightPos.above(),
                     state.setValue(PART, BedPart.HEAD).setValue(LAYER, 1),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
 
             // 放置 FOOT 和 HEAD 的顶层
             world.setBlock(pos.above(2),
                     state.setValue(PART, BedPart.FOOT).setValue(LAYER, 2),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
             world.setBlock(rightPos.above(2),
                     state.setValue(PART, BedPart.HEAD).setValue(LAYER, 2),
-                    Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
         }
     }
 
@@ -131,7 +133,7 @@ public class SoundBarrier1 extends DirectionalBlock {
         BlockState state = world.getBlockState(pos);
         if (state.is(this)) {
             world.setBlock(pos, Blocks.AIR.defaultBlockState(),
-                    Block.UPDATE_ALL | Block.UPDATE_NEIGHBORS);
+                    VersionServices.blocks().updateAll() | VersionServices.blocks().updateNeighbors());
             world.levelEvent(player, 2001, pos,
                     Block.getId(state));
         }
@@ -178,7 +180,7 @@ public class SoundBarrier1 extends DirectionalBlock {
             if (!world.getBlockState(otherPos).is(this) ||
                     world.getBlockState(otherPos).getValue(LAYER) != layer) {
                 world.setBlock(pos, Blocks.AIR.defaultBlockState(),
-                        Block.UPDATE_ALL | Block.UPDATE_NEIGHBORS);
+                        VersionServices.blocks().updateAll() | VersionServices.blocks().updateNeighbors());
             }
         }
     }

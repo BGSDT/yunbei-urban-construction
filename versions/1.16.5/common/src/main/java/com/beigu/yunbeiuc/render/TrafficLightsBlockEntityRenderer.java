@@ -12,7 +12,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.player.Player;
@@ -28,10 +27,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsBlockEntity> {
+public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<TrafficLightsBlockEntity> {
     private final Font textRenderer;
 
     public TrafficLightsBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
         this.textRenderer = ctx.getFont();
     }
 
@@ -617,14 +617,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.popPose();
     }
 
-    @Override
     public boolean shouldRenderOffScreen(TrafficLightsBlockEntity blockEntity) {
         return true;
     }
 
     private boolean isHoldingWand(Player player) {
-        return player.getMainHandItem().is(ModItems.WAND.get()) ||
-                player.getOffhandItem().is(ModItems.WAND.get());
+        return player.getMainHandItem().getItem() == ModItems.WAND.get() ||
+                player.getOffhandItem().getItem() == ModItems.WAND.get();
     }
 
     private String getDirectionText(TrafficLightsBlockEntity.DirectionType type) {
@@ -659,7 +658,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         return PAVEMENT_GREEN_TAIPEI_FRAMES[frameIndex];
     }
 
-    @Override
     public int getViewDistance() {
         return 256;
     }

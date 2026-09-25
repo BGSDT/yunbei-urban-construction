@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.api.mapper;
 
 import com.beigu.yunbeiuc.api.VersionAdapter;
 import com.beigu.yunbeiuc.api.block.BlockPlatform;
+import com.beigu.yunbeiuc.api.block.BlockEntityPlatform;
 import com.beigu.yunbeiuc.api.gui.GuiPlatform;
 import com.beigu.yunbeiuc.api.gui.RenderPlatform;
 import com.beigu.yunbeiuc.api.placeholder.PlaceholderResolver;
@@ -32,6 +33,10 @@ public final class VersionServices {
 
     public static BlockPlatform blocks() {
         return ADAPTER.blocks();
+    }
+
+    public static BlockEntityPlatform blockEntities() {
+        return ADAPTER.blockEntities();
     }
 
     public static RenderPlatform render() {

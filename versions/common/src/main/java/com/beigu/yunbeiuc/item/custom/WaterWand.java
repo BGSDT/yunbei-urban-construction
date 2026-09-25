@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.item.custom;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.TooltipFlag;
@@ -38,7 +40,7 @@ public class WaterWand extends Item {
             }
         }
 
-        if (player != null && !player.getAbilities().instabuild) {
+        if (player != null && !player.isCreative()) {
             context.getItemInHand().hurtAndBreak(1, player, p -> p.broadcastBreakEvent(context.getHand()));
         }
 
@@ -48,7 +50,7 @@ public class WaterWand extends Item {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     BlockPos pos = topPos.offset(x, -y, z);
-                    if (world.setBlock(pos, Blocks.WATER.defaultBlockState(), Block.UPDATE_ALL)) {
+                    if (world.setBlock(pos, Blocks.WATER.defaultBlockState(), VersionServices.blocks().updateAll())) {
                         count++;
                     }
                 }

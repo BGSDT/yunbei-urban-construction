@@ -24,8 +24,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ import java.util.Optional;
  * @see RoadWithAutoRightangleLine
  */
 public abstract class RoadWithAutoLine extends Block {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoadWithAutoLine.class);
+    private static final Logger LOGGER = LogManager.getLogger(RoadWithAutoLine.class);
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 

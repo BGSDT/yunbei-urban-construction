@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -137,7 +139,7 @@ public class GantryFrameMain extends Block {
 
             // 只有状态不同才更新，避免无限递归
             if (!newState.equals(state)) {
-                world.setBlock(current, newState, Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+                world.setBlock(current, newState, VersionServices.blocks().updateClients() | VersionServices.blocks().updateImmediate());
             }
 
             current = current.east();

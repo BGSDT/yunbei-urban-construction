@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.item.custom;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
@@ -39,11 +41,11 @@ public class RotatedWand extends Item {
             // 更新方块状态
             context.getLevel() .setBlock(
                     context.getClickedPos(),
-                    state.setValue(BlockStateProperties.HORIZONTAL_FACING, newFacing), Block.UPDATE_ALL
+                    state.setValue(BlockStateProperties.HORIZONTAL_FACING, newFacing), VersionServices.blocks().updateAll()
             );
 
             // 消耗耐久度
-            if (context.getPlayer() != null && !context.getPlayer().getAbilities().instabuild) {
+            if (context.getPlayer() != null && !context.getPlayer().isCreative()) {
                 context.getItemInHand().hurtAndBreak(1, context.getPlayer(), p -> p.broadcastBreakEvent(context.getHand()));
             }
 
@@ -59,10 +61,10 @@ public class RotatedWand extends Item {
 
                 context.getLevel() .setBlock(
                         context.getClickedPos(),
-                        state.setValue(BlockStateProperties.HORIZONTAL_FACING, newFacing), Block.UPDATE_ALL
+                        state.setValue(BlockStateProperties.HORIZONTAL_FACING, newFacing), VersionServices.blocks().updateAll()
                 );
 
-                if (context.getPlayer() != null && !context.getPlayer().getAbilities().instabuild) {
+                if (context.getPlayer() != null && !context.getPlayer().isCreative()) {
                     context.getItemInHand().hurtAndBreak(1, context.getPlayer(), p -> p.broadcastBreakEvent(context.getHand()));
                 }
 

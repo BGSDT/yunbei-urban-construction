@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,7 +52,7 @@ public class FlagBlockEntity extends BlockEntityMapper {
         this.flagId = flagId;
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), net.minecraft.world.level.block.Block.UPDATE_ALL);
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
         }
     }
 }

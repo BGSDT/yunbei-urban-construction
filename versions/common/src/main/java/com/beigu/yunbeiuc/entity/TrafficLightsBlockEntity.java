@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
@@ -177,7 +179,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         }
 
         if (currentState.getValue(TrafficLightsBlock.LIGHT_STATE) != lightState) {
-            level.setBlock(worldPosition, currentState.setValue(TrafficLightsBlock.LIGHT_STATE, lightState), net.minecraft.world.level.block.Block.UPDATE_ALL);
+            level.setBlock(worldPosition, currentState.setValue(TrafficLightsBlock.LIGHT_STATE, lightState), VersionServices.blocks().updateAll());
         }
     }
 
@@ -448,7 +450,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         if (level != null && !level .isClientSide) {
             BlockState state = getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
-                level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, TrafficLightsBlock.LightState.RED), net.minecraft.world.level.block.Block.UPDATE_ALL);
+                level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, TrafficLightsBlock.LightState.RED), VersionServices.blocks().updateAll());
             }
         }
         markDirtyAndUpdate();
@@ -471,7 +473,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         if (level != null && !level .isClientSide) {
             BlockState state = getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
-                level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, color), net.minecraft.world.level.block.Block.UPDATE_ALL);
+                level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, color), VersionServices.blocks().updateAll());
             }
         }
         markDirtyAndUpdate();
@@ -653,7 +655,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     public void markDirtyAndUpdate() {
         setChanged();
         if (level != null && !level .isClientSide) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), net.minecraft.world.level.block.Block.UPDATE_ALL);
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
         }
     }
 

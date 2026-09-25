@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.traffic;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.InteractionHand;
@@ -90,11 +92,11 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
                 world.setBlock(middlePos,
                         state.setValue(PART, TriplePart.MIDDLE).setValue(FACING, direction).setValue(LIGHT_STATE, lightState),
-                        Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                        VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
 
                 world.setBlock(topPos,
                         state.setValue(PART, TriplePart.TOP).setValue(FACING, direction).setValue(LIGHT_STATE, lightState),
-                        Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE);
+                        VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
             }
         }
     }
@@ -116,7 +118,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
                 if (currentState.is(this) && !currentPos.equals(pos)) {
                     world.setBlock(currentPos, Blocks.AIR.defaultBlockState(),
-                            Block.UPDATE_ALL | Block.UPDATE_NEIGHBORS);
+                            VersionServices.blocks().updateAll() | VersionServices.blocks().updateNeighbors());
                     world.levelEvent(player, 2001, currentPos,
                             Block.getId(currentState));
                 }
@@ -127,7 +129,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
         if (state.getValue(PART) == TriplePart.BOTTOM) {
             return new TrafficLightsPavementIntegrationBlockEntity(pos, state);
         }
@@ -146,11 +148,11 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
         ItemStack heldItem = player.getItemInHand(hand);
 
-        if (heldItem.is(ModItems.LINK_WAND.get())) {
+        if (heldItem.getItem() == ModItems.LINK_WAND.get()) {
             return InteractionResult.PASS;
         }
 
-        if (heldItem.is(ModItems.WAND.get())) {
+        if (heldItem.getItem() == ModItems.WAND.get()) {
             if (world .isClientSide) {
                 BlockEntity blockEntity = world.getBlockEntity(bottomPos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {

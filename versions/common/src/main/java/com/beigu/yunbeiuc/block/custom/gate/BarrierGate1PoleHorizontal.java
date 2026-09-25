@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.gate;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
+
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.Rotation;
@@ -107,8 +109,8 @@ public class BarrierGate1PoleHorizontal extends Block {
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!world.isClientSide && player.getItemInHand(hand).is(ModItems.WAND.get())) {
-            world.setBlock(pos, state.cycle(GATE_TYPE), Block.UPDATE_ALL);
+        if (!world.isClientSide && player.getItemInHand(hand).getItem() == ModItems.WAND.get()) {
+            world.setBlock(pos, state.cycle(GATE_TYPE), VersionServices.blocks().updateAll());
         }
         return InteractionResult.SUCCESS;
     }
