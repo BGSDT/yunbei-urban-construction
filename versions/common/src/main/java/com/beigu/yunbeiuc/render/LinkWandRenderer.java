@@ -58,7 +58,7 @@ public class LinkWandRenderer {
             VoxelShape shape = client.level.getBlockState(pos).getShape(client.level, pos);
             AABB box = shape.bounds().move(pos).inflate(0.002);
 
-            buffer.begin(3, DefaultVertexFormat.POSITION_COLOR);
+            buffer.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
             float r = 0.0f;
             float g = 1.0f;
@@ -79,7 +79,7 @@ public class LinkWandRenderer {
 
             tessellator.end();
 
-            buffer.begin(1, DefaultVertexFormat.POSITION_COLOR);
+            buffer.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
 
             buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.minY, (float) box.minZ).color(r, g, b, a).endVertex();
             buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.maxY, (float) box.minZ).color(r, g, b, a).endVertex();
