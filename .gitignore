@@ -42,3 +42,6 @@ replay_*.log
 
 # local release outputs
 artifacts/
+
+# Modrinth account credentials and local publishing settings
+modrinth.properties
