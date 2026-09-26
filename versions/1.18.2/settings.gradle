@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'yunbeiuc'
+rootProject.name = '1.18.2'
 
 include 'common'
 include 'fabric'
