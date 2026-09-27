@@ -1,0 +1,9 @@
+# Copy this file to modrinth.properties and fill in the values before publishing.
+# The local modrinth.properties file is ignored by Git.
+token=YOUR_MODRINTH_TOKEN
+project_name=Yunbei Urban Construction
+project_id=yunbeiuc
+# Optional: use different Modrinth project IDs for each loader.
+# project_id_fabric=yunbeiuc
+# project_id_forge=yunbeiuc
+version_type=release

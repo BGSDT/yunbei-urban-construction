@@ -1,0 +1,58 @@
+// Shared Modrinth publishing setup for every supported Minecraft version.
+// Credentials deliberately live outside this file in the repository-root
+// modrinth.properties file, which is ignored by Git.
+def modrinthConfig = new Properties()
+def modrinthConfigFile = rootProject.file('../../modrinth.properties')
+if (modrinthConfigFile.isFile()) {
+    modrinthConfigFile.withInputStream { modrinthConfig.load(it) }
+}
+
+def changelogFile = rootProject.file('../../CHANGELOG.md')
+
+subprojects { platformProject ->
+    if (!(platformProject.name in ['fabric', 'forge'])) {
+        return
+    }
+
+    // The root build script applies Loom in a later subprojects block. Defer
+    // this setup until then so remapJar is guaranteed to exist.
+    platformProject.plugins.withId('dev.architectury.loom') {
+        platformProject.apply plugin: 'com.modrinth.minotaur'
+
+        def loader = platformProject.name
+        def projectId = modrinthConfig.getProperty("project_id_${loader}",
+            modrinthConfig.getProperty('project_id', ''))
+        def projectName = modrinthConfig.getProperty('project_name', rootProject.archives_name)
+        def versionType = modrinthConfig.getProperty('version_type', 'release')
+
+        platformProject.modrinth {
+            token = modrinthConfig.getProperty('token', '')
+            projectId = projectId
+            versionNumber = "${rootProject.mod_version}-${rootProject.minecraft_version}-${loader}"
+            versionName = "${projectName} ${rootProject.mod_version} - ${loader.capitalize()} ${rootProject.minecraft_version}"
+            versionType = versionType
+            uploadFile = platformProject.tasks.named('remapJar')
+            gameVersions = [rootProject.minecraft_version]
+            loaders = [loader]
+            if (changelogFile.isFile()) {
+                changelog = changelogFile.getText('UTF-8')
+            }
+        }
+
+        platformProject.tasks.register('publishModrinth') {
+            group = 'publishing'
+            description = "Uploads the remapped ${loader.capitalize()} jar to Modrinth."
+            dependsOn platformProject.tasks.named('remapJar')
+            dependsOn platformProject.tasks.named('modrinth')
+        }
+    }
+}
+
+tasks.register('publishModrinth') {
+    group = 'publishing'
+    description = 'Uploads the Fabric and Forge jars for this Minecraft version to Modrinth.'
+    dependsOn {
+        subprojects.findAll { it.name in ['fabric', 'forge'] }
+            .collect { it.tasks.named('publishModrinth') }
+    }
+}

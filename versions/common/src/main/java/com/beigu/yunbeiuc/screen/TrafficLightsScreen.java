@@ -682,6 +682,8 @@ public class TrafficLightsScreen extends Screen {
         private final int slotIndex;
         private int currentPhase;
 
+        public int getX() { return this.x; }
+
         public PhaseSliderWidget(int x, int y, int width, int height, int initialPhase, int phaseCount, int slotIndex) {
             super(x, y, width, height,
                     Text.literal("相位: " + (initialPhase + 1) + " / " + phaseCount),

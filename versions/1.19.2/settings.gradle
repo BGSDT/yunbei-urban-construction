@@ -1,0 +1,29 @@
+pluginManagement {
+    repositories {
+        maven { name = 'LoomMinecraftCache'; url = uri("$rootDir/.gradle/loom-cache/minecraftMaven") }
+        mavenCentral()
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.architectury.dev/' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+    repositories {
+        maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
+        maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
+        mavenCentral()
+        maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
+        maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        maven { name = 'MinecraftLibraries'; url = 'https://libraries.minecraft.net/' }
+    }
+}
+
+rootProject.name = '1.19.2'
+
+include 'common'
+include 'fabric'
+include 'forge'
