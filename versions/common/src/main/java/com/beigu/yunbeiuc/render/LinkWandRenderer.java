@@ -1,12 +1,12 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.api.gui.RenderPlatform;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.custom.LinkWand;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.*;
@@ -50,6 +50,7 @@ public class LinkWandRenderer {
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
+        RenderPlatform render = VersionServices.render();
 
         for (BlockPos pos : linkedPositions) {
             if (!(client.level.getBlockEntity(pos) instanceof TrafficLightsBlockEntity)) continue;
@@ -58,7 +59,7 @@ public class LinkWandRenderer {
             VoxelShape shape = client.level.getBlockState(pos).getShape(client.level, pos);
             AABB box = shape.bounds().move(pos).inflate(0.002);
 
-            buffer.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+            render.beginLines(RenderPlatform.LinePrimitive.LINE_STRIP);
 
             float r = 0.0f;
             float g = 1.0f;
@@ -77,9 +78,9 @@ public class LinkWandRenderer {
             buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.maxY, (float) box.maxZ).color(r, g, b, a).endVertex();
             buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.maxY, (float) box.minZ).color(r, g, b, a).endVertex();
 
-            tessellator.end();
+            render.endLines();
 
-            buffer.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+            render.beginLines(RenderPlatform.LinePrimitive.LINES);
 
             buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.minY, (float) box.minZ).color(r, g, b, a).endVertex();
             buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.maxY, (float) box.minZ).color(r, g, b, a).endVertex();
@@ -90,7 +91,7 @@ public class LinkWandRenderer {
             buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.minY, (float) box.maxZ).color(r, g, b, a).endVertex();
             buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.maxY, (float) box.maxZ).color(r, g, b, a).endVertex();
 
-            tessellator.end();
+            render.endLines();
         }
 
         RenderSystem.lineWidth(1.0f);

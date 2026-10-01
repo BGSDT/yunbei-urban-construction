@@ -244,7 +244,7 @@ public class TrafficLightsScreen extends Screen {
             pendingMountType = currentMountType;
             mountTypeButton = this.addDrawableChild(
                     ButtonWidget.builderCompat(
-                            Text.literal(currentMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                            Text.literal(currentMountType.getDisplayName()),
                             button -> toggleMountType())
                             .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
                             .build()
@@ -317,7 +317,7 @@ public class TrafficLightsScreen extends Screen {
             }
             mountTypeButton = this.addDrawableChild(
                     ButtonWidget.builderCompat(
-                            Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                            Text.literal(pendingMountType.getDisplayName()),
                             button -> toggleMountType())
                             .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
                             .build()
@@ -329,10 +329,12 @@ public class TrafficLightsScreen extends Screen {
         if (blockEntity == null || !blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) return;
 
         pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
-                TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
+                TrafficLightsBlock.MountType.POLE :
+                pendingMountType == TrafficLightsBlock.MountType.POLE ?
+                        TrafficLightsBlock.MountType.AUTO : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
-            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+            mountTypeButton.setMessage(Text.literal(pendingMountType.getDisplayName()));
         }
     }
 
@@ -681,8 +683,6 @@ public class TrafficLightsScreen extends Screen {
         private final int phaseCount;
         private final int slotIndex;
         private int currentPhase;
-
-        public int getX() { return this.x; }
 
         public PhaseSliderWidget(int x, int y, int width, int height, int initialPhase, int phaseCount, int slotIndex) {
             super(x, y, width, height,

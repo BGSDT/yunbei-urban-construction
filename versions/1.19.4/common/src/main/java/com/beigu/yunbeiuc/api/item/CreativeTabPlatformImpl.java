@@ -20,4 +20,5 @@ public final class CreativeTabPlatformImpl implements CreativeTabPlatform {
             CreativeTabRegistry.append(supplier, (Supplier) item);
         }
     }
+    @Override public void registerTabs() { }
 }

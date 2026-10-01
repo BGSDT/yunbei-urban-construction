@@ -27,6 +27,7 @@ public final class ModItemGroups {
     }
 
     public static void init() {
+        VersionServices.creativeTabs().registerTabs();
         VersionServices.creativeTabs().append(YUNBEIUC_MUNICIPAL_GROUP, ModItems.ALL_MUNICIPAL_ITEMS);
         VersionServices.creativeTabs().append(YUNBEIUC_ROAD_GROUP, ModItems.ALL_ROAD_ITEMS);
         VersionServices.creativeTabs().append(YUNBEIUC_SIGN_GROUP, ModItems.ALL_SIGN_ITEMS);

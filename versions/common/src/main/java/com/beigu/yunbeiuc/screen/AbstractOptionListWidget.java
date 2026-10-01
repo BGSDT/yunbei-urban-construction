@@ -41,6 +41,11 @@ public abstract class AbstractOptionListWidget<O> extends ElementListWidget<Abst
                                         Function<O, Component> displayTextProvider, Function<O, Integer> colorProvider,
                                         Function<O, Icon> iconProvider) {
         super(client, width, height, top, bottom, itemHeight);
+        // Yarn 的选中/悬停框按行自身的 x（getRowLeft()）绘制，而 Mojang 的框是
+        // x0 + (width - rowWidth)/2 居中算出来的、完全不经过 getRowLeft()；本类覆写
+        // getRowLeft() 后两者必然错位（框向右偏）。Entry 已自行绘制选中/悬停底色，
+        // 因此关闭基类的框，避免出现第二个错位的矩形。
+        this.setRenderSelection(false);
         this.listWidth = width;
         this.isSelected = isSelected;
         this.onSelect = onSelect;

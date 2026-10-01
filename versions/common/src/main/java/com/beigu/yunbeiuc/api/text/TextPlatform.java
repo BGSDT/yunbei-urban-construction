@@ -7,4 +7,7 @@ public interface TextPlatform {
     MutableComponent literal(String value);
 
     MutableComponent translatable(String key, Object... arguments);
+
+    /** An empty component; 1.16.5-1.18.2 lack {@code Component.empty()} and use {@code TextComponent.EMPTY}. */
+    MutableComponent empty();
 }

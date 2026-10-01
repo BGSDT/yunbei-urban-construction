@@ -40,7 +40,7 @@ public class TrafficLightsStaticStateUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        Level world = player.level;
+        Level world = player.getCommandSenderWorld();
         if (world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity entity) {
             entity.setStaticState(directionType, lightState, showSeconds, fixedSeconds, player);
         }

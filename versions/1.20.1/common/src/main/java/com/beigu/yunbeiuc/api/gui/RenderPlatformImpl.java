@@ -1,6 +1,10 @@
 package com.beigu.yunbeiuc.api.gui;
 
 import com.beigu.yunbeiuc.screen.DrawContext;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +27,18 @@ public final class RenderPlatformImpl implements RenderPlatform {
     @Override public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
         matrices.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
     }
+    @Override
+    public void beginLines(LinePrimitive primitive) {
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+        buffer.begin(primitive == LinePrimitive.LINE_STRIP ? VertexFormat.Mode.LINE_STRIP : VertexFormat.Mode.LINES,
+                DefaultVertexFormat.POSITION_COLOR);
+    }
+
+    @Override
+    public void endLines() {
+        Tesselator.getInstance().end();
+    }
+
     @Override
     public void fill(DrawContext context, int left, int top, int right, int bottom, int color) {
         context.fill(left, top, right, bottom, color);

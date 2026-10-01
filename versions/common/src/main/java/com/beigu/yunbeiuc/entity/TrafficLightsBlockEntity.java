@@ -33,6 +33,8 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private int currentTick = 0;
     private int currentActivePhase = 0;
     private boolean cycleActive = false;
+    /** 本灯最近一次被组内其它灯同步进度时的游戏刻：同一刻内已同步则自身不再推进，保证整组每刻只推进一次 */
+    private long lastGroupSyncTick = Long.MIN_VALUE;
 
     private static final int YELLOW_DURATION = 3 * 20;
     private static final int FLASH_DURATION = 3 * 20;
@@ -49,8 +51,6 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private boolean showSeconds = false;
     // 静态状态下的固定秒数（用于人行道红绿灯静态显示）
     private int fixedSeconds = 10;
-
-    private int syncTimer = 0;
 
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
@@ -71,23 +71,29 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         normalizePhaseData();
 
+        // 本游戏刻已被组内其它灯同步（相位、进度与灯状态均已刷新过），自身不再推进，
+        // 否则组内每盏灯都会在同一刻各自 +1、并以一刻多次的速度推进
+        if (level.getGameTime() == lastGroupSyncTick) {
+            return;
+        }
+
         currentTick++;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
+        boolean phaseAdvanced = currentTick >= totalTicks;
 
-        if (currentTick >= totalTicks) {
+        if (phaseAdvanced) {
             currentActivePhase = (currentActivePhase + 1) % phaseCount;
             currentTick = 0;
-            updateGroupPhase();
-            markDirtyAndUpdate();
-        } else {
-            syncTimer++;
-            if (syncTimer >= 10) {
-                syncTimer = 0;
-                markDirtyAndUpdate();
-            }
         }
 
+        // 相位切换时必发；其余每 10 game tick 发一次。读秒（getLightTimingInfo → currentTick）
+        // 是在客户端方块实体上算出来的，只发方块状态不会让读秒数字变化。
+        // 按游戏刻判断而不是自增计数器：驱动整组的灯会随区块 tick 顺序变化，计数器会被拉长周期。
+        boolean syncClients = phaseAdvanced || level.getGameTime() % 10L == 0L;
+        if (syncClients) markDirtyAndUpdate();
+
+        syncGroupProgress(syncClients);
         updateLightState();
     }
 
@@ -183,17 +189,38 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         }
     }
 
-    private void updateGroupPhase() {
+    /**
+     * 把本灯的相位进度同步给组内其它灯，并立即刷新它们的灯状态。
+     *
+     * <p>每个游戏刻都同步（而不是只在相位切换时同步）：组内某盏灯所在的区块未 tick 时，
+     * 它的进度会落后于整组；等到组内相位推进时才被强制跟随，就会出现"绿灯还没走到黄灯时间
+     * 就被切掉、直接跳红灯"。逐刻同步后整组进度始终一致，黄灯不会被跳过；
+     * 所在区块未 tick 的灯也能持续得到正确的灯状态，不会停在旧颜色上。
+     *
+     * <p>灯状态之外还要按周期把方块实体数据发给客户端（{@code syncClients}）：读秒在客户端
+     * 方块实体上计算，只发方块状态不会让读秒数字变化。
+     *
+     * <p>区块未加载的成员只跳过、不拆除链接组：区块未加载不代表方块被破坏
+     * （被破坏的成员由 {@code TrafficLightsBlock#unloadGroupAt} 显式清理）。
+     */
+    private void syncGroupProgress(boolean syncClients) {
         if (groupId == null || groupPositions.isEmpty() || level == null || level .isClientSide) return;
 
         for (BlockPos pos : groupPositions) {
             if (pos.equals(this.worldPosition)) continue;
+            if (!level.isLoaded(pos)) continue;
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TrafficLightsBlockEntity tl) {
+                // 时间表以组内正在推进的灯为准，避免成员残留旧时间表导致相位/时长不一致
+                if (tl.phaseTimes != this.phaseTimes || tl.phaseCount != this.phaseCount) {
+                    tl.phaseTimes = this.phaseTimes;
+                    tl.phaseCount = this.phaseCount;
+                }
                 tl.currentActivePhase = this.currentActivePhase;
                 tl.currentTick = this.currentTick;
+                tl.lastGroupSyncTick = level.getGameTime();
                 tl.updateLightState();
-                tl.markDirtyAndUpdate();
+                if (syncClients) tl.markDirtyAndUpdate();
             } else {
                 unloadGroup();
                 return;
@@ -447,6 +474,14 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.groupId = groupId;
         this.groupPositions = new ArrayList<>(positions);
         this.directionType = DirectionType.STRAIGHT_CIRCLE;
+        // 重新链接后必须回到"已分组但未设置时间表"状态，否则残留的旧时间表会让
+        // TrafficLightsBlock#use 直接打开主界面（含"相位预设"按钮）而不是时间设置界面。
+        this.phaseTimes = null;
+        this.phaseCount = 0;
+        this.phaseIndices.clear();
+        this.currentTick = 0;
+        this.currentActivePhase = 0;
+        this.cycleActive = false;
         if (level != null && !level .isClientSide) {
             BlockState state = getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {

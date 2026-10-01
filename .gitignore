@@ -5,6 +5,8 @@
 build/
 out/
 classes/
+.gradle-user
+.port-tools
 
 # eclipse
 

@@ -34,10 +34,10 @@ public class CustomSignFieldUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (!player.level.hasChunkAt(pos)) {
+        if (!player.getCommandSenderWorld().hasChunkAt(pos)) {
             return;
         }
-        BlockEntity be = player.level.getBlockEntity(pos);
+        BlockEntity be = player.getCommandSenderWorld().getBlockEntity(pos);
         if (be instanceof CustomSignBlockEntity sign) {
             sign.applyFieldOption(field, value);
         }

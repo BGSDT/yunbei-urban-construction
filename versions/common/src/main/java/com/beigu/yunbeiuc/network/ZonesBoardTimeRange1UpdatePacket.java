@@ -30,8 +30,8 @@ public class ZonesBoardTimeRange1UpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.level.getBlockEntity(pos);
+        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
+            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof ZonesBoardTimeRange1Entity signEntity) {
                 signEntity.setTime1(time1);
                 signEntity.setTime2(time2);

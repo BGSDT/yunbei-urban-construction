@@ -45,17 +45,17 @@ public class CustomSignUpdatePacket {
 
     public void apply(ServerPlayer player) {
 
-        if (!player.level.hasChunkAt(pos)) {
+        if (!player.getCommandSenderWorld().hasChunkAt(pos)) {
             return;
         }
 
-        BlockEntity be = player.level.getBlockEntity(pos);
+        BlockEntity be = player.getCommandSenderWorld().getBlockEntity(pos);
         if (be instanceof CustomSignBlockEntity sign) {
             sign.setTextLines(textLines);
             sign.setChanged();
 
             // 通知客户端重新读取方块实体数据
-            player.level.sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), VersionServices.blocks().updateAll());
+            player.getCommandSenderWorld().sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), VersionServices.blocks().updateAll());
 
         }
     }

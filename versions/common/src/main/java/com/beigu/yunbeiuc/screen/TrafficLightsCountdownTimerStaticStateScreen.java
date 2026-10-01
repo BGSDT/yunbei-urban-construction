@@ -120,7 +120,7 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         }
         mountTypeButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(
-                        Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                        Text.literal(pendingMountType.getDisplayName()),
                         button -> toggleMountType())
                         .dimensions(panelX + 30, panelY + 235, 160, 20)
                         .build()
@@ -245,10 +245,12 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
 
     private void toggleMountType() {
         pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
-                TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
+                TrafficLightsBlock.MountType.POLE :
+                pendingMountType == TrafficLightsBlock.MountType.POLE ?
+                        TrafficLightsBlock.MountType.AUTO : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
-            mountTypeButton.setMessage(Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+            mountTypeButton.setMessage(Text.literal(pendingMountType.getDisplayName()));
         }
     }
 

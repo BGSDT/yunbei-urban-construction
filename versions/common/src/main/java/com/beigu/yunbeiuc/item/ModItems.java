@@ -204,6 +204,9 @@ public class ModItems {
     public static final RegistrySupplier<Item> ROAD_CLOSED_BARRICADE_GUARDRAIL_4 = registerBlockItem(MunicipalBlocks.ROAD_CLOSED_BARRICADE_GUARDRAIL_4, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> SPIKED_BELT = registerBlockItem(MunicipalBlocks.SPIKED_BELT, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> RISING_BOLLARD = registerBlockItem(MunicipalBlocks.RISING_BOLLARD, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> CORNER_GUARD_BLACK = registerBlockItem(MunicipalBlocks.CORNER_GUARD_BLACK, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> CORNER_GUARD_BLACK_LEFT = registerBlockItem(MunicipalBlocks.CORNER_GUARD_BLACK_LEFT, ALL_MUNICIPAL_ITEMS);
+    public static final RegistrySupplier<Item> CORNER_GUARD_BLACK_RIGHT = registerBlockItem(MunicipalBlocks.CORNER_GUARD_BLACK_RIGHT, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> CALTROP_RED = registerBlockItem(MunicipalBlocks.CALTROP_RED, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> CALTROP_YELLOW = registerBlockItem(MunicipalBlocks.CALTROP_YELLOW, ALL_MUNICIPAL_ITEMS);
     public static final RegistrySupplier<Item> ROAD_WARNING_POLE_RED = registerBlockItem(MunicipalBlocks.ROAD_WARNING_POLE_RED, ALL_MUNICIPAL_ITEMS);

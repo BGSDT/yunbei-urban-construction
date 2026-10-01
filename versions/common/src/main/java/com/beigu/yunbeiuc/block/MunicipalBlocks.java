@@ -203,6 +203,10 @@ public static final DeferredRegister<Block> BLOCKS = VersionServices.registries(
     public static final RegistrySupplier<Block> SPIKED_BELT = BLOCKS.register("spiked_belt", () -> new SpikedBelt(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> RISING_BOLLARD = BLOCKS.register("rising_bollard", () -> new RisingBollard(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
 
+    public static final RegistrySupplier<Block> CORNER_GUARD_BLACK = BLOCKS.register("corner_guard_black", () -> new CornerGuard(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
+    public static final RegistrySupplier<Block> CORNER_GUARD_BLACK_LEFT = BLOCKS.register("corner_guard_black_left", () -> new CornerGuard(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
+    public static final RegistrySupplier<Block> CORNER_GUARD_BLACK_RIGHT = BLOCKS.register("corner_guard_black_right", () -> new CornerGuard(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
+
     public static final RegistrySupplier<Block> CALTROP_RED = BLOCKS.register("caltrop_red", () -> new CaltropBlock(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> CALTROP_YELLOW = BLOCKS.register("caltrop_yellow", () -> new CaltropBlock(BlockBehaviour.Properties.copy(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
 

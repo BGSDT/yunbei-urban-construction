@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsBlockEntity> {
     private final Font textRenderer;
 
+    private static final float FOGGY_PATTERN_SIZE = 0.26f;
+
     public TrafficLightsBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
         this.textRenderer = ctx.getFont();
     }
@@ -39,13 +41,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) return 0.16f;
         if (mountType == TrafficLightsBlock.MountType.POLE) {
             if (isPavementBlock(currentBlock)) return -0.46f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.68f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.74f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.74f;
             else return -0.53f;
         }
         if (mountType == TrafficLightsBlock.MountType.SIMPLE) {
             if (isPavementBlock(currentBlock)) return -0.33f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.36f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.40f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.38f;
             else return -0.33f;
         }
@@ -102,7 +104,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
         Direction facing = entity.getBlockState().getValue(TrafficLightsBlock.FACING);
         TrafficLightsBlock.LightState type = entity.getBlockState().getValue(TrafficLightsBlock.LIGHT_STATE);
-        TrafficLightsBlock.MountType mountType = entity.getBlockState().getValue(TrafficLightsBlock.TYPE);
+        TrafficLightsBlock.MountType mountType = TrafficLightsBlock.resolveMountType(entity.getLevel(), entity.getBlockPos(), entity.getBlockState());
         Block currentBlock = entity.getBlockState().getBlock();
         renderPhaseText(entity, matrices, vertexConsumers, light, currentBlock);
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()){
@@ -296,7 +298,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.translate(0.5, 0.5, 0.5);
         matrices.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
 
-        float arrowSize = 0.4f;
+        float arrowSize = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get() ? FOGGY_PATTERN_SIZE : 0.4f;
         float halfSize = arrowSize / 2f;
         float x = 0;
         float y = 0;

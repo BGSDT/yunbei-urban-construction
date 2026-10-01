@@ -29,7 +29,7 @@ public class TrafficLightsMountTypeUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        Level world = player.level;
+        Level world = player.getCommandSenderWorld();
         if (world == null) return;
 
         BlockState state = world.getBlockState(pos);

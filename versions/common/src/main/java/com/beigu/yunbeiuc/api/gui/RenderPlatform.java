@@ -10,6 +10,26 @@ import net.minecraft.client.renderer.MultiBufferSource;
 
 /** Version-neutral rendering operations for text, textures and primitives. */
 public interface RenderPlatform {
+    /**
+     * The OpenGL primitive used by {@link #beginLines}.
+     *
+     * <p>1.16.5 takes a raw {@code GL_LINES}/{@code GL_LINE_STRIP} int, while 1.17+ take
+     * {@code VertexFormat.Mode.LINES}/{@code LINE_STRIP}; this enum selects between them.
+     */
+    enum LinePrimitive {
+        LINES,
+        LINE_STRIP
+    }
+
+    /**
+     * Starts a {@code POSITION_COLOR} batch of the given primitive on the tesselator's
+     * buffer builder, so callers stay independent of each version's {@code begin} signature.
+     */
+    void beginLines(LinePrimitive primitive);
+
+    /** Finishes and submits the batch started by {@link #beginLines}. */
+    void endLines();
+
     void fill(DrawContext context, int left, int top, int right, int bottom, int color);
 
     void drawBorder(DrawContext context, int x, int y, int width, int height, int color);

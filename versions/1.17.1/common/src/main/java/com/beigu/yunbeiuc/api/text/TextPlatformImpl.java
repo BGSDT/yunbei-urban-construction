@@ -14,4 +14,9 @@ public final class TextPlatformImpl implements TextPlatform {
     public MutableComponent translatable(String key, Object... arguments) {
         return new TranslatableComponent(key, arguments);
     }
+
+    @Override
+    public MutableComponent empty() {
+        return new TextComponent("");
+    }
 }

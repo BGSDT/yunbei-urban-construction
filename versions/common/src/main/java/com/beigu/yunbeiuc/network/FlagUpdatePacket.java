@@ -33,7 +33,7 @@ public class FlagUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.getBlockEntity(this.pos) instanceof com.beigu.yunbeiuc.entity.FlagBlockEntity flagEntity) {
+        if (player.getCommandSenderWorld().getBlockEntity(this.pos) instanceof com.beigu.yunbeiuc.entity.FlagBlockEntity flagEntity) {
             flagEntity.setFlagId(this.flagId);
         }
     }

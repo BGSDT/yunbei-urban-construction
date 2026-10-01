@@ -1,8 +1,8 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -17,21 +17,22 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 
     @Override
     protected void init() {
+        super.init();
         client = minecraft;
         textRenderer = font;
     }
 
     @Override
-    public final void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        render(new DrawContext(matrices), mouseX, mouseY, delta);
+    public final void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        render(new DrawContext(graphics), mouseX, mouseY, delta);
     }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context.getMatrices(), mouseX, mouseY, delta);
+        super.render(context.getGraphics(), mouseX, mouseY, delta);
     }
 
     public void renderBackground(DrawContext context) {
-        super.renderBackground(context.getMatrices());
+        super.renderBackground(context.getGraphics());
     }
 
     protected <T extends GuiEventListener & Renderable & NarratableEntry> T addDrawableChild(T widget) {

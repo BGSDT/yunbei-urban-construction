@@ -60,7 +60,7 @@ public class TrafficLightsTimingUpdatePacket {
             }
         }
 
-        Level world = player.level;
+        Level world = player.getCommandSenderWorld();
         List<TrafficLightsBlockEntity> linkedLights = new ArrayList<>();
         boolean allValid = true;
 

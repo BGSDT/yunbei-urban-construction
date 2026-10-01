@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.server.level.ServerLevel;
@@ -19,7 +18,7 @@ public interface BlockPlatform {
 
     boolean growOakTree(ServerLevel level, BlockPos pos);
 
-    BlockBehaviour.Properties color(BlockBehaviour.Properties properties, MaterialColor color);
+    BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color);
 
     int updateAll();
 

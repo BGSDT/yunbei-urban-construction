@@ -27,6 +27,16 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         this.textRenderer = ctx.getFont();
     }
 
+    private static final int ENGLISH_FREE_CHARS = 12;
+
+    private static final float X_SCALE_DECREASE_PER_CHAR = 0.025f;
+
+    private static final float MIN_X_SCALE_FACTOR = 0.65f;
+
+    private static final float ENGLISH_BASE_SCALE = 0.025f;
+
+    private static final float CHINESE_BASE_SCALE = 0.035f;
+
     private static final Map<Direction, Map<String, String>> DIRECTION_MAP = Map.of(
             Direction.NORTH, Map.of(
                     "cnLeft", "西", "cnRight", "东",
@@ -81,6 +91,25 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         renderDirectionText(matrices, vertexConsumers, light, facing, "enRightBack", true, false, false);
     }
 
+    /**
+     * 计算 X 方向额外缩放系数。
+     * 只对英文小字号生效。
+     * 超过 ENGLISH_FREE_CHARS 后，每多 1 个字符，X 缩放直接减少 X_SCALE_DECREASE_PER_CHAR。
+     */
+    private float getXScaleFactor(String text, boolean isSmallScale) {
+        if (!isSmallScale) {
+            return 1.0f;
+        }
+
+        int extraChars = text.length() - ENGLISH_FREE_CHARS;
+        if (extraChars <= 0) {
+            return 1.0f;
+        }
+
+        float xScale = 1.0f - extraChars * X_SCALE_DECREASE_PER_CHAR;
+        return Math.max(xScale, MIN_X_SCALE_FACTOR);
+    }
+
     private void renderText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, String text, boolean isBlack, float andY, boolean backTF, boolean isSmallScale) {
         matrices.pushPose();
 
@@ -90,22 +119,24 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
             VersionServices.render().rotateY(matrices, 180);
         }
 
-        float scaleValue = isSmallScale ? 0.025f : 0.035f;
+        float scaleValue = isSmallScale ? ENGLISH_BASE_SCALE : CHINESE_BASE_SCALE;
+        float xScaleFactor = getXScaleFactor(text, isSmallScale);
 
         Component styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new ResourceLocation("minecraft", "uniform")));
         int textWidth = this.textRenderer.width(styledText);
         int textHeight = this.textRenderer.lineHeight;
         float zOffset = 1.5f;
 
-        float centeredX = -1 * (textWidth * scaleValue) / 2f;
+        float centeredX = -1 * (textWidth * scaleValue * xScaleFactor) / 2f;
         float centeredY = andY / 16f;
         matrices.translate(centeredX, centeredY, zOffset / 16f);
 
-        matrices.scale(scaleValue, -scaleValue, scaleValue);
+        // 只额外压缩 X 方向，Y / Z 保持原缩放
+        matrices.scale(scaleValue * xScaleFactor, -scaleValue, scaleValue);
 
         int textColor = isSmallScale ? 0X000000 : 0xFFFFFF;
 
-        if(this.currentBlock == MunicipalBlocks.ROAD_NAME_SIGN_RA.get()){
+        if (this.currentBlock == MunicipalBlocks.ROAD_NAME_SIGN_RA.get()) {
             textColor = 0xFFFFFF;
         }
 
@@ -124,7 +155,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         matrices.popPose();
     }
 
-    private void renderDirectionText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, String directionKey, boolean backTF, boolean leftTF,  boolean cnTF) {
+    private void renderDirectionText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, String directionKey, boolean backTF, boolean leftTF, boolean cnTF) {
         matrices.pushPose();
 
         matrices.translate(0.5, 0.5, 0.5);
@@ -132,6 +163,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         if (backTF) {
             VersionServices.render().rotateY(matrices, 180);
         }
+
         String directionText = DIRECTION_MAP.get(facing).get(directionKey);
         Component styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true).withFont(new ResourceLocation("minecraft", "uniform")));
         int textWidth = this.textRenderer.width(styledText);
@@ -147,16 +179,17 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         if (cnTF) {
             y = 4f;
             color = 0xFFFFFF;
-        }else{
+        } else {
             y = 0f;
             color = 0x000000;
         }
+
         float centeredX = x / 16f - (textWidth * 0.02f) / 2f;
         float centeredY = y / 16f;
         matrices.translate(centeredX, centeredY, zOffset / 16f);
         matrices.scale(0.02f, -0.02f, 0.02f);
 
-        if(this.currentBlock == MunicipalBlocks.ROAD_NAME_SIGN_RA.get()){
+        if (this.currentBlock == MunicipalBlocks.ROAD_NAME_SIGN_RA.get()) {
             color = 0xFFFFFF;
         }
 

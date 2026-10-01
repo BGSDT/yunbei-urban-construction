@@ -74,8 +74,8 @@ public class SignGuideIntersectionAdvanceWarning3UpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.level.getBlockEntity(pos);
+        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
+            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof SignGuideIntersectionAdvanceWarning3Entity signEntity) {
                 signEntity.setText1(text1);
                 signEntity.setCnText2(cnText2);

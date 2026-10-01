@@ -26,8 +26,8 @@ public class ZonesBoardOverWeightUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.level.getBlockEntity(pos);
+        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
+            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof ZonesBoardOverWeightEntity signEntity) {
                 signEntity.setText1(text1);
 

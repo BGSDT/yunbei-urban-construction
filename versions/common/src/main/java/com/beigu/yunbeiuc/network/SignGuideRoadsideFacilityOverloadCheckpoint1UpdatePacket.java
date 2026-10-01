@@ -31,8 +31,8 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1UpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.level.getBlockEntity(pos);
+        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
+            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof SignGuideRoadsideFacilityOverloadCheckpoint1Entity signEntity) {
                 signEntity.setUnit1(unit1);
                 signEntity.setLength1(length1);

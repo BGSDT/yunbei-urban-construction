@@ -112,6 +112,9 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                 case TOP -> pos.below(2);
             };
 
+            // 方块实体只挂在 BOTTOM 上；在它被移除前记录，供 onRemove 拆除链接组
+            TrafficLightsGroupTracker.track(world, bottomPos);
+
             for (int i = 0; i < 3; i++) {
                 BlockPos currentPos = bottomPos.above(i);
                 BlockState currentState = world.getBlockState(currentPos);

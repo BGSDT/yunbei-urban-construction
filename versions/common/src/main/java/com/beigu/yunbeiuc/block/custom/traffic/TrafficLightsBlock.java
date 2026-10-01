@@ -188,6 +188,12 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         return state;
     }
 
+    /**
+     * 判断后方方块是否属于"路杆"家族（决定安装模式解析为路杆模式还是墙面模式）。
+     *
+     * <p>必须覆盖模组里全部路杆/路灯类方块：漏掉任何一个，装在它上面的灯都会被判成墙面模式，
+     * 自适应（以及放置时的自动识别）就会选到墙面模式的 z 偏移，图案与读秒位置跟着错位。
+     */
     private boolean isPoleBlock(Block block) {
         return block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS.get()
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB.get()
@@ -196,7 +202,17 @@ public class TrafficLightsBlock extends TickingEntityBlock {
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_TSHAPE.get()
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY.get()
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LED.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FLAG.get();
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FLAG.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_1.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_2.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_3.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHT_HIGH_MAST.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHT_1.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHT_2.get()
+                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHTING_LAMP.get();
     }
 
     private MountType determineType(BlockState behindState) {
@@ -208,12 +224,35 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         }
     }
 
+    // 安装模式：AUTO 保留在方块状态中，消费方每次按背后方块解析为具体的 SIMPLE/POLE
+    public static MountType resolveMountType(Level world, BlockPos pos, BlockState state) {
+        MountType type = state.getValue(TYPE);
+        if (type != MountType.AUTO) {
+            return type;
+        }
+        if (world == null) {
+            return MountType.SIMPLE;
+        }
+        Block block = state.getBlock();
+        if (!(block instanceof TrafficLightsBlock trafficLightsBlock)) {
+            return MountType.SIMPLE;
+        }
+        Direction facing = state.getValue(FACING);
+        BlockState behindState = world.getBlockState(pos.relative(facing.getOpposite()));
+        return trafficLightsBlock.determineType(behindState);
+    }
+
     @Override
     public BlockState updateShape(BlockState state, Direction direction,
                                                 BlockState neighborState, LevelAccessor world,
                                                 BlockPos pos, BlockPos neighborPos) {
         Direction facing = state.getValue(FACING);
         if (direction == facing.getOpposite()) {
+            // 自适应模式保持 AUTO：由消费方每次按后方方块解析，不能写死成具体模式，
+            // 否则后方方块一变（拆除/放置路杆）就退化成固定模式，失去自适应语义。
+            if (state.getValue(TYPE) == MountType.AUTO) {
+                return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+            }
             MountType newType = determineType(neighborState);
             if (newType != state.getValue(TYPE)) {
                 return state.setValue(TYPE, newType);
@@ -237,9 +276,10 @@ public class TrafficLightsBlock extends TickingEntityBlock {
             if (player.isShiftKeyDown()) {
                 if (!world .isClientSide) {
                     MountType currentType = state.getValue(TYPE);
-                    MountType newType = currentType == MountType.SIMPLE ? MountType.POLE : MountType.SIMPLE;
+                    MountType newType = currentType == MountType.SIMPLE ? MountType.POLE
+                            : currentType == MountType.POLE ? MountType.AUTO : MountType.SIMPLE;
                     world.setBlock(pos, state.setValue(TYPE, newType), VersionServices.blocks().updateAll());
-                    player.displayClientMessage(Text.literal("§a已切换至 " + (newType == MountType.POLE ? "§6路杆模式" : "§6简易模式")), true);
+                    player.displayClientMessage(Text.literal("§a已切换至 §6" + newType.getDisplayName()), true);
                 }
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
@@ -328,15 +368,34 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     }
 
     @Override
+    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+        // 在方块实体被移除前记录它，供 onRemove 取回并拆除链接组
+        TrafficLightsGroupTracker.track(world, pos);
+        super.playerWillDestroy(world, pos, state, player);
+    }
+
+    @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
-                if (trafficLightsBE.getGroupId() != null) {
-                    trafficLightsBE.unloadGroup();
-                }
-            }
+            // 注意：1.20.1 的 LevelChunk#setBlockState 会先移除方块实体并 setRemoved()，
+            // 再调用 Block#onRemove。因此此处 world.getBlockEntity(pos) 对本方块恒为 null。
+            // 必须改用 onRemove 之前缓存下来的方块实体（见 playerWillDestroy / 摧毁事件），
+            // 否则整个链接组的状态不会被清理。
+            unloadGroupAt(world, pos);
             super.onRemove(state, world, pos, newState, moved);
+        }
+    }
+
+    /**
+     * 在方块实体被移除前拆除链接组。
+     * 服务端在玩家破坏方块时调用，确保组内所有存活成员的状态被清空并同步到客户端。
+     */
+    public static void unloadGroupAt(Level world, BlockPos pos) {
+        if (world == null || world.isClientSide) return;
+        TrafficLightsBlockEntity trafficLightsBE = TrafficLightsGroupTracker.take(pos);
+        if (trafficLightsBE == null) return;
+        if (trafficLightsBE.getGroupId() != null) {
+            trafficLightsBE.unloadGroup();
         }
     }
 
@@ -360,7 +419,8 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
     public enum MountType implements StringRepresentable {
         SIMPLE("simple"),
-        POLE("pole");
+        POLE("pole"),
+        AUTO("auto");
 
         private final String name;
 
@@ -371,6 +431,14 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         @Override
         public String getSerializedName() {
             return this.name;
+        }
+
+        public String getDisplayName() {
+            return switch (this) {
+                case POLE -> "路杆模式";
+                case AUTO -> "自适应";
+                default -> "墙面模式";
+            };
         }
     }
 }

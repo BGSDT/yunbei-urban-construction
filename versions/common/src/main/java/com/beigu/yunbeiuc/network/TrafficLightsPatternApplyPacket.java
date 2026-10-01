@@ -81,7 +81,7 @@ public class TrafficLightsPatternApplyPacket {
     }
 
     public void apply(ServerPlayer player) {
-        Level world = player.level;
+        Level world = player.getCommandSenderWorld();
         if (!(world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity clicked)) {
             player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该方块不是红绿灯！"), false);
             return;

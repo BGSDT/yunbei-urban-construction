@@ -42,8 +42,8 @@ public class SignExpresswayDistanceFromLocation3Entity extends CustomSignBlockEn
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("苏州城区", 0f, 5.5f, 0.045f, 0xFFFFFF));
-        lines.add(SignTextLinesHelper.centered("5个出口", 0f, -5.5f, 0.045f, 0xFFFFFF));
+        lines.add(SignTextLinesHelper.centered("苏州城区", 0f, 5.5f, 0.045f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.centered("5个出口", 0f, -5.5f, 0.045f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

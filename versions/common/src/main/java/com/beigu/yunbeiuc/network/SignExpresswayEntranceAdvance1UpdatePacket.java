@@ -38,8 +38,8 @@ public class SignExpresswayEntranceAdvance1UpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.level.getBlockEntity(pos);
+        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
+            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof SignExpresswayEntranceAdvance1Entity signEntity) {
                 signEntity.setExpressway1(expressway1);
                 signEntity.setText1(text1);

@@ -214,12 +214,15 @@ public class TrafficLightsPatternPreset {
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
-                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
                 return NORMAL;
             }
             if (block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
-                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) {
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get()) {
                 return PAVEMENT;
             }
             if (block == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) {
@@ -426,7 +429,7 @@ public class TrafficLightsPatternPreset {
     }
 
     private static void send(@Nullable Player player, String message) {
-        if (player != null && !player.level.isClientSide) {
+        if (player != null && !player.getCommandSenderWorld().isClientSide) {
             player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal(message), false);
         }
     }

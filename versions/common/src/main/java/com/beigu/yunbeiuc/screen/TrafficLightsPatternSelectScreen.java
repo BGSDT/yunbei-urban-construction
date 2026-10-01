@@ -253,7 +253,7 @@ public class TrafficLightsPatternSelectScreen extends Screen {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         Minecraft.getInstance().setScreen(previousScreen);
     }
 

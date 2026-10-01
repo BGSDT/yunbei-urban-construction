@@ -1,6 +1,7 @@
 package com.beigu.yunbeiuc.api.registry;
 
 import dev.architectury.registry.registries.DeferredRegister;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -12,4 +13,6 @@ public interface RegistryPlatform {
     DeferredRegister<Item> items(String modId);
 
     DeferredRegister<BlockEntityType<?>> blockEntityTypes(String modId);
+
+    ResourceLocation blockId(Block block);
 }

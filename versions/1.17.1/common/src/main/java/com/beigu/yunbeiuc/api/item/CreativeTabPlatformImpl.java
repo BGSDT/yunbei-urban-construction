@@ -13,4 +13,5 @@ public final class CreativeTabPlatformImpl implements CreativeTabPlatform {
     @Override public CreativeTabHandle create(ResourceLocation id, Supplier<ItemStack> icon) { return new CreativeTabHandle(CreativeTabRegistry.create(id, icon)); }
     @Override public Item.Properties apply(Item.Properties properties, CreativeTabHandle tab) { return properties.tab((CreativeModeTab) tab.value()); }
     @Override public void append(CreativeTabHandle tab, List<Supplier<? extends Item>> items) {}
+    @Override public void registerTabs() { }
 }

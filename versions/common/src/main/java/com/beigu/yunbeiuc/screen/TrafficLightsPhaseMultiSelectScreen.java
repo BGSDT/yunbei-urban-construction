@@ -162,7 +162,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         Minecraft.getInstance().setScreen(previousScreen);
     }
 
@@ -175,8 +175,6 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
         private final int phaseCount;
         private final int slotIndex;
         private int currentPhase;
-
-        public int getX() { return this.x; }
 
         public PhaseSliderWidget(int x, int y, int width, int height, int initialPhase, int phaseCount, int slotIndex) {
             super(x, y, width, height,

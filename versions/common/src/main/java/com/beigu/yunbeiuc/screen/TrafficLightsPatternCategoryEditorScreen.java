@@ -104,7 +104,7 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         Minecraft.getInstance().setScreen(previousScreen);
     }
 

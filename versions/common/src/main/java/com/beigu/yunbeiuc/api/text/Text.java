@@ -14,4 +14,8 @@ public final class Text {
     public static MutableComponent translatable(String key, Object... arguments) {
         return VersionServices.text().translatable(key, arguments);
     }
+
+    public static MutableComponent empty() {
+        return VersionServices.text().empty();
+    }
 }

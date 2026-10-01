@@ -49,11 +49,11 @@ public class SignGuideIntersectionAdvanceWarning1Entity extends CustomSignBlockE
         boolean isWarning2 = getBlockState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning2) {
-            lines.add(SignTextLinesHelper.left("昌平", -17f, 10f, 0.035f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.left("顺义", 3f, -1f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.left("昌平", -17f, 10f, 0.035f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.left("顺义", 3f, -1f, 0.035f, 0xFFFFFF, "a"));
         } else {
-            lines.add(SignTextLinesHelper.left("昌平", -12f, 12f, 0.035f, 0xFFFFFF));
-            lines.add(SignTextLinesHelper.left("顺义", -5f, -7f, 0.035f, 0xFFFFFF));
+            lines.add(SignTextLinesHelper.left("昌平", -12f, 12f, 0.035f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.left("顺义", -5f, -7f, 0.035f, 0xFFFFFF, "a"));
         }
         setTextLines(lines);
     }

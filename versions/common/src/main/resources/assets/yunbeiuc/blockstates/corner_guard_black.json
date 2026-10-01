@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "yunbeiuc:block/corner_guard_black",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "yunbeiuc:block/corner_guard_black"
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/corner_guard_black",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/corner_guard_black",
+      "y": 270
+    }
+  }
+}

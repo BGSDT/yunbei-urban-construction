@@ -142,7 +142,7 @@ public class TrafficLightsTimingScreen extends Screen {
         int mountTypeY = panelY + panelHeight() - 60;
         mountTypeButton = this.addDrawableChild(
                 GUI.createButton(
-                        Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"),
+                        Text.literal(pendingMountType.getDisplayName()),
                         panelX + PANEL_WIDTH / 2 - 70, mountTypeY, 140, 20, button -> toggleMountType())
         );
 
@@ -290,11 +290,13 @@ public class TrafficLightsTimingScreen extends Screen {
         if (positions.isEmpty()) return;
 
         pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
-                TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.SIMPLE;
+                TrafficLightsBlock.MountType.POLE :
+                pendingMountType == TrafficLightsBlock.MountType.POLE ?
+                        TrafficLightsBlock.MountType.AUTO : TrafficLightsBlock.MountType.SIMPLE;
 
         if (mountTypeButton != null) {
             GUI.setButtonMessage(mountTypeButton,
-                    Text.literal(pendingMountType == TrafficLightsBlock.MountType.POLE ? "路杆模式" : "墙面模式"));
+                    Text.literal(pendingMountType.getDisplayName()));
         }
     }
 }

@@ -34,8 +34,8 @@ public class SignGuideIntersectionWarning4UpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.level.getBlockEntity(pos);
+        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
+            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof SignGuideIntersectionWarning4Entity signEntity) {
                 signEntity.setDirection1(direction1);
                 signEntity.setText1(text1);

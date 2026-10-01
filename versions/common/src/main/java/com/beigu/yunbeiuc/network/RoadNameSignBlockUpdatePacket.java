@@ -30,8 +30,8 @@ public class RoadNameSignBlockUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.level.hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.level.getBlockEntity(pos);
+        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
+            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof RoadNameSignBlockEntity signEntity) {
                 // 更新数据
                 signEntity.setChineseText(chineseText);

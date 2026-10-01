@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.grower.OakTreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MaterialColor;
 
 public final class BlockPlatformImpl implements BlockPlatform {
     @Override public boolean isWater(FluidState state) { return state.getType() == Fluids.WATER; }
@@ -20,7 +19,13 @@ public final class BlockPlatformImpl implements BlockPlatform {
         return new OakTreeGrower().growTree(level, level.getChunkSource().getGenerator(), pos,
                 Blocks.OAK_SAPLING.defaultBlockState(), level.getRandom());
     }
-    @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, MaterialColor color) { return properties.color(color); }
+    @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color) {
+        // Properties.mapColor(MapColor) is a 1.20+ mutator; on this version the map colour can only
+        // be supplied through the static of(Material, MaterialColor) factories, which cannot be
+        // applied to an already-built Properties. All callers copy CYAN_TERRACOTTA, so retaining the
+        // copied colour is the closest compatible form.
+        return properties;
+    }
     @Override public int updateAll() { return Block.UPDATE_ALL; }
     @Override public int updateImmediate() { return Block.UPDATE_IMMEDIATE; }
     @Override public int updateNeighbors() { return Block.UPDATE_NEIGHBORS; }

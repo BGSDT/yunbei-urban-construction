@@ -33,7 +33,7 @@ public class CustomFontManager {
         if (initialized) return;
 
         try {
-            loadFont("ds_digital", "assets/yunbeiuc/fonts/ds_digital.ttf", 144);
+            loadFont("ds_digital", "assets/yunbeiuc/font/ds_digital.ttf", 144);
         } catch (Exception e) {
             fontCache.put("default", new Font("SansSerif", Font.PLAIN, 72));
         } finally {
