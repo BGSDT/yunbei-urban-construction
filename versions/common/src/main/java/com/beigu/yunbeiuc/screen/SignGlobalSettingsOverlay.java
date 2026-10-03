@@ -1,62 +1,92 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.beigu.yunbeiuc.api.text.Text;
 import com.beigu.yunbeiuc.util.GlobalFontSettings;
 import com.beigu.yunbeiuc.util.GlobalFontSettings.FontMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * 「云北路牌全局设置」覆盖层页面。
+ * 「云北路牌全局设置」全屏页面。
  *
- * <p>由文本编辑界面（{@link TextDisplayScreen}）的「设置」按钮打开；页内只有一个选项组
- * 「全局字体（仅对路牌方块新的文本行有效）」，五选一：
- * 原版uniform（不包裹JSON）/ A字体 / B字体 / C字体 / 路牌自适应。
+ * <p>由文本编辑界面（{@link TextDisplayScreen}）的「设置」按钮打开。全屏覆盖，
+ * 沿用项目其它界面的方角面板与海燕蓝配色（不使用圆角）。
  *
- * <p>与 {@link PatternAndFontOverlay} 相同的浮层契约：静态 {@link #isVisible} 控制显隐，
- * 渲染与输入事件由宿主界面转发；浮层自己持有并绘制按钮，不注册到宿主界面的控件列表
- * （宿主在浮层打开时不绘制自己的控件，也不处理世界中的拖拽手柄）。
+ * <p>两块内容：
+ * <ol>
+ *   <li><b>全局字体</b>：原版 uniform / 交通字体 A·B·C / 路牌自适应，决定之后新生成文本行的字体；</li>
+ *   <li><b>一键转换</b>：把已放置路牌「自带行」的字体标签统一改写为自适应字体或原版字体
+ *       （自适应按每行各自的 a/b/c；原版则加粗）。用户自己新增的行不参与。</li>
+ * </ol>
+ *
+ * <p>内容区比视口高，因此带滚动条：滚轮滚动，也可以按住滚动条拖动。
+ *
+ * <p>契约与 {@link PatternAndFontOverlay} 相同：静态 {@link #isVisible} 控制显隐，
+ * 渲染与输入事件由宿主界面转发；本页自行绘制与命中测试。
  */
 public final class SignGlobalSettingsOverlay {
 
     private static final String TITLE = "云北路牌全局设置";
-    private static final String SECTION = "全局字体（仅对新放置路牌或文本行有效）";
-    private static final String LABEL_VANILLA = "原版";
-    private static final String LABEL_ABC_PREFIX = "交通标志专用字体";
-    private static final String LABEL_A = "A字体";
-    private static final String LABEL_B = "B字体";
-    private static final String LABEL_C = "C字体";
-    private static final String LABEL_ADAPTIVE = "自适应字体";
-    private static final String LABEL_CLOSE = "关闭";
-    private static final String CHECK = " ✔";
 
+    private static final String FONT_SECTION = "全局字体";
+    private static final String FONT_HINT = "仅对之后新生成的文本行生效，不影响已有文本行";
+
+    private static final String CONVERT_SECTION = "一键转换自带标签文本";
+    private static final String CONVERT_HINT = "按每行自带的 a/b/c 字体改写；原版字体为加粗纯文本";
+    private static final String CONVERT_ADAPTIVE = "全部转为自适应字体";
+    private static final String CONVERT_VANILLA = "全部转为原版字体";
+    private static final String FOOTER_HINT = "仅改路牌自带的标签行；新增行与图片/矩形指令行不受影响";
+
+    private static final String[] OPTION_LABELS = {"原版 uniform", "交通字体 A", "交通字体 B", "交通字体 C", "路牌自适应"};
+    private static final String[] OPTION_NOTES = {"加粗纯文本", "traf_sign_font_a", "traf_sign_font_b", "traf_sign_font_c", "按每行自带字体"};
+    private static final FontMode[] OPTION_MODES = {FontMode.VANILLA, FontMode.ABC_A, FontMode.ABC_B, FontMode.ABC_C, FontMode.ADAPTIVE};
+    private static final int OPTION_COUNT = OPTION_LABELS.length;
+
+    private static final int DIM = 0x9C000000;
+    private static final int PAD = 20;
+    private static final int HEADER_H = 20;
+    private static final int SECTION_TITLE_H = 16;
+    private static final int SECTION_HINT_H = 11;
     private static final int OPTION_H = 20;
-    private static final int OPTION_GAP = 6;
-    private static final int ROW_GAP = 8;
-    private static final int PADDING = 12;
-    private static final int CLOSE_W = 72;
-
-    // 「设置」页面背景与文本编辑界面各面板保持一致：灰色透明底 + 浅色（白）边框
-    private static final int CLR_PANEL_FILL = 0xAA333333;
-    private static final int CLR_PANEL_BORDER = 0xFF888888;
-    private static final int CLR_TITLE = 0xFFFFFFFF;
-    private static final int CLR_SECTION = 0xFF66FFCC;
-    private static final int CLR_HINT = 0xFFAAAAAA;
+    private static final int OPTION_GAP = 4;
+    private static final int ACTION_H = 22;
+    private static final int ACTION_GAP = 10;
+    private static final int CLOSE_SIZE = 16;
+    private static final int CARD_W_MAX = 560;
+    private static final int VIEWPORT_MAX_H = 168;
+    private static final int FOOTER_H = 11;
+    private static final int ACCENT_BAR_W = 3;
+    private static final int SCROLLBAR_RESERVE = 10;
 
     public static boolean isVisible = false;
     public static TextDisplayScreen targetScreen = null;
 
-    private static final List<ButtonWidget> optionButtons = new ArrayList<>();
-    private static ButtonWidget vanillaOption;
-    private static ButtonWidget closeButton;
+    private static String statusMessage = "";
+    private static int statusColor = UIConstants.CLR_MUTED;
 
-    private static int optionWidth = 80;
-    private static int panelX, panelY, panelW, panelH;
-    private static int titleY, sectionY, row1Y, abcLabelY, row2Y, closeY;
+    private static boolean hoverClose = false;
+    private static int hoverOption = -1;
+    private static int hoverAction = -1;
+
+    // 滚动
+    private static int scrollOffset = 0;
+    private static int maxScroll = 0;
+    private static int contentHeight = 0;
+    private static int viewportX, viewportY, viewportW, viewportH;
+    private static int thumbX, thumbY, thumbW, thumbH;
+    private static boolean draggingThumb = false;
+    private static int dragStartMouseY = 0;
+    private static int dragStartScroll = 0;
+
+    // 布局结果（已含滚动偏移）
+    private static int cardX, cardY, cardW, cardH;
+    private static int contentX, contentW;
+    private static int titleY, closeX, closeY;
+    private static int fontSectionY, fontHintY;
+    private static final int[] optionY = new int[OPTION_COUNT];
+    private static int convertSectionY, convertHintY;
+    private static int adaptiveBtnX, adaptiveBtnY, vanillaBtnX, actionBtnW;
+    private static int statusY, footerY;
 
     private SignGlobalSettingsOverlay() {}
 
@@ -65,140 +95,277 @@ public final class SignGlobalSettingsOverlay {
     public static void open(TextDisplayScreen screen) {
         targetScreen = screen;
         isVisible = true;
-        rebuild();
+        statusMessage = "";
+        statusColor = UIConstants.CLR_MUTED;
+        scrollOffset = 0;
+        draggingThumb = false;
+        hoverOption = -1;
+        hoverAction = -1;
+        hoverClose = false;
     }
 
     public static void close() {
         isVisible = false;
         targetScreen = null;
-        optionButtons.clear();
-        vanillaOption = null;
-        closeButton = null;
+        statusMessage = "";
+        draggingThumb = false;
+        hoverOption = -1;
+        hoverAction = -1;
+        hoverClose = false;
     }
 
-    // ==================== 控件构建 ====================
+    // ==================== 一键转换 ====================
 
-    private static void rebuild() {
-        Font tr = Minecraft.getInstance().font;
-        optionButtons.clear();
-        int w = tr.width(LABEL_A + CHECK) + 20;
-        w = Math.max(w, tr.width(LABEL_B + CHECK) + 20);
-        w = Math.max(w, tr.width(LABEL_C + CHECK) + 20);
-        w = Math.max(w, tr.width(LABEL_ADAPTIVE + CHECK) + 20);
-        optionWidth = w;
-
-        vanillaOption = makeOption(FontMode.VANILLA, LABEL_VANILLA, tr.width(LABEL_VANILLA + CHECK) + 20);
-        optionButtons.add(vanillaOption);
-        optionButtons.add(makeOption(FontMode.ABC_A, LABEL_A, optionWidth));
-        optionButtons.add(makeOption(FontMode.ABC_B, LABEL_B, optionWidth));
-        optionButtons.add(makeOption(FontMode.ABC_C, LABEL_C, optionWidth));
-        optionButtons.add(makeOption(FontMode.ADAPTIVE, LABEL_ADAPTIVE, optionWidth));
-
-        closeButton = ButtonWidget.builderCompat(Text.literal(LABEL_CLOSE), b -> close())
-                .dimensions(0, 0, CLOSE_W, OPTION_H).build();
-
-        refreshLabels();
-        layout();
-    }
-
-    private static ButtonWidget makeOption(FontMode mode, String label, int width) {
-        return ButtonWidget.builderCompat(Text.literal(label), b -> {
-            GlobalFontSettings.setMode(mode);
-            refreshLabels();
-        }).dimensions(0, 0, width, OPTION_H).build();
-    }
-
-    /** 当前生效的模式在标签后打勾（不使用 active=false 表示选中，那会禁用点击） */
-    private static void refreshLabels() {
-        FontMode mode = GlobalFontSettings.getMode();
-        if (vanillaOption != null) vanillaOption.setMessage(Text.literal(mark(LABEL_VANILLA, mode == FontMode.VANILLA)));
-        if (optionButtons.size() < 5) return;
-        optionButtons.get(1).setMessage(Text.literal(mark(LABEL_A, mode == FontMode.ABC_A)));
-        optionButtons.get(2).setMessage(Text.literal(mark(LABEL_B, mode == FontMode.ABC_B)));
-        optionButtons.get(3).setMessage(Text.literal(mark(LABEL_C, mode == FontMode.ABC_C)));
-        optionButtons.get(4).setMessage(Text.literal(mark(LABEL_ADAPTIVE, mode == FontMode.ADAPTIVE)));
-    }
-
-    private static String mark(String label, boolean selected) {
-        return selected ? label + CHECK : label;
+    private static void runConvert(boolean adaptive) {
+        if (targetScreen == null) return;
+        int converted = targetScreen.convertBuiltinFontTags(adaptive);
+        if (converted > 0) {
+            statusMessage = "已转换 " + converted + " 行自带标签文本 → "
+                    + (adaptive ? "自适应字体" : "原版字体（加粗）");
+            statusColor = UIConstants.CLR_ACCENT;
+        } else {
+            statusMessage = "没有找到可转换的自带标签文本行";
+            statusColor = UIConstants.CLR_MUTED;
+        }
     }
 
     // ==================== 布局 ====================
 
+    private static int computeContentHeight() {
+        return SECTION_TITLE_H + SECTION_HINT_H + 6
+                + OPTION_COUNT * OPTION_H + (OPTION_COUNT - 1) * OPTION_GAP
+                + 14
+                + SECTION_TITLE_H + SECTION_HINT_H + 6
+                + ACTION_H + 8 + 12;
+    }
+
     private static void layout() {
-        Font tr = Minecraft.getInstance().font;
         int sw = LayoutHelper.getScreenWidth();
         int sh = LayoutHelper.getScreenHeight();
 
-        int row2W = 4 * optionWidth + 3 * OPTION_GAP;
-        int contentW = Math.max(Math.max(tr.width(TITLE), tr.width(SECTION)), Math.max(vanillaOption.getWidth(), row2W));
-        panelW = contentW + PADDING * 2;
-        panelH = PADDING * 2 + tr.lineHeight * 3 + OPTION_H * 3 + ROW_GAP * 4;
-        panelX = Math.max(0, (sw - panelW) / 2);
-        panelY = Math.max(0, (sh - panelH) / 2);
+        cardW = Math.min(CARD_W_MAX, Math.max(300, sw - 40));
+        contentW = cardW - PAD * 2 - SCROLLBAR_RESERVE;
+        contentHeight = computeContentHeight();
+        viewportH = Math.min(contentHeight, Math.min(VIEWPORT_MAX_H, Math.max(60, sh - 150)));
+        maxScroll = Math.max(0, contentHeight - viewportH);
+        scrollOffset = Math.max(0, Math.min(scrollOffset, maxScroll));
 
-        int y = panelY + PADDING;
-        titleY = y; y += tr.lineHeight + ROW_GAP;
-        sectionY = y; y += tr.lineHeight + ROW_GAP;
-        row1Y = y; y += OPTION_H + ROW_GAP;
-        abcLabelY = y; y += tr.lineHeight + ROW_GAP;
-        row2Y = y; y += OPTION_H + ROW_GAP;
-        closeY = y;
+        cardH = PAD + HEADER_H + 8 + 1 + 8 + viewportH + 8 + FOOTER_H + PAD;
+        cardX = Math.max(10, (sw - cardW) / 2);
+        cardY = Math.max(10, (sh - cardH) / 2);
+        contentX = cardX + PAD;
+        viewportX = contentX;
+        viewportY = cardY + PAD + HEADER_H + 8 + 1 + 8;
+        viewportW = cardW - PAD * 2;
 
-        vanillaOption.setPosition(panelX + PADDING, row1Y);
-        int x = panelX + PADDING;
-        for (int i = 1; i < optionButtons.size(); i++) {
-            optionButtons.get(i).setPosition(x, row2Y);
-            x += optionWidth + OPTION_GAP;
+        titleY = cardY + PAD + (HEADER_H - 8) / 2;
+        closeX = cardX + cardW - PAD - CLOSE_SIZE;
+        closeY = cardY + PAD + (HEADER_H - CLOSE_SIZE) / 2;
+
+        // 内容区内的相对布局，再减去滚动偏移得到屏幕坐标
+        int y = viewportY - scrollOffset;
+        fontSectionY = y; y += SECTION_TITLE_H;
+        fontHintY = y; y += SECTION_HINT_H + 6;
+        for (int i = 0; i < OPTION_COUNT; i++) {
+            optionY[i] = y;
+            y += OPTION_H + (i < OPTION_COUNT - 1 ? OPTION_GAP : 0);
         }
-        closeButton.setPosition(panelX + panelW - PADDING - CLOSE_W, closeY);
+        y += 14;
+        convertSectionY = y; y += SECTION_TITLE_H;
+        convertHintY = y; y += SECTION_HINT_H + 6;
+        adaptiveBtnY = y;
+        actionBtnW = (contentW - ACTION_GAP) / 2;
+        adaptiveBtnX = contentX;
+        vanillaBtnX = contentX + actionBtnW + ACTION_GAP;
+        y += ACTION_H + 8;
+        statusY = y;
+
+        footerY = viewportY + viewportH + 8;
+
+        // 滚动条滑块
+        thumbW = UIConstants.THUMB_WIDTH;
+        thumbX = viewportX + viewportW - thumbW - 3;
+        if (maxScroll > 0) {
+            float ratio = (float) viewportH / (float) contentHeight;
+            thumbH = Math.max(UIConstants.THUMB_MIN_SIZE, (int) ((viewportH - 4) * ratio));
+            float scrollRatio = (float) scrollOffset / (float) maxScroll;
+            thumbY = viewportY + 2 + (int) ((viewportH - 4 - thumbH) * scrollRatio);
+        } else {
+            thumbH = viewportH - 4;
+            thumbY = viewportY + 2;
+        }
     }
 
-    // ==================== 渲染与输入 ====================
+    private static boolean inViewport(double mx, double my, int y, int h) {
+        return LayoutHelper.isMouseInRect(mx, my, viewportX, y, contentW, h)
+                && my >= viewportY && my <= viewportY + viewportH;
+    }
+
+    // ==================== 渲染 ====================
 
     public static void render(DrawContext ctx, int mouseX, int mouseY) {
         if (!isVisible) return;
         Font tr = Minecraft.getInstance().font;
         layout();
+        updateHover(mouseX, mouseY);
 
-        ctx.fill(panelX, panelY, panelX + panelW, panelY + panelH, CLR_PANEL_FILL);
-        ctx.drawBorder(panelX, panelY, panelW, panelH, CLR_PANEL_BORDER);
+        // 全屏遮罩：本页是全屏页面，背后不再显示文本编辑界面
+        ctx.fill(0, 0, LayoutHelper.getScreenWidth(), LayoutHelper.getScreenHeight(), DIM);
 
-        ctx.drawCenteredTextWithShadow(tr, TITLE, panelX + panelW / 2, titleY, CLR_TITLE);
-        ctx.drawText(tr, SECTION, panelX + PADDING, sectionY, CLR_SECTION, false);
-        ctx.drawText(tr, LABEL_ABC_PREFIX, panelX + PADDING, abcLabelY, CLR_HINT, false);
+        // 卡片（方角）
+        ctx.fill(cardX, cardY, cardX + cardW, cardY + cardH, UIConstants.CLR_CONTENT_BG);
+        ctx.drawBorder(cardX, cardY, cardW, cardH, UIConstants.CLR_CONTENT_BORDER);
 
-        for (ButtonWidget b : optionButtons) renderButton(ctx, b, mouseX, mouseY);
-        renderButton(ctx, closeButton, mouseX, mouseY);
+        // 标题 + 关闭
+        ctx.fill(contentX, titleY - 1, contentX + ACCENT_BAR_W, titleY + 9, UIConstants.CLR_ACCENT);
+        ctx.drawText(tr, TITLE, contentX + ACCENT_BAR_W + 6, titleY, UIConstants.CLR_HEADING, false);
+
+        int closeFill = hoverClose ? UIConstants.CLR_BTN_HOVER : UIConstants.CLR_BTN_FILL;
+        ctx.fill(closeX, closeY, closeX + CLOSE_SIZE, closeY + CLOSE_SIZE, closeFill);
+        ctx.drawBorder(closeX, closeY, CLOSE_SIZE, CLOSE_SIZE, UIConstants.CLR_BTN_STROKE);
+        ctx.drawCenteredTextWithShadow(tr, "×", closeX + CLOSE_SIZE / 2, closeY + (CLOSE_SIZE - 8) / 2,
+                UIConstants.CLR_BTN_LABEL);
+
+        int headerDivider = viewportY - 5;
+        ctx.fill(contentX, headerDivider, contentX + viewportW, headerDivider + 1, UIConstants.CLR_CONTENT_DIVIDER);
+
+        // ---- 可滚动内容区 ----
+        ctx.enableScissor(viewportX, viewportY, viewportX + viewportW, viewportY + viewportH);
+
+        drawSectionTitle(ctx, tr, FONT_SECTION, fontSectionY);
+        ctx.drawText(tr, FONT_HINT, contentX, fontHintY, UIConstants.CLR_MUTED, false);
+
+        FontMode current = GlobalFontSettings.getMode();
+        for (int i = 0; i < OPTION_COUNT; i++) {
+            drawOptionRow(ctx, tr, i, optionY[i], OPTION_MODES[i] == current, hoverOption == i);
+        }
+
+        drawSectionTitle(ctx, tr, CONVERT_SECTION, convertSectionY);
+        ctx.drawText(tr, CONVERT_HINT, contentX, convertHintY, UIConstants.CLR_MUTED, false);
+        drawActionButton(ctx, tr, CONVERT_ADAPTIVE, adaptiveBtnX, adaptiveBtnY, actionBtnW, hoverAction == 0);
+        drawActionButton(ctx, tr, CONVERT_VANILLA, vanillaBtnX, adaptiveBtnY, actionBtnW, hoverAction == 1);
+        if (!statusMessage.isEmpty()) {
+            ctx.drawText(tr, statusMessage, contentX, statusY, statusColor, false);
+        }
+
+        ctx.disableScissor();
+
+        // 滚动条
+        if (maxScroll > 0) {
+            ctx.fill(thumbX, viewportY + 2, thumbX + thumbW, viewportY + viewportH - 2, UIConstants.CLR_TRACK);
+            boolean thumbHover = draggingThumb
+                    || LayoutHelper.isMouseInRect(mouseX, mouseY, thumbX, thumbY, thumbW, thumbH);
+            ctx.fill(thumbX, thumbY, thumbX + thumbW, thumbY + thumbH,
+                    thumbHover ? UIConstants.CLR_SLIDER_HOVER : UIConstants.CLR_SLIDER);
+        }
+
+        ctx.drawText(tr, FOOTER_HINT, contentX, footerY, UIConstants.CLR_MUTED, false);
     }
 
-    private static void renderButton(DrawContext ctx, ButtonWidget button, int mouseX, int mouseY) {
-        if (button == null || !button.visible) return;
-        button.render(ctx, mouseX, mouseY, 0f);
+    private static void drawSectionTitle(DrawContext ctx, Font tr, String text, int y) {
+        ctx.fill(contentX, y + 3, contentX + ACCENT_BAR_W, y + 12, UIConstants.CLR_ACCENT);
+        ctx.drawText(tr, text, contentX + ACCENT_BAR_W + 6, y + 3, UIConstants.CLR_ACCENT, false);
     }
+
+    /** 单行选项卡：选中态用填充 + 左侧强调条，悬停态用浅色底（方角）。 */
+    private static void drawOptionRow(DrawContext ctx, Font tr, int index, int y, boolean selected, boolean hovered) {
+        int fill = selected ? UIConstants.CLR_NAVItemSelected
+                : (hovered ? UIConstants.CLR_NAV_PILL_HOVER : UIConstants.CLR_CELL_FILL);
+        ctx.fill(contentX, y, contentX + contentW, y + OPTION_H, fill);
+        ctx.drawBorder(contentX, y, contentW, OPTION_H, selected ? UIConstants.CLR_ACCENT : UIConstants.CLR_CELL_OUTLINE);
+        if (selected) {
+            ctx.fill(contentX, y + 1, contentX + ACCENT_BAR_W, y + OPTION_H - 1, UIConstants.CLR_ACCENT);
+        }
+        int textY = y + (OPTION_H - 8) / 2;
+        ctx.drawText(tr, OPTION_LABELS[index], contentX + 12, textY,
+                selected ? UIConstants.CLR_HEADING : UIConstants.CLR_BODY_TEXT, false);
+        String note = OPTION_NOTES[index];
+        ctx.drawText(tr, note, contentX + contentW - 10 - tr.width(note), textY, UIConstants.CLR_MUTED, false);
+    }
+
+    private static void drawActionButton(DrawContext ctx, Font tr, String label, int x, int y, int w, boolean hovered) {
+        ctx.fill(x, y, x + w, y + ACTION_H, hovered ? UIConstants.CLR_ACTION_HOVER : UIConstants.CLR_ACTION_FILL);
+        ctx.drawBorder(x, y, w, ACTION_H, UIConstants.CLR_ACTION_STROKE);
+        ctx.drawCenteredTextWithShadow(tr, label, x + w / 2, y + (ACTION_H - 8) / 2, UIConstants.CLR_BTN_LABEL);
+    }
+
+    private static void updateHover(int mouseX, int mouseY) {
+        hoverClose = LayoutHelper.isMouseInRect(mouseX, mouseY, closeX, closeY, CLOSE_SIZE, CLOSE_SIZE);
+        hoverOption = -1;
+        for (int i = 0; i < OPTION_COUNT; i++) {
+            if (inViewport(mouseX, mouseY, optionY[i], OPTION_H)) {
+                hoverOption = i;
+                break;
+            }
+        }
+        hoverAction = -1;
+        if (inViewport(mouseX, mouseY, adaptiveBtnY, ACTION_H)) {
+            if (LayoutHelper.isMouseInRect(mouseX, mouseY, adaptiveBtnX, adaptiveBtnY, actionBtnW, ACTION_H)) {
+                hoverAction = 0;
+            } else if (LayoutHelper.isMouseInRect(mouseX, mouseY, vanillaBtnX, adaptiveBtnY, actionBtnW, ACTION_H)) {
+                hoverAction = 1;
+            }
+        }
+    }
+
+    private static void scrollBy(int amount) {
+        scrollOffset = Math.max(0, Math.min(scrollOffset + amount, maxScroll));
+    }
+
+    // ==================== 输入 ====================
 
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!isVisible) return false;
         layout();
-        for (ButtonWidget b : optionButtons) {
-            if (b.mouseClicked(mouseX, mouseY, button)) return true;
+        updateHover((int) mouseX, (int) mouseY);
+        if (button != 0) return true;
+
+        if (hoverClose) {
+            close();
+            return true;
         }
-        if (closeButton != null) closeButton.mouseClicked(mouseX, mouseY, button);
+        if (maxScroll > 0 && LayoutHelper.isMouseInRect(mouseX, mouseY, thumbX, thumbY, thumbW, thumbH)) {
+            draggingThumb = true;
+            dragStartMouseY = (int) mouseY;
+            dragStartScroll = scrollOffset;
+            return true;
+        }
+        if (hoverOption >= 0) {
+            GlobalFontSettings.setMode(OPTION_MODES[hoverOption]);
+            return true;
+        }
+        if (hoverAction == 0) {
+            runConvert(true);
+            return true;
+        }
+        if (hoverAction == 1) {
+            runConvert(false);
+            return true;
+        }
+        // 全屏页面：卡片外的点击也一并吞掉，避免影响底层界面
+        return true;
+    }
+
+    /** 拖动滚动条滑块。 */
+    public static boolean mouseDragged(double mouseX, double mouseY, int button) {
+        if (!isVisible) return false;
+        if (!draggingThumb || maxScroll <= 0) return true;
+        int track = Math.max(1, viewportH - 4 - thumbH);
+        int delta = (int) mouseY - dragStartMouseY;
+        scrollOffset = Math.max(0, Math.min(dragStartScroll + (int) ((float) delta / track * maxScroll), maxScroll));
         return true;
     }
 
     public static boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!isVisible) return false;
-        for (ButtonWidget b : optionButtons) {
-            if (b.mouseReleased(mouseX, mouseY, button)) return true;
-        }
-        if (closeButton != null) closeButton.mouseReleased(mouseX, mouseY, button);
-        return true;
+        draggingThumb = false;
+        return isVisible;
     }
 
     public static boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        // 浮层内容固定高度，无滚动内容：仅吞掉滚轮，避免影响底层界面
-        return isVisible;
+        if (!isVisible) return false;
+        layout();
+        if (maxScroll > 0) scrollBy((int) (-amount * UIConstants.WHEEL_STEP));
+        return true;
     }
 
     public static boolean keyPressed(int keyCode) {

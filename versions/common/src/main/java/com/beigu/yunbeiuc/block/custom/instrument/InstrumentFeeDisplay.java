@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.instrument;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class InstrumentFeeDisplay extends Block {
+public class InstrumentFeeDisplay extends BlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<DirectionType> DIRECTION_TYPE = EnumProperty.create("direction_type", DirectionType.class);
 
@@ -47,9 +48,8 @@ public class InstrumentFeeDisplay extends Block {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.instrument_fee_display.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class InstrumentFeeDisplay extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
             if (!world.isClientSide) {

@@ -29,7 +29,7 @@ public class RoadPoleTextDisplay extends CustomTextDisplayBlock {
     private static final VoxelShape SHAPE_W = Shapes.join(Block.box(-8, -4, 5, 24, 6, 11), Block.box(0, 6, 6, 16, 10, 10), BooleanOp.OR);
 
     public RoadPoleTextDisplay(BlockBehaviour.Properties properties) {
-        super(properties);
+        super(properties.lightLevel(state -> 15));
     }
 
     @Override

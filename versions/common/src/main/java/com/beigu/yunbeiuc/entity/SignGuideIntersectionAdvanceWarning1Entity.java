@@ -21,8 +21,8 @@ public class SignGuideIntersectionAdvanceWarning1Entity extends CustomSignBlockE
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
@@ -32,10 +32,10 @@ public class SignGuideIntersectionAdvanceWarning1Entity extends CustomSignBlockE
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -46,7 +46,7 @@ public class SignGuideIntersectionAdvanceWarning1Entity extends CustomSignBlockE
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning2 = getBlockState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2.get();
+        boolean isWarning2 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning2) {
             lines.add(SignTextLinesHelper.left("昌平", -17f, 10f, 0.035f, 0xFFFFFF, "a"));
@@ -86,7 +86,7 @@ public class SignGuideIntersectionAdvanceWarning1Entity extends CustomSignBlockE
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

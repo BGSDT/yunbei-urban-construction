@@ -27,8 +27,8 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
@@ -44,7 +44,7 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("text3", this.text3);
@@ -53,7 +53,7 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
         nbt.putFloat("text2AndY", this.text2AndY);
         nbt.putFloat("text3AndY", this.text3AndY);
         nbt.putFloat("text4AndY", this.text4AndY);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -145,7 +145,7 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

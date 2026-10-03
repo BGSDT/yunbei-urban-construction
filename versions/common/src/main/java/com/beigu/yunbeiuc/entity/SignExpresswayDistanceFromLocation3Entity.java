@@ -18,8 +18,8 @@ public class SignExpresswayDistanceFromLocation3Entity extends CustomSignBlockEn
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
@@ -29,10 +29,10 @@ public class SignExpresswayDistanceFromLocation3Entity extends CustomSignBlockEn
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -73,7 +73,7 @@ public class SignExpresswayDistanceFromLocation3Entity extends CustomSignBlockEn
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), 3);
         }
     }
 }

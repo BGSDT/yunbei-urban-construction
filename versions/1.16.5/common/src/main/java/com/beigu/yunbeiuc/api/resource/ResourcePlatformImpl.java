@@ -23,4 +23,6 @@ public final class ResourcePlatformImpl implements ResourcePlatform {
         }
         return result;
     }
+    @Override public ResourceLocation create(String namespace, String path) { return new ResourceLocation(namespace, path); }
+    @Override public ResourceLocation parse(String location) { return new ResourceLocation(location); }
 }

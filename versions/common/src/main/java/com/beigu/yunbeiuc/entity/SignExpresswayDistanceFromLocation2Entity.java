@@ -27,8 +27,8 @@ public class SignExpresswayDistanceFromLocation2Entity extends CustomSignBlockEn
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
         this.text1 = nbt.getString("text1");
         this.expresswayNumber = nbt.getString("expresswayNumber");
@@ -45,7 +45,7 @@ public class SignExpresswayDistanceFromLocation2Entity extends CustomSignBlockEn
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("text1", this.text1);
         nbt.putString("expresswayNumber", this.expresswayNumber);
@@ -54,7 +54,7 @@ public class SignExpresswayDistanceFromLocation2Entity extends CustomSignBlockEn
         nbt.putString("length1", this.length1);
         nbt.putString("length2", this.length2);
         nbt.putString("length3", this.length3);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -175,7 +175,7 @@ public class SignExpresswayDistanceFromLocation2Entity extends CustomSignBlockEn
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

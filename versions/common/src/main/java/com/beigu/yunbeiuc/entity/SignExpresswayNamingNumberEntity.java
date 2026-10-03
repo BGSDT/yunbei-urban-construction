@@ -21,8 +21,8 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.expresswayNumber = nbt.getString("expresswayNumber");
         this.expresswayName = nbt.getString("expresswayName");
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
@@ -32,10 +32,10 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("expresswayNumber", this.expresswayNumber);
         nbt.putString("expresswayName", this.expresswayName);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -85,7 +85,7 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

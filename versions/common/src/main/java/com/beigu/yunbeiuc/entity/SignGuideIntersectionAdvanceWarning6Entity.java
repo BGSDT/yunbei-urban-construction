@@ -23,8 +23,8 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.direction1 = SignTurnDirection.fromName(nbt.getString("direction1"), SignTurnDirection.STRAIGHT);
         this.direction2 = SignTurnDirection.fromName(nbt.getString("direction2"), SignTurnDirection.STRAIGHT);
         this.text1 = nbt.getString("text1");
@@ -36,12 +36,12 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("direction1", this.direction1.getName());
         nbt.putString("direction2", this.direction2.getName());
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -57,7 +57,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning6 = getBlockState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get();
+        boolean isWarning6 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning6) {
             // 原渲染器右转时整行 X 镜像：logo ±13、文本 ±6（旧存档 direction 已为 RIGHT 时同样生效）
@@ -102,7 +102,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
 
     @Override
     public String getPlaceholderValue(String key) {
-        boolean isWarning8 = getBlockState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8.get();
+        boolean isWarning8 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8.get();
         return switch (key) {
             // 对应原 renderDirectionLogo1（左转/直行/右转直行箭头）与 renderDirectionLogo2（转弯箭头纹理）：
             // WARNING_8 方块用 left_turn/right_turn 纹理，其余用 left/right
@@ -152,7 +152,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
      * WARNING_8 方块布局固定不镜像。
      */
     private void mirrorWarning6Lines() {
-        if (getBlockState().getBlock() != com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get()) return;
+        if (blockStateForDefaults().getBlock() != com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get()) return;
         float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
         float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
         float text1X = direction1 == SignTurnDirection.RIGHT ? -6f : 6f;
@@ -185,7 +185,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

@@ -21,8 +21,8 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
@@ -31,9 +31,9 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -49,7 +49,7 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        Block block = getBlockState().getBlock();
+        Block block = blockStateForDefaults().getBlock();
         List<TextLineData> lines = new ArrayList<>();
         if (block == SignBlocks.ZONES_BOARD_OVER_WEIGHT.get() || block == SignBlocks.ZONES_BOARD_TIME_LIMIT.get()) {
             lines.add(SignTextLinesHelper.left("{text1}", -5f, 5.5f, 0.03f, 0x000000, "b"));
@@ -87,7 +87,7 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

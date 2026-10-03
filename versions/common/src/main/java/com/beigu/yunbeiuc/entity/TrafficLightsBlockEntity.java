@@ -1,6 +1,9 @@
 package com.beigu.yunbeiuc.entity;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
+import com.beigu.yunbeiuc.api.network.NetworkCompat;
+import com.beigu.yunbeiuc.network.ModMessages;
+import com.beigu.yunbeiuc.network.TrafficLightsGroupSyncPacket;
 
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
@@ -10,11 +13,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +40,8 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private int currentTick = 0;
     private int currentActivePhase = 0;
     private boolean cycleActive = false;
+    /** 链接组状态（groupId / groupPositions / 时间表）自上次推送后是否又变化过 */
+    private boolean groupStateDirty = false;
     /** 本灯最近一次被组内其它灯同步进度时的游戏刻：同一刻内已同步则自身不再推进，保证整组每刻只推进一次 */
     private long lastGroupSyncTick = Long.MIN_VALUE;
 
@@ -231,8 +240,12 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     // ==================== 时间查询接口（秒数） ====================
 
     /**
-     * 获取绿灯+闪烁的总剩余秒数。
-     * 向上取整计算，始终显示 1 到绿灯总秒数的完整序列，不会出现 0。
+     * 获取绿灯+闪烁的剩余秒数（只算「当前相位」，不跨相位叠加）。
+     *
+     * <p>本灯被分配到多个相位时，读秒只反映距离最近的那一次相位结束还有多久，
+     * 不会把后面连续的绿灯相位时长累加进来。
+     *
+     * <p>向上取整计算，始终显示 1 到绿灯总秒数的完整序列，不会出现 0。
      */
     public int getGreenRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
@@ -256,15 +269,10 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             return -1;
         }
 
-        // 连续绿灯相位（本相位与下一相位对本灯均为绿灯）时，中间不出现黄灯，
-        // 剩余秒数需要跨相位叠加，包含中间本应出现的黄灯时长
-        int phase = currentActivePhase;
+        // 只按「当前相位」计算：本灯被分配到多个相位时，绿灯剩余时间显示距离最近的那一次
+        // 相位结束的时长，不再跨相位叠加。叠加会把后面连续的绿灯相位时间也算进来，
+        // 读秒会明显大于当前相位的实际剩余时间（与灯色变化对不上）。
         long remainingTicks = totalTicks - currentTick;
-        for (int i = 1; i < phaseCount; i++) {
-            int nextPhase = (phase + i) % phaseCount;
-            if (!phaseIndices.contains(nextPhase)) break;
-            remainingTicks += phaseTimes[nextPhase] * 20L;
-        }
 
         // 人行道灯：黄灯时间并入绿灯显示，不减去黄灯时长
         // 普通灯：减去黄灯时长（因为黄灯单独显示）
@@ -300,8 +308,13 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     /**
-     * 获取红灯剩余秒数。
-     * 向上取整计算，始终显示 1 到红灯总秒数的完整序列，不会出现 0。
+     * 获取红灯剩余秒数（只算「当前相位」，不跨相位叠加）。
+     *
+     * <p>与绿灯一致：本灯被分配到多个相位时，红灯读秒只反映距离最近的那一次相位结束
+     * 还有多久，不把后面连续的红灯相位时长累加进来，避免读秒远大于当前相位剩余时间、
+     * 以及在相位切换时突然跳变。
+     *
+     * <p>向上取整计算，始终显示 1 到红灯总秒数的完整序列，不会出现 0。
      */
     public int getRedRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
@@ -311,11 +324,6 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int remainingTicks = totalTicks - currentTick;
-        for (int i = 1; i < phaseCount; i++) {
-            int nextPhase = (currentActivePhase + i) % phaseCount;
-            if (phaseIndices.contains(nextPhase)) break;
-            remainingTicks += phaseTimes[nextPhase] * 20;
-        }
 
         return (remainingTicks + 19) / 20;
     }
@@ -410,7 +418,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             }
             player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§a相位已设置为 §6" + sb + " §7(共" + phaseCount + "个相位)"), true);
         }
-        markDirtyAndUpdate();
+        markGroupStateDirty();
         return true;
     }
 
@@ -445,7 +453,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                     tl.phaseIndices.clear();
                     tl.directionType = DirectionType.STRAIGHT_CIRCLE;
                     tl.stopCycle();
-                    tl.markDirtyAndUpdate();
+                    tl.markGroupStateDirty();
                 }
             }
         }
@@ -456,7 +464,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         phaseCount = 0;
         phaseIndices.clear();
         directionType = DirectionType.STRAIGHT_CIRCLE;
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     // ==================== 设置器 ====================
@@ -467,7 +475,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.phaseCount = timings != null ? timings.length : 0;
         this.phaseIndices.clear();
         startCycle();
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     public void setGroup(String groupId, List<BlockPos> positions) {
@@ -488,7 +496,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, TrafficLightsBlock.LightState.RED), VersionServices.blocks().updateAll());
             }
         }
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     /**
@@ -511,7 +519,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, color), VersionServices.blocks().updateAll());
             }
         }
-        markDirtyAndUpdate();
+        markGroupStateDirty();
         return true;
     }
 
@@ -523,6 +531,33 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public boolean isInGroup() {
         return groupId != null;
+    }
+
+    /**
+     * 客户端专用：应用 {@code TrafficLightsGroupSyncPacket} 推来的链接组状态。
+     *
+     * <p>1.16.5 / 1.17.1 的方块实体更新包会被客户端整包丢弃（详见
+     * {@code TrafficLightsGroupSyncPacket}），必须靠这条通道把 {@code groupId}
+     * 等状态补到客户端，否则客户端会误判为"未分组"而打开静态状态界面。
+     */
+    public void applyClientGroupSync(String groupId, List<BlockPos> groupPositions, int[] phaseTimes,
+                                     List<Integer> phaseIndices, String directionType,
+                                     boolean cycleActive, int currentActivePhase, int currentTick,
+                                     boolean showSeconds, int fixedSeconds,
+                                     int countdownDisplayMode, int countdownThreshold) {
+        this.groupId = groupId;
+        this.groupPositions = groupPositions == null ? new ArrayList<>() : new ArrayList<>(groupPositions);
+        this.phaseTimes = phaseTimes;
+        this.phaseCount = phaseTimes != null ? phaseTimes.length : 0;
+        this.phaseIndices = phaseIndices == null ? new ArrayList<>() : new ArrayList<>(phaseIndices);
+        this.directionType = DirectionType.fromName(directionType);
+        this.cycleActive = cycleActive;
+        this.currentActivePhase = currentActivePhase;
+        this.currentTick = currentTick;
+        this.showSeconds = showSeconds;
+        this.fixedSeconds = fixedSeconds;
+        this.countdownDisplayMode = countdownDisplayMode;
+        this.countdownThreshold = countdownThreshold;
     }
 
     public int getPhaseCount() {
@@ -551,7 +586,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public void setDirectionType(DirectionType directionType) {
         this.directionType = directionType;
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     public int getCountdownDisplayMode() {
@@ -560,7 +595,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public void setCountdownDisplayMode(int mode) {
         this.countdownDisplayMode = mode;
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     public int getCountdownThreshold() {
@@ -569,7 +604,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public void setCountdownThreshold(int threshold) {
         this.countdownThreshold = threshold;
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     public boolean isShowSeconds() {
@@ -578,7 +613,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public void setShowSeconds(boolean showSeconds) {
         this.showSeconds = showSeconds;
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     public int getFixedSeconds() {
@@ -587,14 +622,14 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public void setFixedSeconds(int fixedSeconds) {
         this.fixedSeconds = fixedSeconds;
-        markDirtyAndUpdate();
+        markGroupStateDirty();
     }
 
     // ==================== NBT 读写 ====================
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         if (nbt.contains("phaseIndices")) {
             int[] arr = nbt.getIntArray("phaseIndices");
             this.phaseIndices = new ArrayList<>();
@@ -630,8 +665,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             int size = positionsTag.getInt("size");
             groupPositions.clear();
             for (int i = 0; i < size; i++) {
-                BlockPos pos = NbtUtils.readBlockPos(positionsTag.getCompound("pos" + i));
-                groupPositions.add(pos);
+                groupPositions.add(readPos(positionsTag, i));
             }
         }
 
@@ -640,7 +674,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt) {
+    protected void saveAdditionalCompat(CompoundTag nbt) {
         int[] indicesArray = new int[phaseIndices.size()];
         for (int i = 0; i < phaseIndices.size(); i++) indicesArray[i] = phaseIndices.get(i);
         nbt.putIntArray("phaseIndices", indicesArray);
@@ -668,12 +702,40 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             CompoundTag positionsTag = new CompoundTag();
             positionsTag.putInt("size", groupPositions.size());
             for (int i = 0; i < groupPositions.size(); i++) {
-                positionsTag.put("pos" + i, NbtUtils.writeBlockPos(groupPositions.get(i)));
+                positionsTag.put("pos" + i, writePos(groupPositions.get(i)));
             }
             nbt.put("groupPositions", positionsTag);
         }
 
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
+    }
+
+    /**
+     * 版本中立的坐标序列化。
+     *
+     * <p>不能用 {@code NbtUtils.writeBlockPos}：1.16.5–1.20.1 写的是带 X/Y/Z 的复合标签，
+     * 而 1.21 起改写成 {@code IntArrayTag([x,y,z])}，跨版本读写会对不上（坐标全部读成 0,0,0，
+     * 链接组因此被判定为"成员已被破坏"）。这里固定使用复合标签格式，与旧存档一致。
+     */
+    private static CompoundTag writePos(BlockPos pos) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("X", pos.getX());
+        tag.putInt("Y", pos.getY());
+        tag.putInt("Z", pos.getZ());
+        return tag;
+    }
+
+    /** 读取坐标：兼容 X/Y/Z 复合标签，以及 1.21 上曾被写坏的 {@code IntArrayTag([x,y,z])}。 */
+    private static BlockPos readPos(CompoundTag positionsTag, int index) {
+        Tag tag = positionsTag.get("pos" + index);
+        if (tag instanceof IntArrayTag array) {
+            int[] values = array.getAsIntArray();
+            if (values.length >= 3) {
+                return new BlockPos(values[0], values[1], values[2]);
+            }
+        }
+        CompoundTag compound = positionsTag.getCompound("pos" + index);
+        return new BlockPos(compound.getInt("X"), compound.getInt("Y"), compound.getInt("Z"));
     }
 
     @Nullable
@@ -681,16 +743,56 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return createUpdatePacket();
     }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return createUpdateTag();
-    }
-
     public void markDirtyAndUpdate() {
         setChanged();
         if (level != null && !level .isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            syncGroupStateToClients();
+        }
+    }
+
+    /**
+     * 标记链接组状态已变化，下一次 {@link #markDirtyAndUpdate()} 时把完整组状态推给客户端。
+     *
+     * <p>{@code markDirtyAndUpdate} 在 tick 中每 10 刻也会被调用（读秒同步），
+     * 若每次都推组状态会白白占用带宽，因此用脏标记把推送限制在实际变化时。
+     */
+    public void markGroupStateDirty() {
+        this.groupStateDirty = true;
+        markDirtyAndUpdate();
+    }
+
+    /**
+     * 把链接组状态推给正在追踪本区块的客户端。
+     *
+     * <p>只在 1.16.5 / 1.17.1 需要：这两个版本的方块实体更新包用 int 类型，
+     * 模组方块实体只能填 {@code -1}，客户端会整包丢弃，导致
+     * {@code groupId} / {@code phaseTimes} 永远同步不到客户端。
+     * 1.18.2 起更新包携带 {@code BlockEntityType}，客户端按键取值并 {@code load}，
+     * 不存在该问题，此时本方法直接返回，不额外占用带宽。
+     */
+    private void syncGroupStateToClients() {
+        if (!groupStateDirty) return;
+        if (!TrafficLightsGroupSync.isRequired()) return;
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        if (!serverLevel.isLoaded(worldPosition)) return;
+
+        groupStateDirty = false;
+
+        TrafficLightsGroupSyncPacket packet = new TrafficLightsGroupSyncPacket(
+                worldPosition, groupId, groupPositions, phaseTimes, phaseIndices,
+                directionType.getName(), cycleActive, currentActivePhase, currentTick,
+                showSeconds, fixedSeconds, countdownDisplayMode, countdownThreshold);
+
+        for (ServerPlayer player : serverLevel.players()) {
+            // 只发给距离足够近、且客户端已加载本方块所在区块的玩家
+            if (player.distanceToSqr(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
+                    worldPosition.getZ() + 0.5) > 96 * 96) {
+                continue;
+            }
+            FriendlyByteBuf buf = NetworkCompat.newBuffer();
+            packet.write(buf);
+            NetworkCompat.sendToPlayer(player, ModMessages.SYNC_TRAFFIC_LIGHTS_GROUP, buf);
         }
     }
 
@@ -705,6 +807,10 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         NON_MOTOR_VEHICLES("non_motor_vehicles"),
         NON_MOTOR_VEHICLES_LEFT_TURN("non_motor_vehicles_left_turn"),
         NON_MOTOR_VEHICLES_RIGHT_TURN("non_motor_vehicles_right_turn"),
+        LANE_BOTTOM("lane_bottom"),
+        LANE_BOTTOM_LEFT("lane_bottom_left"),
+        LANE_BOTTOM_RIGHT("lane_bottom_right"),
+        LANE_CLOSE("lane_close"),
         COLOR_FLASH("color_flash"),
         SLOW_FLASH("slow_flash");
 

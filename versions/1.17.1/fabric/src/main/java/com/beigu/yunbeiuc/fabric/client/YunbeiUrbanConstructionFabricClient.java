@@ -50,6 +50,10 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get(), RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get(), RenderType.cutout());
 
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.CORNER_GUARD_BLACK.get(), RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.CORNER_GUARD_BLACK_LEFT.get(), RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.CORNER_GUARD_BLACK_RIGHT.get(), RenderType.cutout());
+
         SignBlocks.entries().forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderType.cutout()));
 
         BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);

@@ -26,8 +26,8 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
@@ -41,14 +41,14 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("text3", this.text3);
         nbt.putString("length1", this.length1);
         nbt.putString("length2", this.length2);
         nbt.putString("length3", this.length3);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -57,11 +57,11 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
      * renderRightAlignedText(length1..3, 长度X, 9/0/-9, 0.04)、
      * renderRightAlignedText("km", 单位X, 8.5/-0.5/-9.5, 0.025)——单位固定 km，unit 选择已移除。
      * 原渲染器分支：SIGN_GUIDE_CONFIRMATION_1 用 文本X=-17/长度X=13/单位X=17，
-     * 其余方块整体内收 2px（-15/11/15），此处同样按 getBlockState() 判断。
+     * 其余方块整体内收 2px（-15/11/15），此处同样按 blockStateForDefaults() 判断。
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean main = getBlockState().getBlock() == SignBlocks.SIGN_GUIDE_CONFIRMATION_1.get();
+        boolean main = blockStateForDefaults().getBlock() == SignBlocks.SIGN_GUIDE_CONFIRMATION_1.get();
         float textX = main ? -17f : -15f;
         float lengthX = main ? 13f : 11f;
         float unitX = main ? 17f : 15f;
@@ -138,7 +138,7 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

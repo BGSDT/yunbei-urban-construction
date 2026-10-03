@@ -82,19 +82,22 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.create("light_state", LightState.class);
     public static final EnumProperty<MountType> TYPE = EnumProperty.create("type", MountType.class);
+    /** 实际安装方式：驱动方块模型与图案/读秒的 z 偏移。自适应时随背后方块变化，墙面/路杆是玩家的固定选择 */
+    public static final EnumProperty<Mount> MOUNT = EnumProperty.create("mount", Mount.class);
 
     public TrafficLightsBlock(BlockBehaviour.Properties properties) {
         super(properties);
+        // 默认「自适应」：放置后自动按背后方块决定实际安装方式
         this.registerDefaultState(
-                stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIGHT_STATE, LightState.RED).setValue(TYPE, MountType.SIMPLE)
+                stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIGHT_STATE, LightState.RED)
+                        .setValue(TYPE, MountType.AUTO).setValue(MOUNT, Mount.WALL)
         );
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip"));
         tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip.auto_detect"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     @Override
@@ -150,7 +153,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIGHT_STATE, TYPE);
+        builder.add(FACING, LIGHT_STATE, TYPE, MOUNT);
     }
 
     @Override
@@ -177,24 +180,23 @@ public class TrafficLightsBlock extends TickingEntityBlock {
             state = state.setValue(LIGHT_STATE, LightState.YELLOW);
         }
 
-        // 自动检测背后是否有路杆方块
+        // 新放置的灯默认为「自适应」，并按背后方块先解析一次实际安装方式
         Direction facing = state.getValue(FACING);
         BlockPos behindPos = ctx.getClickedPos().relative(facing.getOpposite());
         BlockState behindState = ctx.getLevel().getBlockState(behindPos);
 
-        MountType type = determineType(behindState);
-        state = state.setValue(TYPE, type);
+        state = state.setValue(TYPE, MountType.AUTO).setValue(MOUNT, mountOf(behindState));
 
         return state;
     }
 
     /**
-     * 判断后方方块是否属于"路杆"家族（决定安装模式解析为路杆模式还是墙面模式）。
+     * 判断后方方块是否属于"路杆"家族（决定实际安装方式是路杆还是墙面）。
      *
      * <p>必须覆盖模组里全部路杆/路灯类方块：漏掉任何一个，装在它上面的灯都会被判成墙面模式，
-     * 自适应（以及放置时的自动识别）就会选到墙面模式的 z 偏移，图案与读秒位置跟着错位。
+     * 自适应就会选到墙面模式的 z 偏移，模型/图案/读秒位置跟着错位。
      */
-    private boolean isPoleBlock(Block block) {
+    private static boolean isPoleBlock(Block block) {
         return block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS.get()
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB.get()
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LONGITUDINAL.get()
@@ -215,47 +217,44 @@ public class TrafficLightsBlock extends TickingEntityBlock {
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHTING_LAMP.get();
     }
 
-    private MountType determineType(BlockState behindState) {
-        Block behindBlock = behindState.getBlock();
-        if (isPoleBlock(behindBlock)) {
-            return MountType.POLE;
-        } else {
-            return MountType.SIMPLE;
-        }
+    /** 按后方方块判定实际安装方式 */
+    private static Mount mountOf(BlockState behindState) {
+        return behindState != null && isPoleBlock(behindState.getBlock()) ? Mount.POLE : Mount.WALL;
     }
 
-    // 安装模式：AUTO 保留在方块状态中，消费方每次按背后方块解析为具体的 SIMPLE/POLE
-    public static MountType resolveMountType(Level world, BlockPos pos, BlockState state) {
+    /**
+     * 该状态应有的实际安装方式。
+     *
+     * <p>墙面 / 路杆是玩家的明确选择，永远保持所选；只有「自适应」才按背后方块实时解析。
+     */
+    public static Mount expectedMount(Level world, BlockPos pos, BlockState state) {
         MountType type = state.getValue(TYPE);
-        if (type != MountType.AUTO) {
-            return type;
-        }
-        if (world == null) {
-            return MountType.SIMPLE;
-        }
-        Block block = state.getBlock();
-        if (!(block instanceof TrafficLightsBlock trafficLightsBlock)) {
-            return MountType.SIMPLE;
-        }
-        Direction facing = state.getValue(FACING);
-        BlockState behindState = world.getBlockState(pos.relative(facing.getOpposite()));
-        return trafficLightsBlock.determineType(behindState);
+        if (type == MountType.SIMPLE) return Mount.WALL;
+        if (type == MountType.POLE) return Mount.POLE;
+        if (world == null) return state.getValue(MOUNT);
+        return mountOf(world.getBlockState(pos.relative(state.getValue(FACING).getOpposite())));
+    }
+
+    /** 切换安装方式：同时写入玩家选择（type）与解析后的实际安装方式（mount） */
+    public static BlockState applyMountType(Level world, BlockPos pos, BlockState state, MountType type) {
+        BlockState updated = state.setValue(TYPE, type);
+        return updated.setValue(MOUNT, expectedMount(world, pos, updated));
+    }
+
+    /** 实际安装方式（供渲染端取 z 偏移）：墙面 → SIMPLE，路杆 → POLE */
+    public static MountType resolveMountType(Level world, BlockPos pos, BlockState state) {
+        return state.getValue(MOUNT) == Mount.POLE ? MountType.POLE : MountType.SIMPLE;
     }
 
     @Override
     public BlockState updateShape(BlockState state, Direction direction,
                                                 BlockState neighborState, LevelAccessor world,
                                                 BlockPos pos, BlockPos neighborPos) {
-        Direction facing = state.getValue(FACING);
-        if (direction == facing.getOpposite()) {
-            // 自适应模式保持 AUTO：由消费方每次按后方方块解析，不能写死成具体模式，
-            // 否则后方方块一变（拆除/放置路杆）就退化成固定模式，失去自适应语义。
-            if (state.getValue(TYPE) == MountType.AUTO) {
-                return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
-            }
-            MountType newType = determineType(neighborState);
-            if (newType != state.getValue(TYPE)) {
-                return state.setValue(TYPE, newType);
+        // 只有「自适应」跟随后方方块；墙面/路杆是玩家的明确选择，后方方块怎么变都不改
+        if (direction == state.getValue(FACING).getOpposite() && state.getValue(TYPE) == MountType.AUTO) {
+            Mount mount = mountOf(neighborState);
+            if (mount != state.getValue(MOUNT)) {
+                return state.setValue(MOUNT, mount);
             }
         }
         return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
@@ -267,24 +266,11 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
 
-        // 魔杖交互
+        // 魔杖交互：右键打开面板（安装方式在面板内切换，不再用 Shift+右键）
         if (heldItem.getItem() == ModItems.WAND.get()) {
-            // Shift + 右键切换 type 状态
-            if (player.isShiftKeyDown()) {
-                if (!world .isClientSide) {
-                    MountType currentType = state.getValue(TYPE);
-                    MountType newType = currentType == MountType.SIMPLE ? MountType.POLE
-                            : currentType == MountType.POLE ? MountType.AUTO : MountType.SIMPLE;
-                    world.setBlock(pos, state.setValue(TYPE, newType), VersionServices.blocks().updateAll());
-                    player.displayClientMessage(Text.literal("§a已切换至 §6" + newType.getDisplayName()), true);
-                }
-                return InteractionResult.sidedSuccess(world.isClientSide);
-            }
-
-            // 普通右键打开设置界面
             if (world .isClientSide) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
@@ -305,7 +291,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
 
-        return super .use(state, world, pos, player, hand, hit);
+        return super.useCompat(state, world, pos, player, hand, hit);
     }
 
     @Environment(EnvType.CLIENT)
@@ -352,6 +338,15 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
     @Override
     protected void tickCompat(BlockState state, ServerLevel world, BlockPos pos) {
+        // 旧存档迁移：老版本的方块状态里没有 mount 属性，读取时会被填成默认值（墙面）。
+        // 这里按 type 与后方方块把 mount 校正回来——玩家之前选的墙面/路杆/自适应全部沿用，
+        // 只有确实与应有值不符时才写一次方块状态。
+        Mount expected = expectedMount(world, pos, state);
+        if (state.getValue(MOUNT) != expected) {
+            state = state.setValue(MOUNT, expected);
+            world.setBlock(pos, state, VersionServices.blocks().updateAll());
+        }
+
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
             trafficLightsBE.tick();
@@ -368,10 +363,9 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroyCompat(Level world, BlockPos pos, BlockState state, Player player) {
         // 在方块实体被移除前记录它，供 onRemove 取回并拆除链接组
         TrafficLightsGroupTracker.track(world, pos);
-        super.playerWillDestroy(world, pos, state, player);
     }
 
     @Override
@@ -417,10 +411,27 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         }
     }
 
+    /** 实际安装方式：驱动方块模型与图案/读秒的 z 偏移（墙面 = 无挂臂，路杆 = 挂臂伸向后方路杆） */
+    public enum Mount implements StringRepresentable {
+        WALL("wall"),
+        POLE("pole");
+
+        private final String name;
+
+        Mount(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.name;
+        }
+    }
+
     public enum MountType implements StringRepresentable {
+        AUTO("auto"),
         SIMPLE("simple"),
-        POLE("pole"),
-        AUTO("auto");
+        POLE("pole");
 
         private final String name;
 

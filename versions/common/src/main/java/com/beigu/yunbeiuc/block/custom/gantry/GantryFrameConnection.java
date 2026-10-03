@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -28,7 +29,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
-public class GantryFrameConnection extends Block {
+public class GantryFrameConnection extends BlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<GantryFrameConnectionType> CONNECTION_TYPE =
             EnumProperty.create("connection_type", GantryFrameConnectionType.class);
@@ -89,7 +90,7 @@ public class GantryFrameConnection extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
 
         if (item == ModItems.WAND.get()) {

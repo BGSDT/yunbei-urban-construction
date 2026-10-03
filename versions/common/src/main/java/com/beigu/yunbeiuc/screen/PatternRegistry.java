@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.screen;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.api.text.Text;
 import com.beigu.yunbeiuc.util.PatternResourceLoader;
@@ -6,15 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 
-/**
- * 图案与字体分类注册中心
- *
- * <p>只负责定义分类结构与内置素材清单；纹理扫描、自定义图案/字体 JSON 等
- * 资源包加载逻辑由 {@link PatternResourceLoader} 承担。
- *
- * @see PatternAndFontOverlay
- * @see PatternResourceLoader
- */
 public final class PatternRegistry {
 
     /** 内置标志纹理根目录。 */
@@ -170,7 +162,7 @@ public final class PatternRegistry {
         customPatterns.headerText = Text.translatable("yunbeiuc.gui.sections.custom_patterns.desc");
         customPatterns.addSection(new PatternAndFontOverlay.H4Section(
                 Text.translatable("yunbeiuc.gui.sections.custom_patterns"),
-                Text.literal(""), new ResourceLocation("yunbeiuc", "patterns/"))
+                Text.literal(""), VersionServices.resources().create("yunbeiuc", "patterns/"))
                 .setCustomJsonPath("yunbeiuc:patterns/custom_patterns.json"));
         patternCategory.addSubCategory(customPatterns);
 
@@ -183,7 +175,7 @@ public final class PatternRegistry {
         builtInFonts.addSection(new PatternAndFontOverlay.H4Section(
                 Text.translatable("yunbeiuc.gui.sections.builtin_fonts"),
                 Text.translatable("yunbeiuc.gui.sections.builtin_fonts.desc"),
-                new ResourceLocation("yunbeiuc", "font/"))
+                VersionServices.resources().create("yunbeiuc", "font/"))
                 .setFontMode()
                 .addFontItem("yunbeiuc:traf_sign_font_a", Text.translatable("yunbeiuc.gui.fonts.traf_sign_font_a"))
                 .addFontItem("yunbeiuc:traf_sign_font_b", Text.translatable("yunbeiuc.gui.fonts.traf_sign_font_b"))
@@ -195,7 +187,7 @@ public final class PatternRegistry {
         customFonts.headerText = Text.translatable("yunbeiuc.gui.sections.custom_fonts.desc");
         customFonts.addSection(new PatternAndFontOverlay.H4Section(
                 Text.translatable("yunbeiuc.gui.sections.custom_fonts"),
-                Text.literal(""), new ResourceLocation("yunbeiuc", "fonts/"))
+                Text.literal(""), VersionServices.resources().create("yunbeiuc", "fonts/"))
                 .setFontMode()
                 .setCustomJsonPath("yunbeiuc:fonts/custom_fonts.json"));
         fontCategory.addSubCategory(customFonts);
@@ -226,14 +218,14 @@ public final class PatternRegistry {
         parent.addSection(new PatternAndFontOverlay.H4Section(
                 Text.translatable("yunbeiuc.gui.sections.sign_basic"),
                 Text.translatable("yunbeiuc.gui.sections.sign_basic.desc"),
-                new ResourceLocation("yunbeiuc", SIGN_TEXTURE_PATH))
+                VersionServices.resources().create("yunbeiuc", SIGN_TEXTURE_PATH))
                 .setExtensionFilter(PatternAndFontOverlay.FilterMode.WHITELIST, BASIC_PATTERN_TEXTURES));
 
         // 2. 底图图案：车道底图 + 高速/普通道路编号背景
         parent.addSection(new PatternAndFontOverlay.H4Section(
                 Text.translatable("yunbeiuc.gui.sections.sign_background"),
                 Text.translatable("yunbeiuc.gui.sections.sign_background.desc"),
-                new ResourceLocation("yunbeiuc", SIGN_TEXTURE_PATH))
+                VersionServices.resources().create("yunbeiuc", SIGN_TEXTURE_PATH))
                 .setExtensionFilter(PatternAndFontOverlay.FilterMode.WHITELIST, BACKGROUND_PATTERN_TEXTURES));
 
         // 3. 禁令标识：禁令 + 限速/限重/限高/限宽 + 从告示移入的散装禁令标志
@@ -321,7 +313,7 @@ public final class PatternRegistry {
         return new PatternAndFontOverlay.H4Section(
                 Text.translatable("yunbeiuc.gui.sections." + sectionKey),
                 Text.translatable("yunbeiuc.gui.sections." + sectionKey + ".desc"),
-                new ResourceLocation("yunbeiuc", SIGN_TEXTURE_PATH));
+                VersionServices.resources().create("yunbeiuc", SIGN_TEXTURE_PATH));
     }
 
     // 添加一个按文件名前缀过滤的分区

@@ -2,6 +2,7 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -140,8 +141,7 @@ public final class TextGizmo {
     public static float halfHeightBlocks() { return halfHbBlocks; }
 
     public static void updateAndRender(int mode, Matrix4f baseFrame, Matrix4f lineFrame, TextLineData d, float zOffsetBlocks, float halfWBlocks, float halfHBlocks) {
-        Matrix4f pm = new Matrix4f();
-        if (pm == null || d == null || lineFrame == null || baseFrame == null) return;
+        if (d == null || lineFrame == null || baseFrame == null) return;
         bs = 0.05f * d.getFontSize();
         if (bs <= 1e-6f) return;
         frame = new Matrix4f(lineFrame);
@@ -153,7 +153,11 @@ public final class TextGizmo {
             frameInv = null;
             baseFrameInv = null;
         }
-        proj = new Matrix4f(pm);
+        // 1.16.5 的 RenderSystem 没有 getProjectionMatrix()，必须向 GameRenderer 取当帧投影矩阵。
+        // 早先这里退化成 new Matrix4f()（单位矩阵），projectGui / viewRayPoints / addLineRect
+        // 全部按单位矩阵换算，屏幕坐标完全错位——表现为世界里的拖拽轴既点不中、也拖不动。
+        Matrix4f pm = currentProjectionMatrix();
+        proj = pm != null ? new Matrix4f(pm) : null;
         halfWpx = halfWBlocks / bs;
         halfHpx = halfHBlocks / bs;
         halfWbBlocks = halfWBlocks;
@@ -307,9 +311,13 @@ public final class TextGizmo {
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
+        // 1.16.5 是固定管线：POSITION_COLOR 顶点没有 UV，若纹理仍处于开启状态，
+        // 就会被当前绑定的贴图（文字渲染留下的字体图集）调制，采样到透明像素后整体不可见。
+        // 1.17+ 走 setShader，不存在这个问题，所以这里必须显式关闭纹理。
+        RenderSystem.disableTexture();
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buf = tessellator.getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buf = tesselator.getBuilder();
         buf.begin(4, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f m = new Matrix4f();
@@ -335,11 +343,32 @@ public final class TextGizmo {
             }
         }
 
-        BufferUploader.end(buf);
+        tesselator.end();
 
+        RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
+    }
+
+    /**
+     * 取当前帧的投影矩阵。
+     *
+     * <p>1.16.5 的 {@code RenderSystem} 没有 {@code getProjectionMatrix()}（该方法 1.17 才有），
+     * 因此向 {@code GameRenderer} 索取：世界渲染阶段调用它与本帧实际使用的投影一致。
+     *
+     * <p>取不到时返回 {@code null}，此时只影响鼠标拾取/拖拽换算，绘制仍然正常。
+     */
+    private static Matrix4f currentProjectionMatrix() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc == null || mc.gameRenderer == null) return null;
+        try {
+            Camera camera = mc.gameRenderer.getMainCamera();
+            if (camera == null || !camera.isInitialized()) return null;
+            return mc.gameRenderer.getProjectionMatrix(camera, mc.getFrameTime(), false);
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
     private static Vector4f[] viewRayPoints(double mx, double my) {

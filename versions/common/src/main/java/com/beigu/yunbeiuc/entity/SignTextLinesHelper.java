@@ -7,72 +7,36 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-/**
- * 将原固定渲染体系的布局参数换算为 TextLineData 的工具类。
- *
- * 换算关系（保证渲染位置与原渲染器逐像素一致）：
- * - AbstractTextDisplayEntityRenderer 的 baseScale = 0.05 * fontSize，
- *   故 fontSize = 原渲染 scale * 20（如 0.04f → 0.8）；
- * - TextLineData 的 xOffset/yOffset 与原 andX/andY 同坐标系（单位 1/16 像素，y 向上为正）；
- * - 原渲染器文本均为 bold，生成默认行时同步置 bold；
- * - 原 renderCenteredText/renderLeftAlignedText/renderRightAlignedText 的锚点语义
- *   与 TextAlignment 的 CENTER/LEFT/RIGHT 居中行完全一致；
- * - renderTexture 的 size 与 AbstractTextDisplayEntityRenderer 的 imageSize = 0.4 * fontSize
- *   对应，故 fontSize = size / 0.4；
- * - renderTextWithCustomZ / renderExpresswayText 的 zOffsetDelta（方块单位）
- *   需乘以 16 存入 TextLineData.zOffset（该类以 1/16 为单位）。
- *
- * ABC 交通字体：
- * - centered/left/right/centeredWithZ 末尾的 abcFont 参数取值为 "a" / "b" / "c"，决定该行走哪种 ABC 字体；
- * - ABC 字体行会把文本直接包成 -json {"text":"...","font":"yunbeiuc:traf_sign_font_?"} 写入
- *   TextLineData.text 并随 NBT 固化（UI/存档可见），渲染端仅按 -json 指令解析，不做任何临时包装；
- * - 本类不做取值校验（按约定只填 a/b/c），非法值不会触发包装（该行走原版字体路径）；
- * - logo() 生成的是 -texture 纹理指令行，不参与字体选择，故不接收该参数；
- * - 全局设置（GlobalFontSettings，全局覆盖）：
- *   原版uniform → 忽略行内 abcFont，全部走原版字体（不包 -json）；
- *   A/B/C 型 → 强制使用对应字体，忽略行内 abcFont；
- *   路牌自适应 → 使用行内 abcFont（即方块自带布局的字体），未填或非法值兜底 A 型；
- *   后四种（含自适应）新生成的默认行一律取消加粗（bold 随行写入 NBT，已放置方块不受影响）；
- * - 走 ABC 字体时新生成的 ABC 字体行 y 位置自动下移 1（单位 1/16，y 向上为正），补偿 ABC 字体基线偏移。
- */
 public final class SignTextLinesHelper {
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
-    /** ABC 字体行的 y 位置下移量（单位 1/16，y 向上为正）：补偿 ABC 字体的基线/字形上偏。 */
-    private static final float ABC_FONT_Y_OFFSET = 1.0f;
-
     private SignTextLinesHelper() {}
 
-    /** 对应 renderCenteredText：锚点为文本中心；abcFont 取 "a" / "b" / "c" */
     public static TextLineData centered(String text, float andX, float andY, float scale, int color, String abcFont) {
         TextLineData line = base(text, andX, andY, scale, color, abcFont);
         line.setAlignment(TextAlignment.CENTER_CENTER);
         return line;
     }
 
-    /** 对应 renderLeftAlignedText：锚点为文本左边缘；abcFont 取 "a" / "b" / "c" */
     public static TextLineData left(String text, float andX, float andY, float scale, int color, String abcFont) {
         TextLineData line = base(text, andX, andY, scale, color, abcFont);
         line.setAlignment(TextAlignment.LEFT_CENTER);
         return line;
     }
 
-    /** 对应 renderRightAlignedText：锚点为文本右边缘；abcFont 取 "a" / "b" / "c" */
     public static TextLineData right(String text, float andX, float andY, float scale, int color, String abcFont) {
         TextLineData line = base(text, andX, andY, scale, color, abcFont);
         line.setAlignment(TextAlignment.RIGHT_CENTER);
         return line;
     }
 
-    /** 对应 renderTexture / renderTextWithCustomZ 组合：带独立 z 偏移的居中文本；abcFont 取 "a" / "b" / "c" */
     public static TextLineData centeredWithZ(String text, float andX, float andY, float scale, int color, float zOffsetDelta, String abcFont) {
         TextLineData line = centered(text, andX, andY, scale, color, abcFont);
         line.setZOffset(zOffsetDelta * 16f);
         return line;
     }
 
-    /** 对应 renderTexture：以 -texture 指令行表示 logo，路径支持 {字段名} 占位符（按枚举/编号选纹理），锚点为纹理中心 */
     public static TextLineData logo(String texturePath, float andX, float andY, float size) {
         TextLineData line = new TextLineData("-texture " + texturePath);
         line.setXOffset(andX);
@@ -82,7 +46,6 @@ public final class SignTextLinesHelper {
         line.setAlignment(TextAlignment.CENTER_CENTER);
         line.setBold(false);
         line.setFontSize(size / 0.4f);
-        // 系统默认布局行：删除时 UI 需二次确认（即使占位符被用户改写）
         line.setBuiltin(true);
         return line;
     }
@@ -94,43 +57,26 @@ public final class SignTextLinesHelper {
         line.setZOffset(0);
         line.setColor(color);
         line.setAlignment(TextAlignment.CENTER_CENTER);
-        // ABC 交通字体归属由全局设置决定，行参数只是「路牌自适应」模式的取值来源：
-        // - 原版uniform → 忽略行参数，全部走原版字体（不包 -json）；
-        // - A/B/C 型 → 强制该字体，忽略行参数；
-        // - 路牌自适应 → 用行参数（方块自带布局所选的字体）。
         String effFont = resolveFont(abcFont);
-        // ABC 字体行直接把文本包成 -json 指令行写入 TextLineData.text（随 NBT 固化，UI/存档可见），
-        // 而非在渲染端临时包装；占位符 {字段} 在渲染时先展开再解析 JSON。
         if (!effFont.isEmpty()) {
             line.setText("-json " + wrapJson(text, fontId(effFont)));
-            // ABC 字体行：y 位置自动下移（单位 1/16，y 向上为正），补偿 ABC 字体的基线/字形上偏
-            line.setYOffset(andY - ABC_FONT_Y_OFFSET);
+            line.setYOffset(andY);
         }
-        // 走 ABC 字体时新生成的默认行一律取消加粗（ABC 字体本身含字重，避免原版 bold 二次加粗发糊）；
-        // 原版uniform 模式保持原渲染器行为（bold）。bold 随行写入 NBT，故已放置方块不受全局设置影响。
         line.setBold(!GlobalFontSettings.isAbcMode());
         line.setFontSize(scale * 20f);
-        // ABC 交通字体标识："a" / "b" / "c"
-        line.setAbcFont(effFont);
-        // 系统默认布局行：删除时 UI 需二次确认（即使占位符被用户改写）
+        // 始终记录「方块自带布局指定的字体」（a/b/c），与当前全局模式无关。
+        // 否则全局模式为原版/A 型时会把每行本来的 a/b 覆盖掉，
+        // 之后「转为自适应字体」就永远只能得到 a。
+        line.setAbcFont(normalizeFontOrEmpty(abcFont));
         line.setBuiltin(true);
         return line;
     }
 
-    /**
-     * 对界面新建的文本行套用全局字体设置。
-     *
-     * <p>与 {@link #base} 使用同一套规则与同一偏移量（{@link #ABC_FONT_Y_OFFSET}）：
-     * 原版uniform 时清空 abcFont、走原版字体；A/B/C 型时套用该字体；
-     * 路牌自适应时套用 {@code signAbcFont}（当前方块自带布局的字体，见 {@link #resolveFont}）。
-     *
-     * <p>文本本身是 {@code -} 开头的指令行（{@code -texture}/{@code -rect}/{@code -json} 等）时不改写，
-     * 否则会破坏图案指令与已套用的字体指令。
-     *
-     * @param line        界面新建的文本行
-     * @param signAbcFont 当前方块自带布局记录的字体（"a"/"b"/"c"，未知填 "a"），仅路牌自适应模式使用
-     * @return 传入的行（便于链式使用）
-     */
+    private static String normalizeFontOrEmpty(String font) {
+        if (font == null) return "";
+        return ("a".equals(font) || "b".equals(font) || "c".equals(font)) ? font : "";
+    }
+
     public static TextLineData applyGlobalFontSetting(TextLineData line, String signAbcFont) {
         if (line == null) {
             return null;
@@ -145,19 +91,11 @@ public final class SignTextLinesHelper {
             return line;
         }
         line.setText("-json " + wrapJson(current, fontId(effFont)));
-        line.setYOffset(line.getYOffset() - ABC_FONT_Y_OFFSET);
-        // ABC 字体本身含字重，避免原版 bold 二次加粗发糊
         line.setBold(false);
         line.setAbcFont(effFont);
         return line;
     }
 
-    /**
-     * 按全局设置解析本行实际使用的 ABC 字体。
-     *
-     * @param lineAbcFont 行内记录的字体（"a"/"b"/"c"），仅路牌自适应模式参与决策
-     * @return "a"/"b"/"c"；空串表示走原版uniform（不包裹 -json）
-     */
     private static String resolveFont(String lineAbcFont) {
         return switch (GlobalFontSettings.getMode()) {
             case VANILLA -> "";
@@ -168,12 +106,131 @@ public final class SignTextLinesHelper {
         };
     }
 
-    /** 非法/缺失的字体标识统一兜底 A 型 */
+    private static final String FONT_PREFIX = "yunbeiuc:traf_sign_font_";
+
+    // ==================== 字体标签解析 / 改写（供「一键转换」使用） ====================
+
+    /** 取出文本行的纯文本：{@code -json {"text":...}} 包裹时解出 text，其它内容原样返回。 */
+    public static String plainText(String raw) {
+        if (raw == null) return "";
+        if (!raw.trim().startsWith("-json")) return raw;
+        JsonObject obj = parseJsonArg(raw);
+        if (obj != null && obj.has("text")) {
+            try {
+                return obj.get("text").getAsString();
+            } catch (Exception ignored) {
+            }
+        }
+        return raw;
+    }
+
+    private static JsonObject parseJsonArg(String raw) {
+        String t = raw == null ? "" : raw.trim();
+        int sp = t.indexOf(' ');
+        if (sp < 0) return null;
+        try {
+            return GSON.fromJson(t.substring(sp + 1).trim(), JsonObject.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * {@code -json} 包裹里的交通字体标识（"a"/"b"/"c"）。
+     *
+     * @return 不是「交通标志字体标签」时返回 {@code null}
+     */
+    public static String trafficFontOf(String raw) {
+        if (raw == null || !raw.trim().startsWith("-json")) return null;
+        JsonObject obj = parseJsonArg(raw);
+        if (obj == null || !obj.has("font")) return null;
+        try {
+            String font = obj.get("font").getAsString();
+            if (!font.startsWith(FONT_PREFIX)) return null;
+            String letter = font.substring(FONT_PREFIX.length());
+            if ("a".equals(letter) || "b".equals(letter) || "c".equals(letter)) return letter;
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    /**
+     * 该行是否可以安全地改写字体。
+     *
+     * <p>{@code -texture} / {@code -rect} 等指令行不能改写（会被破坏）；纯文本与
+     * {@code -json} 交通字体标签可以。
+     */
+    public static boolean canApplyFont(String raw) {
+        if (raw == null || raw.trim().isEmpty()) return false;
+        String t = raw.trim();
+        if (!t.startsWith("-")) return true;
+        return trafficFontOf(t) != null;
+    }
+
+    /**
+     * 强制把一行改写为指定 ABC 字体（{@code ""} = 原版 uniform），与当前全局字体模式无关。
+     *
+     * <p>原版 uniform：去掉字体标签并**加粗**（原版路牌文字就是加粗的）；
+     * 交通字体：包 {@code -json} 字体标签并**取消加粗**（交通字体自带字重）。
+     *
+     * <p>转为原版时**保留** {@code abcFont}（即方块自带的字体意图），
+     * 这样之后再转回自适应仍能恢复每行各自的 a/b/c。
+     */
+    public static void forceFont(TextLineData line, String abcFont) {
+        if (line == null) return;
+        String text = plainText(line.getText());
+        // 解不出纯文本（解析失败、或本身是指令行）：保持原样，避免嵌套包裹或破坏指令
+        if (text.trim().startsWith("-")) return;
+        if (abcFont == null || abcFont.isEmpty()) {
+            line.setText(text);
+            line.setBold(true);
+            return;
+        }
+        line.setText("-json " + wrapJson(text, fontId(abcFont)));
+        line.setAbcFont(abcFont);
+        line.setBold(false);
+    }
+
+    /**
+     * 该行「应该」使用的交通字体。
+     *
+     * <p>优先取行上记录的 {@code abcFont}（方块自带布局写入的 a/b/c），
+     * 其次是文本里已有的交通字体标签，最后按内容推断（中文→A，英文→B）。
+     */
+    public static String lineAbcFont(TextLineData line) {
+        if (line == null) return "a";
+        String recorded = normalizeFontOrEmpty(line.getAbcFont());
+        if (!recorded.isEmpty()) return recorded;
+        String tag = trafficFontOf(line.getText());
+        if (tag != null) return tag;
+        return inferAbcFont(line.getText());
+    }
+
+    /**
+     * 没有记录字体时按内容推断，与方块自带布局的约定一致：
+     * 含中日韩字符 → A 型；其余（英文 / 数字 / 符号）→ B 型。
+     */
+    public static String inferAbcFont(String raw) {
+        String text = plainText(raw);
+        for (int i = 0; i < text.length(); i++) {
+            if (isCjk(text.charAt(i))) return "a";
+        }
+        return "b";
+    }
+
+    private static boolean isCjk(char c) {
+        Character.UnicodeBlock b = Character.UnicodeBlock.of(c);
+        return b == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || b == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || b == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || b == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || b == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
+    }
+
     private static String normalizeFont(String font) {
         return "b".equals(font) || "c".equals(font) ? font : "a";
     }
 
-    /** effFont（"a"/"b"/"c"）→ ABC 交通字体 Identifier 字符串；非法值兜底 A 型 */
     private static String fontId(String effFont) {
         return switch (effFont) {
             case "b" -> "yunbeiuc:traf_sign_font_b";
@@ -182,7 +239,6 @@ public final class SignTextLinesHelper {
         };
     }
 
-    /** 用 Gson 序列化 JSON 段，文本内的引号/反斜杠自动转义；占位符 {字段} 保持原样待渲染时展开 */
     private static String wrapJson(String text, String fontId) {
         JsonObject obj = new JsonObject();
         obj.addProperty("text", text);

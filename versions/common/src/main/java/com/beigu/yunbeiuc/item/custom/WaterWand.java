@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.item.custom;
+import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -16,16 +17,15 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class WaterWand extends Item {
+public class WaterWand extends ItemCompat {
 
     public WaterWand(Properties settings) {
         super(settings);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag context) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag context) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.water_wand.tooltip"));
-        super .appendHoverText(stack, world, tooltip, context);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class WaterWand extends Item {
         }
 
         if (player != null && !player.isCreative()) {
-            context.getItemInHand().hurtAndBreak(1, player, p -> p.broadcastBreakEvent(context.getHand()));
+            ItemCompat.hurtAndBreakCompat(context.getItemInHand(), 1, player, context.getHand());
         }
 
         int count = 0;

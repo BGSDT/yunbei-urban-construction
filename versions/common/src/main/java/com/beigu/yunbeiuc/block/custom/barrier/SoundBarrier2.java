@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.barrier;
+import com.beigu.yunbeiuc.api.mapper.DirectionalBlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -23,7 +24,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class SoundBarrier2 extends DirectionalBlock {
+public class SoundBarrier2 extends DirectionalBlockCompat {
     public static final IntegerProperty LAYER = IntegerProperty.create("layer", 0, 2); // 0=底, 1=中, 2=顶
 
     private static final VoxelShape SHAPE_N = Block.box(0, 0, 6.5, 16, 16, 9.5);
@@ -79,14 +80,12 @@ public class SoundBarrier2 extends DirectionalBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroyCompat(Level world, BlockPos pos, BlockState state, Player player) {
         int layer = state.getValue(LAYER);
 
         if (!world.isClientSide) {
             breakOtherLayers(world, pos, layer, player);
         }
-
-        super.playerWillDestroy(world, pos, state, player);
     }
 
     private void breakOtherLayers(Level world, BlockPos pos, int currentLayer, Player player) {

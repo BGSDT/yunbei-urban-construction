@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.screen;
+import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
 
@@ -265,9 +266,9 @@ public class FlagSelectionScreen extends Screen {
 
             // 发送网络数据包到服务器
             if (client != null && client.getConnection() != null) {
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                FriendlyByteBuf buf = NetworkCompat.newBuffer();
                 new FlagUpdatePacket(blockPos, selectedFlag.getId()).write(buf);
-                NetworkManager.sendToServer(ModMessages.UPDATE_FLAG, buf);
+                NetworkCompat.sendToServer(ModMessages.UPDATE_FLAG, buf);
             }
 
             // 客户端预览（可选，保持即时反馈）

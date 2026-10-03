@@ -28,26 +28,36 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<TrafficLightsBlockEntity> {
-    private final Font textRenderer;
+    private Font textRenderer;
 
-    private static final float FOGGY_PATTERN_SIZE = 0.26f;
+    private static final float FOGGY_PATTERN_SIZE = 0.24f;
 
     public TrafficLightsBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
-        this.textRenderer = ctx.getFont();
+    }
+
+    /**
+     * 字体必须延迟获取：1.16.5 的 {@code BlockEntityRenderDispatcher.font} 只在每帧
+     * {@code prepare(...)} 时才赋值，渲染器构造期拿到的必然是 null，缓存下来渲染时就会空指针。
+     */
+    private Font textRenderer() {
+        if (this.textRenderer == null) {
+            this.textRenderer = Minecraft.getInstance().font;
+        }
+        return this.textRenderer;
     }
 
     private float getZOffset(TrafficLightsBlock.MountType mountType, Block currentBlock) {
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) return 0.16f;
         if (mountType == TrafficLightsBlock.MountType.POLE) {
             if (isPavementBlock(currentBlock)) return -0.46f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.74f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.75f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.74f;
             else return -0.53f;
         }
         if (mountType == TrafficLightsBlock.MountType.SIMPLE) {
             if (isPavementBlock(currentBlock)) return -0.33f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.40f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.43f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.38f;
             else return -0.33f;
         }
@@ -84,6 +94,18 @@ public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<
     private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_red.png");
     private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_yellow.png");
     private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_green.png");
+    private static final ResourceLocation LANE_BOTTOM_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_red.png");
+    private static final ResourceLocation LANE_BOTTOM_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_yellow.png");
+    private static final ResourceLocation LANE_BOTTOM_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_green.png");
+    private static final ResourceLocation LANE_BOTTOM_LEFT_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_left_red.png");
+    private static final ResourceLocation LANE_BOTTOM_LEFT_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_left_yellow.png");
+    private static final ResourceLocation LANE_BOTTOM_LEFT_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_left_green.png");
+    private static final ResourceLocation LANE_BOTTOM_RIGHT_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_right_red.png");
+    private static final ResourceLocation LANE_BOTTOM_RIGHT_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_right_yellow.png");
+    private static final ResourceLocation LANE_BOTTOM_RIGHT_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_right_green.png");
+    private static final ResourceLocation LANE_CLOSE_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_close_red.png");
+    private static final ResourceLocation LANE_CLOSE_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_close_yellow.png");
+    private static final ResourceLocation LANE_CLOSE_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_close_green.png");
     private static final ResourceLocation PAVEMENT_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
     private static final ResourceLocation PAVEMENT_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
     private static final ResourceLocation PAVEMENT_RED_TAIPEI = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red_taipei.png");
@@ -280,6 +302,30 @@ public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<
                     case GREEN -> NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN;
                     case GRAY -> null;
                 };
+                case LANE_BOTTOM -> switch (lightState) {
+                    case RED -> LANE_BOTTOM_RED;
+                    case YELLOW -> LANE_BOTTOM_YELLOW;
+                    case GREEN -> LANE_BOTTOM_GREEN;
+                    case GRAY -> null;
+                };
+                case LANE_BOTTOM_LEFT -> switch (lightState) {
+                    case RED -> LANE_BOTTOM_LEFT_RED;
+                    case YELLOW -> LANE_BOTTOM_LEFT_YELLOW;
+                    case GREEN -> LANE_BOTTOM_LEFT_GREEN;
+                    case GRAY -> null;
+                };
+                case LANE_BOTTOM_RIGHT -> switch (lightState) {
+                    case RED -> LANE_BOTTOM_RIGHT_RED;
+                    case YELLOW -> LANE_BOTTOM_RIGHT_YELLOW;
+                    case GREEN -> LANE_BOTTOM_RIGHT_GREEN;
+                    case GRAY -> null;
+                };
+                case LANE_CLOSE -> switch (lightState) {
+                    case RED -> LANE_CLOSE_RED;
+                    case YELLOW -> LANE_CLOSE_YELLOW;
+                    case GREEN -> LANE_CLOSE_GREEN;
+                    case GRAY -> null;
+                };
                 case SLOW_FLASH -> switch (lightState) {
                     case RED -> SLOW_RED;
                     case YELLOW -> SLOW_YELLOW;
@@ -408,11 +454,11 @@ public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<
             phaseText = "相位: " + joined + " / " + entity.getPhaseCount();
         }
 
-        int directionWidth = textRenderer.width(directionText);
-        int phaseWidth = textRenderer.width(phaseText);
+        int directionWidth = textRenderer().width(directionText);
+        int phaseWidth = textRenderer().width(phaseText);
         int maxWidth = Math.max(directionWidth, phaseWidth);
 
-        int lineHeight = textRenderer.lineHeight + 2;
+        int lineHeight = textRenderer().lineHeight + 2;
         int totalHeight = lineHeight * 2;
 
         float padding = 4;
@@ -424,7 +470,7 @@ public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<
         Matrix4f matrix = matrices.last().pose();
         // 1.18.2 Font supplies the text background through drawInBatch.
 
-        textRenderer.drawInBatch(
+        textRenderer().drawInBatch(
                 Text.literal(directionText),
                 -directionWidth / 2f,
                 0,
@@ -437,7 +483,7 @@ public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<
                 light
         );
 
-        textRenderer.drawInBatch(
+        textRenderer().drawInBatch(
                 Text.literal(phaseText),
                 -phaseWidth / 2f,
                 lineHeight,
@@ -638,6 +684,10 @@ public class TrafficLightsBlockEntityRenderer extends BlockEntityRendererCompat<
             case NON_MOTOR_VEHICLES -> "非机动车";
             case NON_MOTOR_VEHICLES_LEFT_TURN -> "非机动车（左转）";
             case NON_MOTOR_VEHICLES_RIGHT_TURN -> "非机动车（右转）";
+            case LANE_BOTTOM -> "车道开启（正下方）";
+            case LANE_BOTTOM_LEFT -> "车道开启（左下方）";
+            case LANE_BOTTOM_RIGHT -> "车道开启（右下方）";
+            case LANE_CLOSE -> "车道关闭";
             case COLOR_FLASH -> "色闪";
             case SLOW_FLASH -> "慢闪";
         };

@@ -10,7 +10,7 @@ if (modrinthConfigFile.isFile()) {
 def changelogFile = rootProject.file('../../CHANGELOG.md')
 
 subprojects { platformProject ->
-    if (!(platformProject.name in ['fabric', 'forge'])) {
+    if (!(platformProject.name in ['fabric', 'forge', 'neoforge'])) {
         return
     }
 
@@ -20,6 +20,7 @@ subprojects { platformProject ->
         platformProject.apply plugin: 'com.modrinth.minotaur'
 
         def loader = platformProject.name
+        def loaderTitle = loader == 'neoforge' ? 'NeoForge' : loader.capitalize()
         def projectId = modrinthConfig.getProperty("project_id_${loader}",
             modrinthConfig.getProperty('project_id', ''))
         def projectName = modrinthConfig.getProperty('project_name', rootProject.archives_name)
@@ -28,8 +29,8 @@ subprojects { platformProject ->
         platformProject.modrinth {
             token = modrinthConfig.getProperty('token', '')
             projectId = projectId
-            versionNumber = "${rootProject.mod_version}-${rootProject.minecraft_version}-${loader}"
-            versionName = "${projectName} ${rootProject.mod_version} - ${loader.capitalize()} ${rootProject.minecraft_version}"
+            versionNumber = "${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
+            versionName = "${projectName} ${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
             versionType = versionType
             uploadFile = platformProject.tasks.named('remapJar')
             gameVersions = [rootProject.minecraft_version]
@@ -41,7 +42,7 @@ subprojects { platformProject ->
 
         platformProject.tasks.register('publishModrinth') {
             group = 'publishing'
-            description = "Uploads the remapped ${loader.capitalize()} jar to Modrinth."
+            description = "Uploads the remapped ${loaderTitle} jar to Modrinth."
             dependsOn platformProject.tasks.named('remapJar')
             dependsOn platformProject.tasks.named('modrinth')
         }
@@ -50,9 +51,9 @@ subprojects { platformProject ->
 
 tasks.register('publishModrinth') {
     group = 'publishing'
-    description = 'Uploads the Fabric and Forge jars for this Minecraft version to Modrinth.'
+    description = 'Uploads the Fabric, Forge and NeoForge jars for this Minecraft version to Modrinth.'
     dependsOn {
-        subprojects.findAll { it.name in ['fabric', 'forge'] }
+        subprojects.findAll { it.name in ['fabric', 'forge', 'neoforge'] }
             .collect { it.tasks.named('publishModrinth') }
     }
 }

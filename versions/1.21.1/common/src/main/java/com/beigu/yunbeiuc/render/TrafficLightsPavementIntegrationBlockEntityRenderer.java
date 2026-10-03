@@ -22,8 +22,8 @@ import org.joml.Matrix4f;
 
 public class TrafficLightsPavementIntegrationBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsPavementIntegrationBlockEntity> {
 
-    private static final ResourceLocation PAVEMENT_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
-    private static final ResourceLocation PAVEMENT_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
+    private static final ResourceLocation PAVEMENT_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
+    private static final ResourceLocation PAVEMENT_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
 
     private final Font textRenderer;
 
@@ -112,10 +112,10 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderType.entityCutout(texture));
         Matrix4f positionMatrix = matrices.last().pose();
 
-        consumer.vertex(positionMatrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
-        consumer.vertex(positionMatrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).uv(1.0f, 1.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
-        consumer.vertex(positionMatrix, halfSize, halfSize, 0).color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
-        consumer.vertex(positionMatrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
+        consumer.addVertex(positionMatrix, -halfSize, -halfSize, 0).setColor(255, 255, 255, 255).setUv(0.0f, 1.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, halfSize, -halfSize, 0).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, halfSize, halfSize, 0).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, -halfSize, halfSize, 0).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
 
         matrices.popPose();
     }
@@ -162,7 +162,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
 
             // 使用 Minecraft 原生 Font 渲染单个字
             Component styledText = Text.literal(String.valueOf(chars[i])).setStyle(Style.EMPTY.withBold(true)
-                    .withFont(new ResourceLocation("minecraft", "uniform")));
+                    .withFont(ResourceLocation.fromNamespaceAndPath("minecraft", "uniform")));
             int textWidth = this.textRenderer.width(styledText);
             int textHeight = this.textRenderer.lineHeight;
 

@@ -3,12 +3,6 @@ package com.beigu.yunbeiuc.screen;
 import com.beigu.yunbeiuc.api.text.Text;
 import org.lwjgl.glfw.GLFW;
 
-/**
- * 承载图案与字体选择浮层的空白界面。
- *
- * <p>自身不绘制任何背景，仅把渲染与输入事件转发给 {@link PatternAndFontOverlay}，
- * 使浮层可以在没有告示牌编辑界面时独立打开。
- */
 public class PatternAndFontBlankScreen extends Screen {
 
     public PatternAndFontBlankScreen() {
@@ -58,13 +52,12 @@ public class PatternAndFontBlankScreen extends Screen {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        public boolean mouseScrolledCompat(double mouseX, double mouseY, double amount) {
         if (PatternAndFontOverlay.isVisible) {
             PatternAndFontOverlay.mouseScrolled(mouseX, mouseY, amount);
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolledCompat(mouseX, mouseY, amount);
     }
 
     @Override

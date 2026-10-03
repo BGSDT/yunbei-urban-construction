@@ -10,6 +10,12 @@ import java.util.function.Predicate;
 
 /** Opens a resource, returning null when it does not exist. */
 public interface ResourcePlatform {
+    /** Builds a namespaced resource id: 1.21 made the ResourceLocation constructor private. */
+    ResourceLocation create(String namespace, String path);
+
+    /** Parses "{@code namespace:path}" (1.21 made the single-argument constructor private). */
+    ResourceLocation parse(String location);
+
     InputStream openIfPresent(ResourceManager manager, ResourceLocation id) throws IOException;
 
     /**

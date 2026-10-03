@@ -52,6 +52,10 @@ public class YunbeiUrbanConstructionForgeClient {
             RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get());
             RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get());
 
+            RenderTypeRegistry.register(cutout, MunicipalBlocks.CORNER_GUARD_BLACK.get());
+            RenderTypeRegistry.register(cutout, MunicipalBlocks.CORNER_GUARD_BLACK_LEFT.get());
+            RenderTypeRegistry.register(cutout, MunicipalBlocks.CORNER_GUARD_BLACK_RIGHT.get());
+
             SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
 
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);

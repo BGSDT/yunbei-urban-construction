@@ -21,8 +21,8 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.unit1 = Unit.fromName(nbt.getString("unit1"));
         this.length1 = nbt.getString("length1");
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
@@ -32,10 +32,10 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("unit1", this.unit1.getName());
         nbt.putString("length1", this.length1);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -97,7 +97,7 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

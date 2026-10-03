@@ -26,12 +26,18 @@ import java.util.List;
 import java.util.Locale;
 
 public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBlockEntity> extends BlockEntityRendererCompat<T> {
-    protected final Font textRenderer;
+    protected Font textRenderer;
     private int gizmoLineIndex;
 
     protected AbstractTextDisplayEntityRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
-        this.textRenderer = ctx.getFont();
+    }
+
+    protected Font font() {
+        if (textRenderer == null) {
+            textRenderer = Minecraft.getInstance().font;
+        }
+        return textRenderer;
     }
 
     @Override
@@ -42,7 +48,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float zOffset = getZOffset(entity);
         int effectiveLight = entity.isGlowingText() ? 0xF000F0 : light;
 
-        // 子类渲染固定内容（如枚举驱动的 logo 纹理），在动态文本行之前
         renderFixedContent(entity, matrices, vertexConsumers, tickDelta, light, overlay, zOffset);
 
         List<CustomSignBlockEntity.TextLineData> lines = entity.getTextLines();
@@ -57,18 +62,14 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.popPose();
     }
 
-    // 子类实现前置变换（平移/旋转）
     protected abstract void applyTransforms(PoseStack matrices, T entity);
 
-    // 子类实现 Z 轴偏移
     protected abstract float getZOffset(T entity);
 
-    // 子类可选渲染固定内容（枚举驱动的 logo 纹理等），在动态文本行之前执行；默认不渲染
     protected void renderFixedContent(T entity, PoseStack matrices, MultiBufferSource vertexConsumers,
                                       float tickDelta, int light, int overlay, float zOffset) {
     }
 
-    // 检查纹理资源是否真实存在，避免渲染缺失纹理时反复刷错误日志
     private boolean textureExists(ResourceLocation id) {
         try {
             return Minecraft.getInstance().getResourceManager().hasResource(id);
@@ -87,7 +88,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 try {
                     float w = Float.parseFloat(parts[1]);
                     float h = Float.parseFloat(parts[2]);
-                    renderRect(matrices, zOffset, lineData, w, h, editing, gizmoMode, baseFrame);
+                    renderRect(matrices, vertexConsumers, zOffset, lineData, w, h, editing, gizmoMode, baseFrame);
                     return;
                 } catch (NumberFormatException ignored) {}
             }
@@ -96,14 +97,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (text.startsWith("-texture")) {
             String[] parts = text.split("\\s+", 3);
             if (parts.length >= 2) {
-                // 路径支持 {字段名} 占位符（如按枚举/编号选择 logo 纹理），与 -json 分支一致先解析；
-                // ResourceLocation 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
                 ResourceLocation textureId = ResourceLocation.tryParse(entity.resolvePlaceholders(parts[1]).trim().toLowerCase(Locale.ROOT));
-                // 仅当路径以 .png 结尾且资源真实存在时才按贴图渲染；
-                // 目录条目会被 getResource 误判为存在（jar 内含目录项），必须用后缀过滤掉，否则输入过程会反复报错；
-                // 无效路径（占位符按字段条件返回空、资源不存在、格式错误）静默跳过整行，不回退为文本渲染
                 if (textureId != null && textureId.getPath().endsWith(".png") && textureExists(textureId)) {
-                    // 可选第三参数：x 偏移占位符（单位同 xOffset，如窄/宽版 logo 联动的 ±1px），叠加到行 xOffset
                     float xShift = 0f;
                     if (parts.length >= 3) {
                         try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[2]).trim()); }
@@ -163,8 +158,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (lineData.isItalic()) renderText = renderText.copy().withStyle(s -> s.withItalic(true));
         if (lineData.isUnderline()) renderText = renderText.copy().withStyle(s -> s.withUnderlined(true));
 
-        int textWidth = this.textRenderer.width(renderText);
-        int textHeight = this.textRenderer.lineHeight;
+        int textWidth = font().width(renderText);
+        int textHeight = font().lineHeight;
 
         float renderX = switch (lineData.getAlignment().hAlign) {
             case 0 -> 0;
@@ -179,13 +174,11 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
-        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch();
         }
 
-        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY(), 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
         if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
@@ -211,10 +204,9 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 .withUnderlined(lineData.isUnderline())
                 .withFont(new ResourceLocation("minecraft", "uniform"));
 
-        // 渲染时解析 {字段名} 占位符为固定 NBT 字段的值
         Component renderText = Text.literal(entity.resolvePlaceholders(lineData.getText())).setStyle(style);
-        int textWidth = this.textRenderer.width(renderText);
-        int textHeight = this.textRenderer.lineHeight;
+        int textWidth = font().width(renderText);
+        int textHeight = font().lineHeight;
 
         float renderX = switch (lineData.getAlignment().hAlign) {
             case 0 -> 0;
@@ -229,13 +221,11 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
-        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch();
         }
 
-        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY(), 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
         if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
@@ -243,27 +233,76 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     }
 
     private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, MultiBufferSource vertexConsumers, int light) {
+        // 本行开启发光：用原版全亮光照渲染，不受环境光影响
+        int textLight = lineData.isGlowing() ? 0xF000F0 : light;
         boolean outline = lineData.isOutline();
         boolean shadow = lineData.isShadow();
+        Font f = font();
         if (outline) {
             if (shadow) {
-                this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), true,
-                        matrix, vertexConsumers, false, 0, light);
+                f.drawInBatch(renderText, x, y, lineData.getColor(), true,
+                        matrix, vertexConsumers, false, 0, textLight);
             }
-            this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), false,
-                    matrix, vertexConsumers, false, 0, light);
+            // 1.16.5 的 Font 没有 drawInBatch8xOutline（1.17+ 才有），
+            // 之前这里用「画一遍阴影 + 画一遍正文」顶替，看起来根本没有描边。
+            // 这里按原版 8x 描边的做法：先在 8 个方向各偏移 1 像素画一圈描边色，再画正文。
+            int outlineColor = resolveOutlineColor(lineData);
+            // 关键：必须把描边色写进组件自身的 style。
+            // 1.16.5 的 Font 逐字取色时 style 颜色优先于传入的 color，
+            // 所以 -json 文本里带的样式颜色会盖掉描边色，导致描边与正文同色 → 看上去没有描边。
+            Component outlineText = renderText.copy()
+                    .withStyle(s -> s.withColor(net.minecraft.network.chat.TextColor.fromRgb(outlineColor & 0xFFFFFF)));
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0) continue;
+                    f.drawInBatch(outlineText, x + dx, y + dy, outlineColor, false,
+                            matrix, vertexConsumers, false, 0, textLight);
+                }
+            }
+            f.drawInBatch(renderText, x, y, lineData.getColor(), false,
+                    matrix, vertexConsumers, false, 0, textLight);
         } else {
-            this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), shadow,
-                    matrix, vertexConsumers, false, 0, light);
+            f.drawInBatch(renderText, x, y, lineData.getColor(), shadow,
+                    matrix, vertexConsumers, false, 0, textLight);
         }
     }
 
-    private void renderRect(PoseStack matrices, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    /**
+     * 决定这一行实际使用的描边颜色。
+     *
+     * <p>未设置（-1）时用黑色；若描边色与文字色相同，自动改用反差色
+     * （文字偏亮 → 黑边，文字偏暗 → 白边），否则描边与正文同色、等于看不见。
+     */
+    /**
+     * 立即模式绘制前，把已经排队的文本/贴图批次刷掉。
+     *
+     * <p>1.16.5 的 {@code MultiBufferSource.BufferSource} 与 {@code Tesselator} 共用同一个
+     * {@code BufferBuilder}；若仍有批次处于 building 状态，紧接着的 {@code begin()} 会抛
+     * {@code IllegalStateException}。所以画描边边框之前必须先 flush。
+     */
+    private static void flushBatch(MultiBufferSource vertexConsumers) {
+        if (vertexConsumers instanceof MultiBufferSource.BufferSource queued) {
+            queued.endBatch();
+        }
+    }
+    private static int resolveOutlineColor(CustomSignBlockEntity.TextLineData lineData) {
+        int outline = lineData.getOutlineColor();
+        if (outline == -1) return 0x000000;
+        int outlineRgb = outline & 0xFFFFFF;
+        int textRgb = lineData.getColor() & 0xFFFFFF;
+        if (outlineRgb != textRgb) return outlineRgb;
+
+        int r = (textRgb >> 16) & 0xFF, g = (textRgb >> 8) & 0xFF, b = textRgb & 0xFF;
+        // 用感知亮度判断正文偏亮还是偏暗
+        int luma = (r * 299 + g * 587 + b * 114) / 1000;
+        return luma >= 128 ? 0x000000 : 0xFFFFFF;
+    }
+
+    private void renderRect(PoseStack matrices, MultiBufferSource vertexConsumers, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
         float zPos = lineData.getZOffset() / 16f + zOffset;
-        // 矩形大小乘以 fontSize 及 XY 缩放；矩形本身在局部 z=0 平面上，scaleZ 对其无可见效果
         float scale = lineData.getFontSize();
         float halfW = width / 16f / 2f * scale * lineData.getScaleX();
         float halfH = height / 16f / 2f * scale * lineData.getScaleY();
@@ -294,8 +333,11 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
+        // 1.16.5 是固定管线：POSITION_COLOR 顶点没有 UV，纹理开启时会被当前绑定的贴图调制
+        // （采样到透明像素 → 颜色发透明）。这里显式关闭纹理，画完再恢复。
+        RenderSystem.disableTexture();
         buffer.begin(4, DefaultVertexFormat.POSITION_COLOR);
         buffer.vertex(matrix, -halfW, -halfH, 0).color(r, g, b, a).endVertex();
         buffer.vertex(matrix, halfW, -halfH, 0).color(r, g, b, a).endVertex();
@@ -303,12 +345,19 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         buffer.vertex(matrix, -halfW, -halfH, 0).color(r, g, b, a).endVertex();
         buffer.vertex(matrix, halfW, halfH, 0).color(r, g, b, a).endVertex();
         buffer.vertex(matrix, -halfW, halfH, 0).color(r, g, b, a).endVertex();
-        BufferUploader.end(buffer);
+        tesselator.end();
 
+        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
 
-        if (editing) renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f, 1f);
+        // 「描边」开关：矩形也画一圈描边色边框
+        if (lineData.isOutline()) {
+            flushBatch(vertexConsumers);
+            renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
+        }
+
+        if (editing) renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f, 1f, 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f);
         if (editing && gizmoMode >= 0) {
             TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.last().pose()), lineData,
@@ -353,13 +402,17 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.vertex(positionMatrix, halfWidth, halfHeight, 0).color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
         consumer.vertex(positionMatrix, -halfWidth, halfHeight, 0).color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
 
-        // 图片顶点在缓冲层，gizmo 轴/描边为立即模式——编辑行先 flush 贴图层，
-        // 否则帧末绘制图片时会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch();
         }
 
-        if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f, 1f);
+        // 「描边」开关：图片也画一圈描边色边框
+        if (lineData.isOutline()) {
+            flushBatch(vertexConsumers);
+            renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
+        }
+
+        if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f, 1f, 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f);
         if (editing && gizmoMode >= 0) {
             TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.last().pose()), lineData,
@@ -369,10 +422,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.popPose();
     }
 
-    // 在当前矩阵局部坐标系内绘制一个包住 (left,top)-(left+w,top+h) 区域的绿色描边矩形框，用于标注正在编辑的文本行
-    // unitScale：局部坐标 1 单位对应的方块尺寸（1 像素 = 1/16 方块）；scaleX/scaleY 为矩阵所含缩放，
-    // 用于抵消厚度被放大，保证描边在世界空间中恒为 0.25px 粗
-    private void renderEditingOutline(PoseStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY) {
+    private void renderEditingOutline(PoseStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY, int rgb) {
         float px = 0.25f / 16f / Math.max(1e-5f, unitScale);
         float thicknessX = px / Math.max(0.01f, scaleX);
         float thicknessY = px / Math.max(0.01f, scaleY);
@@ -380,7 +430,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float marginY = thicknessY;
         float x0 = left - marginX, y0 = top - marginY, x1 = left + w + marginX, y1 = top + h + marginY;
 
-        int r = 0, g = 255, b = 255, a = 255;
+        int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
+        int a = 255;
         Matrix4f matrix = matrices.last().pose();
 
         RenderSystem.enableBlend();
@@ -388,15 +439,19 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.enableDepthTest();
         RenderSystem.disableCull();
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
+        // 1.16.5 是固定管线：POSITION_COLOR 顶点没有 UV，纹理开启时会被当前绑定的贴图调制
+        // （采样到透明像素 → 颜色发透明）。这里显式关闭纹理，画完再恢复。
+        RenderSystem.disableTexture();
         buffer.begin(4, DefaultVertexFormat.POSITION_COLOR);
         addOutlineBar(buffer, matrix, x0, y0, x1, y0 + thicknessY, r, g, b, a);
         addOutlineBar(buffer, matrix, x0, y1 - thicknessY, x1, y1, r, g, b, a);
         addOutlineBar(buffer, matrix, x0, y0, x0 + thicknessX, y1, r, g, b, a);
         addOutlineBar(buffer, matrix, x1 - thicknessX, y0, x1, y1, r, g, b, a);
-        BufferUploader.end(buffer);
+        tesselator.end();
 
+        RenderSystem.enableTexture();
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();

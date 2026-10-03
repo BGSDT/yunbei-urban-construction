@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.pole;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -34,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class RoadLightHighMast extends Block {
+public class RoadLightHighMast extends BlockCompat {
     public static final EnumProperty<TFType> TF_TYPE = EnumProperty.create("tf_type", TFType.class);
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -48,9 +49,8 @@ public class RoadLightHighMast extends Block {
     ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.road_light.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     public RoadLightHighMast(BlockBehaviour.Properties properties) {
@@ -69,7 +69,7 @@ public class RoadLightHighMast extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
         // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world .isClientSide) {

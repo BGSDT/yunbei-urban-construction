@@ -11,7 +11,7 @@
     "Tizhengxie",
     "NanGuaQWQ",
     "Yomi_307",
-    "空悦星海"
+    "FrostyHulan"
   ],
   "contact": {
     "homepage": "https://bgsdt.github.io/",
@@ -37,7 +37,7 @@
     "minecraft": "1.17.1",
     "java": ">=17",
     "architectury": ">=2.8.67",
-    "fabric-api": "*"
+    "fabric": "*"
   },
   "suggests": {
     "another-mod": "*",

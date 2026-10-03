@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class RoadPoleLedEntity extends CustomSignBlockEntity {
 
     public RoadPoleLedEntity(BlockPos pos, BlockState state) {
-        super(pos, state);
+        super(ModBlockEntities.ROAD_POLE_LED_ENTITY.get(), pos, state);
     }
 
     @Override

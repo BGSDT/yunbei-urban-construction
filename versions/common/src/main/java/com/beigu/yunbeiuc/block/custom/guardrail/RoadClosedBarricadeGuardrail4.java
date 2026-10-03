@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.guardrail;
+import com.beigu.yunbeiuc.api.mapper.DirectionalBlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -24,7 +25,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class RoadClosedBarricadeGuardrail4 extends DirectionalBlock {
+public class RoadClosedBarricadeGuardrail4 extends DirectionalBlockCompat {
     public static final EnumProperty<BedPart> PART = BlockStateProperties.BED_PART;
 
     private static final VoxelShape FOOT_SHAPE_NORTH = Block.box(2, 0, 0, 16, 18, 16);
@@ -75,7 +76,7 @@ public class RoadClosedBarricadeGuardrail4 extends DirectionalBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroyCompat(Level world, BlockPos pos, BlockState state, Player player) {
         BedPart part = state.getValue(PART);
         Direction direction = state.getValue(FACING);
 
@@ -93,8 +94,6 @@ public class RoadClosedBarricadeGuardrail4 extends DirectionalBlock {
             world.levelEvent(player, 2001, otherPos,
                     Block.getId(otherState));
         }
-
-        super .playerWillDestroy(world, pos, state, player);
     }
 
     @Override

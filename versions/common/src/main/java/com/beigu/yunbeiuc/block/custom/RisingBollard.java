@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -32,11 +33,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class RisingBollard extends Block {
+public class RisingBollard extends BlockCompat {
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.rising_bollard.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
     private static final VoxelShape SHAPE_ON = Block.box(2, 0, 2, 14, 16, 14);
     private static final VoxelShape SHAPE_OFF = Block.box(2, 0, 2, 14, 0.1, 14);
@@ -64,7 +64,7 @@ public class RisingBollard extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
         // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world .isClientSide) {

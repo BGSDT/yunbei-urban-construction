@@ -22,17 +22,17 @@ public class RoadNameSignBlockEntity extends BlockEntityMapper {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.chineseText = nbt.getString("chineseText");
         this.englishText = nbt.getString("englishText");
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt) {
+    protected void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("chineseText", this.chineseText);
         nbt.putString("englishText", this.englishText);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     @Nullable
@@ -40,12 +40,6 @@ public class RoadNameSignBlockEntity extends BlockEntityMapper {
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return createUpdatePacket();
     }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return createUpdateTag();
-    }
-
     public String getChineseText() {
         return chineseText;
     }

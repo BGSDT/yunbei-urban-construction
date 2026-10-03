@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.barrier;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TrafficBarrierGrayObliqueBlock extends Block {
+public class TrafficBarrierGrayObliqueBlock extends BlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
@@ -42,9 +43,8 @@ public class TrafficBarrierGrayObliqueBlock extends Block {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(Text.translatable("block.yunbeiuc.traffic_barrier.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     @Override

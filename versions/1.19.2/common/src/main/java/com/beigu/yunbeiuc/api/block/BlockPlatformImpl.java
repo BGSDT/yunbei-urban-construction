@@ -19,6 +19,7 @@ public final class BlockPlatformImpl implements BlockPlatform {
         return new OakTreeGrower().growTree(level, level.getChunkSource().getGenerator(), pos,
                 Blocks.OAK_SAPLING.defaultBlockState(), level.getRandom());
     }
+    @Override public BlockBehaviour.Properties copyProperties(Block source) { return BlockBehaviour.Properties.copy(source); }
     @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color) {
         // Properties.mapColor(MapColor) is a 1.20+ mutator; on this version the map colour can only
         // be supplied through the static of(Material, MaterialColor) factories, which cannot be

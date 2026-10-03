@@ -20,6 +20,7 @@ public final class BlockPlatformImpl implements BlockPlatform {
         return new OakTreeGrower().growTree(level, level.getChunkSource().getGenerator(), pos,
                 Blocks.OAK_SAPLING.defaultBlockState(), level.getRandom());
     }
+    @Override public BlockBehaviour.Properties copyProperties(Block source) { return BlockBehaviour.Properties.copy(source); }
     @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color) {
         return properties.mapColor(mapColor(color));
     }

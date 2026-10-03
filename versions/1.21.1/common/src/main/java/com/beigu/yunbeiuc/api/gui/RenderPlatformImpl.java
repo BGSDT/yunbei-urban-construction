@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 
 /** Drawing operations for the Minecraft 1.21.1 GUI API. */
 public final class RenderPlatformImpl implements RenderPlatform {
+    private BufferBuilder lineBuffer;
     @Override
     public void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
                             com.mojang.blaze3d.vertex.PoseStack matrices,
@@ -22,21 +23,45 @@ public final class RenderPlatformImpl implements RenderPlatform {
     @Override
     public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
                        com.mojang.blaze3d.vertex.PoseStack matrices, float x, float y, float z) {
-        consumer.vertex(matrices.last().pose(), x, y, z);
+        consumer.addVertex(matrices.last().pose(), x, y, z);
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       float red, float green, float blue, float alpha) {
+        consumer.addVertex(pose.pose(), x, y, z).setColor(red, green, blue, alpha);
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       int red, int green, int blue, int alpha, float u, float v, int overlay, int light,
+                       float normalX, float normalY, float normalZ) {
+        consumer.addVertex(pose.pose(), x, y, z).setColor(red, green, blue, alpha).setUv(u, v)
+                .setOverlay(overlay).setLight(light).setNormal(pose, normalX, normalY, normalZ);
     }
     @Override public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
         matrices.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
     }
     @Override
-    public void beginLines(LinePrimitive primitive) {
-        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        buffer.begin(primitive == LinePrimitive.LINE_STRIP ? VertexFormat.Mode.LINE_STRIP : VertexFormat.Mode.LINES,
+    public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
+        lineBuffer = Tesselator.getInstance().begin(
+                primitive == LinePrimitive.LINE_STRIP ? VertexFormat.Mode.LINE_STRIP : VertexFormat.Mode.LINES,
                 DefaultVertexFormat.POSITION_COLOR);
+        return lineBuffer;
     }
 
     @Override
     public void endLines() {
-        Tesselator.getInstance().end();
+        if (lineBuffer == null) {
+            return;
+        }
+        com.mojang.blaze3d.vertex.MeshData mesh = lineBuffer.build();
+        lineBuffer = null;
+        if (mesh != null) {
+            com.mojang.blaze3d.vertex.BufferUploader.drawWithShader(mesh);
+        }
     }
 
     @Override

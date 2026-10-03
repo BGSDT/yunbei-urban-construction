@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.util;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.text.Text;
 import com.beigu.yunbeiuc.screen.PatternAndFontOverlay;
+import com.beigu.yunbeiuc.screen.TextureAspectCache;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -56,6 +57,10 @@ public final class PatternResourceLoader {
      * @param manager 资源管理器
      */
     public static void loadAllFromResourceManager(ResourceManager manager) {
+        // 重新扫描纹理前清空尺寸缓存：资源包可能替换了同名贴图，
+        // 沿用旧尺寸会导致缩略图按错误比例绘制
+        TextureAspectCache.clear();
+
         for (PatternAndFontOverlay.H2Category h2 : PatternAndFontOverlay.REGISTRY) {
             for (PatternAndFontOverlay.H3Category h3 : h2.subCategories) {
                 buildTextureCacheForH3(h3, manager);
@@ -196,14 +201,14 @@ public final class PatternResourceLoader {
 
     // 解析自定义图案 JSON 并追加到指定 Section
     private static void loadCustomPatternsFromJsonSection(PatternAndFontOverlay.H4Section section, ResourceManager manager) {
-        ResourceLocation jsonId = new ResourceLocation(section.customJsonPath);
+        ResourceLocation jsonId = VersionServices.resources().parse(section.customJsonPath);
 
         try {
             List<InputStream> streams = collectAllResourceStreams(manager, jsonId);
             for (InputStream stream : streams) {
                 try (InputStream in = stream;
                      InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                    JsonElement root = JsonParser.parseReader(reader);
+                    JsonElement root = new JsonParser().parse(reader);
                     if (root.isJsonArray()) {
                         for (JsonElement element : root.getAsJsonArray()) {
                             JsonObject obj = element.getAsJsonObject();
@@ -212,7 +217,7 @@ public final class PatternResourceLoader {
                             String insert = obj.has("insert") ? obj.get("insert").getAsString() : "";
 
                             if (!texture.isEmpty()) {
-                                section.addWhitelistItem(new ResourceLocation(texture), insert, Text.literal(name));
+                                section.addWhitelistItem(VersionServices.resources().parse(texture), insert, Text.literal(name));
                             }
                         }
                     }
@@ -233,14 +238,14 @@ public final class PatternResourceLoader {
 
     // 解析自定义字体 JSON 并追加到指定 Section
     private static void loadCustomFontsFromJsonSection(PatternAndFontOverlay.H4Section section, ResourceManager manager) {
-        ResourceLocation jsonId = new ResourceLocation(section.customJsonPath);
+        ResourceLocation jsonId = VersionServices.resources().parse(section.customJsonPath);
 
         try {
             List<InputStream> streams = collectAllResourceStreams(manager, jsonId);
             for (InputStream stream : streams) {
                 try (InputStream in = stream;
                      InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                    JsonElement root = JsonParser.parseReader(reader);
+                    JsonElement root = new JsonParser().parse(reader);
                     if (root.isJsonArray()) {
                         for (JsonElement element : root.getAsJsonArray()) {
                             JsonObject obj = element.getAsJsonObject();
@@ -326,7 +331,7 @@ public final class PatternResourceLoader {
                 if (stream != null) {
                     try (InputStream in = stream;
                          InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                        JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+                        JsonObject root = new JsonParser().parse(reader).getAsJsonObject();
 
                         String tabType = root.has("tab") ? root.get("tab").getAsString() : "patterns";
                         boolean isFont = tabType.equals("fonts");
@@ -368,7 +373,7 @@ public final class PatternResourceLoader {
     private static PatternAndFontOverlay.H4Section parseSectionFromJson(JsonObject secObj) {
         Component secTitle = Text.literal(secObj.has("title") ? secObj.get("title").getAsString() : "未命名 Section");
         Component secDesc = Text.literal(secObj.has("description") ? secObj.get("description").getAsString() : "");
-        ResourceLocation basePath = new ResourceLocation(secObj.has("basePath") ? secObj.get("basePath").getAsString() : "minecraft:empty/");
+        ResourceLocation basePath = VersionServices.resources().parse(secObj.has("basePath") ? secObj.get("basePath").getAsString() : "minecraft:empty/");
 
         PatternAndFontOverlay.H4Section newSection = new PatternAndFontOverlay.H4Section(secTitle, secDesc, basePath);
 

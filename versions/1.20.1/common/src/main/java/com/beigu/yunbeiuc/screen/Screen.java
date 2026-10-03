@@ -27,7 +27,16 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         render(new DrawContext(graphics), mouseX, mouseY, delta);
     }
 
+    /** 是否在 render 时自动铺底。1.20.1 的 Screen.render 不自动铺底，故默认关闭。 */
+    protected boolean renderBackdrop = false;
+
+    /** 具体界面按需开启自动铺底；不调用则完全由界面自己决定要不要调 renderBackground。 */
+    public void setRenderBackdrop(boolean value) { this.renderBackdrop = value; }
+
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (this.renderBackdrop) {
+            super.renderBackground(context.getGraphics());
+        }
         super.render(context.getGraphics(), mouseX, mouseY, delta);
     }
 
@@ -55,4 +64,13 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 
     @Override
     public boolean isPauseScreen() { return shouldPause(); }
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return mouseScrolledCompat(mouseX, mouseY, amount);
+    }
+
+    /** Version-neutral scroll hook used by the shared screens. */
+    public boolean mouseScrolledCompat(double mouseX, double mouseY, double amount) {
+        return super.mouseScrolled(mouseX, mouseY, amount);
+    }
 }

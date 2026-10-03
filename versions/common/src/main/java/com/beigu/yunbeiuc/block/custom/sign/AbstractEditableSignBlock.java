@@ -66,8 +66,7 @@ public abstract class AbstractEditableSignBlock extends EntityBlockCompat {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos,
-                                 Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
             if (world.isClientSide) {

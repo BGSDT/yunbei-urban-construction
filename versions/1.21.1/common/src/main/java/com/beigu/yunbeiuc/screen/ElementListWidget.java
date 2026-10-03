@@ -1,7 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
 
@@ -12,39 +12,64 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
     protected int left;
 
     protected ElementListWidget(Minecraft client, int width, int height, int top, int bottom, int itemHeight) {
-        super(client, width, height, top, bottom, itemHeight);
+        // 1.21 takes (minecraft, width, height, y, itemHeight): the old top/bottom window becomes y + height.
+        super(client, width, bottom - top, top, itemHeight);
         this.client = client;
         this.left = 0;
     }
 
     /**
-     * 同步 Yarn {@code EntryListWidget#setLeftPos} 语义：Mojang 的 {@code AbstractSelectionList}
-     * 用它设置裁剪窗口的 x0/x1，而共享代码通过 {@code left} 计算行位置，两者必须保持一致。
+     * 同步 Yarn {@code EntryListWidget#setLeftPos} 语义：共享代码通过 {@code left} 计算行位置。
      */
-    @Override
     public void setLeftPos(int left) {
-        super.setLeftPos(left);
         this.left = left;
     }
 
     /** Yarn 的 {@code updateSize} 会把 left 归零，这里同步保持两边一致。 */
-    @Override
     public void updateSize(int width, int height, int top, int bottom) {
-        super.updateSize(width, height, top, bottom);
+        updateSizeAndPosition(width, bottom - top, top);
         this.left = 0;
     }
 
+    private boolean renderSelection = true;
+    private boolean renderListBackground = true;
+
+    /**
+     * 1.21 去掉了原版的选中框开关，但原版框仍会按「x0 + (width - rowWidth)/2」居中绘制，
+     * 而共享代码的行布局是以 {@code left}（{@link #getRowLeft()}）为基准左对齐的，
+     * 两者必然错位（框的左边贴不紧选项左边）。
+     *
+     * <p>共享代码调用本方法关闭原版框、由 {@code Entry} 自绘选中/悬停底色；
+     * 这里用字段承接，并在 {@link #renderSelection} 中真正拦下绘制。
+     */
+    public void setRenderSelection(boolean visible) { this.renderSelection = visible; }
+
+    @Override
+    protected void renderSelection(GuiGraphics graphics, int top, int height, int left, int width, int color) {
+        if (!this.renderSelection) return;
+        super.renderSelection(graphics, top, height, left, width, color);
+    }
+
+    /** 1.21 同样没有列表底色开关，用字段承接共享代码的调用。 */
+    public void setRenderBackground(boolean visible) { this.renderListBackground = visible; }
+
+    @Override
+    protected void renderListBackground(GuiGraphics graphics) {
+        if (!this.renderListBackground) return;
+        super.renderListBackground(graphics);
+    }
+
     protected int getScrollbarPositionX() { return getRowRight() + 4; }
-    public void setRenderHorizontalShadows(boolean visible) { setRenderTopAndBottom(visible); }
+    public void setRenderHorizontalShadows(boolean visible) { }
 
     @Override
     protected int getScrollbarPosition() { return getScrollbarPositionX(); }
 
     public abstract static class Entry<E extends Entry<E>> extends ObjectSelectionList.Entry<E> {
         @Override
-        public final void render(PoseStack matrices, int index, int y, int x, int entryWidth,
+        public final void render(GuiGraphics graphics, int index, int y, int x, int entryWidth,
                                  int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
-            render(new DrawContext(matrices), index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, delta);
+            render(new DrawContext(graphics), index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, delta);
         }
 
         public abstract void render(DrawContext context, int index, int y, int x, int entryWidth,

@@ -32,8 +32,8 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.cnText2 = nbt.getString("cnText2");
         this.enText2 = nbt.getString("enText2");
@@ -54,7 +54,7 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("cnText2", this.cnText2);
         nbt.putString("enText2", this.enText2);
@@ -68,7 +68,7 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
         nbt.putString("enText6", this.enText6);
         nbt.putString("cnText7", this.cnText7);
         nbt.putString("enText7", this.enText7);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -84,7 +84,7 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning3 = getBlockState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3.get();
+        boolean isWarning3 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning3) {
             lines.add(SignTextLinesHelper.centered("新吴路", 0f, 8f, 0.03f, 0xFFFFFF, "a"));
@@ -107,7 +107,7 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
             lines.add(SignTextLinesHelper.centered("121/130", -14f, 4f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("道法路", -14f, 0f, 0.03f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.centered("50/50", -14f, -4f, 0.023f, 0xFFFFFF, "b"));
-            lines.add(SignTextLinesHelper.centered("历史", 14f, 8f, 0.03f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("历史路", 14f, 8f, 0.03f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.centered("45/50", 14f, 4f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("地理路", 14f, 0f, 0.03f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.centered("I don't know", 14f, -4f, 0.023f, 0xFFFFFF, "b"));
@@ -231,7 +231,7 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

@@ -48,8 +48,8 @@ public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        final InteractionResult result = super .use(state, world, pos, player, hand, hit);
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        final InteractionResult result = super.useCompat(state, world, pos, player, hand, hit);
         if (result == InteractionResult.FAIL) {
             return result;
         }

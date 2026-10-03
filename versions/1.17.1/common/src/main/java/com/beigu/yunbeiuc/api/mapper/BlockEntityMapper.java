@@ -7,19 +7,28 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Minecraft 1.17.1 block entity compatibility base, modeled after Minecraft-Mappings. */
+/**
+ * Minecraft 1.17.1 block entity compatibility base.
+ *
+ * <p>1.17.1 still stores through {@code save(CompoundTag)} / {@code load(CompoundTag)} - the
+ * {@code saveAdditional} / {@code saveWithoutMetadata} split arrived later - and builds its update
+ * packet by hand.
+ */
 public abstract class BlockEntityMapper extends BlockEntity {
     protected BlockEntityMapper(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    protected void saveAdditional(CompoundTag tag) {
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        loadCompat(tag);
     }
 
     @Override
     public final CompoundTag save(CompoundTag tag) {
         super.save(tag);
-        saveAdditional(tag);
+        saveAdditionalCompat(tag);
         return tag;
     }
 
@@ -29,7 +38,18 @@ public abstract class BlockEntityMapper extends BlockEntity {
 
     protected final CompoundTag createUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
-        saveAdditional(tag);
+        saveAdditionalCompat(tag);
         return tag;
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return createUpdateTag();
+    }
+
+    protected void loadCompat(CompoundTag tag) {
+    }
+
+    protected void saveAdditionalCompat(CompoundTag tag) {
     }
 }

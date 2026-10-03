@@ -43,7 +43,8 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIGHT_STATE, TYPE, PART);
+        // MOUNT 由 TrafficLightsBlock 的构造函数写入默认状态，必须出现在本子类的定义里
+        builder.add(FACING, LIGHT_STATE, TYPE, MOUNT, PART);
     }
 
     public static final VoxelShape SHAPE_N = Block.box(3.5, 0, 5, 12.5, 16, 11);
@@ -102,7 +103,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroyCompat(Level world, BlockPos pos, BlockState state, Player player) {
         if (!world.isClientSide) {
             TriplePart part = state.getValue(PART);
 
@@ -127,21 +128,26 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                 }
             }
         }
-
-        super .playerWillDestroy(world, pos, state, player);
     }
 
     @Override
     protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
-        if (state.getValue(PART) == TriplePart.BOTTOM) {
-            return new TrafficLightsPavementIntegrationBlockEntity(pos, state);
+        // 只有「本方块、且明确不是 BOTTOM 段」才不挂方块实体（方块实体只挂在最下面一段）。
+        //
+        // 关键点：state 可能是 air 之类的外来状态——vanilla 放置方块 / 提升待定方块实体时
+        // 都会用位置上的旧状态来调用工厂。此时绝不能返回 null：
+        // 1.16.5 的 LevelChunk#getBlockEntity(BlockPos) 走 EntityCreationType.CHECK，
+        // 只查表 + 提升待定 NBT，**不会按方块补建方块实体**（只有 IMMEDIATE 才建）。
+        // 也就是说 setBlockState 这次调用是唯一一次创建机会，错过之后这个位置就永远没有
+        // 方块实体了——表现为链接魔杖右键提示"这不是一个红绿灯"。
+        if (state.hasProperty(PART) && state.getValue(PART) != TriplePart.BOTTOM) {
+            return null;
         }
-        return null;
+        return new TrafficLightsPavementIntegrationBlockEntity(pos, state);
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos,
-                              Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         TriplePart part = state.getValue(PART);
         BlockPos bottomPos = switch (part) {
             case BOTTOM -> pos;

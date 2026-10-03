@@ -8,7 +8,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.grower.OakTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 
@@ -17,9 +17,10 @@ public final class BlockPlatformImpl implements BlockPlatform {
     @Override public void scheduleBlockTick(LevelAccessor level, BlockPos pos, Block block, int delay) { level.scheduleTick(pos, block, delay); }
     @Override public void scheduleFluidTick(LevelAccessor level, BlockPos pos, Fluid fluid, int delay) { level.scheduleTick(pos, fluid, delay); }
     @Override public boolean growOakTree(ServerLevel level, BlockPos pos) {
-        return new OakTreeGrower().growTree(level, level.getChunkSource().getGenerator(), pos,
+        return TreeGrower.OAK.growTree(level, level.getChunkSource().getGenerator(), pos,
                 Blocks.OAK_SAPLING.defaultBlockState(), level.getRandom());
     }
+    @Override public BlockBehaviour.Properties copyProperties(Block source) { return BlockBehaviour.Properties.ofFullCopy(source); }
     @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color) {
         return properties.mapColor(mapColor(color));
     }

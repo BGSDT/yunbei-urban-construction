@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.network;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import dev.architectury.networking.NetworkManager;
@@ -49,10 +50,24 @@ public class  ModMessages {
     public static final ResourceLocation UPDATE_ZONES_BOARD_OVER_WEIGHT = id("update_zone_board_over_weight");
     public static final ResourceLocation UPDATE_CUSTOM_SIGN = id("update_custom_sign");
     public static final ResourceLocation UPDATE_CUSTOM_SIGN_FIELD = id("update_custom_sign_field");
+    public static final ResourceLocation SYNC_TRAFFIC_LIGHTS_GROUP = id("sync_traffic_lights_group");
     private static ResourceLocation id(String path) {
-        return new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, path);
+        return VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, path);
     }
 
+    /**
+     * S2C 接收器。客户端与服务端都会调用 {@code YunbeiUrbanConstruction.init()}，
+     * 因此在这里统一注册即可；S2C 包只在 1.16.5 / 1.17.1 会被真正发出。
+     */
+    @SuppressWarnings("removal")
+    public static void registerS2CPackets() {
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, SYNC_TRAFFIC_LIGHTS_GROUP, (buf, context) -> {
+            TrafficLightsGroupSyncPacket packet = new TrafficLightsGroupSyncPacket(buf);
+            context.queue(packet::applyClient);
+        });
+    }
+
+    @SuppressWarnings("removal")
     public static void registerC2SPackets() {
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_FLAG, (buf, context) -> {
             FlagUpdatePacket packet = new FlagUpdatePacket(buf);

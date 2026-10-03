@@ -24,8 +24,8 @@ public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity 
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.direction1 = SignCompassDirection.fromName(nbt.getString("direction1"), SignCompassDirection.EAST);
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
         this.text1 = nbt.getString("text1");
@@ -39,13 +39,13 @@ public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity 
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("direction1", this.direction1.getName());
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("text1", this.text1);
         nbt.putString("expresswayNumber1", this.expresswayNumber1);
         nbt.putString("logoType1", this.logoType1);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -105,7 +105,7 @@ public class SignExpresswayEntranceAdvance4Entity extends CustomSignBlockEntity 
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

@@ -41,10 +41,10 @@ subprojects {
         maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
         maven { name = 'LoomMinecraftCache'; url = uri("$rootProject.projectDir/.gradle/loom-cache/minecraftMaven") }
         mavenCentral()
-        maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
+        maven { name = 'NeoForged'; url = 'https://neoforged.forgecdn.net/releases/' }
         maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
         maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
-        maven { name = 'MinecraftLibraries'; url = 'https://libraries.minecraft.net/' }
+        maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
         // Add repositories to retrieve artifacts from in here.
         // You should only use this when depending on other mods because
         // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.

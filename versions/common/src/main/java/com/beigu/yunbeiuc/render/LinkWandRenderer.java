@@ -5,8 +5,7 @@ import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.custom.LinkWand;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.*;
@@ -48,8 +47,6 @@ public class LinkWandRenderer {
         RenderSystem.disableDepthTest();
         RenderSystem.lineWidth(4.0f);
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
         RenderPlatform render = VersionServices.render();
 
         for (BlockPos pos : linkedPositions) {
@@ -59,7 +56,7 @@ public class LinkWandRenderer {
             VoxelShape shape = client.level.getBlockState(pos).getShape(client.level, pos);
             AABB box = shape.bounds().move(pos).inflate(0.002);
 
-            render.beginLines(RenderPlatform.LinePrimitive.LINE_STRIP);
+            VertexConsumer lineBuffer = render.beginLines(RenderPlatform.LinePrimitive.LINE_STRIP);
 
             float r = 0.0f;
             float g = 1.0f;
@@ -67,29 +64,29 @@ public class LinkWandRenderer {
             float a = 0.8f;
 
             // 绘制完整的碰撞箱描边
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.minY, (float) box.minZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.minY, (float) box.minZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.minY, (float) box.maxZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.minY, (float) box.maxZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.minY, (float) box.minZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.maxY, (float) box.minZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.maxY, (float) box.minZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.maxY, (float) box.maxZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.maxY, (float) box.maxZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.maxY, (float) box.minZ).color(r, g, b, a).endVertex();
+            render.vertex(lineBuffer, matrices.last(), (float) box.minX, (float) box.minY, (float) box.minZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.maxX, (float) box.minY, (float) box.minZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.maxX, (float) box.minY, (float) box.maxZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.minX, (float) box.minY, (float) box.maxZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.minX, (float) box.minY, (float) box.minZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.minX, (float) box.maxY, (float) box.minZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.maxX, (float) box.maxY, (float) box.minZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.maxX, (float) box.maxY, (float) box.maxZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.minX, (float) box.maxY, (float) box.maxZ, r, g, b, a);
+            render.vertex(lineBuffer, matrices.last(), (float) box.minX, (float) box.maxY, (float) box.minZ, r, g, b, a);
 
             render.endLines();
 
-            render.beginLines(RenderPlatform.LinePrimitive.LINES);
+            VertexConsumer linesBuffer = render.beginLines(RenderPlatform.LinePrimitive.LINES);
 
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.minY, (float) box.minZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.maxY, (float) box.minZ).color(r, g, b, a).endVertex();
+            render.vertex(linesBuffer, matrices.last(), (float) box.maxX, (float) box.minY, (float) box.minZ, r, g, b, a);
+            render.vertex(linesBuffer, matrices.last(), (float) box.maxX, (float) box.maxY, (float) box.minZ, r, g, b, a);
 
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.minY, (float) box.maxZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.maxX, (float) box.maxY, (float) box.maxZ).color(r, g, b, a).endVertex();
+            render.vertex(linesBuffer, matrices.last(), (float) box.maxX, (float) box.minY, (float) box.maxZ, r, g, b, a);
+            render.vertex(linesBuffer, matrices.last(), (float) box.maxX, (float) box.maxY, (float) box.maxZ, r, g, b, a);
 
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.minY, (float) box.maxZ).color(r, g, b, a).endVertex();
-            buffer.vertex(matrices.last().pose(), (float) box.minX, (float) box.maxY, (float) box.maxZ).color(r, g, b, a).endVertex();
+            render.vertex(linesBuffer, matrices.last(), (float) box.minX, (float) box.minY, (float) box.maxZ, r, g, b, a);
+            render.vertex(linesBuffer, matrices.last(), (float) box.minX, (float) box.maxY, (float) box.maxZ, r, g, b, a);
 
             render.endLines();
         }

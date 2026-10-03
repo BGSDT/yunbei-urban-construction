@@ -29,8 +29,8 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
         this.expressway2 = Expressway.fromName(nbt.getString("expressway2"));
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
@@ -49,7 +49,7 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("expressway2", this.expressway2.getName());
         nbt.putString("expresswayNumber1", this.expresswayNumber1);
@@ -60,7 +60,7 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         nbt.putString("text2", this.text2);
         nbt.putString("text3", this.text3);
         nbt.putString("text4", this.text4);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -140,7 +140,7 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

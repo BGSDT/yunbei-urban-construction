@@ -39,7 +39,7 @@ public class TrafficLightsPatternPresetLoader {
         try {
             // 遍历所有命名空间，直接查找 traffic_lights_yunbeiuc.json
             for (String namespace : resourceManager.getNamespaces()) {
-                ResourceLocation fileId = new ResourceLocation(namespace, "traffic_lights_yunbeiuc.json");
+                ResourceLocation fileId = VersionServices.resources().create(namespace, "traffic_lights_yunbeiuc.json");
 
                 try (InputStream stream = VersionServices.resources().openIfPresent(resourceManager, fileId)) {
                     if (stream != null) {

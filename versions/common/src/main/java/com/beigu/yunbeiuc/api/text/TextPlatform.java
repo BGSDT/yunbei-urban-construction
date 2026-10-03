@@ -10,4 +10,7 @@ public interface TextPlatform {
 
     /** An empty component; 1.16.5-1.18.2 lack {@code Component.empty()} and use {@code TextComponent.EMPTY}. */
     MutableComponent empty();
+
+    /** Parses a lenient JSON component; 1.21 additionally requires a registry provider. */
+    net.minecraft.network.chat.Component fromLegacyJson(String json);
 }

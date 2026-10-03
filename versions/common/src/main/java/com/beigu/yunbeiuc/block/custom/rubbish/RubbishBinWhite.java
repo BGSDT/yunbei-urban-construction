@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.rubbish;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.InteractionHand;
@@ -29,11 +30,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class RubbishBinWhite extends Block {
+public class RubbishBinWhite extends BlockCompat {
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.rubbish_bin.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     private static final VoxelShape SHAPE_N = Block.box(0, 0, 4.25, 16, 16, 11.75);
@@ -80,12 +80,12 @@ public class RubbishBinWhite extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
         if (!heldItem.isEmpty()) {
             player.setItemInHand(hand, ItemStack.EMPTY);
             return InteractionResult.sidedSuccess(world .isClientSide);
         }
-        return super .use(state, world, pos, player, hand, hit);
+        return super.useCompat(state, world, pos, player, hand, hit);
     }
 }

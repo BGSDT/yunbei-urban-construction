@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.barrier;
+import com.beigu.yunbeiuc.api.mapper.DirectionalBlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -25,7 +26,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class SoundBarrier1 extends DirectionalBlock {
+public class SoundBarrier1 extends DirectionalBlockCompat {
     public static final EnumProperty<BedPart> PART = BlockStateProperties.BED_PART;
     public static final IntegerProperty LAYER = IntegerProperty.create("layer", 0, 2); // 0=底, 1=中, 2=顶
 
@@ -96,7 +97,7 @@ public class SoundBarrier1 extends DirectionalBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroyCompat(Level world, BlockPos pos, BlockState state, Player player) {
         BedPart part = state.getValue(PART);
         Direction direction = state.getValue(FACING);
         int layer = state.getValue(LAYER);
@@ -105,8 +106,6 @@ public class SoundBarrier1 extends DirectionalBlock {
             // 破坏其他所有方块
             breakOtherParts(world, pos, part, direction, layer, player);
         }
-
-        super.playerWillDestroy(world, pos, state, player);
     }
 
     private void breakOtherParts(Level world, BlockPos pos, BedPart part,

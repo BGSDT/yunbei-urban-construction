@@ -14,22 +14,22 @@ import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class FlagBlockEntity extends BlockEntityMapper {
-    private String flagId = ""; // 存储旗帜ID
+    private String flagId = "";
 
     public FlagBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), pos, state);
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.flagId = nbt.getString("flagId");
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt) {
+    protected void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("flagId", this.flagId);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     @Nullable
@@ -37,17 +37,10 @@ public class FlagBlockEntity extends BlockEntityMapper {
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return createUpdatePacket();
     }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return createUpdateTag();
-    }
-
     public String getFlagId() {
         return flagId;
     }
 
-    // 确保有这个setter方法
     public void setFlagId(String flagId) {
         this.flagId = flagId;
         setChanged();

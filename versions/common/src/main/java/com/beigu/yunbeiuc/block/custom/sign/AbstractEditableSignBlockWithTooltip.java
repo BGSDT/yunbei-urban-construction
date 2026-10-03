@@ -18,8 +18,7 @@ public abstract class AbstractEditableSignBlockWithTooltip extends AbstractEdita
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(Text.translatable(tooltipKey));
-        super.appendHoverText(stack, world, tooltip, options);
     }
 }

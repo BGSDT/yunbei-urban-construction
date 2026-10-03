@@ -20,6 +20,9 @@ public interface BlockPlatform {
 
     BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color);
 
+    /** Copy the properties of an existing block: 1.21 renamed {@code Properties.copy} to {@code ofFullCopy}. */
+    BlockBehaviour.Properties copyProperties(Block source);
+
     int updateAll();
 
     int updateImmediate();

@@ -20,4 +20,27 @@ public abstract class BlockEntityMapper extends BlockEntity {
     protected final CompoundTag createUpdateTag() {
         return saveWithoutMetadata();
     }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        loadCompat(tag);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        saveAdditionalCompat(tag);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return createUpdateTag();
+    }
+
+    protected void loadCompat(CompoundTag tag) {
+    }
+
+    protected void saveAdditionalCompat(CompoundTag tag) {
+    }
 }

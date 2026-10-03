@@ -23,9 +23,12 @@ public final class CreativeTabPlatformImpl implements CreativeTabPlatform {
 
     @Override
     public CreativeTabHandle create(ResourceLocation id, Supplier<ItemStack> icon) {
-        // 1.20.1 的创造模式物品栏由标题 Component 标识，没有 ResourceLocation；
-        // 语言键与资源包 lang 文件中的 itemGroup.<命名空间>_<路径>_group 一一对应。
-        Component title = Component.translatable("itemGroup." + id.getNamespace() + "_" + id.getPath() + "_group");
+        // 1.20.1 的创造模式物品栏由标题 Component 标识，没有 ResourceLocation。
+        // 键名必须与低版本保持一致：1.16.5~1.19.4 走 Architectury 的
+        // CreativeTabRegistry.create(id, icon)，其内部固定拼成
+        // "itemGroup.<命名空间>.<路径>"，调用方无法覆盖。
+        // 因此这里同样使用点号形式，保证全版本语言键统一。
+        Component title = Component.translatable("itemGroup." + id.getNamespace() + "." + id.getPath());
         RegistrySupplier<CreativeModeTab> supplier =
                 TABS.register(id.getPath(), () -> CreativeTabRegistry.create(title, icon));
         return new CreativeTabHandle(supplier);

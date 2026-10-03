@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.gate;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BarrierGate1MainSlab extends Block {
+public class BarrierGate1MainSlab extends BlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<PoleType> POLE_TYPE = EnumProperty.create("pole_type", PoleType.class);
 
@@ -42,9 +43,8 @@ public class BarrierGate1MainSlab extends Block {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.barrier_gate_1_main.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     private static final VoxelShape SHAPE = Block.box(4, -8, 4, 12, 14, 12);
@@ -75,7 +75,7 @@ public class BarrierGate1MainSlab extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide && player.getItemInHand(hand).getItem() == ModItems.WAND.get()) {
             PoleType next = state.getValue(POLE_TYPE) == PoleType.LONGITUDINAL ? PoleType.HORIZONTAL : PoleType.LONGITUDINAL;
             world.setBlock(pos, state.setValue(POLE_TYPE, next), VersionServices.blocks().updateAll());

@@ -15,7 +15,6 @@ public class TextFieldWidget extends EditBox {
     public void setText(String value) { setValue(value); }
     public void setChangedListener(Consumer<String> listener) { setResponder(listener); }
     public void setPlaceholder(Component placeholder) { setSuggestion(placeholder.getString()); }
-    public void setFocused(boolean focused) { setFocus(focused); }
     public void setPosition(int x, int y) { this.x = x; this.y = y; }
     public int getX() { return x; }
     public int getY() { return y; }

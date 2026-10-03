@@ -24,8 +24,8 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.image = BoardImage.fromName(nbt.getString("image"));
         this.andX = nbt.getFloat("andX");
@@ -38,13 +38,13 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("image", this.image.getName());
         nbt.putFloat("andX", this.andX);
         nbt.putFloat("andY", this.andY);
         nbt.putFloat("andScale", this.andScale);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -150,7 +150,7 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

@@ -122,7 +122,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         float scaleValue = isSmallScale ? ENGLISH_BASE_SCALE : CHINESE_BASE_SCALE;
         float xScaleFactor = getXScaleFactor(text, isSmallScale);
 
-        Component styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(new ResourceLocation("minecraft", "uniform")));
+        Component styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(VersionServices.resources().create("minecraft", "uniform")));
         int textWidth = this.textRenderer.width(styledText);
         int textHeight = this.textRenderer.lineHeight;
         float zOffset = 1.5f;
@@ -165,7 +165,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         }
 
         String directionText = DIRECTION_MAP.get(facing).get(directionKey);
-        Component styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true).withFont(new ResourceLocation("minecraft", "uniform")));
+        Component styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true).withFont(VersionServices.resources().create("minecraft", "uniform")));
         int textWidth = this.textRenderer.width(styledText);
         int textHeight = this.textRenderer.lineHeight;
         float zOffset = 1.5f;

@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.screen;
+import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
 
@@ -168,7 +169,14 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                 "text.yunbeiuc.traffic_lights.direction.color_flash"));
         options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.SLOW_FLASH,
                 "text.yunbeiuc.traffic_lights.direction.slow_flash"));
-        return options;
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.LANE_BOTTOM,
+                "text.yunbeiuc.traffic_lights.direction.lane_bottom"));
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.LANE_BOTTOM_LEFT,
+                "text.yunbeiuc.traffic_lights.direction.lane_bottom_left"));
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.LANE_BOTTOM_RIGHT,
+                "text.yunbeiuc.traffic_lights.direction.lane_bottom_right"));
+        options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.LANE_CLOSE,
+                "text.yunbeiuc.traffic_lights.direction.lane_close"));        return options;
     }
 
     @Override
@@ -250,9 +258,9 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
 
             TrafficLightsStaticStateUpdatePacket packet =
                     new TrafficLightsStaticStateUpdatePacket(pos, selectedDirection, selectedColor, shouldShowCountdown, seconds);
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            FriendlyByteBuf buf = NetworkCompat.newBuffer();
             packet.write(buf);
-            NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
+            NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
 
             // 保存时才应用mountType的更改
             if (pendingMountType != null) {
@@ -261,9 +269,9 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                     TrafficLightsBlock.MountType currentType = blockEntity.getBlockState().getValue(TrafficLightsBlock.TYPE);
                     if (pendingMountType != currentType) {
                         TrafficLightsMountTypeUpdatePacket mountPacket = new TrafficLightsMountTypeUpdatePacket(pos, pendingMountType);
-                        FriendlyByteBuf mountBuf = new FriendlyByteBuf(Unpooled.buffer());
+                        FriendlyByteBuf mountBuf = NetworkCompat.newBuffer();
                         mountPacket.write(mountBuf);
-                        NetworkManager.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, mountBuf);
+                        NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, mountBuf);
                     }
                 }
             }
@@ -307,6 +315,10 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                 case NON_MOTOR_VEHICLES -> 0x00AAAA;
                 case NON_MOTOR_VEHICLES_LEFT_TURN -> 0x0088AA;
                 case NON_MOTOR_VEHICLES_RIGHT_TURN -> 0x00AA88;
+                case LANE_BOTTOM -> 0x00CC00;
+                case LANE_BOTTOM_LEFT -> 0x00CC44;
+                case LANE_BOTTOM_RIGHT -> 0x00CC88;
+                case LANE_CLOSE -> 0xCC0000;
                 case COLOR_FLASH -> 0xFFAA00;
                 case SLOW_FLASH -> 0xFFCC00;
             };
@@ -328,19 +340,19 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
     }
 
     private TrafficLightsBlock.MountType getCurrentMountType() {
-        if (Minecraft.getInstance().level == null) return TrafficLightsBlock.MountType.SIMPLE;
+        if (Minecraft.getInstance().level == null) return TrafficLightsBlock.MountType.AUTO;
         TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos);
         if (blockEntity != null && blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) {
             return blockEntity.getBlockState().getValue(TrafficLightsBlock.TYPE);
         }
-        return TrafficLightsBlock.MountType.SIMPLE;
+        return TrafficLightsBlock.MountType.AUTO;
     }
 
     private void toggleMountType() {
-        pendingMountType = pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
-                TrafficLightsBlock.MountType.POLE :
-                pendingMountType == TrafficLightsBlock.MountType.POLE ?
-                        TrafficLightsBlock.MountType.AUTO : TrafficLightsBlock.MountType.SIMPLE;
+        pendingMountType = pendingMountType == TrafficLightsBlock.MountType.AUTO ?
+                TrafficLightsBlock.MountType.SIMPLE :
+                pendingMountType == TrafficLightsBlock.MountType.SIMPLE ?
+                        TrafficLightsBlock.MountType.POLE : TrafficLightsBlock.MountType.AUTO;
 
         if (mountTypeButton != null) {
             mountTypeButton.setMessage(Text.literal(pendingMountType.getDisplayName()));

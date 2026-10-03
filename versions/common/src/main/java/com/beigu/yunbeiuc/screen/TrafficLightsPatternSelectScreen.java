@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.screen;
+import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
 
@@ -155,9 +156,9 @@ public class TrafficLightsPatternSelectScreen extends Screen {
             return;
         }
         TrafficLightsPatternApplyPacket packet = new TrafficLightsPatternApplyPacket(pos, preset);
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        FriendlyByteBuf buf = NetworkCompat.newBuffer();
         packet.write(buf);
-        NetworkManager.sendToServer(ModMessages.APPLY_TRAFFIC_LIGHTS_PATTERN, buf);
+        NetworkCompat.sendToServer(ModMessages.APPLY_TRAFFIC_LIGHTS_PATTERN, buf);
         this.close();
     }
 

@@ -18,6 +18,6 @@ public class TextFieldWidget extends EditBox {
     public void setPosition(int x, int y) { setX(x); setY(y); }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context.getMatrices(), mouseX, mouseY, delta);
+        super.render(context.getGraphics(), mouseX, mouseY, delta);
     }
 }

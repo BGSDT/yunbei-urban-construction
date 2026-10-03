@@ -21,11 +21,8 @@ public interface RenderPlatform {
         LINE_STRIP
     }
 
-    /**
-     * Starts a {@code POSITION_COLOR} batch of the given primitive on the tesselator's
-     * buffer builder, so callers stay independent of each version's {@code begin} signature.
-     */
-    void beginLines(LinePrimitive primitive);
+        /** Starts a `POSITION_COLOR` batch and returns the consumer to write vertices into. */
+    VertexConsumer beginLines(LinePrimitive primitive);
 
     /** Finishes and submits the batch started by {@link #beginLines}. */
     void endLines();
@@ -51,4 +48,16 @@ public interface RenderPlatform {
                      PoseStack matrices, MultiBufferSource buffers, int backgroundColor, int light);
 
     void vertex(VertexConsumer consumer, PoseStack matrices, float x, float y, float z);
+
+    /** Adds one {@code POSITION_COLOR} vertex with float colour components in the 0..1 range. */
+    void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z,
+                float red, float green, float blue, float alpha);
+
+    /**
+     * Adds one vertex carrying position, colour (0..255 components), uv, overlay, light and
+     * normal. Attributes that the active vertex format does not consume are ignored.
+     */
+    void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z,
+                int red, int green, int blue, int alpha, float u, float v, int overlay, int light,
+                float normalX, float normalY, float normalZ);
 }

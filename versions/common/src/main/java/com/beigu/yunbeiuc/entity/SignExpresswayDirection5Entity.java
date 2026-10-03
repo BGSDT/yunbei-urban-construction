@@ -20,48 +20,36 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
 
     public SignExpresswayDirection5Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_5_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
         this.text1 = nbt.getString("text1");
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
-        // 旧存档兼容：无 logoType1 键时按原逻辑（国/省道 × 编号位数）推导初始值
         this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.direction1 = SignCompassDirection.fromName(nbt.getString("direction1"), SignCompassDirection.NORTH);
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("text1", this.text1);
         nbt.putString("expresswayNumber1", this.expresswayNumber1);
         nbt.putString("logoType1", this.logoType1);
         nbt.putString("direction1", this.direction1.getName());
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayDirection5EntityRenderer 的固定布局生成默认文本行（同一实体/渲染器服务
-     * SIGN_EXPRESSWAY_DIRECTION_5 与 SIGN_EXPRESSWAY_DIRECTION_6 两个方块，X 坐标镜像）：
-     * renderExpresswayLogo(expressway1, ±4.5, 7, size 0.85) → -texture 行，纹理由 {logo1} 占位符选择（logoType1 四选一枚举字段）；
-     * renderCenteredText(text1, ±4.5, -7, 0.05)；
-     * renderExpresswayText(expresswayNumber1, ±4.5, 6.5, 0.06, zOffsetDelta 0.002)；
-     * renderDirectionLogo(direction1, ∓8.5, 8.5, size 0.5) → -texture 行，纹理由 {direction1} 占位符（north/east/south/west）选择。
-     * 原单位编号 +1px 自动 X 偏移为动态布局逻辑，默认行不含。
-     */
+
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        // DIRECTION_6 为 DIRECTION_5 的镜像布局（logo/文本在左，方向箭头在右）
-        boolean direction6 = getBlockState().getBlock() == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get();
+        boolean direction6 = blockStateForDefaults().getBlock() == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get();
         float centerX = direction6 ? -4.5f : 4.5f;
         float directionLogoX = direction6 ? 8.5f : -8.5f;
         List<TextLineData> lines = new ArrayList<>();
@@ -103,15 +91,12 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
         return switch (key) {
             case "text1" -> text1;
             case "expresswayNumber1" -> expresswayNumber1;
-            // 对应原 renderDirectionLogo：方向箭头纹理名（north/east/south/west）
             case "direction1" -> direction1 == null ? null : direction1.getName();
-            // 高速盾牌 logo 纹理：national/provincial × logo_1(宽)/logo_2(窄) 四选一枚举字段
             case "logo1" -> logoType1;
             default -> null;
         };
     }
 
-    // 旧存档兼容推导：原 {logo1} 的派生逻辑——国道/省道 × 编号位数（1 位数字用窄版 logo_2，其余 logo_1）
     private String legacyLogoType1() {
         String kind = expressway1 == Expressway.PROVINCIAL ? "provincial" : "national";
         return kind + "_logo_" + (narrowLogo() ? "2" : "1");
@@ -142,7 +127,6 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
         }
     }
 
-    // 原 renderExpresswayLogo：编号为 1 位数字时用窄版 logo_2，其余用 logo_1
     private boolean narrowLogo() {
         String digits = expresswayNumber1 == null ? "" : expresswayNumber1.replaceAll("[^0-9]", "");
         return expresswayNumber1 != null && expresswayNumber1.matches(".*\\d.*") && digits.length() == 1;
@@ -151,7 +135,7 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

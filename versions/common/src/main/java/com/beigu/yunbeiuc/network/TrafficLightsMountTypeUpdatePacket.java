@@ -34,7 +34,8 @@ public class TrafficLightsMountTypeUpdatePacket {
 
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof TrafficLightsBlock && state.hasProperty(TrafficLightsBlock.TYPE)) {
-            world.setBlock(pos, state.setValue(TrafficLightsBlock.TYPE, mountType), VersionServices.blocks().updateAll());
+            // 同时写入玩家选择与实际安装方式：自适应按后方方块解析，墙面/路杆固定为所选
+            world.setBlock(pos, TrafficLightsBlock.applyMountType(world, pos, state, mountType), VersionServices.blocks().updateAll());
         }
     }
 }

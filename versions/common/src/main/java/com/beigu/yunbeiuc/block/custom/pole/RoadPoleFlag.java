@@ -52,9 +52,8 @@ public class RoadPoleFlag extends EntityBlockCompat {
     private static final VoxelShape SHAPE_W = Shapes.join(Block.box(5, 0, 5, 11, 16, 11), Block.box(7.75, -5.25, -9.75, 8.25, 21.25, 25.75), BooleanOp.OR);
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.road_pole_flag.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     public RoadPoleFlag(BlockBehaviour.Properties properties) {
@@ -99,7 +98,7 @@ public class RoadPoleFlag extends EntityBlockCompat {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
             if (world .isClientSide) {

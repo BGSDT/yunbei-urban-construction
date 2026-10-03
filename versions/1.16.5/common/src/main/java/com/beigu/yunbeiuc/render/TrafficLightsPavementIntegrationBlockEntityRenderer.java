@@ -25,11 +25,25 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
     private static final ResourceLocation PAVEMENT_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
     private static final ResourceLocation PAVEMENT_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
 
-    private final Font textRenderer;
+    /**
+     * 字体必须延迟获取。
+     *
+     * <p>1.16.5 的 {@code BlockEntityRendererProvider.Context#getFont()} 取的是
+     * {@code BlockEntityRenderDispatcher.font}，该字段在渲染器构造时可能还没被赋值（为 null），
+     * 构造期缓存下来会一直拿到 null，渲染时直接空指针崩溃。
+     * 与同目录的 {@code AbstractTextDisplayEntityRenderer#font()} 保持一致，改为按需读取。
+     */
+    private Font textRenderer;
 
     public TrafficLightsPavementIntegrationBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
-        this.textRenderer = ctx.getFont();
+    }
+
+    private Font textRenderer() {
+        if (this.textRenderer == null) {
+            this.textRenderer = net.minecraft.client.Minecraft.getInstance().font;
+        }
+        return this.textRenderer;
     }
 
     @Override
@@ -164,13 +178,14 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
             // 使用 Minecraft 原生 Font 渲染单个字
             Component styledText = Text.literal(String.valueOf(chars[i])).setStyle(Style.EMPTY.withBold(true)
                     .withFont(new ResourceLocation("minecraft", "uniform")));
-            int textWidth = this.textRenderer.width(styledText);
-            int textHeight = this.textRenderer.lineHeight;
+            Font font = textRenderer();
+            int textWidth = font.width(styledText);
+            int textHeight = font.lineHeight;
 
             // 居中对齐
             float centeredX = -textWidth / 2f;
 
-            this.textRenderer.drawInBatch(styledText, centeredX, -textHeight / 2.0f, color, false,
+            font.drawInBatch(styledText, centeredX, -textHeight / 2.0f, color, false,
                     matrices.last().pose(), vertexConsumers,
                     false, 0, light);
 

@@ -24,14 +24,30 @@ public final class RenderPlatformImpl implements RenderPlatform {
                        com.mojang.blaze3d.vertex.PoseStack matrices, float x, float y, float z) {
         consumer.vertex(matrices.last().pose(), x, y, z);
     }
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       float red, float green, float blue, float alpha) {
+        consumer.vertex(pose.pose(), x, y, z).color(red, green, blue, alpha).endVertex();
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       int red, int green, int blue, int alpha, float u, float v, int overlay, int light,
+                       float normalX, float normalY, float normalZ) {
+        consumer.vertex(pose.pose(), x, y, z).color(red, green, blue, alpha).uv(u, v)
+                .overlayCoords(overlay).uv2(light).normal(pose.normal(), normalX, normalY, normalZ).endVertex();
+    }
     @Override public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
         matrices.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
     }
     @Override
-    public void beginLines(LinePrimitive primitive) {
+    public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(primitive == LinePrimitive.LINE_STRIP ? VertexFormat.Mode.LINE_STRIP : VertexFormat.Mode.LINES,
                 DefaultVertexFormat.POSITION_COLOR);
+        return buffer;
     }
 
     @Override

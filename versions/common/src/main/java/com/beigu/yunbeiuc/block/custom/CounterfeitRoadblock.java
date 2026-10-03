@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -34,7 +35,7 @@ import net.minecraft.world.level.LevelAccessor;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CounterfeitRoadblock extends Block {
+public class CounterfeitRoadblock extends BlockCompat {
     public CounterfeitRoadblock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, Type.SINGLE).setValue(ACTIVE, true));
@@ -81,7 +82,7 @@ public class CounterfeitRoadblock extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
 
         // 检查玩家是否手持 ModItem.Wand

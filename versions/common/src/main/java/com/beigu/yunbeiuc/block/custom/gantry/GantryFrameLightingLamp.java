@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.gantry;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -35,11 +36,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class GantryFrameLightingLamp extends Block {
+public class GantryFrameLightingLamp extends BlockCompat {
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.lighting_lamp.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     private static final VoxelShape SHAPE_N = Block.box(5.25, 8.75, 11.5, 10.75, 16.75, 17);
@@ -88,7 +88,7 @@ public class GantryFrameLightingLamp extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
         // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world .isClientSide) {

@@ -23,8 +23,8 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.direction1 = SignTurnDirection.fromName(nbt.getString("direction1"), SignTurnDirection.STRAIGHT);
         this.text1 = nbt.getString("text1");
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
@@ -34,10 +34,10 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("direction1", this.direction1.getName());
         nbt.putString("text1", this.text1);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -54,7 +54,7 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning4 = getBlockState().getBlock() == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4.get();
+        boolean isWarning4 = blockStateForDefaults().getBlock() == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning4) {
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -13f, 0f, 0.4f));
@@ -125,7 +125,7 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
 
     /** 与原渲染器 DIRECTION_MAP 一致：按方块朝向取面板左/右侧的中/英文方位名 */
     private String directionText(String key) {
-        net.minecraft.core.Direction facing = getBlockState().getValue(SignGuideIntersectionWarning4.FACING);
+        net.minecraft.core.Direction facing = blockStateForDefaults().getValue(SignGuideIntersectionWarning4.FACING);
         boolean left = key.equals("cnLeft") || key.equals("enLeft");
         boolean cn = key.equals("cnLeft") || key.equals("cnRight");
         return switch (facing) {
@@ -140,7 +140,7 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

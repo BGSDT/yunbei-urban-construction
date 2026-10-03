@@ -167,6 +167,13 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         if (this.slotListWidget != null) {
             this.savedScrollAmount = this.slotListWidget.getScrollAmount();
         }
+        // 延迟到本次输入事件分发结束之后再重建：按钮的点击回调里同步 clearChildren() 会
+        // 销毁正在处理该事件的控件，MC 仍会继续向已销毁的控件派发 mouseReleased，
+        // 并把列表留在 dragging 状态，导致下一次点击被吞掉（表现为"要切换两次才生效"）。
+        Minecraft.getInstance().execute(this::rebuildNow);
+    }
+
+    private void rebuildNow() {
         this.clearChildren();
         this.init();
     }
@@ -313,6 +320,10 @@ public class TrafficLightsPatternEditorScreen extends Screen {
             case NON_MOTOR_VEHICLES -> "非机动车";
             case NON_MOTOR_VEHICLES_LEFT_TURN -> "非机动车（左转）";
             case NON_MOTOR_VEHICLES_RIGHT_TURN -> "非机动车（右转）";
+            case LANE_BOTTOM -> "车道开启（正下方）";
+            case LANE_BOTTOM_LEFT -> "车道开启（左下方）";
+            case LANE_BOTTOM_RIGHT -> "车道开启（右下方）";
+            case LANE_CLOSE -> "车道关闭";
             case COLOR_FLASH -> "色闪";
             case SLOW_FLASH -> "慢闪";
         };

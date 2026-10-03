@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.screen;
+import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
 
@@ -85,9 +86,9 @@ public class RoadNameSignScreen extends Screen {
             String englishText = this.englishNameTextField.getText();
 
             RoadNameSignBlockUpdatePacket packet = new RoadNameSignBlockUpdatePacket(pos, chineseText, englishText);
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            FriendlyByteBuf buf = NetworkCompat.newBuffer();
             packet.write(buf);
-            NetworkManager.sendToServer(ModMessages.UPDATE_ROAD_NAME_SIGN, buf);
+            NetworkCompat.sendToServer(ModMessages.UPDATE_ROAD_NAME_SIGN, buf);
         }
         this.close();
     }

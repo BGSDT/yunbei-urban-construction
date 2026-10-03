@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class GantryFrameLedEntity extends CustomSignBlockEntity {
 
     public GantryFrameLedEntity(BlockPos pos, BlockState state) {
-        super(pos, state);
+        super(ModBlockEntities.GANTRY_FRAME_LED_ENTITY.get(), pos, state);
     }
 
     @Override

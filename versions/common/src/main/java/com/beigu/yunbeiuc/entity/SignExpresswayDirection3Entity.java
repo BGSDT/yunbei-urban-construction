@@ -16,44 +16,33 @@ public class SignExpresswayDirection3Entity extends CustomSignBlockEntity {
 
     public SignExpresswayDirection3Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_DIRECTION_3_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
         this.text1 = nbt.getString("text1");
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
-        // 旧存档兼容：无 logoType1 键时按原逻辑（国/省道 × 编号位数）推导初始值
         this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("text1", this.text1);
         nbt.putString("expresswayNumber1", this.expresswayNumber1);
         nbt.putString("logoType1", this.logoType1);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayDirection3EntityRenderer 的固定布局生成默认文本行（x 按方块镜像：
-     * SIGN_EXPRESSWAY_DIRECTION_3 → 4.5 / SIGN_EXPRESSWAY_DIRECTION_4 → -4.5）：
-     * renderExpresswayLogo(expressway1, x, 7, size 0.85) → -texture 行，纹理由 {logo1} 占位符选择（logoType1 四选一枚举字段）；
-     * renderCenteredText(text1, x, -7, 0.05, 0xFFFFFF)；
-     * renderExpresswayText(expresswayNumber1, x, 6.5, 0.06, zOffsetDelta 0.002)。
-     * 原单位编号 +1px 自动 X 偏移为动态布局逻辑，默认行不含（一位数编号将偏左约 1 像素）。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        float x = getBlockState().getBlock() == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4.get() ? -4.5f : 4.5f;
+        float x = blockStateForDefaults().getBlock() == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_4.get() ? -4.5f : 4.5f;
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", x, 7f, 0.85f));
         lines.add(SignTextLinesHelper.centered("天津", x, -7f, 0.05f, 0xFFFFFF, "a"));
@@ -84,7 +73,7 @@ public class SignExpresswayDirection3Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), 3);
         }
     }
 
@@ -93,13 +82,11 @@ public class SignExpresswayDirection3Entity extends CustomSignBlockEntity {
         return switch (key) {
             case "text1" -> text1;
             case "expresswayNumber1" -> expresswayNumber1;
-            // 高速盾牌 logo 纹理：national/provincial × logo_1(宽)/logo_2(窄) 四选一枚举字段
             case "logo1" -> logoType1;
             default -> null;
         };
     }
 
-    // 旧存档兼容推导：原 {logo1} 的派生逻辑——国道/省道 × 编号位数（1 位数字用窄版 logo_2，其余 logo_1）
     private String legacyLogoType1() {
         boolean hasDigits = expresswayNumber1 != null && expresswayNumber1.matches(".*\\d.*");
         String digits = expresswayNumber1 == null ? "" : expresswayNumber1.replaceAll("[^0-9]", "");

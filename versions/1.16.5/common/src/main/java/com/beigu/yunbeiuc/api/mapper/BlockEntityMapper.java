@@ -14,22 +14,16 @@ public abstract class BlockEntityMapper extends BlockEntity {
         worldPosition = pos;
     }
 
-    public void load(CompoundTag tag) {
-    }
-
-    protected void saveAdditional(CompoundTag tag) {
-    }
-
     @Override
     public final void load(BlockState state, CompoundTag tag) {
         super.load(state, tag);
-        load(tag);
+        loadCompat(tag);
     }
 
     @Override
     public final CompoundTag save(CompoundTag tag) {
         super.save(tag);
-        saveAdditional(tag);
+        saveAdditionalCompat(tag);
         return tag;
     }
 
@@ -39,7 +33,18 @@ public abstract class BlockEntityMapper extends BlockEntity {
 
     protected final CompoundTag createUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
-        saveAdditional(tag);
+        saveAdditionalCompat(tag);
         return tag;
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return createUpdateTag();
+    }
+
+    protected void loadCompat(CompoundTag tag) {
+    }
+
+    protected void saveAdditionalCompat(CompoundTag tag) {
     }
 }

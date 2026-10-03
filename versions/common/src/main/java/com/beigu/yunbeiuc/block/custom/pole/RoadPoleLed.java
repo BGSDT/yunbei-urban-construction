@@ -5,6 +5,7 @@ import com.beigu.yunbeiuc.entity.RoadPoleLedEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.item.TooltipFlag;
@@ -37,12 +38,11 @@ public class RoadPoleLed extends CustomTextDisplayBlock {
     private static final VoxelShape SHAPE_W = Block.box(5.5, 0, 0, 10.5, 16, 16);
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.road_pole_led.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
     public RoadPoleLed(BlockBehaviour.Properties properties) {
-        super(properties);
+        super(properties.lightLevel(state -> 15));
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, Type.SINGLE));
     }
 

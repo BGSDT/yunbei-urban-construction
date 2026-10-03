@@ -33,8 +33,8 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
@@ -58,7 +58,7 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("text3", this.text3);
@@ -71,7 +71,7 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         nbt.putString("logoType1", this.logoType1);
         nbt.putString("logoType2", this.logoType2);
         nbt.putString("logoType3", this.logoType3);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -114,21 +114,21 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
      * 按 POLE_L/POLE_H/NORMAL）换算为相对渲染器 getZOffset（POLE_L -0.74 / POLE_H -0.81 / NORMAL -0.45）的 1/16 单位偏移
      */
     private float roadTextZOffset(RoadType roadType) {
-        float baseZ = switch (getBlockState().getValue(SignExpresswayDistanceFromLocation4.TYPE)) {
+        float baseZ = switch (blockStateForDefaults().getValue(SignExpresswayDistanceFromLocation4.TYPE)) {
             case POLE_L -> -0.74f;
             case POLE_H -> -0.81f;
             case NORMAL -> -0.45f;
         };
         float absoluteZ = switch (roadType) {
-            case EXPRESSWAY -> switch (getBlockState().getValue(SignExpresswayDistanceFromLocation4.TYPE)) {
+            case EXPRESSWAY -> switch (blockStateForDefaults().getValue(SignExpresswayDistanceFromLocation4.TYPE)) {
                 case POLE_L -> -0.75f;
                 case POLE_H -> -0.79f;
                 case NORMAL -> -0.43f;
             };
-            case ORDINARY_MUNICIPAL -> switch (getBlockState().getValue(SignExpresswayDistanceFromLocation4.TYPE)) {
+            case ORDINARY_MUNICIPAL -> switch (blockStateForDefaults().getValue(SignExpresswayDistanceFromLocation4.TYPE)) {
                 case POLE_L -> -0.74f;
                 case POLE_H -> -0.78f;
-                case NORMAL -> -0.42f;
+                case NORMAL -> -0.43f;
             };
         };
         return (absoluteZ - baseZ) * 16f;
@@ -281,7 +281,7 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

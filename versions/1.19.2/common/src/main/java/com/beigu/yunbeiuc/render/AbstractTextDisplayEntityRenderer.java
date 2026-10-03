@@ -87,7 +87,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 try {
                     float w = Float.parseFloat(parts[1]);
                     float h = Float.parseFloat(parts[2]);
-                    renderRect(matrices, zOffset, lineData, w, h, editing, gizmoMode, baseFrame);
+                    renderRect(matrices, vertexConsumers, zOffset, lineData, w, h, editing, gizmoMode, baseFrame);
                     return;
                 } catch (NumberFormatException ignored) {}
             }
@@ -185,7 +185,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             immediate.endBatch();
         }
 
-        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY(), 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
         if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
@@ -235,7 +235,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             immediate.endBatch();
         }
 
-        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY());
+        if (editing) renderEditingOutline(matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY(), 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
         if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
 
@@ -243,22 +243,29 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     }
 
     private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, MultiBufferSource vertexConsumers, int light) {
+        // 本行开启发光：用原版全亮光照渲染，不受环境光影响
+        int textLight = lineData.isGlowing() ? 0xF000F0 : light;
         boolean outline = lineData.isOutline();
         boolean shadow = lineData.isShadow();
         if (outline) {
             if (shadow) {
                 this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), true,
-                        matrix, vertexConsumers, false, 0, light);
+                        matrix, vertexConsumers, false, 0, textLight);
             }
-            this.textRenderer.drawInBatch8xOutline(renderText.getVisualOrderText(), x, y, lineData.getColor(), lineData.getOutlineColor(),
-                    matrix, vertexConsumers, light);
+            // 原版 8x 描边同样按 style 取色：-json 文本自带的样式颜色会盖掉描边色，
+            // 必须把描边色写进组件自身的 style，否则描边与正文同色、看起来没有描边。
+            int outlineColor = resolveOutlineColor(lineData);
+            Component outlineText = renderText.copy()
+                    .withStyle(s -> s.withColor(net.minecraft.network.chat.TextColor.fromRgb(outlineColor & 0xFFFFFF)));
+            this.textRenderer.drawInBatch8xOutline(outlineText.getVisualOrderText(), x, y, lineData.getColor(), outlineColor,
+                    matrix, vertexConsumers, textLight);
         } else {
             this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), shadow,
-                    matrix, vertexConsumers, false, 0, light);
+                    matrix, vertexConsumers, false, 0, textLight);
         }
     }
 
-    private void renderRect(PoseStack matrices, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderRect(PoseStack matrices, MultiBufferSource vertexConsumers, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
@@ -295,8 +302,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.enableDepthTest();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
         buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         buffer.vertex(matrix, -halfW, -halfH, 0).color(r, g, b, a).endVertex();
         buffer.vertex(matrix, halfW, -halfH, 0).color(r, g, b, a).endVertex();
@@ -309,7 +316,13 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
 
-        if (editing) renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f, 1f);
+        // 「描边」开关：矩形也画一圈描边色边框
+        if (lineData.isOutline()) {
+            flushBatch(vertexConsumers);
+            renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
+        }
+
+        if (editing) renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f, 1f, 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f);
         if (editing && gizmoMode >= 0) {
             TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.last().pose()), lineData,
@@ -360,7 +373,13 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             immediate.endBatch();
         }
 
-        if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f, 1f);
+        // 「描边」开关：图片也画一圈描边色边框
+        if (lineData.isOutline()) {
+            flushBatch(vertexConsumers);
+            renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
+        }
+
+        if (editing) renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f, 1f, 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f);
         if (editing && gizmoMode >= 0) {
             TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.last().pose()), lineData,
@@ -373,7 +392,33 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     // 在当前矩阵局部坐标系内绘制一个包住 (left,top)-(left+w,top+h) 区域的绿色描边矩形框，用于标注正在编辑的文本行
     // unitScale：局部坐标 1 单位对应的方块尺寸（1 像素 = 1/16 方块）；scaleX/scaleY 为矩阵所含缩放，
     // 用于抵消厚度被放大，保证描边在世界空间中恒为 0.25px 粗
-    private void renderEditingOutline(PoseStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY) {
+    /**
+     * 该行实际使用的描边颜色：未设置(-1)用黑色；与文字颜色相同时自动取反差色，
+     * 否则描边和正文同色、等于看不见。
+     */
+    /**
+     * 立即模式绘制前，把已经排队的文本/贴图批次刷掉。
+     *
+     * <p>1.16.5 的 {@code MultiBufferSource.BufferSource} 与 {@code Tesselator} 共用同一个
+     * {@code BufferBuilder}；若仍有批次处于 building 状态，紧接着的 {@code begin()} 会抛
+     * {@code IllegalStateException}。所以画描边边框之前必须先 flush。
+     */
+    private static void flushBatch(MultiBufferSource vertexConsumers) {
+        if (vertexConsumers instanceof MultiBufferSource.BufferSource queued) {
+            queued.endBatch();
+        }
+    }
+    private static int resolveOutlineColor(CustomSignBlockEntity.TextLineData lineData) {
+        int outline = lineData.getOutlineColor();
+        if (outline == -1) return 0x000000;
+        int outlineRgb = outline & 0xFFFFFF;
+        int textRgb = lineData.getColor() & 0xFFFFFF;
+        if (outlineRgb != textRgb) return outlineRgb;
+        int r = (textRgb >> 16) & 0xFF, g = (textRgb >> 8) & 0xFF, b = textRgb & 0xFF;
+        int luma = (r * 299 + g * 587 + b * 114) / 1000;
+        return luma >= 128 ? 0x000000 : 0xFFFFFF;
+    }
+    private void renderEditingOutline(PoseStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY, int rgb) {
         float px = 0.25f / 16f / Math.max(1e-5f, unitScale);
         float thicknessX = px / Math.max(0.01f, scaleX);
         float thicknessY = px / Math.max(0.01f, scaleY);
@@ -381,7 +426,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float marginY = thicknessY;
         float x0 = left - marginX, y0 = top - marginY, x1 = left + w + marginX, y1 = top + h + marginY;
 
-        int r = 0, g = 255, b = 255, a = 255;
+        int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
+        int a = 255;
         Matrix4f matrix = matrices.last().pose();
 
         RenderSystem.enableBlend();
@@ -390,8 +436,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
         buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         addOutlineBar(buffer, matrix, x0, y0, x1, y0 + thicknessY, r, g, b, a);
         addOutlineBar(buffer, matrix, x0, y1 - thicknessY, x1, y1, r, g, b, a);

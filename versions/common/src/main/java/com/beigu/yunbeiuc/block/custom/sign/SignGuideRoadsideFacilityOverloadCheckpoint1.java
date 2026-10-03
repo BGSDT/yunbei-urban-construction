@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class SignGuideRoadsideFacilityOverloadCheckpoint1 extends AbstractEditableSignBlockWithTooltip {
     public SignGuideRoadsideFacilityOverloadCheckpoint1(BlockBehaviour.Properties properties) {
-        super(properties, "block.yunbeiuc.sign_guide_roadside_facility_overload_checkpoint_1.tooltip");
+        super(properties, "block.yunbeiuc.sign_text.tooltip");
     }
 
     @Override

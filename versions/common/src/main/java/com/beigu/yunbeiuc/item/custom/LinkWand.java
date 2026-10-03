@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.item.custom;
+import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -11,11 +12,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class LinkWand extends Item {
+public class LinkWand extends ItemCompat {
     private static final Map<UUID, List<BlockPos>> PLAYER_LINKING = new HashMap<>();
 
     public LinkWand(Properties settings) {
@@ -27,9 +29,8 @@ public class LinkWand extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag context) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.link_wand.tooltip"));
-        super .appendHoverText(stack, world, tooltip, context);
     }
 
     @Override
@@ -41,21 +42,22 @@ public class LinkWand extends Item {
         if (player == null) return InteractionResult.PASS;
         if (world .isClientSide) return InteractionResult.SUCCESS;
 
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-
-        if (!(blockEntity instanceof TrafficLightsBlockEntity)) {
-            var state = world.getBlockState(pos);
-            if (state.getBlock() instanceof com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock) {
-                var part = state.getValue(com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock.PART);
-                BlockPos bottomPos = switch (part) {
-                    case BOTTOM -> pos;
-                    case MIDDLE -> pos.below();
-                    case TOP -> pos.below(2);
-                };
-                blockEntity = world.getBlockEntity(bottomPos);
-                pos = bottomPos;
-            }
+        // 人行道一体化红绿灯是 3 段方块，方块实体只挂在最下面一段：
+        // 无论点中哪一段都先解析到 BOTTOM，再取方块实体。
+        // 不能只在「点中的位置没有方块实体」时才解析——那样一旦某一段上意外存在方块实体，
+        // 就会把非 BOTTOM 的坐标当成红绿灯写进链接组。
+        BlockState clickedState = world.getBlockState(pos);
+        if (clickedState.getBlock() instanceof com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock
+                && clickedState.hasProperty(com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock.PART)) {
+            var part = clickedState.getValue(com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock.PART);
+            pos = switch (part) {
+                case BOTTOM -> pos;
+                case MIDDLE -> pos.below();
+                case TOP -> pos.below(2);
+            };
         }
+
+        BlockEntity blockEntity = world.getBlockEntity(pos);
 
         if (!(blockEntity instanceof TrafficLightsBlockEntity)) {
             player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c这不是一个红绿灯！"), true);

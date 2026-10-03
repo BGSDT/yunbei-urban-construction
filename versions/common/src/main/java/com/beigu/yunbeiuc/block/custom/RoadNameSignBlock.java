@@ -53,9 +53,8 @@ public class RoadNameSignBlock extends EntityBlockCompat {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.road_name_sign.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     @Override
@@ -64,8 +63,7 @@ public class RoadNameSignBlock extends EntityBlockCompat {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos,
-                              Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
             if (world .isClientSide) {

@@ -22,8 +22,8 @@ public class ZonesBoardTimeRange2Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.time1 = nbt.getString("time1");
         this.time2 = nbt.getString("time2");
         this.time3 = nbt.getString("time3");
@@ -35,12 +35,12 @@ public class ZonesBoardTimeRange2Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("time1", this.time1);
         nbt.putString("time2", this.time2);
         nbt.putString("time3", this.time3);
         nbt.putString("time4", this.time4);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -94,7 +94,7 @@ public class ZonesBoardTimeRange2Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

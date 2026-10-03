@@ -2,23 +2,16 @@ package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.text.Text;
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.FormattedCharSequence;
 
-import java.io.InputStream;
 import java.util.List;
 
 public final class HomepageRenderer {
-    private static final ResourceLocation HEADER_TEX = new ResourceLocation("yunbeiuc", "textures/gui/header.png");
-    private static float cachedAspect = -1f;
-    private static boolean texExists = false;
-    private static boolean texChecked = false;
+    private static final ResourceLocation HEADER_TEX = VersionServices.resources().create("yunbeiuc", "textures/gui/header.png");
 
     private HomepageRenderer() {
     }
@@ -34,7 +27,15 @@ public final class HomepageRenderer {
         int hdrH = (int) (paneW * getAspect());
         if (hdrH > 0) {
             if (y + hdrH >= clipTop && y <= clipBottom) {
-                ctx.drawTexture(HEADER_TEX, navW, y, 0, 0, paneW, hdrH, paneW, hdrH);
+                // 真实像素尺寸既作 region 也作 texture 尺寸，UV 恰好覆盖整张图。
+                // 原先传的是 (paneW, hdrH) 自洽尺寸，一旦 PNG 实际比例与
+                // getAspect() 推算结果不符（或缓存陈旧），UV 就会越界，
+                // 表现为只显示出图片的一小块、比例不对。
+                TextureAspectCache.Size size = TextureAspectCache.get(HEADER_TEX);
+                if (size != null) {
+                    ctx.drawTexture(HEADER_TEX, navW, y, paneW, hdrH, 0, 0,
+                            size.width, size.height, size.width, size.height);
+                }
             }
             y += hdrH + 6;
         }
@@ -168,24 +169,10 @@ public final class HomepageRenderer {
         return false;
     }
 
+    /** 头部横幅的宽高比（高 / 宽）；纹理缺失时返回 0 表示不绘制。 */
     private static float getAspect() {
-        if (!texChecked) {
-            texChecked = true;
-            try {
-                ResourceManager manager = Minecraft.getInstance().getResourceManager();
-                try (InputStream in = VersionServices.resources().openIfPresent(manager, HEADER_TEX)) {
-                    if (in != null) {
-                        try (NativeImage img = NativeImage.read(in)) {
-                            if (img.getWidth() > 0) {
-                                cachedAspect = (float) img.getHeight() / (float) img.getWidth();
-                                texExists = true;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return texExists && cachedAspect > 0 ? cachedAspect : 0f;
+        TextureAspectCache.Size size = TextureAspectCache.get(HEADER_TEX);
+        if (size == null || size.width <= 0 || size.height <= 0) return 0f;
+        return (float) size.height / (float) size.width;
     }
 }

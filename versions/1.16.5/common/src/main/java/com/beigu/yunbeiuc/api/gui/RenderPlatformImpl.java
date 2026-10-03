@@ -23,15 +23,31 @@ public final class RenderPlatformImpl implements RenderPlatform {
                        com.mojang.blaze3d.vertex.PoseStack matrices, float x, float y, float z) {
         consumer.vertex(matrices.last().pose(), x, y, z);
     }
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       float red, float green, float blue, float alpha) {
+        consumer.vertex(pose.pose(), x, y, z).color(red, green, blue, alpha).endVertex();
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       int red, int green, int blue, int alpha, float u, float v, int overlay, int light,
+                       float normalX, float normalY, float normalZ) {
+        consumer.vertex(pose.pose(), x, y, z).color(red, green, blue, alpha).uv(u, v)
+                .overlayCoords(overlay).uv2(light).normal(pose.normal(), normalX, normalY, normalZ).endVertex();
+    }
     @Override public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
         matrices.mulPose(com.mojang.math.Vector3f.YP.rotationDegrees(degrees));
     }
     @Override
-    public void beginLines(LinePrimitive primitive) {
+    public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
         // 1.16.5 takes the raw OpenGL draw mode instead of a VertexFormat.Mode enum.
         int glMode = primitive == LinePrimitive.LINE_STRIP ? 3 : 1;
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(glMode, DefaultVertexFormat.POSITION_COLOR);
+        return buffer;
     }
 
     @Override

@@ -25,8 +25,8 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.direction1 = SignTurnDirection.fromName(nbt.getString("direction1"), SignTurnDirection.STRAIGHT);
         this.direction2 = SignTurnDirection.fromName(nbt.getString("direction2"), SignTurnDirection.STRAIGHT);
         this.direction3 = SignTurnDirection.fromName(nbt.getString("direction3"), SignTurnDirection.STRAIGHT);
@@ -40,14 +40,14 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("direction1", this.direction1.getName());
         nbt.putString("direction2", this.direction2.getName());
         nbt.putString("direction3", this.direction3.getName());
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("text3", this.text3);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -205,7 +205,7 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

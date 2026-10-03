@@ -18,7 +18,7 @@ dependencyResolutionManagement {
         maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
         maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
         maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
-        maven { name = 'MinecraftLibraries'; url = 'https://libraries.minecraft.net/' }
+        maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
     }
 }
 

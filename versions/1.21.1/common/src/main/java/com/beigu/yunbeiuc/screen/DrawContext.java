@@ -1,25 +1,31 @@
 package com.beigu.yunbeiuc.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.resources.ResourceLocation;
 
 /** 1.21.1 GUI drawing bridge for the shared screen layout code. */
 public final class DrawContext {
-    private final PoseStack matrices;
+    private final GuiGraphics graphics;
 
-    public DrawContext(PoseStack matrices) {
-        this.matrices = matrices;
+    public DrawContext(GuiGraphics graphics) {
+        this.graphics = graphics;
     }
 
-    public PoseStack getMatrices() { return matrices; }
+    public GuiGraphics getGraphics() { return graphics; }
+
+    public PoseStack getMatrices() { return graphics.pose(); }
 
     public void fill(int x0, int y0, int x1, int y1, int color) {
-        GuiComponent.fill(matrices, x0, y0, x1, y1, color);
+        graphics.fill(x0, y0, x1, y1, color);
+    }
+
+    /** 垂直渐变填充；1.20.1 的原版界面底色就是用它画的。 */
+    public void fillGradient(int x0, int y0, int x1, int y1, int colorFrom, int colorTo) {
+        graphics.fillGradient(x0, y0, x1, y1, colorFrom, colorTo);
     }
 
     public void drawBorder(int x, int y, int width, int height, int color) {
@@ -30,40 +36,47 @@ public final class DrawContext {
     }
 
     public void drawCenteredTextWithShadow(Font font, Component text, int x, int y, int color) {
-        GuiComponent.drawCenteredString(matrices, font, text, x, y, color);
+        graphics.drawCenteredString(font, text, x, y, color);
     }
 
     public void drawCenteredTextWithShadow(Font font, String text, int x, int y, int color) {
-        GuiComponent.drawCenteredString(matrices, font, text, x, y, color);
+        graphics.drawCenteredString(font, text, x, y, color);
     }
 
     public void drawTextWithShadow(Font font, Component text, int x, int y, int color) {
-        GuiComponent.drawString(matrices, font, text, x, y, color);
+        graphics.drawString(font, text, x, y, color);
     }
 
     public void drawTextWithShadow(Font font, String text, int x, int y, int color) {
-        GuiComponent.drawString(matrices, font, text, x, y, color);
+        graphics.drawString(font, text, x, y, color);
     }
 
     public void drawText(Font font, Component text, int x, int y, int color, boolean shadow) {
-        if (shadow) font.drawShadow(matrices, text, x, y, color);
-        else font.draw(matrices, text, x, y, color);
+        graphics.drawString(font, text, x, y, color, shadow);
+    }
+
+    public void drawText(Font font, String text, int x, int y, int color, boolean shadow) {
+        graphics.drawString(font, text, x, y, color, shadow);
+    }
+
+    public void drawText(Font font, FormattedCharSequence text, int x, int y, int color, boolean shadow) {
+        graphics.drawString(font, text, x, y, color, shadow);
     }
 
     public void drawTexture(ResourceLocation texture, int x, int y, int width, int height,
                             int u, int v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-        RenderSystem.setShaderTexture(0, texture);
-        GuiComponent.blit(matrices, x, y, width, height, (float) u, (float) v,
+        graphics.blit(texture, x, y, width, height, (float) u, (float) v,
                 regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
-    public void enableScissor(int x0, int y0, int x1, int y1) {
-        var window = Minecraft.getInstance().getWindow();
-        double scale = window.getGuiScale();
-        RenderSystem.enableScissor((int) (x0 * scale),
-                (int) ((window.getGuiScaledHeight() - y1) * scale),
-                (int) ((x1 - x0) * scale), (int) ((y1 - y0) * scale));
+    public void drawTexture(ResourceLocation texture, int x, int y, float u, float v,
+                            int width, int height, int regionWidth, int regionHeight) {
+        graphics.blit(texture, x, y, u, v, width, height, regionWidth, regionHeight);
     }
 
-    public void disableScissor() { RenderSystem.disableScissor(); }
+    public void enableScissor(int x0, int y0, int x1, int y1) {
+        graphics.enableScissor(x0, y0, x1, y1);
+    }
+
+    public void disableScissor() { graphics.disableScissor(); }
 }

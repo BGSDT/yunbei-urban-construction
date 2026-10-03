@@ -20,8 +20,8 @@ public class ZonesBoardTimeRange1Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.time1 = nbt.getString("time1");
         this.time2 = nbt.getString("time2");
         // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
@@ -31,10 +31,10 @@ public class ZonesBoardTimeRange1Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("time1", this.time1);
         nbt.putString("time2", this.time2);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -74,7 +74,7 @@ public class ZonesBoardTimeRange1Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

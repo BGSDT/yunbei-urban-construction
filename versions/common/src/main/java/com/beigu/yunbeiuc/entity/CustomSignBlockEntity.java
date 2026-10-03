@@ -18,10 +18,18 @@ import java.util.List;
 public class CustomSignBlockEntity extends BlockEntityMapper {
     private List<TextLineData> textLines = new ArrayList<>();
     private boolean glowingText = false;
-    // 客户端UI状态：当前正在编辑的文本行索引，不写入NBT
     private transient int editingLineIndex = -1;
-    // 客户端UI状态：当前gizmo模式（-1无 0位移 1旋转 2缩放），不写入NBT
     private transient int editingGizmoMode = -1;
+
+    /**
+     * 构造时传入的方块状态。
+     *
+     * <p>1.16.5 / 1.17.1 的 {@code BlockEntity} 构造函数不保存方块状态，其
+     * {@code getBlockState()} 会去读 {@code level}；而方块实体是"先构造、后 setLevel"，
+     * 构造期间 {@code level == null}，此时调用 {@code getBlockState()} 直接空指针。
+     * 因此把构造参数缓存下来，供构造期的默认文本行判断使用。
+     */
+    private final BlockState initialState;
 
     public CustomSignBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), pos, state);
@@ -29,6 +37,19 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
 
     protected CustomSignBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        this.initialState = state;
+    }
+
+    /**
+     * 取方块状态，可在构造期安全调用。
+     *
+     * <p>{@code level} 未就绪时返回构造参数缓存的方块状态，避免
+     * {@code BlockEntity#getBlockState()} 在构造期空指针崩溃；{@code level}
+     * 就绪后行为与 {@code getBlockState()} 完全一致。
+     */
+    protected BlockState blockStateForDefaults() {
+        if (level == null && initialState != null) return initialState;
+        return getBlockState();
     }
 
     public List<TextLineData> getTextLines() { return textLines; }
@@ -54,8 +75,8 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     public void setEditingGizmoMode(int editingGizmoMode) { this.editingGizmoMode = editingGizmoMode; }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    protected void saveAdditionalCompat(CompoundTag nbt) {
+        super.saveAdditionalCompat(nbt);
         ListTag list = new ListTag();
         for (TextLineData data : textLines) list.add(data.toNbt());
         nbt.put("TextLines", list);
@@ -63,8 +84,8 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         textLines.clear();
         ListTag list = nbt.getList("TextLines", 10);
         for (int i = 0; i < list.size(); i++) textLines.add(TextLineData.fromNbt(list.getCompound(i)));
@@ -72,13 +93,6 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     }
 
     @Nullable @Override public ClientboundBlockEntityDataPacket getUpdatePacket() { return createUpdatePacket(); }
-    @Override public CompoundTag getUpdateTag() { return createUpdateTag(); }
-
-    // ==================== 占位符解析 ====================
-    // 文本行中的 {字段名} 会在渲染时替换为对应固定 NBT 字段的值；
-    // 新放置的方块由子类在 readNbt 中生成默认文本行，文本即 {字段名} 占位符，
-    // 用户仅需在 TextDisplayScreen 中修改文本（保留占位符可继续联动字段数据）。
-
     private static final java.util.regex.Pattern PLACEHOLDER_PATTERN = java.util.regex.Pattern.compile("\\{(\\w+)\\}");
 
     /** 按字段名取占位符值；子类 override 提供固定 NBT 字段映射，未知字段返回 null（保留原文） */
@@ -97,28 +111,18 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         return sb.toString();
     }
 
-    // ==================== 可选字段编辑（TextDisplayScreen 选项行） ====================
-    // 选中行文本中的占位符若关联枚举字段（如国道/省道、左转/直行/右转），实体 override getFieldOptions
-    // 提供选项组，UI 在行标签上方显示按钮行，点击经 applyFieldOption 写回字段（网络包同步到服务端）。
-
-    /** 一个可选字段的选项：显示文本 + 写入值 + 是否当前值 */
     public record FieldOption(String label, String value, boolean current) {}
 
-    /** 一个占位符关联的字段选项组：组标题 + 字段名 + 选项列表 */
     public record FieldOptionGroup(String title, String field, List<FieldOption> options) {}
 
-    /** 便捷构造：value 等于 currentValue 的选项自动标记为当前项 */
     protected static FieldOption opt(String label, String value, String currentValue) {
         return new FieldOption(label, value, value != null && value.equals(currentValue));
     }
 
-    /** 占位符 key 关联的可编辑字段选项组；无则返回 null（UI 隐藏选项行） */
     public List<FieldOptionGroup> getFieldOptions(String placeholderKey) { return null; }
 
-    /** 应用选项按钮写入（field+value 由实体映射到对应 setter），子类实现需触发 markDirty/更新监听 */
     public void applyFieldOption(String field, String value) { }
 
-    /** 提取文本中的全部占位符 key（按出现顺序） */
     public static List<String> extractPlaceholderKeys(String text) {
         List<String> keys = new ArrayList<>();
         if (text == null) return keys;
@@ -136,13 +140,13 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         private boolean bold, italic, underline, shadow;
         private boolean outline;
         private int outlineColor = 0x000000;
+        /** 该行是否发光（用原版全亮光照渲染，即"荧光"效果） */
+        private boolean glowing = false;
         private float fontSize;
-        // ABC 交通字体标识："a" / "b" / "c"（由 SignTextLinesHelper 工厂方法写入）；
-        // 空串表示未指定，渲染端应回退到默认字体
+
         private String abcFont = "";
         private float scaleX, scaleY, scaleZ;
-        // 是否为实体默认布局生成的系统行（SignTextLinesHelper 工厂方法置 true）；
-        // 删除确认依据之一：文本被用户改写（占位符消失）后仍需提示，与 NBT 持久化
+
         private boolean builtin = false;
 
         public TextLineData(String text) {
@@ -164,6 +168,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             c.color = color; c.alignment = alignment;
             c.bold = bold; c.italic = italic; c.underline = underline; c.shadow = shadow;
             c.outline = outline; c.outlineColor = outlineColor;
+            c.glowing = glowing;
             c.fontSize = fontSize;
             c.abcFont = abcFont;
             c.scaleX = scaleX; c.scaleY = scaleY; c.scaleZ = scaleZ;
@@ -178,6 +183,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             this.color = other.color; this.alignment = other.alignment;
             this.bold = other.bold; this.italic = other.italic; this.underline = other.underline; this.shadow = other.shadow;
             this.outline = other.outline; this.outlineColor = other.outlineColor;
+            this.glowing = other.glowing;
             this.fontSize = other.fontSize;
             this.abcFont = other.abcFont;
             this.scaleX = other.scaleX; this.scaleY = other.scaleY; this.scaleZ = other.scaleZ;
@@ -188,6 +194,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             this.color = other.color; this.alignment = other.alignment;
             this.bold = other.bold; this.italic = other.italic; this.underline = other.underline; this.shadow = other.shadow;
             this.outline = other.outline; this.outlineColor = other.outlineColor;
+            this.glowing = other.glowing;
             this.fontSize = other.fontSize;
         }
 
@@ -200,6 +207,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             nbt.putBoolean("bold", bold); nbt.putBoolean("italic", italic);
             nbt.putBoolean("underline", underline); nbt.putBoolean("shadow", shadow);
             nbt.putBoolean("outline", outline);; nbt.putInt("outlineColor", outlineColor);
+            nbt.putBoolean("glowing", glowing);
             nbt.putFloat("fontSize", fontSize);
             nbt.putString("abcFont", abcFont);
             nbt.putFloat("scaleX", scaleX); nbt.putFloat("scaleY", scaleY); nbt.putFloat("scaleZ", scaleZ);
@@ -217,6 +225,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             data.bold = nbt.getBoolean("bold"); data.italic = nbt.getBoolean("italic");
             data.underline = nbt.getBoolean("underline"); data.shadow = nbt.getBoolean("shadow");
             data.outline = nbt.getBoolean("outline");data.outlineColor = nbt.contains("outlineColor") ? nbt.getInt("outlineColor") : 0x000000;
+            data.glowing = nbt.getBoolean("glowing");
             data.fontSize = nbt.contains("fontSize") ? nbt.getFloat("fontSize") : 1.0f;
             // 旧存档无该字段：默认空串（未指定字体）
             data.abcFont = nbt.contains("abcFont") ? nbt.getString("abcFont") : "";
@@ -243,11 +252,12 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         public boolean isOutline() { return outline; } public void setOutline(boolean o) { this.outline = o; }
         public int getOutlineColor() { return outlineColor; } public void setOutlineColor(int c) { this.outlineColor = c; }
         public float getFontSize() { return fontSize; } public void setFontSize(float s) { this.fontSize = s; }
-        /** ABC 交通字体标识："a" / "b" / "c"；null 归一为空串（CompoundTag.putString 不接受 null） */
+
         public String getAbcFont() { return abcFont; } public void setAbcFont(String f) { this.abcFont = f != null ? f : ""; }
         public float getScaleX() { return scaleX; } public void setScaleX(float s) { this.scaleX = s; }
         public float getScaleY() { return scaleY; } public void setScaleY(float s) { this.scaleY = s; }
         public float getScaleZ() { return scaleZ; } public void setScaleZ(float s) { this.scaleZ = s; }
+        public boolean isGlowing() { return glowing; } public void setGlowing(boolean g) { this.glowing = g; }
         public boolean isBuiltin() { return builtin; } public void setBuiltin(boolean b) { this.builtin = b; }
     }
 

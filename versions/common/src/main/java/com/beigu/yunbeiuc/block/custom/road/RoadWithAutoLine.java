@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.road;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import net.minecraft.world.level.block.AirBlock;
@@ -44,7 +45,7 @@ import java.util.Optional;
  * @see RoadWithAutoBevelLine
  * @see RoadWithAutoRightangleLine
  */
-public abstract class RoadWithAutoLine extends Block {
+public abstract class RoadWithAutoLine extends BlockCompat {
     private static final Logger LOGGER = LogManager.getLogger(RoadWithAutoLine.class);
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -91,8 +92,8 @@ public abstract class RoadWithAutoLine extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        final InteractionResult result = super .use(state, world, pos, player, hand, hit);
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        final InteractionResult result = super.useCompat(state, world, pos, player, hand, hit);
         if (result == InteractionResult.FAIL) {
             return result;
         }

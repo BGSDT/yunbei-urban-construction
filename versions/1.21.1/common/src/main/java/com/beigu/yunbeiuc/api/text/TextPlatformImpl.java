@@ -18,4 +18,11 @@ public final class TextPlatformImpl implements TextPlatform {
     public MutableComponent empty() {
         return Component.empty();
     }
+    @Override
+    public net.minecraft.network.chat.Component fromLegacyJson(String json) {
+        net.minecraft.client.Minecraft client = net.minecraft.client.Minecraft.getInstance();
+        net.minecraft.core.HolderLookup.Provider provider =
+                client.level != null ? client.level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
+        return Component.Serializer.fromJsonLenient(json, provider);
+    }
 }

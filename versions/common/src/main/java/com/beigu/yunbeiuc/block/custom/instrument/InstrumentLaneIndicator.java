@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.block.custom.instrument;
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -34,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class InstrumentLaneIndicator extends Block {
+public class InstrumentLaneIndicator extends BlockCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<TFType> TF_TYPE = EnumProperty.create("tf_type", TFType.class);
 
@@ -49,9 +50,8 @@ public class InstrumentLaneIndicator extends Block {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.instrument_lane_indicator.tooltip"));
-        super .appendHoverText(stack, world, tooltip, options);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class InstrumentLaneIndicator extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
             if (!world.isClientSide) {

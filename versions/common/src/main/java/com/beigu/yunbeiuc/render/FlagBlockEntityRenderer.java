@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.render;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleFlag;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
@@ -96,65 +97,33 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
 
     private void renderNorthFace(PoseStack.Pose entry, VertexConsumer consumer,
                                  float minX, float minY, float maxX, float maxY, float z, int light, int overlay) {
-        consumer.vertex(entry.pose(), minX, minY, z)
-                .color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, -1).endVertex();
-        consumer.vertex(entry.pose(), maxX, minY, z)
-                .color(255, 255, 255, 255).uv(1.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, -1).endVertex();
-        consumer.vertex(entry.pose(), maxX, maxY, z)
-                .color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, -1).endVertex();
-        consumer.vertex(entry.pose(), minX, maxY, z)
-                .color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, -1).endVertex();
+        VersionServices.render().vertex(consumer, entry, minX, minY, z, 255, 255, 255, 255, 0.0f, 1.0f, overlay, light, 0, 0, -1);
+        VersionServices.render().vertex(consumer, entry, maxX, minY, z, 255, 255, 255, 255, 1.0f, 1.0f, overlay, light, 0, 0, -1);
+        VersionServices.render().vertex(consumer, entry, maxX, maxY, z, 255, 255, 255, 255, 1.0f, 0.0f, overlay, light, 0, 0, -1);
+        VersionServices.render().vertex(consumer, entry, minX, maxY, z, 255, 255, 255, 255, 0.0f, 0.0f, overlay, light, 0, 0, -1);
     }
 
     private void renderSouthFace(PoseStack.Pose entry, VertexConsumer consumer,
                                  float minX, float minY, float maxX, float maxY, float z, int light, int overlay) {
-        consumer.vertex(entry.pose(), maxX, minY, z)
-                .color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, 1).endVertex();
-        consumer.vertex(entry.pose(), minX, minY, z)
-                .color(255, 255, 255, 255).uv(1.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, 1).endVertex();
-        consumer.vertex(entry.pose(), minX, maxY, z)
-                .color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, 1).endVertex();
-        consumer.vertex(entry.pose(), maxX, maxY, z)
-                .color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 0, 0, 1).endVertex();
+        VersionServices.render().vertex(consumer, entry, maxX, minY, z, 255, 255, 255, 255, 0.0f, 1.0f, overlay, light, 0, 0, 1);
+        VersionServices.render().vertex(consumer, entry, minX, minY, z, 255, 255, 255, 255, 1.0f, 1.0f, overlay, light, 0, 0, 1);
+        VersionServices.render().vertex(consumer, entry, minX, maxY, z, 255, 255, 255, 255, 1.0f, 0.0f, overlay, light, 0, 0, 1);
+        VersionServices.render().vertex(consumer, entry, maxX, maxY, z, 255, 255, 255, 255, 0.0f, 0.0f, overlay, light, 0, 0, 1);
     }
 
     private void renderWestFace(PoseStack.Pose entry, VertexConsumer consumer,
                                 float minX, float minY, float maxX, float maxY, float x, int light, int overlay) {
-        consumer.vertex(entry.pose(), x, minY, minX)
-                .color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), -1, 0, 0).endVertex();
-        consumer.vertex(entry.pose(), x, minY, maxX)
-                .color(255, 255, 255, 255).uv(1.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), -1, 0, 0).endVertex();
-        consumer.vertex(entry.pose(), x, maxY, maxX)
-                .color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), -1, 0, 0).endVertex();
-        consumer.vertex(entry.pose(), x, maxY, minX)
-                .color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), -1, 0, 0).endVertex();
+        VersionServices.render().vertex(consumer, entry, x, minY, minX, 255, 255, 255, 255, 0.0f, 1.0f, overlay, light, -1, 0, 0);
+        VersionServices.render().vertex(consumer, entry, x, minY, maxX, 255, 255, 255, 255, 1.0f, 1.0f, overlay, light, -1, 0, 0);
+        VersionServices.render().vertex(consumer, entry, x, maxY, maxX, 255, 255, 255, 255, 1.0f, 0.0f, overlay, light, -1, 0, 0);
+        VersionServices.render().vertex(consumer, entry, x, maxY, minX, 255, 255, 255, 255, 0.0f, 0.0f, overlay, light, -1, 0, 0);
     }
 
     private void renderEastFace(PoseStack.Pose entry, VertexConsumer consumer,
                                 float minX, float minY, float maxX, float maxY, float x, int light, int overlay) {
-        consumer.vertex(entry.pose(), x, minY, maxX)
-                .color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 1, 0, 0).endVertex();
-        consumer.vertex(entry.pose(), x, minY, minX)
-                .color(255, 255, 255, 255).uv(1.0f, 1.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 1, 0, 0).endVertex();
-        consumer.vertex(entry.pose(), x, maxY, minX)
-                .color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 1, 0, 0).endVertex();
-        consumer.vertex(entry.pose(), x, maxY, maxX)
-                .color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light)
-                .normal(entry.normal(), 1, 0, 0).endVertex();
+        VersionServices.render().vertex(consumer, entry, x, minY, maxX, 255, 255, 255, 255, 0.0f, 1.0f, overlay, light, 1, 0, 0);
+        VersionServices.render().vertex(consumer, entry, x, minY, minX, 255, 255, 255, 255, 1.0f, 1.0f, overlay, light, 1, 0, 0);
+        VersionServices.render().vertex(consumer, entry, x, maxY, minX, 255, 255, 255, 255, 1.0f, 0.0f, overlay, light, 1, 0, 0);
+        VersionServices.render().vertex(consumer, entry, x, maxY, maxX, 255, 255, 255, 255, 0.0f, 0.0f, overlay, light, 1, 0, 0);
     }
 }

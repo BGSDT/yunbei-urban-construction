@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.screen;
+import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
 
@@ -6,6 +7,7 @@ import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.beigu.yunbeiuc.entity.SignTextLinesHelper;
+import com.beigu.yunbeiuc.util.GlobalFontSettings;
 import com.beigu.yunbeiuc.network.CustomSignFieldUpdatePacket;
 import com.beigu.yunbeiuc.network.CustomSignUpdatePacket;
 import com.beigu.yunbeiuc.render.TextGizmo;
@@ -39,11 +41,11 @@ public class TextDisplayScreen extends Screen {
     private static final int SAVE_BTN_ROW_HEIGHT = 22;
     private static final int INFO_PANEL_WIDTH = 100;
     private static final float SCALE_DISPLAY_FACTOR = 16f;
+    private static final int MAX_LINE_TAB_WIDTH = 300;
     private static final int[] COLOR_PALETTE = {0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFA500, 0x000000};
 
     private final CustomSignBlockEntity blockEntity;
     private final BlockPos blockPos;
-    /** 当前方块是否支持全局字体设置（sign 类与区域信息板）：只有它们显示「设置」按钮，构造时确定一次。 */
     private final boolean supportsGlobalFontSetting;
     private final List<TextLineWidget> textLineWidgets = new ArrayList<>();
     private int selectedIndex = -1;
@@ -57,14 +59,13 @@ public class TextDisplayScreen extends Screen {
     private ButtonWidget sxButton, syButton, szButton;
     private ButtonWidget boldButton, italicButton, underlineButton, shadowButton;
     private ButtonWidget outlineButton, outlineColorButton;
+    private ButtonWidget glowButton;
     private ButtonWidget hAlignButton, vAlignButton, clearFormatButton;
 
     private enum Category { POSITION, ROTATION, SCALE, FONT, ALIGN }
     private Category activeCategory = Category.POSITION;
     private ButtonWidget posCatButton, rotCatButton, scaleCatButton, fontCatButton, alignCatButton;
-    // 图案按钮：紧贴「对齐」分类按钮右侧，点击打开图案与字体选择界面
     private ButtonWidget patternButton;
-    // 设置按钮：紧贴图案按钮右侧，点击打开「云北路牌全局设置」覆盖层页面
     private ButtonWidget settingsButton;
 
     private boolean preciseInputMode = false;
@@ -91,22 +92,18 @@ public class TextDisplayScreen extends Screen {
     private int topScrollOffset = 0;
     private ButtonWidget topScrollLeft, topScrollRight;
 
-    // 保存按钮行（属性分类/图案/设置 + 行操作）：整行放不下时按索引分页并显示左右滚动按钮
     private int rowScrollIndex = 0;
     private ButtonWidget rowScrollLeft, rowScrollRight;
-    // 底部属性面板控件行：与右侧状态显示区一起放不下时按索引分页并显示左右滚动按钮
     private int bottomRowScrollIndex = 0;
     private ButtonWidget bottomRowScrollLeft, bottomRowScrollRight;
 
     private int panelTopX, panelTopY, panelTopWidth, panelTopHeight;
     private int panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight;
 
-    // 选项行（行标签面板上方）：选中行占位符关联可编辑枚举字段时显示按钮组，否则整行隐藏
     private static final int OPTIONS_ROW_HEIGHT = 22;
     private boolean optionsRowVisible = false;
     private final List<ButtonWidget> optionButtons = new ArrayList<>();
     private final List<Object[]> optionGroupTitles = new ArrayList<>();
-    // 输入框显示占位符解析值：listener 抑制标志 + 记录占位符原文/解析值（未编辑则保留占位符联动）
     private boolean suppressTextFieldListener = false;
     private String currentPlaceholderText = "";
     private String currentResolvedText = "";
@@ -122,30 +119,12 @@ public class TextDisplayScreen extends Screen {
         this.supportsGlobalFontSetting = computeSupportsGlobalFontSetting(blockEntity);
     }
 
-    /**
-     * 判断方块是否支持全局字体设置（决定「设置」按钮是否显示，该按钮打开「云北路牌全局设置」页面）。
-     *
-     * <p>依据方块注册名（{@code yunbeiuc:<path>} 的 path）中是否包含 {@code sign} 或 {@code zones}：
-     * <ul>
-     *     <li>内建标志牌（{@code AbstractEditableSignBlock} 族的 {@code sign_*}）→ 显示；</li>
-     *     <li>自定义标志牌（{@code CustomSignTypeBlock} 的 {@code sign_custom_*}）→ 显示；</li>
-     *     <li>区域信息板 {@code zones_board_*}（默认行同样使用 ABC 字体）→ 显示；</li>
-     *     <li>路杆文本显示 / 路杆 LED / 龙门架 LED（{@code road_pole_text_display}、{@code road_pole_led}、
-     *         {@code gantry_frame_led*}）等其它方块 → 隐藏。</li>
-     * </ul>
-     */
     private static boolean computeSupportsGlobalFontSetting(CustomSignBlockEntity blockEntity) {
         ResourceLocation id = VersionServices.registries().blockId(blockEntity.getBlockState().getBlock());
         String path = id.getPath();
         return path.contains("sign") || path.contains("zones");
     }
 
-    /**
-     * 当前方块自带布局使用的 ABC 字体（「路牌自适应」模式的字体取值来源）。
-     *
-     * <p>取首个记录了字体的系统内置行（{@code Sign*Entity} 生成默认行时按各自的路牌类型写入
-     * a/b/c）；没有可用的内置行时兜底 A 型。
-     */
     private String signAdaptiveAbcFont() {
         for (TextLineData line : blockEntity.getTextLines()) {
             if (!line.isBuiltin()) continue;
@@ -155,27 +134,15 @@ public class TextDisplayScreen extends Screen {
         return "a";
     }
 
-    /**
-     * 文本行按钮的显示文案：指令行只显示可读摘要，不把整条指令铺在按钮上。
-     *
-     * <ul>
-     *     <li>{@code -json} 行 → 显示 JSON 里的 text 字段；</li>
-     *     <li>{@code -rect w h} 行 → 显示 {@code rect w*h}；</li>
-     *     <li>{@code -texture path} 行 → 只显示最后的 {@code xxx.png}，省略前面的路径。</li>
-     * </ul>
-     *
-     * <p>仅对文本行按钮生效；文本框与 NBT 始终保存原始文本。
-     */
     private static String lineButtonLabel(String resolvedText) {
         String text = resolvedText == null ? "" : resolvedText.trim();
         if (text.startsWith("-json")) {
             String[] parts = text.split("\\s+", 2);
             if (parts.length >= 2) {
                 try {
-                    Component parsed = Component.Serializer.fromJsonLenient(parts[1]);
+                    Component parsed = VersionServices.text().fromLegacyJson(parts[1]);
                     if (parsed != null) return parsed.getString();
                 } catch (Exception ignored) {
-                    // JSON 非法时按空摘要处理，与渲染端"解析失败即回退"的容错一致
                 }
             }
             return "";
@@ -220,7 +187,6 @@ public class TextDisplayScreen extends Screen {
         }).dimensions(sw / 2 - 40, panelTopY + panelTopHeight + 1, 80, 20).build();
         savePresetButton.visible = false;
 
-        // 属性分类按钮靠屏幕左侧依次排列，点击后锁定并在下方显示对应控件
         int catBtnW = 50, catBtnGap = 4;
         int catX = 5;
         int catY = panelTopY + panelTopHeight + 1;
@@ -230,20 +196,17 @@ public class TextDisplayScreen extends Screen {
         fontCatButton = ButtonWidget.builderCompat(Text.literal("字体"), b -> selectCategory(Category.FONT)).dimensions(catX, catY, catBtnW, 20).build(); catX += catBtnW + catBtnGap;
         alignCatButton = ButtonWidget.builderCompat(Text.literal("对齐"), b -> selectCategory(Category.ALIGN)).dimensions(catX, catY, catBtnW, 20).build();
 
-        // 图案按钮：与属性分类按钮同行，位置在 recomputeLayout 中跟随「对齐」按钮
         patternButton = ButtonWidget.builderCompat(Text.translatable("yunbeiuc.gui.button.pattern"), btn -> {
             PatternAndFontOverlay.targetScreen = this;
             PatternAndFontOverlay.isVisible = true;
             PatternAndFontOverlay.selectSidebarTop(PatternAndFontOverlay.NAV_TOP_HOME);
         }).dimensions(0, 0, catBtnW, 20).build();
 
-        // 设置按钮：紧贴图案按钮右侧；点击打开「云北路牌全局设置」覆盖层页面
         settingsButton = ButtonWidget.builderCompat(Text.translatable("yunbeiuc.gui.button.settings"), btn -> SignGlobalSettingsOverlay.open(this))
                 .dimensions(0, 0, catBtnW, 20).build();
 
         updateCategoryButtonsLocked();
 
-        // 行操作按钮靠屏幕右侧排列，正在编辑文本行时显示
         int lineActionBtnW = 45, lineActionGap = 4;
         int lineActionTotalW = lineActionBtnW * 4 + lineActionGap * 3;
         int lineActionStartX = sw - lineActionTotalW - 4;
@@ -287,8 +250,10 @@ public class TextDisplayScreen extends Screen {
 
         addLineButton = ButtonWidget.builderCompat(Text.literal("+"), button -> {
             if (presetSelectMode || presetSaveMode || presetLoadMode) return;
+            // 用户新增的行一律是「普通行」：不带路牌自带属性（无 builtin 标记，
+            // 也不套用路牌自带的字体标签 / -json 包裹），只有路牌自身生成的行才带这些。
             TextLineData newData = new TextLineData("Text");
-            if (supportsGlobalFontSetting) SignTextLinesHelper.applyGlobalFontSetting(newData, signAdaptiveAbcFont());
+            newData.setBuiltin(false);
             textLineWidgets.add(new TextLineWidget(newData));
             blockEntity.getTextLines().add(newData);
             selectedIndex = textLineWidgets.size() - 1;
@@ -322,7 +287,6 @@ public class TextDisplayScreen extends Screen {
         textField.setChangedListener(text -> {
             if (suppressTextFieldListener) return;
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                // 编辑结果与解析值一致则保留占位符原文（维持字段联动），改动后写入纯文本
                 textLineWidgets.get(selectedIndex).data.setText(text.equals(currentResolvedText) ? currentPlaceholderText : text);
                 refreshTopPanel();
                 syncAndUpdateClient();
@@ -351,6 +315,8 @@ public class TextDisplayScreen extends Screen {
         shadowButton = makeToggle("D", s -> s.withBold(true), d -> { d.setShadow(!d.isShadow()); syncAndUpdateClient(); });
         outlineButton = makeToggle("O", s -> s.withBold(true), d -> { d.setOutline(!d.isOutline()); syncAndUpdateClient(); });
         outlineColorButton = makeColorCycleButton(12);
+        // 发光：该行用原版全亮光照渲染（荧光效果）
+        glowButton = makeToggle("L", s -> s.withBold(true), d -> { d.setGlowing(!d.isGlowing()); syncAndUpdateClient(); });
 
         hAlignButton = ButtonWidget.builderCompat(Text.literal("水平居中"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
@@ -505,7 +471,6 @@ public class TextDisplayScreen extends Screen {
     private void selectCategory(Category c) {
         activeCategory = c;
         preciseInputMode = false;
-        // 切换分类后控件组不同，底部控件行分页位置归零
         bottomRowScrollIndex = 0;
         releaseGizmo();
         updateCategoryButtonsLocked();
@@ -562,25 +527,17 @@ public class TextDisplayScreen extends Screen {
     private static int axis(int handle) { return TextGizmo.handleAxis(handle); }
 
     private boolean isOverUiPanel(double mx, double my) {
-        // 图案浮层覆盖全屏时视为始终处于 UI 上，避免误触世界中的拖拽手柄
         if (PatternAndFontOverlay.isVisible || SignGlobalSettingsOverlay.isVisible) return true;
         return my >= (optionsRowVisible ? panelTopY - OPTIONS_ROW_HEIGHT : panelTopY);
     }
 
-    /**
-     * 供图案与字体选择界面把内容写入当前编辑行。
-     *
-     * <p>未选中任何行时新建一行；写入后刷新面板并同步到客户端与服务端。
-     *
-     * @param text 要写入的文本（可为 -texture / -rect / -json 指令）
-     */
     public void insertPatternContent(String text) {
         if (text == null) return;
-        // 退出精准输入模式，让底部面板直接显示写入后的内容
         preciseInputMode = false;
         if (textLineWidgets.isEmpty() || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) {
+            // 同上：新增行不继承路牌自带属性
             TextLineData newData = new TextLineData(text);
-            if (supportsGlobalFontSetting) SignTextLinesHelper.applyGlobalFontSetting(newData, signAdaptiveAbcFont());
+            newData.setBuiltin(false);
             textLineWidgets.add(new TextLineWidget(newData));
             blockEntity.getTextLines().add(newData);
             selectedIndex = textLineWidgets.size() - 1;
@@ -682,17 +639,17 @@ public class TextDisplayScreen extends Screen {
         preciseInputField.setMaxLength(Integer.MAX_VALUE);
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             var d = textLineWidgets.get(selectedIndex).data;
-        preciseInputField.setText(switch (preciseInputType) {
-            case 0 -> String.format("%.1f", d.getXOffset()); case 1 -> String.format("%.1f", d.getYOffset());
-            case 2 -> String.format("%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR); case 3 -> String.format("#%06X", d.getColor());
-            case 4 -> String.format("%.1f", d.getZOffset());
-            case 5 -> String.format("%.1f", d.getRotX()); case 6 -> String.format("%.1f", d.getRotY());
-            case 7 -> String.format("%.1f", d.getRotZ());
-            case 8 -> String.format("%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR); case 9 -> String.format("%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR);
-            case 10 -> String.format("%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR);
-            case 12 -> String.format("#%06X", d.getOutlineColor());
-            default -> "0";
-        });
+            preciseInputField.setText(switch (preciseInputType) {
+                case 0 -> String.format("%.1f", d.getXOffset()); case 1 -> String.format("%.1f", d.getYOffset());
+                case 2 -> String.format("%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR); case 3 -> String.format("#%06X", d.getColor());
+                case 4 -> String.format("%.1f", d.getZOffset());
+                case 5 -> String.format("%.1f", d.getRotX()); case 6 -> String.format("%.1f", d.getRotY());
+                case 7 -> String.format("%.1f", d.getRotZ());
+                case 8 -> String.format("%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR); case 9 -> String.format("%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR);
+                case 10 -> String.format("%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR);
+                case 12 -> String.format("#%06X", d.getOutlineColor());
+                default -> "0";
+            });
         }
         preciseInputField.setChangedListener(text -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
@@ -708,7 +665,7 @@ public class TextDisplayScreen extends Screen {
                         case 8 -> d.setScaleX(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
                         case 9 -> d.setScaleY(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
                         case 10 -> d.setScaleZ(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
-                                    case 12 -> { Integer c = tryParseHex(text); if (c != null) applyColor(12, c, d); }
+                        case 12 -> { Integer c = tryParseHex(text); if (c != null) applyColor(12, c, d); }
                     }
                 } catch (NumberFormatException ignored) {}
                 syncAndUpdateClient();
@@ -768,6 +725,7 @@ public class TextDisplayScreen extends Screen {
             if (count > MAX_VISIBLE_TABS) availableWidth -= SCROLL_BTN_WIDTH * 2 + 8;
 
             int btnWidth = Math.max(20, (availableWidth - (visibleCount + 1) * spacing) / visibleCount);
+            btnWidth = Math.min(btnWidth, MAX_LINE_TAB_WIDTH);
             int btnHeight = panelTopHeight - 4;
             int startX = panelTopX + spacing;
 
@@ -801,14 +759,12 @@ public class TextDisplayScreen extends Screen {
                         refreshBottomPanel(); refreshTopPanel();
                     }
                 }).dimensions(startX + i * (btnWidth + spacing), panelTopY + 2, btnWidth, btnHeight).build();
-                // 正在编辑的文本行使用原版按钮的禁用外观表示"锁定"，格式刷/多选模式下按钮另有用途，不锁定
                 btn.active = formatPainterMode || presetSelectMode || idx != selectedIndex;
                 textButtons.add(btn); this.addDrawableChild(btn);
             }
         }
         if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
         savePresetButton.visible = presetSelectMode && !selectedPresetIndices.isEmpty() && !presetSaveMode && !presetLoadMode;
-        // 属性分类按钮：非预设/格式刷模式下显示
         boolean showCategoryButtons = isCategoryRowShown();
         posCatButton.visible = showCategoryButtons;
         rotCatButton.visible = showCategoryButtons;
@@ -816,53 +772,35 @@ public class TextDisplayScreen extends Screen {
         fontCatButton.visible = showCategoryButtons;
         alignCatButton.visible = showCategoryButtons;
         patternButton.visible = showCategoryButtons;
-        // 设置按钮：仅 sign 类与区域信息板显示（全局字体设置对路杆文本显示/LED、龙门架 LED 无意义）
         settingsButton.visible = showCategoryButtons && supportsGlobalFontSetting;
-        // 正在编辑文本行时显示行操作按钮（靠屏幕右侧）；无剪贴板内容时粘贴按钮锁定
         boolean showLineActions = isLineActionRowShown();
         copyLineButton.visible = showLineActions;
         pasteLineButton.visible = showLineActions;
         pasteLineButton.active = showLineActions && clipboardData != null;
         deleteLineButton.visible = showLineActions;
         formatPainterButton.visible = showLineActions;
-        // 分类/行操作按钮的可见性确定后再排版：分页滚动会在这里进一步隐藏放不下的按钮，
-        // 必须在上面所有 visible 赋值之后执行，否则会被覆盖成"全部可见"而与滚动按钮重叠
         layoutSaveButtonRow(panelBottomY - SAVE_BTN_ROW_HEIGHT + 1);
     }
 
-    // ==================== 选项行布局 ====================
-
-    /** 重算布局：选项行插在行标签面板与保存按钮行之间，可见时行标签面板上移 22px，各段始终紧贴无缝 */
     private void recomputeLayout() {
         optionsRowVisible = computeOptionsRowVisible();
         int optionsH = optionsRowVisible ? OPTIONS_ROW_HEIGHT : 0;
         panelTopY = panelBottomY - SAVE_BTN_ROW_HEIGHT - optionsH - panelTopHeight;
         int rowBtnY = panelBottomY - SAVE_BTN_ROW_HEIGHT + 1;
         savePresetButton.setPosition(width / 2 - 40, rowBtnY);
-        // 分类/行操作按钮行的排版放在 refreshTopPanel 末尾（需在 visible 确定之后），此处只定位本行其它控件
         addLineButton.setPosition(panelTopX + panelTopWidth, panelTopY);
         refreshOptionButtons();
     }
 
-    /** 属性分类按钮行是否显示（预设/格式刷等模式下整行隐藏） */
     private boolean isCategoryRowShown() {
         return !presetSelectMode && !presetSaveMode && !presetLoadMode && !formatPainterMode;
     }
 
-    /** 行操作按钮是否显示（需选中文本行，预设/格式刷等模式下隐藏） */
     private boolean isLineActionRowShown() {
         return !textLineWidgets.isEmpty() && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()
                 && !formatPainterMode && !presetSelectMode && !presetSaveMode && !presetLoadMode;
     }
 
-    /**
-     * 保存按钮行布局：内容顺序为「属性分类 → 图案 → 设置 → 行操作」。
-     *
-     * <p>宽度足够时保持原有外观（分类按钮靠左依次排列、行操作按钮靠右依次排列）；
-     * 放不下时整行合并为一条**按索引分页**的内容：只摆放并显示完整落在内容区内的按钮，
-     * 其余按钮隐藏（不绘制、不响应点击），行两端显示 ◀ ▶ 滚动按钮。
-     * 与文本行标签行的分页做法一致，因此滚动按钮不会被溢出的内容按钮压住。
-     */
     private void layoutSaveButtonRow(int rowBtnY) {
         if (rowScrollLeft != null) { this.remove(rowScrollLeft); rowScrollLeft = null; }
         if (rowScrollRight != null) { this.remove(rowScrollRight); rowScrollRight = null; }
@@ -881,13 +819,11 @@ public class TextDisplayScreen extends Screen {
         int categoryW = rowWidth(categories, gap);
         int lineActionW = rowWidth(lineActions, gap);
 
-        // 能否维持原有外观：分类按钮靠左依次排列、行操作按钮靠右依次排列，且两组不重叠
         boolean fits = categories.isEmpty() || lineActions.isEmpty()
                 ? leftMargin + categoryW + lineActionW + rightMargin <= width
                 : leftMargin + categoryW + 8 <= width - rightMargin - lineActionW;
 
         if (fits) {
-            // 宽度足够：分类按钮靠左、行操作按钮靠右，维持原有布局
             rowScrollIndex = 0;
             int x = leftMargin;
             for (ButtonWidget b : categories) { b.setPosition(x, rowBtnY); x += b.getWidth() + gap; }
@@ -896,7 +832,6 @@ public class TextDisplayScreen extends Screen {
             return;
         }
 
-        // 放不下：整行合并分页滚动，两端留出左右滚动按钮的位置
         List<ButtonWidget> items = new ArrayList<>(categories);
         int splitIndex = items.size();
         items.addAll(lineActions);
@@ -904,7 +839,6 @@ public class TextDisplayScreen extends Screen {
         int contentLeft = leftMargin + SCROLL_BTN_WIDTH + 4;
         int contentRight = width - rightMargin - SCROLL_BTN_WIDTH - 4;
         if (contentRight - contentLeft < widestButton(items)) {
-            // 极端窄窗口：内容区放不下任何一个按钮，此时显示滚动按钮必然重叠，改为平铺（按钮可能超出屏幕右边缘）
             rowScrollIndex = 0;
             int x = leftMargin;
             for (ButtonWidget b : items) { b.visible = true; b.setPosition(x, rowBtnY); x += b.getWidth() + gap; }
@@ -929,7 +863,6 @@ public class TextDisplayScreen extends Screen {
         this.addDrawableChild(rowScrollRight);
     }
 
-    /** 一行按钮按固定间隔排列后的总宽度（0 个按钮时为 0） */
     private static int rowWidth(List<ButtonWidget> buttons, int gap) {
         if (buttons.isEmpty()) return 0;
         int w = gap * (buttons.size() - 1);
@@ -937,36 +870,18 @@ public class TextDisplayScreen extends Screen {
         return w;
     }
 
-    /** 一行中单个按钮的最大宽度 */
     private static int widestButton(List<ButtonWidget> buttons) {
         int w = 0;
         for (ButtonWidget b : buttons) w = Math.max(w, b.getWidth());
         return w;
     }
 
-    /**
-     * 按给定顺序收集其中当前可见的按钮。
-     *
-     * <p>排版时会按需设置 {@code visible}（分页隐藏放不下的按钮），因此必须先把本就应当隐藏的按钮
-     * 排除在外——否则它会被排版逻辑重新置为可见（例如非 sign 方块上的「设置」按钮）。
-     */
     private static void addVisible(List<ButtonWidget> target, ButtonWidget... buttons) {
         for (ButtonWidget b : buttons) {
             if (b.visible) target.add(b);
         }
     }
 
-    /**
-     * 按索引分页摆放一行按钮：从第 {@code index} 个开始向右依次排列，只保留完整落在
-     * [{@code contentLeft}, {@code contentRight}] 内的按钮可见，其余一律隐藏。
-     *
-     * <p>隐藏而非整体平移，是滚动按钮不被内容压住的关键：滚动按钮占用了内容区两侧的位置，
-     * 溢出的按钮若继续绘制就会与它们重叠。调用方需保证内容区至少能容纳最宽的按钮，
-     * 因此本页第一个按钮必定显示。
-     *
-     * @param splitIndex 两组内容之间的间隔索引（间隔取 {@code splitGap}），没有分组时传 -1
-     * @return 本页实际显示的索引区间
-     */
     private PagedRowInfo layoutPagedRow(List<ButtonWidget> items, int splitIndex, int index,
                                         int contentLeft, int contentRight, int gap, int splitGap, int rowY) {
         int start = Math.max(0, Math.min(index, items.size() - 1));
@@ -987,7 +902,6 @@ public class TextDisplayScreen extends Screen {
         return new PagedRowInfo(start, lastShown);
     }
 
-    /** 分页行本页显示的索引区间（start 为起始索引，lastShown 为最后一个显示的索引） */
     private record PagedRowInfo(int start, int lastShown) {}
 
     private boolean computeOptionsRowVisible() {
@@ -999,7 +913,6 @@ public class TextDisplayScreen extends Screen {
         return false;
     }
 
-    /** 重建选项行按钮：按占位符 key 分组，组标题在 render 中绘制，当前值按钮以禁用外观表示选中 */
     private void refreshOptionButtons() {
         for (var b : optionButtons) this.remove(b);
         optionButtons.clear();
@@ -1032,15 +945,14 @@ public class TextDisplayScreen extends Screen {
 
     private void applyOption(String field, String value) {
         blockEntity.applyFieldOption(field, value);
-        // 延迟到回调外刷新（占位符解析结果随字段变化），避免在按钮点击处理中改动控件树
         if (this.client != null) this.client.execute(() -> {
             refreshTopPanel();
             updateBottomPanelDisplay();
         });
         var packet = new CustomSignFieldUpdatePacket(blockPos, field, value);
-        var buf = new FriendlyByteBuf(Unpooled.buffer());
+        var buf = NetworkCompat.newBuffer();
         packet.write(buf);
-        NetworkManager.sendToServer(UPDATE_CUSTOM_SIGN_FIELD, buf);
+        NetworkCompat.sendToServer(UPDATE_CUSTOM_SIGN_FIELD, buf);
     }
 
     private void refreshBottomPanel() {
@@ -1050,7 +962,7 @@ public class TextDisplayScreen extends Screen {
         this.remove(fontSizeButton); this.remove(colorButton); this.remove(boldButton); this.remove(italicButton);
         this.remove(underlineButton); this.remove(shadowButton); this.remove(hAlignButton); this.remove(vAlignButton);
         this.remove(clearFormatButton);
-        this.remove(outlineButton); this.remove(outlineColorButton);
+        this.remove(outlineButton); this.remove(outlineColorButton); this.remove(glowButton);
         if (bottomRowScrollLeft != null) { this.remove(bottomRowScrollLeft); bottomRowScrollLeft = null; }
         if (bottomRowScrollRight != null) { this.remove(bottomRowScrollRight); bottomRowScrollRight = null; }
         if (preciseInputField != null) this.remove(preciseInputField);
@@ -1066,7 +978,7 @@ public class TextDisplayScreen extends Screen {
         for (ButtonWidget b : new ButtonWidget[]{xButton, yButton, zButton, rxButton, ryButton, rzButton,
                 sxButton, syButton, szButton, fontSizeButton, colorButton, boldButton, italicButton,
                 underlineButton, shadowButton, hAlignButton, vAlignButton, clearFormatButton,
-                outlineButton, outlineColorButton}) {
+                outlineButton, outlineColorButton, glowButton}) {
             b.visible = false;
         }
 
@@ -1081,7 +993,6 @@ public class TextDisplayScreen extends Screen {
     private void updateBottomPanelDisplay() {
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
         var d = textLineWidgets.get(selectedIndex).data;
-        // 输入框显示占位符解析后的实际文本，避免出现 {text1} 字面量
         currentPlaceholderText = d.getText();
         currentResolvedText = blockEntity.resolvePlaceholders(d.getText());
         suppressTextFieldListener = true;
@@ -1096,11 +1007,9 @@ public class TextDisplayScreen extends Screen {
     private void addBottomWidgets() {
         int lh = (panelBottomHeight - 10) / 2;
         int y1 = panelBottomY + 5, y2 = panelBottomY + 5 + lh;
-        // 缩短输入框，为右侧当前值状态留出空间
         textField.setWidth(panelBottomWidth - 10 - INFO_PANEL_WIDTH);
         textField.setPosition(panelBottomX + 5, y1);
         this.addDrawableChild(textField);
-        // 控件按分类收集（列表顺序即从左到右顺序），位置与溢出滚动统一由 layoutBottomControlRow 处理
         List<ButtonWidget> row = new ArrayList<>();
         switch (activeCategory) {
             case POSITION -> { row.add(xButton); row.add(yButton); row.add(zButton); }
@@ -1108,19 +1017,13 @@ public class TextDisplayScreen extends Screen {
             case SCALE -> { row.add(sxButton); row.add(syButton); row.add(szButton); row.add(fontSizeButton); }
             case FONT -> {
                 row.add(colorButton); row.add(boldButton); row.add(italicButton); row.add(underlineButton);
-                row.add(shadowButton); row.add(outlineButton); row.add(outlineColorButton); row.add(clearFormatButton);
+                row.add(shadowButton); row.add(outlineButton); row.add(outlineColorButton); row.add(glowButton); row.add(clearFormatButton);
             }
             case ALIGN -> { row.add(hAlignButton); row.add(vAlignButton); }
         }
         layoutBottomControlRow(row, y2);
     }
 
-    /**
-     * 底部属性面板控件行布局：控件靠左依次排列，右端留出 INFO_PANEL_WIDTH 作为当前值状态显示区。
-     *
-     * <p>放不下时按索引分页：只摆放并显示完整落在内容区内的控件，其余隐藏，行两端显示 ◀ ▶
-     * （与文本行标签行一致），因此滚动按钮不会与控件重叠。
-     */
     private void layoutBottomControlRow(List<ButtonWidget> items, int rowY) {
         if (bottomRowScrollLeft != null) { this.remove(bottomRowScrollLeft); bottomRowScrollLeft = null; }
         if (bottomRowScrollRight != null) { this.remove(bottomRowScrollRight); bottomRowScrollRight = null; }
@@ -1132,7 +1035,6 @@ public class TextDisplayScreen extends Screen {
         final int rightLimit = panelBottomX + panelBottomWidth - 5 - INFO_PANEL_WIDTH;
 
         if (rowWidth(items, BTN_GAP) <= rightLimit - leftMargin) {
-            // 放得下：与改动前一致，从左依次排列
             bottomRowScrollIndex = 0;
             int x = leftMargin;
             for (ButtonWidget b : items) { b.visible = true; b.setPosition(x, rowY); x += b.getWidth() + BTN_GAP; }
@@ -1142,7 +1044,6 @@ public class TextDisplayScreen extends Screen {
         int contentLeft = leftMargin + SCROLL_BTN_WIDTH + 4;
         int contentRight = rightLimit - SCROLL_BTN_WIDTH - 4;
         if (contentRight - contentLeft < widestButton(items)) {
-            // 极端窄窗口：内容区放不下任何一个控件，此时显示滚动按钮必然重叠，改为平铺
             bottomRowScrollIndex = 0;
             int x = leftMargin;
             for (ButtonWidget b : items) { b.visible = true; b.setPosition(x, rowY); x += b.getWidth() + BTN_GAP; }
@@ -1203,17 +1104,25 @@ public class TextDisplayScreen extends Screen {
             return;
         }
         List<String> names = new ArrayList<>(presets.keySet());
-        int columns = 4, rows = 2;
-        int perPage = columns * rows;
-        int btnW = (panelBottomWidth - 10) / Math.min(columns, names.size());
+        int rows = 2;
         int rowGap = 2;
         int btnH = ((panelBottomHeight - 30) - rowGap) / rows;
-        int maxOffset = Math.max(0, names.size() - perPage);
+
+        int maxOffset = Math.max(0, names.size() - 1);
         if (presetScrollOffset > maxOffset) presetScrollOffset = maxOffset;
 
-        for (int i = 0; i < Math.min(perPage, names.size() - presetScrollOffset); i++) {
-            String name = names.get(presetScrollOffset + i);
-            int col = i % columns, row = i / columns;
+        int x = panelBottomX + 5;
+        int y = panelBottomY + 5;
+        for (int i = presetScrollOffset; i < names.size(); i++) {
+            String name = names.get(i);
+            int btnW = Math.min(MAX_LINE_TAB_WIDTH, Math.max(20, textRenderer.width(name) + 8));
+
+            if (x + btnW > panelBottomX + panelBottomWidth - 5) {
+                x = panelBottomX + 5;
+                y += btnH + rowGap;
+            }
+            if (y + btnH > panelBottomY + panelBottomHeight - 5) break;
+
             ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(name), b -> {
                 List<TextLineData> loaded = new ArrayList<>();
                 for (var d : presets.get(name)) loaded.add(d.copy());
@@ -1225,11 +1134,14 @@ public class TextDisplayScreen extends Screen {
                 refreshTopPanel(); refreshBottomPanel();
                 syncAndUpdateClient();
                 sendUpdateToServer();
-            }).dimensions(panelBottomX + 5 + col * btnW, panelBottomY + 5 + row * (btnH + rowGap), btnW - 2, btnH).build();
-            presetButtons.add(btn); this.addDrawableChild(btn);
+            }).dimensions(x, y, btnW, btnH).build();
+            presetButtons.add(btn);
+            this.addDrawableChild(btn);
+
+            x += btnW + 2;
         }
 
-        if (names.size() > perPage) {
+        if (names.size() > 1) {
             presetScrollUp = ButtonWidget.builderCompat(Text.literal("◀"), b -> { if (presetScrollOffset > 0) { presetScrollOffset--; refreshBottomPanel(); } })
                     .dimensions(panelBottomX + 2, panelBottomY + panelBottomHeight - 25, 12, 20).build();
             presetScrollDown = ButtonWidget.builderCompat(Text.literal("▶"), b -> { if (presetScrollOffset < maxOffset) { presetScrollOffset++; refreshBottomPanel(); } })
@@ -1243,12 +1155,10 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // 「云北路牌全局设置」浮层可见时独占键盘：ESC 仅关闭浮层，不影响底层编辑界面
         if (SignGlobalSettingsOverlay.isVisible) {
             SignGlobalSettingsOverlay.keyPressed(keyCode);
             return true;
         }
-        // 图案浮层可见时独占键盘：ESC 仅关闭浮层，不影响底层编辑界面
         if (PatternAndFontOverlay.isVisible) {
             if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 PatternAndFontOverlay.isVisible = false;
@@ -1299,7 +1209,6 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        // 图案浮层可见时独占鼠标点击，底层编辑界面不响应
         if (SignGlobalSettingsOverlay.isVisible) {
             SignGlobalSettingsOverlay.mouseClicked(mouseX, mouseY, button);
             return true;
@@ -1334,6 +1243,10 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (SignGlobalSettingsOverlay.isVisible) {
+            SignGlobalSettingsOverlay.mouseDragged(mouseX, mouseY, button);
+            return true;
+        }
         if (grabbedGizmo >= 0 && currentGizmoMode() >= 0) {
             applyGizmoDrag(mouseX, mouseY);
             return true;
@@ -1358,8 +1271,7 @@ public class TextDisplayScreen extends Screen {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolledCompat(double mouseX, double mouseY, double amount) {
         if (SignGlobalSettingsOverlay.isVisible) {
             SignGlobalSettingsOverlay.mouseScrolled(mouseX, mouseY, amount);
             return true;
@@ -1368,11 +1280,6 @@ public class TextDisplayScreen extends Screen {
             PatternAndFontOverlay.mouseScrolled(mouseX, mouseY, amount);
             return true;
         }
-        // 悬停在按钮上滚动滚轮：一格等同一次点击，可连续滚动做微调，方向决定正负——
-        // 向上滚（amount > 0）为正向，等同一次左键点击；向下滚（amount < 0）为反向，
-        // 步进/循环类按钮走本类 mouseClicked 的 button == 1 分支（与 tooltip「左键 +1 | 右键 -1」一致），
-        // 其余按钮任何方向都按一次普通点击。
-        // 反向遍历 children()，命中后添加的在上层、与视觉叠放顺序一致。
         if (amount != 0.0) {
             List<? extends GuiEventListener> children = this.children();
             for (int i = children.size() - 1; i >= 0; i--) {
@@ -1388,7 +1295,7 @@ public class TextDisplayScreen extends Screen {
                 }
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolledCompat(mouseX, mouseY, amount);
     }
 
     private boolean isDirectionalStepButton(AbstractWidget widget) {
@@ -1412,14 +1319,9 @@ public class TextDisplayScreen extends Screen {
         super.mouseMoved(mouseX, mouseY);
     }
 
-    /**
-     * 删除前检查：自带生成的行（系统默认布局 builtin 标记，或含 {占位符}、-texture/-rect/-json 指令）需二次确认——
-     * 删除后不会自动恢复，且将失去枚举按钮、字段联动、图片自动更新等功能；其余纯文本行直接删除
-     */
     private void requestDeleteLine(int idx) {
         var data = textLineWidgets.get(idx).data;
         String text = data.getText();
-        // builtin 标记覆盖"占位符已被用户改写"的系统行；旧存档行无标记，仍按占位符/指令前缀判断
         boolean generated = data.isBuiltin()
                 || !CustomSignBlockEntity.extractPlaceholderKeys(text).isEmpty()
                 || text.trim().startsWith("-");
@@ -1502,8 +1404,6 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        // 图案与字体选择浮层打开时，隐藏底层文本编辑界面：不绘制任何面板/控件，
-        // 并把世界中的编辑高亮与拖拽手柄一并隐藏（置 -1），只渲染浮层
         if (SignGlobalSettingsOverlay.isVisible) {
             blockEntity.setEditingLineIndex(-1);
             blockEntity.setEditingGizmoMode(-1);
@@ -1520,7 +1420,6 @@ public class TextDisplayScreen extends Screen {
         blockEntity.setEditingLineIndex(selectedIndex);
         blockEntity.setEditingGizmoMode(currentGizmoMode());
 
-        // 选项行（行标签面板与保存按钮行之间）：行背景 + 组标题（按钮由 super.render 绘制）
         if (optionsRowVisible) {
             int oy = panelBottomY - SAVE_BTN_ROW_HEIGHT - OPTIONS_ROW_HEIGHT;
             context.fill(0, oy, width, panelBottomY - SAVE_BTN_ROW_HEIGHT, 0xAA333333);
@@ -1530,13 +1429,11 @@ public class TextDisplayScreen extends Screen {
             }
         }
 
-        // 顶部面板
         context.fill(panelTopX, panelTopY, panelTopX + panelTopWidth, panelTopY + panelTopHeight, 0xAA333333);
         context.drawBorder(panelTopX, panelTopY, panelTopWidth, panelTopHeight, 0xFF888888);
         context.fill(panelTopX + panelTopWidth, panelTopY, panelTopX + panelTopWidth + ADD_BUTTON_WIDTH, panelTopY + panelTopHeight, 0xAA444444);
         context.drawBorder(panelTopX + panelTopWidth, panelTopY, ADD_BUTTON_WIDTH, panelTopHeight, 0xFF888888);
 
-        // 保存按钮行（全宽，锚定底部属性面板上缘）
         context.fill(0, panelBottomY - SAVE_BTN_ROW_HEIGHT, width, panelBottomY, 0xAA222233);
         if (formatPainterMode) {
             String h = "格式刷模式：点击目标文本行标签应用格式（不含文字、位移/旋转）";
@@ -1544,7 +1441,6 @@ public class TextDisplayScreen extends Screen {
                     panelBottomY - SAVE_BTN_ROW_HEIGHT + (SAVE_BTN_ROW_HEIGHT - textRenderer.lineHeight) / 2, 0xFFFFDD55, false);
         }
 
-        // 底部面板
         context.fill(panelBottomX, panelBottomY, panelBottomX + panelBottomWidth, panelBottomY + panelBottomHeight, 0xAA333333);
         context.drawBorder(panelBottomX, panelBottomY, panelBottomWidth, panelBottomHeight, 0xFF888888);
 
@@ -1652,9 +1548,9 @@ public class TextDisplayScreen extends Screen {
     public void sendUpdateToServer() {
         syncWidgetsToBlockEntity();
         var packet = CustomSignUpdatePacket.update(blockPos, new ArrayList<>(blockEntity.getTextLines()));
-        var buf = new FriendlyByteBuf(Unpooled.buffer());
+        var buf = NetworkCompat.newBuffer();
         packet.write(buf);
-        NetworkManager.sendToServer(UPDATE_CUSTOM_SIGN, buf);
+        NetworkCompat.sendToServer(UPDATE_CUSTOM_SIGN, buf);
     }
 
     private void syncWidgetsToBlockEntity() {
@@ -1664,6 +1560,37 @@ public class TextDisplayScreen extends Screen {
         }
         blockEntity.getTextLines().clear();
         blockEntity.getTextLines().addAll(updatedLines);
+    }
+
+    /**
+     * 「全局设置」页的「一键转换」：把路牌自带行上的字体标签统一改写为自适应字体或原版字体。
+     *
+     * <p>只处理路牌自带的行（{@code builtin}），并且跳过 {@code -texture} / {@code -rect}
+     * 这类指令行（改写会破坏它们）；用户自己新增的行不受影响。
+     *
+     * @param adaptive {@code true} = 全部转为自适应字体；{@code false} = 全部转为原版 uniform
+     * @return 实际改写的行数
+     */
+    public int convertBuiltinFontTags(boolean adaptive) {
+        int converted = 0;
+        for (TextLineData line : blockEntity.getTextLines()) {
+            if (line == null || !line.isBuiltin()) continue;
+            if (!SignTextLinesHelper.canApplyFont(line.getText())) continue;
+            // 每行用它自己该用的字体（方块自带布局写入的 a/b/c，缺失时按内容推断），
+            // 而不是统一塞同一个字体——否则中英文混排的牌子会全部变成 a。
+            SignTextLinesHelper.forceFont(line, adaptive ? SignTextLinesHelper.lineAbcFont(line) : "");
+            converted++;
+        }
+        // 同步全局字体模式，使本次转换结果与后续新生成的行保持一致
+        GlobalFontSettings.setMode(adaptive ? GlobalFontSettings.FontMode.ADAPTIVE
+                : GlobalFontSettings.FontMode.VANILLA);
+        if (converted > 0) {
+            syncAndUpdateClient();
+            refreshTopPanel();
+            refreshBottomPanel();
+            sendUpdateToServer();
+        }
+        return converted;
     }
 
     @Override

@@ -13,15 +13,6 @@ import net.minecraft.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 图案与字体选择器 — 海燕蓝主题 UI
- *
- * <p>界面结构：左侧导航栏（卡片分组式，可收起）+ 右侧内容区。
- *
- * @see PatternRegistry
- * @see SidebarState
- * @see HomepageRenderer
- */
 public final class PatternAndFontOverlay {
 
     // ==================== 数据模型 ====================
@@ -264,6 +255,8 @@ public final class PatternAndFontOverlay {
         isDataLoaded = false;
         selectedH2 = null;
         selectedH3 = null;
+        // 资源包可能更换了同名纹理，尺寸缓存必须一并失效
+        TextureAspectCache.clear();
     }
 
     public static void closeOverlay() {

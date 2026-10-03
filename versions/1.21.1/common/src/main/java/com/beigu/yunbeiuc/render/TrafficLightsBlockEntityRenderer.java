@@ -6,6 +6,7 @@ import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.util.CustomFontRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -18,7 +19,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.chat.Component;
 import com.beigu.yunbeiuc.api.text.Text;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction;
 import com.mojang.math.Axis;
 import org.joml.Matrix4f;
@@ -41,7 +41,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) return 0.16f;
         if (mountType == TrafficLightsBlock.MountType.POLE) {
             if (isPavementBlock(currentBlock)) return -0.46f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.74f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.75f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.74f;
             else return -0.53f;
         }
@@ -60,43 +60,55 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
     }
 
-    private static final ResourceLocation LEFT_TURN_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
-    private static final ResourceLocation LEFT_TURN_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_yellow.png");
-    private static final ResourceLocation LEFT_TURN_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_green.png");
-    private static final ResourceLocation STRAIGHT_CIRCLE_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_red.png");
-    private static final ResourceLocation STRAIGHT_CIRCLE_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_yellow.png");
-    private static final ResourceLocation STRAIGHT_CIRCLE_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_green.png");
-    private static final ResourceLocation STRAIGHT_ARROW_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_red.png");
-    private static final ResourceLocation STRAIGHT_ARROW_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_yellow.png");
-    private static final ResourceLocation STRAIGHT_ARROW_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_green.png");
-    private static final ResourceLocation RIGHT_TURN_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_red.png");
-    private static final ResourceLocation RIGHT_TURN_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_yellow.png");
-    private static final ResourceLocation RIGHT_TURN_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_green.png");
-    private static final ResourceLocation TURN_AROUND_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_red.png");
-    private static final ResourceLocation TURN_AROUND_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_yellow.png");
-    private static final ResourceLocation TURN_AROUND_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_green.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_red.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_yellow.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_green.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_LEFT_TURN_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_red.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_LEFT_TURN_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_yellow.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_LEFT_TURN_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_green.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_red.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_yellow.png");
-    private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_green.png");
-    private static final ResourceLocation PAVEMENT_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
-    private static final ResourceLocation PAVEMENT_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
-    private static final ResourceLocation PAVEMENT_RED_TAIPEI = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red_taipei.png");
+    private static final ResourceLocation LEFT_TURN_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
+    private static final ResourceLocation LEFT_TURN_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_yellow.png");
+    private static final ResourceLocation LEFT_TURN_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_green.png");
+    private static final ResourceLocation STRAIGHT_CIRCLE_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_red.png");
+    private static final ResourceLocation STRAIGHT_CIRCLE_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_yellow.png");
+    private static final ResourceLocation STRAIGHT_CIRCLE_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_green.png");
+    private static final ResourceLocation STRAIGHT_ARROW_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_red.png");
+    private static final ResourceLocation STRAIGHT_ARROW_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_yellow.png");
+    private static final ResourceLocation STRAIGHT_ARROW_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/straight_arrow_green.png");
+    private static final ResourceLocation RIGHT_TURN_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_red.png");
+    private static final ResourceLocation RIGHT_TURN_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_yellow.png");
+    private static final ResourceLocation RIGHT_TURN_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/right_turn_green.png");
+    private static final ResourceLocation TURN_AROUND_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_red.png");
+    private static final ResourceLocation TURN_AROUND_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_yellow.png");
+    private static final ResourceLocation TURN_AROUND_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/turn_around_green.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_red.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_yellow.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_green.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_LEFT_TURN_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_red.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_LEFT_TURN_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_yellow.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_LEFT_TURN_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_left_turn_green.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_red.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_yellow.png");
+    private static final ResourceLocation NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/non_motor_vehicles_right_turn_green.png");
+    private static final ResourceLocation LANE_BOTTOM_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_red.png");
+    private static final ResourceLocation LANE_BOTTOM_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_yellow.png");
+    private static final ResourceLocation LANE_BOTTOM_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_green.png");
+    private static final ResourceLocation LANE_BOTTOM_LEFT_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_left_red.png");
+    private static final ResourceLocation LANE_BOTTOM_LEFT_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_left_yellow.png");
+    private static final ResourceLocation LANE_BOTTOM_LEFT_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_left_green.png");
+    private static final ResourceLocation LANE_BOTTOM_RIGHT_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_right_red.png");
+    private static final ResourceLocation LANE_BOTTOM_RIGHT_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_right_yellow.png");
+    private static final ResourceLocation LANE_BOTTOM_RIGHT_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_bottom_right_green.png");
+    private static final ResourceLocation LANE_CLOSE_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_close_red.png");
+    private static final ResourceLocation LANE_CLOSE_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_close_yellow.png");
+    private static final ResourceLocation LANE_CLOSE_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/lane_close_green.png");
+    private static final ResourceLocation PAVEMENT_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
+    private static final ResourceLocation PAVEMENT_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green.png");
+    private static final ResourceLocation PAVEMENT_RED_TAIPEI = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red_taipei.png");
     private static final ResourceLocation[] PAVEMENT_GREEN_TAIPEI_FRAMES = {
-            new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_1.png"),
-            new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_2.png"),
-            new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_3.png"),
-            new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_4.png"),
-            new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_5.png")
+            ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_1.png"),
+            ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_2.png"),
+            ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_3.png"),
+            ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_4.png"),
+            ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_green_taipei_5.png")
     };
-    private static final ResourceLocation SLOW_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_red.png");
-    private static final ResourceLocation SLOW_YELLOW = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_yellow.png");
-    private static final ResourceLocation SLOW_GREEN = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_green.png");
+    private static final ResourceLocation SLOW_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_red.png");
+    private static final ResourceLocation SLOW_YELLOW = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_yellow.png");
+    private static final ResourceLocation SLOW_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_green.png");
 
     @Override
     public void render(TrafficLightsBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
@@ -139,7 +151,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
                 ? 3.85f / 16f : -3.85f / 16f;
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
-                    ? 3.3875f / 16f : -3.3875f / 16f;
+                ? 3.3875f / 16f : -3.3875f / 16f;
         float y = -logoY;
         float z = getZOffset(mountType, currentBlock);
 
@@ -280,6 +292,30 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                     case GREEN -> NON_MOTOR_VEHICLES_RIGHT_TURN_GREEN;
                     case GRAY -> null;
                 };
+                case LANE_BOTTOM -> switch (lightState) {
+                    case RED -> LANE_BOTTOM_RED;
+                    case YELLOW -> LANE_BOTTOM_YELLOW;
+                    case GREEN -> LANE_BOTTOM_GREEN;
+                    case GRAY -> null;
+                };
+                case LANE_BOTTOM_LEFT -> switch (lightState) {
+                    case RED -> LANE_BOTTOM_LEFT_RED;
+                    case YELLOW -> LANE_BOTTOM_LEFT_YELLOW;
+                    case GREEN -> LANE_BOTTOM_LEFT_GREEN;
+                    case GRAY -> null;
+                };
+                case LANE_BOTTOM_RIGHT -> switch (lightState) {
+                    case RED -> LANE_BOTTOM_RIGHT_RED;
+                    case YELLOW -> LANE_BOTTOM_RIGHT_YELLOW;
+                    case GREEN -> LANE_BOTTOM_RIGHT_GREEN;
+                    case GRAY -> null;
+                };
+                case LANE_CLOSE -> switch (lightState) {
+                    case RED -> LANE_CLOSE_RED;
+                    case YELLOW -> LANE_CLOSE_YELLOW;
+                    case GREEN -> LANE_CLOSE_GREEN;
+                    case GRAY -> null;
+                };
                 case SLOW_FLASH -> switch (lightState) {
                     case RED -> SLOW_RED;
                     case YELLOW -> SLOW_YELLOW;
@@ -365,10 +401,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         VertexConsumer consumer = vertexConsumers.getBuffer(RenderType.entityCutout(texture));
         Matrix4f positionMatrix = matrices.last().pose();
 
-        consumer.vertex(positionMatrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
-        consumer.vertex(positionMatrix, halfSize, -halfSize, 0).color(255, 255, 255, 255).uv(1.0f, 1.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
-        consumer.vertex(positionMatrix, halfSize, halfSize, 0).color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
-        consumer.vertex(positionMatrix, -halfSize, halfSize, 0).color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
+        consumer.addVertex(positionMatrix, -halfSize, -halfSize, 0).setColor(255, 255, 255, 255).setUv(0.0f, 1.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, halfSize, -halfSize, 0).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, halfSize, halfSize, 0).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, -halfSize, halfSize, 0).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
 
         matrices.popPose();
     }
@@ -638,6 +674,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             case NON_MOTOR_VEHICLES -> "非机动车";
             case NON_MOTOR_VEHICLES_LEFT_TURN -> "非机动车（左转）";
             case NON_MOTOR_VEHICLES_RIGHT_TURN -> "非机动车（右转）";
+            case LANE_BOTTOM -> "车道开启（正下方）";
+            case LANE_BOTTOM_LEFT -> "车道开启（左下方）";
+            case LANE_BOTTOM_RIGHT -> "车道开启（右下方）";
+            case LANE_CLOSE -> "车道关闭";
             case COLOR_FLASH -> "色闪";
             case SLOW_FLASH -> "慢闪";
         };

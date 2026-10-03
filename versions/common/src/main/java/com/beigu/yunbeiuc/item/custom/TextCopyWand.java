@@ -1,4 +1,5 @@
 package com.beigu.yunbeiuc.item.custom;
+import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextCopyWand extends Item {
+public class TextCopyWand extends ItemCompat {
     private static final String COPIED_DATA_KEY = "CopiedTextLines";
 
     public TextCopyWand(Properties settings) {
@@ -40,13 +41,13 @@ public class TextCopyWand extends Item {
         for (CustomSignBlockEntity.TextLineData line : textLines) {
             list.add(line.toNbt());
         }
-        stack.getOrCreateTag().put(COPIED_DATA_KEY, list);
+        ItemCompat.updateTagCompat(stack, tag -> tag.put(COPIED_DATA_KEY, list));
         player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.copied", textLines.size()), true);
         return true;
     }
 
     private static boolean pasteSignText(ItemStack stack, Player player, Level world, BlockPos pos) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = ItemCompat.getTagCompat(stack);
         if (tag == null || !tag.contains(COPIED_DATA_KEY)) {
             player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.no_data"), true);
             return false;
@@ -99,10 +100,10 @@ public class TextCopyWand extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+    public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag context) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.copy"));
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.paste"));
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = ItemCompat.getTagCompat(stack);
         if (tag != null && tag.contains(COPIED_DATA_KEY)) {
             ListTag list = tag.getList(COPIED_DATA_KEY, 10);
             tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.text_copy_wand.tooltip.stored", list.size()));

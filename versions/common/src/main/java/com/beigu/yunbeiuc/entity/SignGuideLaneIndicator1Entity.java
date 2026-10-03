@@ -23,8 +23,8 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.direction1 = ArrowDirection.fromName(nbt.getString("direction1"));
         this.direction2 = ArrowDirection.fromName(nbt.getString("direction2"));
         this.direction3 = ArrowDirection.fromName(nbt.getString("direction3"));
@@ -36,12 +36,12 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("direction1", this.direction1.getName());
         nbt.putString("direction2", this.direction2.getName());
         nbt.putString("direction3", this.direction3.getName());
         nbt.putString("direction4", this.direction4.getName());
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -153,7 +153,7 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 

@@ -27,8 +27,8 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void loadCompat(CompoundTag nbt) {
+        super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.cnText3 = nbt.getString("cnText3");
@@ -44,7 +44,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditionalCompat(CompoundTag nbt) {
         nbt.putString("text1", this.text1);
         nbt.putString("text2", this.text2);
         nbt.putString("cnText3", this.cnText3);
@@ -53,7 +53,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
         nbt.putString("enText4", this.enText4);
         nbt.putString("cnText5", this.cnText5);
         nbt.putString("enText5", this.enText5);
-        super.saveAdditional(nbt);
+        super.saveAdditionalCompat(nbt);
     }
 
     /**
@@ -66,26 +66,26 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
      */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isRight = getBlockState().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get();
+        boolean isRight = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isRight) {
             lines.add(SignTextLinesHelper.centered("沌阳大道", 16.5f, 12f, 0.023f, 0x275aa8, "a"));
             lines.add(SignTextLinesHelper.centered("东风大道", 16.5f, -12f, 0.023f, 0x275aa8, "a"));
             lines.add(SignTextLinesHelper.centered("枫树六路", -6f, 12f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", -6f, 8f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", -6f, 8f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("枫树三路", -6f, 1f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", -6f, -3f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", -6f, -3f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("车城南路", -6f, -10f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", -6f, -14f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", -6f, -14f, 0.023f, 0xFFFFFF, "b"));
         } else {
             lines.add(SignTextLinesHelper.centered("沌阳大道", -16.5f, 12f, 0.023f, 0x275aa8, "a"));
             lines.add(SignTextLinesHelper.centered("东风大道", -16.5f, -12f, 0.023f, 0x275aa8, "a"));
             lines.add(SignTextLinesHelper.centered("枫树六路", 6f, 12f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", 6f, 8f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.6)", 6f, 8f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("枫树三路", 6f, 1f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", 6f, -3f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Fengshu Rd.(No.3)", 6f, -3f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("车城南路", 6f, -10f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", 6f, -14f, 0.023f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("Checheng Rd.(S)", 6f, -14f, 0.023f, 0xFFFFFF, "b"));
         }
         setTextLines(lines);
     }
@@ -168,7 +168,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

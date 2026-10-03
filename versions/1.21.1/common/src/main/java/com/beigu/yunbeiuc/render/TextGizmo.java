@@ -50,6 +50,11 @@ public final class TextGizmo {
     private static Matrix4f frameInv;
     private static Matrix4f baseFrameInv;
     private static Matrix4f proj;
+    /**
+     * 1.21 的方块实体 PoseStack 只含相机相对平移，相机旋转由着色器的 modelView 施加，
+     * 所以 frame 里的坐标要先用 modelView 变换才是裁剪空间，拾取必须与绘制用同一套矩阵。
+     */
+    private static Matrix4f projView;
     private static float bs = 1f;
     private static float halfWpx;
     private static float halfHpx;
@@ -106,6 +111,7 @@ public final class TextGizmo {
         frameInv = null;
         baseFrameInv = null;
         proj = null;
+        projView = null;
         hoverId = -1;
         grabId = -1;
         clearRects();
@@ -141,7 +147,9 @@ public final class TextGizmo {
 
     public static void updateAndRender(int mode, Matrix4f baseFrame, Matrix4f lineFrame, TextLineData d, float zOffsetBlocks, float halfWBlocks, float halfHBlocks) {
         Matrix4f pm = RenderSystem.getProjectionMatrix();
-        if (pm == null || d == null || lineFrame == null || baseFrame == null) return;
+        if (pm == null || d == null || lineFrame == null || baseFrame == null) {
+            return;
+        }
         bs = 0.05f * d.getFontSize();
         if (bs <= 1e-6f) return;
         frame = new Matrix4f(lineFrame);
@@ -158,6 +166,8 @@ public final class TextGizmo {
             baseFrameInv = null;
         }
         proj = new Matrix4f(pm);
+        // 与绘制保持一致：绘制时顶点走的是 着色器(proj × modelView)，拾取也必须用同一个组合矩阵
+        projView = new Matrix4f(pm).mul(RenderSystem.getModelViewMatrix());
         halfWpx = halfWBlocks / bs;
         halfHpx = halfHBlocks / bs;
         halfWbBlocks = halfWBlocks;
@@ -198,7 +208,9 @@ public final class TextGizmo {
     }
 
     public static int pick(double mx, double my, float sx, float sy, float sz) {
-        if (!isFresh() || HANDLES.isEmpty()) return -1;
+        if (!isFresh() || HANDLES.isEmpty()) {
+            return -1;
+        }
         int best = -1;
         float bestD = PICK_RADIUS_SQ;
         for (H h : HANDLES) {
@@ -313,9 +325,8 @@ public final class TextGizmo {
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buf = tessellator.getBuilder();
-        buf.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buf = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f m = new Matrix4f();
         m.identity();
@@ -340,7 +351,7 @@ public final class TextGizmo {
             }
         }
 
-        BufferUploader.drawWithShader(buf.end());
+        BufferUploader.drawWithShader(buf.build());
 
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
@@ -348,13 +359,13 @@ public final class TextGizmo {
     }
 
     private static Vector4f[] viewRayPoints(double mx, double my) {
-        if (proj == null) return null;
+        if (projView == null) return null;
         var win = Minecraft.getInstance().getWindow();
         if (win.getGuiScaledWidth() <= 0 || win.getGuiScaledHeight() <= 0) return null;
         float ndcX = (float) mx / win.getGuiScaledWidth() * 2f - 1f;
         float ndcY = 1f - (float) my / win.getGuiScaledHeight() * 2f;
         try {
-            Matrix4f invP = new Matrix4f(proj);
+            Matrix4f invP = new Matrix4f(projView);
             if (Math.abs(invP.determinant()) < 1e-9f) return null;
             invP.invert();
             Vector4f n = transform(invP, new Vector4f(ndcX, ndcY, -1f, 1f));
@@ -373,14 +384,14 @@ public final class TextGizmo {
     }
 
     public static void addLineRect(Matrix4f viewMatrix, int index, float lx0, float ly0, float lw, float lh, float unitX, float unitY) {
-        if (!rectsActive || proj == null) return;
+        if (!rectsActive || projView == null) return;
         float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, maxX = -Float.MAX_VALUE, maxY = -Float.MAX_VALUE, depth = 0f;
         for (int k = 0; k < 4; k++) {
             float lx = lx0 + (k & 1) * lw;
             float ly = ly0 + ((k >> 1) & 1) * lh;
             Vector3f v = transformPosition(viewMatrix, new Vector3f(lx * unitX, ly * unitY, 0f));
             Vector4f p = new Vector4f(v.x, v.y, v.z, 1f);
-            transformInPlace(proj, p);
+            transformInPlace(projView, p);
             if (p.w < 0.05f) return;
             depth += p.w;
             var win = Minecraft.getInstance().getWindow();
@@ -409,9 +420,9 @@ public final class TextGizmo {
     }
 
     private static float[] projectGui(float vx, float vy, float vz) {
-        if (proj == null) return null;
+        if (projView == null) return null;
         Vector4f p = new Vector4f(vx, vy, vz, 1f);
-        transformInPlace(proj, p);
+        transformInPlace(projView, p);
         if (p.w < 0.05f) return null;
         var win = Minecraft.getInstance().getWindow();
         return new float[]{
@@ -521,7 +532,7 @@ public final class TextGizmo {
     }
 
     private static void vert(BufferBuilder buf, Matrix4f m, Vector3f p, int r, int g, int b, int a) {
-        buf.vertex(m, p.x, p.y, p.z).color(r, g, b, a).endVertex();
+        buf.addVertex(m, p.x, p.y, p.z).setColor(r, g, b, a);
     }
 
     private static Vector4f transform(Matrix4f matrix, Vector4f value) {
