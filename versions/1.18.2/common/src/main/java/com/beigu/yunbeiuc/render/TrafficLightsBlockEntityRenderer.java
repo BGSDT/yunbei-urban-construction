@@ -137,8 +137,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
     private void renderPavementSeconds(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
-        if (entity.isInGroup()) {
+        if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+
             remaining = info.getActiveRemaining();
             if (remaining < 0) {
                 return;
@@ -495,8 +496,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         boolean showSeconds = entity.isShowSeconds();
 
         // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
-        if (entity.isInGroup()) {
+        if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+
             remaining = info.getActiveRemaining();
             if (remaining < 0) {
                 return;
@@ -587,8 +589,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         }
 
         // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
-        if (entity.isInGroup()) {
+        if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+
             remaining = info.getActiveRemaining();
             if (remaining < 0) {
                 return;

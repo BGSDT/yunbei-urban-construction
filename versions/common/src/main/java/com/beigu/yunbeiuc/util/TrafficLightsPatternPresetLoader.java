@@ -42,7 +42,7 @@ public class TrafficLightsPatternPresetLoader {
                 ResourceLocation fileId = VersionServices.resources().create(namespace, "traffic_lights_yunbeiuc.json");
 
                 try (InputStream stream = VersionServices.resources().openIfPresent(resourceManager, fileId)) {
-                    if (stream != null) {
+                    if (stream == null) continue;
                     try (
                          InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
 
@@ -71,9 +71,6 @@ public class TrafficLightsPatternPresetLoader {
                     } catch (Exception e) {
                         System.err.println("加载红绿灯相位预设文件失败 [" + fileId + "]: " + e.getMessage());
                     }
-                    }
-                } catch (Exception e) {
-                    System.err.println("打开红绿灯相位预设文件失败 [" + fileId + "]: " + e.getMessage());
                 }
             }
 

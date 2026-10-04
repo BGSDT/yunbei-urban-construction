@@ -35,7 +35,7 @@ public class TrafficLightsGroupSyncPacket {
     private final String directionType;
     private final boolean cycleActive;
     private final int currentActivePhase;
-    private final int currentTick;
+    private final long cycleStartGameTime;
     private final boolean showSeconds;
     private final int fixedSeconds;
     private final int countdownDisplayMode;
@@ -43,7 +43,7 @@ public class TrafficLightsGroupSyncPacket {
 
     public TrafficLightsGroupSyncPacket(BlockPos pos, String groupId, List<BlockPos> groupPositions,
                                         int[] phaseTimes, List<Integer> phaseIndices, String directionType,
-                                        boolean cycleActive, int currentActivePhase, int currentTick,
+                                        boolean cycleActive, int currentActivePhase, long cycleStartGameTime,
                                         boolean showSeconds, int fixedSeconds,
                                         int countdownDisplayMode, int countdownThreshold) {
         this.pos = pos;
@@ -54,7 +54,7 @@ public class TrafficLightsGroupSyncPacket {
         this.directionType = directionType;
         this.cycleActive = cycleActive;
         this.currentActivePhase = currentActivePhase;
-        this.currentTick = currentTick;
+        this.cycleStartGameTime = cycleStartGameTime;
         this.showSeconds = showSeconds;
         this.fixedSeconds = fixedSeconds;
         this.countdownDisplayMode = countdownDisplayMode;
@@ -86,7 +86,7 @@ public class TrafficLightsGroupSyncPacket {
         this.directionType = buf.readUtf();
         this.cycleActive = buf.readBoolean();
         this.currentActivePhase = buf.readVarInt();
-        this.currentTick = buf.readVarInt();
+        this.cycleStartGameTime = buf.readLong();
         this.showSeconds = buf.readBoolean();
         this.fixedSeconds = buf.readVarInt();
         this.countdownDisplayMode = buf.readVarInt();
@@ -118,7 +118,7 @@ public class TrafficLightsGroupSyncPacket {
                 : directionType);
         buf.writeBoolean(cycleActive);
         buf.writeVarInt(currentActivePhase);
-        buf.writeVarInt(currentTick);
+        buf.writeLong(cycleStartGameTime);
         buf.writeBoolean(showSeconds);
         buf.writeVarInt(fixedSeconds);
         buf.writeVarInt(countdownDisplayMode);
@@ -131,7 +131,7 @@ public class TrafficLightsGroupSyncPacket {
         if (world == null) return;
         if (world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity tl) {
             tl.applyClientGroupSync(groupId, groupPositions, phaseTimes, phaseIndices, directionType,
-                    cycleActive, currentActivePhase, currentTick,
+                    cycleActive, currentActivePhase, cycleStartGameTime,
                     showSeconds, fixedSeconds, countdownDisplayMode, countdownThreshold);
         }
     }

@@ -196,8 +196,9 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
     private void renderPavementSeconds(TrafficLightsPavementIntegrationBlockEntity entity, PoseStack matrices,
                                       MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, float zOffset, boolean isBack) {
         int remaining;
-        if (entity.isInGroup()) {
+        if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
+
             remaining = info.getActiveRemaining();
             if (remaining < 0) {
                 return;

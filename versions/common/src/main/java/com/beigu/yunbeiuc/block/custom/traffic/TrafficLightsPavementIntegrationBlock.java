@@ -11,7 +11,10 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.entity.TrafficLightsPavementIntegrationBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
+import com.beigu.yunbeiuc.screen.TrafficLightsScreen;
 import com.beigu.yunbeiuc.screen.TrafficLightsSimpleStaticStateScreen;
+import com.beigu.yunbeiuc.screen.TrafficLightsStaticStateScreen;
+import com.beigu.yunbeiuc.screen.TrafficLightsTimingScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.level.block.*;
@@ -167,23 +170,65 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
                     if (!trafficLightsBE.isInGroup()) {
                         // 未分组：打开静态状态设置界面
-                        Minecraft.getInstance().setScreen(new TrafficLightsSimpleStaticStateScreen(bottomPos));
+                        openStaticStateScreen(bottomPos);
                         return InteractionResult.sidedSuccess(true);
                     }
                     if (!trafficLightsBE.hasTimings()) {
                         // 已分组但未设置时间表：打开时间设置界面
-                        Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsTimingScreen(
-                                trafficLightsBE.getGroupId(), trafficLightsBE.getGroupPositions()));
+                        openTimingScreen(bottomPos);
                         return InteractionResult.sidedSuccess(true);
                     }
                     // 已分组且已设置时间：打开显示界面
-                    Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsScreen(bottomPos));
+                    openDisplayScreen(bottomPos);
                 }
             }
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openDisplayScreen(BlockPos pos) {
+        Minecraft.getInstance().setScreen(new TrafficLightsScreen(pos));
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openStaticStateScreen(BlockPos pos) {
+        BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
+        if (blockEntity instanceof TrafficLightsBlockEntity tl) {
+            Block currentBlock = tl.getBlockState().getBlock();
+            boolean isCountdownTimer = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
+            boolean isShanghai = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
+            boolean isPavement = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
+
+            if (isCountdownTimer) {
+                // 读秒器：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
+                Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
+            } else if (isShanghai) {
+                // 上海红绿灯：有方向列表 + 秒数输入 + 是否显示秒数开关
+                Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
+            } else if (isPavement) {
+                // 人行道红绿灯：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
+                Minecraft.getInstance().setScreen(new TrafficLightsSimpleStaticStateScreen(pos));
+            } else {
+                // 普通红绿灯（含单灯横式/竖式）：有方向列表，无秒数相关控件
+                Minecraft.getInstance().setScreen(new TrafficLightsStaticStateScreen(pos));
+            }
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openTimingScreen(BlockPos pos) {
+        BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
+        if (blockEntity instanceof TrafficLightsBlockEntity tl) {
+            Minecraft.getInstance().setScreen(new TrafficLightsTimingScreen(
+                    tl.getGroupId(), tl.getGroupPositions()));
+        }
     }
 
     public PushReaction getPushReaction(BlockState state) {

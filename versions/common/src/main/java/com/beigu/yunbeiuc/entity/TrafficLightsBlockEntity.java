@@ -37,13 +37,29 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private int[] phaseTimes = null;
     private int phaseCount = 0;
 
+    /** 相位内进度（由 {@link #cycleStartGameTime} 与本地游戏刻推算，不再独立自增） */
     private int currentTick = 0;
+    /** 当前相位（由 {@link #cycleStartGameTime} 与本地游戏刻推算，不再由"驱动灯"推送） */
     private int currentActivePhase = 0;
     private boolean cycleActive = false;
+    /**
+     * 整组共享的周期起点（相位 0 开始的游戏刻）。
+     *
+     * <p>每盏灯都用「本地游戏刻 - cycleStartGameTime」自行推算当前相位与相位内进度，
+     * 不再由某一盏"驱动灯"把相位/进度推给组内其它灯。这样做的原因：
+     * <ul>
+     *   <li>读秒是在客户端方块实体上算出来的，而客户端方块实体不会自己 tick，
+     *       只能等服务端每 10 刻推一次方块实体包。若读秒依赖被推来的 currentTick，
+     *       客户端拿到的始终是"上一个包"的快照，数字就会一顿一顿地跳。
+     *       改成游戏刻推算后，客户端用自己的本地游戏刻逐刻算出读秒，数字连续下降。</li>
+     *   <li>每盏灯自己算相位 = "自己分清楚自己属于哪个相位"，不会因为某盏灯区块
+     *       未加载、刚加载（旧存档进度）或 tick 顺序变化而把错误相位推给整组。</li>
+     * </ul>
+     * 只有相位 0 的起点这一个值需要在组内/客户端之间同步，且它每个周期才变一次。
+     */
+    private long cycleStartGameTime = Long.MIN_VALUE;
     /** 链接组状态（groupId / groupPositions / 时间表）自上次推送后是否又变化过 */
     private boolean groupStateDirty = false;
-    /** 本灯最近一次被组内其它灯同步进度时的游戏刻：同一刻内已同步则自身不再推进，保证整组每刻只推进一次 */
-    private long lastGroupSyncTick = Long.MIN_VALUE;
 
     private static final int YELLOW_DURATION = 3 * 20;
     private static final int FLASH_DURATION = 3 * 20;
@@ -80,30 +96,57 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         normalizePhaseData();
 
-        // 本游戏刻已被组内其它灯同步（相位、进度与灯状态均已刷新过），自身不再推进，
-        // 否则组内每盏灯都会在同一刻各自 +1、并以一刻多次的速度推进
-        if (level.getGameTime() == lastGroupSyncTick) {
-            return;
+        // 旧存档没有周期起点时，以当前游戏刻作为起点补上（组内同步会把整组拉到同一个值）
+        if (cycleStartGameTime == Long.MIN_VALUE) {
+            cycleStartGameTime = level.getGameTime();
         }
 
-        currentTick++;
+        int previousPhase = currentActivePhase;
+        refreshPhaseProgress();
 
-        int totalTicks = phaseTimes[currentActivePhase] * 20;
-        boolean phaseAdvanced = currentTick >= totalTicks;
-
-        if (phaseAdvanced) {
-            currentActivePhase = (currentActivePhase + 1) % phaseCount;
-            currentTick = 0;
+        // 相位切换必须立刻把新起点推给客户端；其余每 10 刻心跳同步一次，
+        // 用来纠正客户端本地游戏刻与服务端的细微漂移（读秒本身是客户端逐刻算的）。
+        if (currentActivePhase != previousPhase || level.getGameTime() % 10L == 0L) {
+            markDirtyAndUpdate();
         }
 
-        // 相位切换时必发；其余每 10 game tick 发一次。读秒（getLightTimingInfo → currentTick）
-        // 是在客户端方块实体上算出来的，只发方块状态不会让读秒数字变化。
-        // 按游戏刻判断而不是自增计数器：驱动整组的灯会随区块 tick 顺序变化，计数器会被拉长周期。
-        boolean syncClients = phaseAdvanced || level.getGameTime() % 10L == 0L;
-        if (syncClients) markDirtyAndUpdate();
-
-        syncGroupProgress(syncClients);
+        // 组内共享周期起点与时间表；相位/进度由每盏灯自己按同一起点推算，无需逐刻推送。
+        syncGroupClock();
         updateLightState();
+    }
+
+    /**
+     * 按「本地游戏刻 - 周期起点」推算当前相位与相位内进度。
+     *
+     * <p>这是整个读秒/相位系统的唯一来源：服务端与客户端都调用它，
+     * 客户端因此能在渲染时用本地游戏刻算出连续下降的读秒，不必依赖网络包。
+     * 组内所有灯共用同一个 {@link #cycleStartGameTime}，所以推出来的相位必然一致。
+     */
+    private void refreshPhaseProgress() {
+        if (phaseTimes == null || phaseCount <= 0 || level == null) return;
+        if (cycleStartGameTime == Long.MIN_VALUE) return;
+
+        long totalCycleTicks = 0L;
+        for (int i = 0; i < phaseCount; i++) {
+            totalCycleTicks += (long) phaseTimes[i] * 20L;
+        }
+        if (totalCycleTicks <= 0L) return;
+
+        long elapsed = (level.getGameTime() - cycleStartGameTime) % totalCycleTicks;
+        if (elapsed < 0L) elapsed += totalCycleTicks;
+
+        long accumulated = 0L;
+        for (int i = 0; i < phaseCount; i++) {
+            long duration = (long) phaseTimes[i] * 20L;
+            if (elapsed < accumulated + duration) {
+                currentActivePhase = i;
+                currentTick = (int) (elapsed - accumulated);
+                return;
+            }
+            accumulated += duration;
+        }
+        currentActivePhase = phaseCount - 1;
+        currentTick = 0;
     }
 
     /**
@@ -143,6 +186,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         if (level == null || level .isClientSide || phaseTimes == null || phaseCount <= 0) return;
 
         normalizePhaseData();
+        refreshPhaseProgress();
 
         BlockState currentState = getBlockState();
         if (!currentState.hasProperty(TrafficLightsBlock.LIGHT_STATE)) return;
@@ -199,20 +243,20 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     /**
-     * 把本灯的相位进度同步给组内其它灯，并立即刷新它们的灯状态。
+     * 把整组共享的周期起点与时间表同步给组内其它灯，并立即刷新它们的灯状态。
      *
-     * <p>每个游戏刻都同步（而不是只在相位切换时同步）：组内某盏灯所在的区块未 tick 时，
-     * 它的进度会落后于整组；等到组内相位推进时才被强制跟随，就会出现"绿灯还没走到黄灯时间
-     * 就被切掉、直接跳红灯"。逐刻同步后整组进度始终一致，黄灯不会被跳过；
-     * 所在区块未 tick 的灯也能持续得到正确的灯状态，不会停在旧颜色上。
+     * <p>只同步"基准"，不同步"当前相位/进度"：相位与进度由每盏灯自己按
+     * {@link #cycleStartGameTime} 与本地游戏刻推算（见 {@link #refreshPhaseProgress()}）。
+     * 这样即使某盏灯所在区块未 tick、或刚从旧存档加载进来，它算出的相位也与整组一致，
+     * 不会把旧进度推给整组。
      *
-     * <p>灯状态之外还要按周期把方块实体数据发给客户端（{@code syncClients}）：读秒在客户端
-     * 方块实体上计算，只发方块状态不会让读秒数字变化。
+     * <p>仍然逐刻刷新成员的灯状态（{@code tl.updateLightState()}）：所在区块未 tick 的成员
+     * 也需要持续得到正确的颜色，不能停在旧颜色上。
      *
      * <p>区块未加载的成员只跳过、不拆除链接组：区块未加载不代表方块被破坏
      * （被破坏的成员由 {@code TrafficLightsBlock#unloadGroupAt} 显式清理）。
      */
-    private void syncGroupProgress(boolean syncClients) {
+    private void syncGroupClock() {
         if (groupId == null || groupPositions.isEmpty() || level == null || level .isClientSide) return;
 
         for (BlockPos pos : groupPositions) {
@@ -220,16 +264,12 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             if (!level.isLoaded(pos)) continue;
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TrafficLightsBlockEntity tl) {
-                // 时间表以组内正在推进的灯为准，避免成员残留旧时间表导致相位/时长不一致
-                if (tl.phaseTimes != this.phaseTimes || tl.phaseCount != this.phaseCount) {
-                    tl.phaseTimes = this.phaseTimes;
-                    tl.phaseCount = this.phaseCount;
-                }
-                tl.currentActivePhase = this.currentActivePhase;
-                tl.currentTick = this.currentTick;
-                tl.lastGroupSyncTick = level.getGameTime();
+                // 时间表与周期起点以整组为准，避免成员残留旧值导致相位/时长不一致
+                tl.phaseTimes = this.phaseTimes;
+                tl.phaseCount = this.phaseCount;
+                tl.cycleActive = this.cycleActive;
+                tl.cycleStartGameTime = this.cycleStartGameTime;
                 tl.updateLightState();
-                if (syncClients) tl.markDirtyAndUpdate();
             } else {
                 unloadGroup();
                 return;
@@ -249,9 +289,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
      */
     public int getGreenRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
-        if (!phaseIndices.contains(currentActivePhase)) return -1;
 
         normalizePhaseData();
+        refreshPhaseProgress();
+
+        if (!phaseIndices.contains(currentActivePhase)) return -1;
 
         Block currentBlock = getBlockState().getBlock();
         boolean isPavementLight = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
@@ -290,9 +332,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
      */
     public int getYellowRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
-        if (!phaseIndices.contains(currentActivePhase)) return -1;
 
         normalizePhaseData();
+        refreshPhaseProgress();
+
+        if (!phaseIndices.contains(currentActivePhase)) return -1;
 
         // 与下一相位相接为连续绿灯时，中间不出现黄灯
         if (phaseIndices.contains((currentActivePhase + 1) % phaseCount)) return -1;
@@ -318,9 +362,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
      */
     public int getRedRemainingSeconds() {
         if (phaseTimes == null || phaseCount <= 0 || !cycleActive) return -1;
-        if (phaseIndices.contains(currentActivePhase)) return -1;
 
         normalizePhaseData();
+        refreshPhaseProgress();
+
+        if (phaseIndices.contains(currentActivePhase)) return -1;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int remainingTicks = totalTicks - currentTick;
@@ -425,6 +471,9 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     public void startCycle() {
         if (phaseTimes == null || phaseCount <= 0) return;
         this.cycleActive = true;
+        // 整组共用同一个周期起点：setTimings 会在同一游戏刻对所有成员调用本方法，
+        // 因此它们拿到的起点完全相同，之后各自推算出的相位必然一致。
+        this.cycleStartGameTime = (level != null) ? level.getGameTime() : Long.MIN_VALUE;
         this.currentTick = 0;
         this.currentActivePhase = 0;
         updateLightState();
@@ -452,6 +501,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                     tl.phaseCount = 0;
                     tl.phaseIndices.clear();
                     tl.directionType = DirectionType.STRAIGHT_CIRCLE;
+                    tl.cycleStartGameTime = Long.MIN_VALUE;
                     tl.stopCycle();
                     tl.markGroupStateDirty();
                 }
@@ -464,6 +514,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         phaseCount = 0;
         phaseIndices.clear();
         directionType = DirectionType.STRAIGHT_CIRCLE;
+        cycleStartGameTime = Long.MIN_VALUE;
         markGroupStateDirty();
     }
 
@@ -490,6 +541,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.currentTick = 0;
         this.currentActivePhase = 0;
         this.cycleActive = false;
+        this.cycleStartGameTime = Long.MIN_VALUE;
         if (level != null && !level .isClientSide) {
             BlockState state = getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
@@ -542,7 +594,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
      */
     public void applyClientGroupSync(String groupId, List<BlockPos> groupPositions, int[] phaseTimes,
                                      List<Integer> phaseIndices, String directionType,
-                                     boolean cycleActive, int currentActivePhase, int currentTick,
+                                     boolean cycleActive, int currentActivePhase, long cycleStartGameTime,
                                      boolean showSeconds, int fixedSeconds,
                                      int countdownDisplayMode, int countdownThreshold) {
         this.groupId = groupId;
@@ -552,8 +604,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.phaseIndices = phaseIndices == null ? new ArrayList<>() : new ArrayList<>(phaseIndices);
         this.directionType = DirectionType.fromName(directionType);
         this.cycleActive = cycleActive;
+        // 客户端拿周期起点，之后按本地游戏刻自行推算相位与读秒（读秒因此逐刻连续变化）
+        this.cycleStartGameTime = cycleStartGameTime;
         this.currentActivePhase = currentActivePhase;
-        this.currentTick = currentTick;
+        this.currentTick = 0;
+        refreshPhaseProgress();
         this.showSeconds = showSeconds;
         this.fixedSeconds = fixedSeconds;
         this.countdownDisplayMode = countdownDisplayMode;
@@ -659,6 +714,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.currentActivePhase = nbt.getInt("currentActivePhase");
         this.currentTick = nbt.getInt("currentTick");
         this.cycleActive = nbt.getBoolean("cycleActive");
+        // 周期起点（新格式）。旧存档没有该字段时置为未初始化，由 tick/refreshPhaseProgress
+        // 以当前游戏刻补上，之后由组内同步（syncGroupClock）把整组拉到同一个值。
+        this.cycleStartGameTime = nbt.contains("cycleStartGameTime")
+                ? nbt.getLong("cycleStartGameTime")
+                : Long.MIN_VALUE;
 
         if (nbt.contains("groupPositions")) {
             CompoundTag positionsTag = nbt.getCompound("groupPositions");
@@ -697,6 +757,9 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         nbt.putInt("currentActivePhase", currentActivePhase);
         nbt.putInt("currentTick", currentTick);
         nbt.putBoolean("cycleActive", cycleActive);
+        if (cycleStartGameTime != Long.MIN_VALUE) {
+            nbt.putLong("cycleStartGameTime", cycleStartGameTime);
+        }
 
         if (groupPositions != null && !groupPositions.isEmpty()) {
             CompoundTag positionsTag = new CompoundTag();
@@ -781,7 +844,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         TrafficLightsGroupSyncPacket packet = new TrafficLightsGroupSyncPacket(
                 worldPosition, groupId, groupPositions, phaseTimes, phaseIndices,
-                directionType.getName(), cycleActive, currentActivePhase, currentTick,
+                directionType.getName(), cycleActive, currentActivePhase, cycleStartGameTime,
                 showSeconds, fixedSeconds, countdownDisplayMode, countdownThreshold);
 
         for (ServerPlayer player : serverLevel.players()) {

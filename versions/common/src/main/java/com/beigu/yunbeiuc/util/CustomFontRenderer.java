@@ -27,6 +27,8 @@ public class CustomFontRenderer {
     private ResourceLocation fontAtlas;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
     private final Set<Character> pendingChars = new HashSet<>();
+    /** 取不到位图的字符：记下来避免每次渲染都重复触发整张图集重建。 */
+    private final Set<Character> unresolvable = new HashSet<>();
     private boolean initialized = false;
     private boolean atlasDirty = false;
 
@@ -59,7 +61,7 @@ public class CustomFontRenderer {
         boolean hasNewChars = false;
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            if (!charMap.containsKey(c) && !pendingChars.contains(c)) {
+            if (!charMap.containsKey(c) && !pendingChars.contains(c) && !unresolvable.contains(c)) {
                 pendingChars.add(c);
                 hasNewChars = true;
             }
@@ -77,29 +79,26 @@ public class CustomFontRenderer {
     /**
      * 重建字形图集。
      *
-     * <p>关键约束：字形在 UV 空间中的位置一经分配就<b>不再改变</b>。
+     * <p>每次字符集变化都<b>整体重排</b>：先 {@code charMap.clear()}，再按排序后的
+     * 字符顺序把每个字形依次落到游标位置，因此每个字形的 UV 必然互不重叠。
      *
-     * <p>原实现每次新增字符都把已有字形整体重排（{@code charMap.clear()} 后按
-     * {@code HashSet} 的不确定顺序重新排布），同时又用固定名称把新纹理注册到
-     * 同一个 {@link ResourceLocation} 上。在 1.20.1 及更低版本中，渲染批次会跨帧
-     * 持有上一帧的 UV 与 GL 纹理引用，于是每当字符集变化（如倒计时 15→14），
-     * 正在绘制的批次就会按新 UV 采样旧图集，数字边缘被切碎、像素错乱。
+     * <p>曾经这里尝试过"已有字形保留原 UV、只为新字形追加空隙"的增量布局，那是错的：
+     * 增量布局要正确推进游标，必须按<b>分配顺序</b>回放已有字形；而 {@code charMap} 是
+     * {@link HashMap}，{@code keySet()} 的迭代顺序是哈希桶顺序。倒计时数字 '0'-'9'
+     * 的哈希桶恰好等于数字值，而引入顺序是"先渲染背景 88、再渲染数字"，于是 charMap 的
+     * 迭代顺序变成 [2,5,8] 这类与分配顺序不同的顺序，游标会往回跳，新字形被摆到已有
+     * 字形上面 —— 多个数字共用同一块 UV，读秒就会显示成别的数字（看起来像"乱跳"）。
      *
-     * <p>因此这里改为：布局按字符排序保证确定性，且只为<b>尚未分配</b>的字形
-     * 追加空隙，已有字形的 UV 保持不变；纹理则整体重新上传。
+     * <p>重排是安全的：{@link #ensureCharacters} 只在字符集变化时触发重建，
+     * 且重建发生在写入顶点之前，同一帧内所有文字用的都是同一份新 UV。
      */
     private void rebuildAtlas() {
         CustomFontManager fontManager = CustomFontManager.getInstance();
         fontManager.initialize();
 
-        // 只处理从未分配过位置的字形，已有字形保持原 UV 不动
-        List<Character> newChars = new ArrayList<>(pendingChars);
-        newChars.removeIf(c -> charMap.containsKey(c));
-        // 排序保证同一批字符在不同机器/不同次运行下布局一致
-        Collections.sort(newChars);
-
+        // 本次需要存在于图集中的全部字形 = 已分配 + 本次新增
         Set<Character> allChars = new LinkedHashSet<>(charMap.keySet());
-        allChars.addAll(newChars);
+        allChars.addAll(pendingChars);
 
         NativeImage atlasImage = new NativeImage(NativeImage.Format.RGBA, ATLAS_WIDTH, ATLAS_HEIGHT, true);
         fillImage(atlasImage, 0);
@@ -109,41 +108,28 @@ public class CustomFontRenderer {
         int maxRowHeight = 0;
         int padding = 2;
 
-        // 必须按排序后的顺序布局：先已分配（其位置会被下面的赋值覆盖为一致值），
-        // 再追加新字形，保证新字形落在已有字形之后，不会挤占既有 UV。
-        for (char c : allChars) {
-            if (!charMap.containsKey(c) && charMap.size() >= MAX_CHAR_CACHE) break;
+        // 排序后布局：同一批字符在任意机器/任意次运行下都会得到完全相同的图集
+        List<Character> ordered = new ArrayList<>(allChars);
+        Collections.sort(ordered);
+
+        charMap.clear();
+
+        for (char c : ordered) {
+            if (charMap.size() >= MAX_CHAR_CACHE) break;
 
             CustomFontManager.FontTexture glyph =
                     fontManager.getStringTexture(String.valueOf(c), 0xFFFFFFFF, fontName);
 
-            if (glyph == null || glyph.getImage() == null) continue;
+            if (glyph == null || glyph.getImage() == null) {
+                unresolvable.add(c);
+                continue;
+            }
 
             NativeImage glyphImage = glyph.getImage();
             int glyphW = glyph.getWidth();
             int glyphH = glyph.getHeight();
-            if (glyphW <= 0 || glyphH <= 0) continue;
-
-            CharInfo existing = charMap.get(c);
-            if (existing != null && existing.width == glyphW && existing.height == glyphH) {
-                // 已分配且尺寸未变：沿用原 UV，并推进布局指针跳过其占位，
-                // 使后续追加的字形不会与它重叠。
-                int ex = Math.round(existing.u1 * ATLAS_WIDTH);
-                int ey = Math.round(existing.v1 * ATLAS_HEIGHT);
-                if (ex + glyphW + padding > ATLAS_WIDTH) {
-                    currentX = 0;
-                    currentY = ey + glyphH + padding;
-                    maxRowHeight = 0;
-                } else {
-                    currentX = ex + glyphW + padding;
-                    if (currentX > ATLAS_WIDTH) {
-                        currentX = 0;
-                        currentY = ey + glyphH + padding;
-                        maxRowHeight = 0;
-                    }
-                }
-                maxRowHeight = Math.max(maxRowHeight, glyphH);
-                blitGlyph(atlasImage, glyphImage, ex, ey, glyphW, glyphH);
+            if (glyphW <= 0 || glyphH <= 0) {
+                unresolvable.add(c);
                 continue;
             }
 
@@ -159,12 +145,12 @@ public class CustomFontRenderer {
 
             blitGlyph(atlasImage, glyphImage, currentX, currentY, glyphW, glyphH);
 
-            float u1 = (float) currentX / ATLAS_WIDTH;
-            float v1 = (float) currentY / ATLAS_HEIGHT;
-            float u2 = (float) (currentX + glyphW) / ATLAS_WIDTH;
-            float v2 = (float) (currentY + glyphH) / ATLAS_HEIGHT;
-
-            charMap.put(c, new CharInfo(u1, v1, u2, v2, glyphW, glyphH));
+            charMap.put(c, new CharInfo(
+                    (float) currentX / ATLAS_WIDTH,
+                    (float) currentY / ATLAS_HEIGHT,
+                    (float) (currentX + glyphW) / ATLAS_WIDTH,
+                    (float) (currentY + glyphH) / ATLAS_HEIGHT,
+                    glyphW, glyphH));
 
             currentX += glyphW + padding;
             maxRowHeight = Math.max(maxRowHeight, glyphH);
@@ -174,9 +160,7 @@ public class CustomFontRenderer {
         ResourceLocation id = VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID,
                 "font_atlas_" + fontName);
 
-        // DynamicTexture 接管 atlasImage 的所有权，不要再单独 close 它；
-        // upload() 会把整张图集重新上传到同一个 GL 纹理对象，
-        // 避免释放纹理导致在途批次采样到已删除的纹理。
+        // DynamicTexture 接管 atlasImage 的所有权，不要再单独 close 它。
         DynamicTexture texture = new DynamicTexture(atlasImage);
         texture.setFilter(false, false);
         Minecraft.getInstance().getTextureManager().register(id, texture);
@@ -355,6 +339,7 @@ public class CustomFontRenderer {
         }
         charMap.clear();
         pendingChars.clear();
+        unresolvable.clear();
         atlasDirty = true;
         initialized = false;
     }
