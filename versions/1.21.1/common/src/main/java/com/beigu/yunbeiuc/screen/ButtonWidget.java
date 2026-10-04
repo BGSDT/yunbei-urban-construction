@@ -18,7 +18,7 @@ public class ButtonWidget extends Button implements ClickableWidget {
         return new Builder(label, action);
     }
 
-    public void setPosition(int x, int y) { setX(x); setY(y); }
+    public void setPosition(int x, int y) { super.setX(x); super.setY(y); }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context.getGraphics(), mouseX, mouseY, delta);

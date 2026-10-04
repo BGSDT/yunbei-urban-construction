@@ -34,11 +34,18 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
         this.left = 0;
     }
 
-    protected int getScrollbarPositionX() { return getRowRight() + 4; }
-    public void setRenderHorizontalShadows(boolean visible) { setRenderTopAndBottom(visible); }
+    /**
+     * 共享界面覆盖本方法来自定义滚动条位置。
+     *
+     * <p>名字故意带 {@code *Compat} 后缀，<b>不能</b>叫 {@code getScrollbarPositionX}：
+     * 那是 {@code method_25329}（即下面 {@code getScrollbarPosition}）在 Yarn 里的名字。
+     * 重映射到 Yarn 时该 override 会被改名成 {@code getScrollbarPositionX}，与同名同签名的方法撞车。
+     */
+    protected int getScrollbarPositionXCompat() { return super.getRowRight() + 4; }
+    public void setRenderHorizontalShadows(boolean visible) { super.setRenderTopAndBottom(visible); }
 
     @Override
-    protected int getScrollbarPosition() { return getScrollbarPositionX(); }
+    protected int getScrollbarPosition() { return getScrollbarPositionXCompat(); }
 
     public abstract static class Entry<E extends Entry<E>> extends AbstractSelectionList.Entry<E> {
         @Override

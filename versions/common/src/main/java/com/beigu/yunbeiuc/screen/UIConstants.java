@@ -28,6 +28,8 @@ public final class UIConstants {
     public static final int CARD_ITEM_H = 20;
     /** 分组卡片内胶囊项左右内缩 */
     public static final int CARD_ITEM_INSET = 6;
+    /** 子分类（H3 下的子 H3）每级额外缩进像素 */
+    public static final int CARD_SUB_INDENT = 10;
     /** 卡片之间的垂直间距 */
     public static final int CARD_GAP = 6;
     /** 卡片内部子项区与头部的间距 */

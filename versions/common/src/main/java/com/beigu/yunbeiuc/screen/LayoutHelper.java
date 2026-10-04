@@ -29,13 +29,13 @@ public final class LayoutHelper {
                 : UIConstants.CARD_HEADER_H;
     }
 
-    /** H2 分组卡片高度（含展开的子项）。 */
+    /** H2 分组卡片高度（含展开的子项；子分类按当前可见行数计入）。 */
     public static int calculateH2CardHeight(PatternAndFontOverlay.H2Category h2, Font tr) {
         if (SidebarState.isCollapsed()) return UIConstants.NAV_ICON_ROW_H;
         int h = UIConstants.CARD_HEADER_H;
         if (h2.isExpanded && !h2.subCategories.isEmpty()) {
             h += UIConstants.CARD_INNER_TOP;
-            h += h2.subCategories.size() * UIConstants.CARD_ITEM_H;
+            h += PatternAndFontOverlay.collectNavRows(h2).size() * UIConstants.CARD_ITEM_H;
             h += UIConstants.CARD_INNER_BOTTOM;
         }
         return h;
@@ -206,9 +206,8 @@ public final class LayoutHelper {
         PatternAndFontOverlay.H3Category selH3 = PatternAndFontOverlay.selectedH3;
 
         if (selH3.headerText != null) {
-            int descMaxW = paneW - 48;
-            int lines = tr.split(selH3.headerText, descMaxW).size();
-            h += lines * 12 + 12 + 16;
+            h += PatternAndFontOverlay.headerCardHeight(tr, selH3.headerText, paneW)
+                    + PatternAndFontOverlay.HEADER_CARD_GAP;
         }
 
         for (int secIdx = 0; secIdx < selH3.sections.size(); secIdx++) {

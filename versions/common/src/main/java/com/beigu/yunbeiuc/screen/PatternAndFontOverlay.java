@@ -219,6 +219,40 @@ public final class PatternAndFontOverlay {
         }
     }
 
+    /**
+     * 侧边栏中的一行 H3 分类（含缩进层级）。
+     *
+     * <p>用于支持 H2 → H3 → 子分类 的多级菜单：{@code depth} 为 0 表示 H3 直属 H2，
+     * 每深入一层 +1，渲染时按 {@code depth * UIConstants.CARD_SUB_INDENT} 缩进。
+     */
+    public static class NavRow {
+        public final H3Category h3;
+        public final int depth;
+
+        public NavRow(H3Category h3, int depth) {
+            this.h3 = h3;
+            this.depth = depth;
+        }
+    }
+
+    /** 深度优先收集某 H2 下当前可见的全部 H3 行（收起的分支不展开）。 */
+    public static List<NavRow> collectNavRows(H2Category h2) {
+        List<NavRow> rows = new ArrayList<>();
+        for (H3Category h3 : h2.subCategories) {
+            collectNavRows(h3, 0, rows);
+        }
+        return rows;
+    }
+
+    private static void collectNavRows(H3Category h3, int depth, List<NavRow> out) {
+        out.add(new NavRow(h3, depth));
+        if (h3.isExpanded && !h3.subCategories.isEmpty()) {
+            for (H3Category child : h3.subCategories) {
+                collectNavRows(child, depth + 1, out);
+            }
+        }
+    }
+
     // ==================== 全局状态 ====================
 
     public static final List<H2Category> REGISTRY = new ArrayList<>();
@@ -495,11 +529,11 @@ public final class PatternAndFontOverlay {
 
         int bodyY = curY + headerH;
 
-        // 子项胶囊
+        // 子项胶囊（支持 H3 多级缩进）
         if (h2.isExpanded && !h2.subCategories.isEmpty()) {
             bodyY += UIConstants.CARD_INNER_TOP;
-            for (H3Category h3 : h2.subCategories) {
-                paintH3Pill(ctx, tr, mx, my, x, w, bodyY, h3);
+            for (NavRow row : collectNavRows(h2)) {
+                paintH3Pill(ctx, tr, mx, my, x, w, bodyY, row);
                 bodyY += UIConstants.CARD_ITEM_H;
             }
         }
@@ -507,14 +541,17 @@ public final class PatternAndFontOverlay {
         return curY + totalH;
     }
 
-    // H3 胶囊项
+    // H3 胶囊项（按 depth 缩进；含子分类时显示展开/收起箭头）
     private static void paintH3Pill(DrawContext ctx, Font tr,
-                                    int mx, int my, int cardX, int cardW, int y, H3Category h3) {
+                                    int mx, int my, int cardX, int cardW, int y, NavRow row) {
         int inset = UIConstants.CARD_ITEM_INSET;
-        int px = cardX + inset;
-        int pw = cardW - inset * 2;
+        int indent = row.depth * UIConstants.CARD_SUB_INDENT;
+        int px = cardX + inset + indent;
+        int pw = cardW - inset * 2 - indent;
         int ph = UIConstants.CARD_ITEM_H - 4;
 
+        H3Category h3 = row.h3;
+        boolean hasChildren = !h3.subCategories.isEmpty();
         boolean isSelected = !isHomeSelected && selectedH3 == h3;
         boolean isHov = LayoutHelper.isMouseInRect(mx, my, px, y, pw, ph);
 
@@ -529,7 +566,13 @@ public final class PatternAndFontOverlay {
 
         int txtClr = isSelected ? 0xFFFFFFFF
                 : (isHov ? UIConstants.CLR_NAVTextPri : UIConstants.CLR_NAVTextSec);
-        ctx.drawText(tr, h3.title.getString(), px + 12, y + (ph - 8) / 2, txtClr, false);
+        int textX = px + 12;
+        if (hasChildren) {
+            String arrow = h3.isExpanded ? "\u25BE" : "\u25B8";
+            ctx.drawText(tr, arrow, px + 4, y + (ph - 8) / 2, txtClr, false);
+            textX = px + 14;
+        }
+        ctx.drawText(tr, h3.title.getString(), textX, y + (ph - 8) / 2, txtClr, false);
     }
 
     // 收起模式图标方块
@@ -598,25 +641,47 @@ public final class PatternAndFontOverlay {
 
     // ==================== 分区内容渲染 ====================
 
+    /** 说明卡片左内边距（4px 强调条 + 10px 间距）。 */
+    private static final int HEADER_CARD_PAD_L = 14;
+    /** 说明卡片右内边距。 */
+    private static final int HEADER_CARD_PAD_R = 10;
+    /** 说明卡片与下方分区之间的间距。 */
+    public static final int HEADER_CARD_GAP = 16;
+
+    /**
+     * 分类说明卡片的高度（换行行数 × 行高 + 上下内边距）。
+     *
+     * <p>渲染、滚动高度与点击命中三处共用，保证完全一致。
+     */
+    public static int headerCardHeight(Font tr, Component headerText, int paneW) {
+        int cardW = paneW - 32;
+        int textMaxW = cardW - HEADER_CARD_PAD_L - HEADER_CARD_PAD_R;
+        return tr.split(headerText, textMaxW).size() * 12 + 16;
+    }
+
     private static void paintSectionBody(DrawContext ctx, Font tr, int mx, int my,
                                          int winW, int paneW, int contentY, int clipTop, int clipBottom) {
         int navW = SidebarState.getEffectiveWidth();
         H3Category h3 = selectedH3;
 
-        // 分类说明文字（整行蓝色底色条）
+        // 分类说明文字（主页 header 同款卡片：底色 + 描边 + 左侧强调条）
         if (h3.headerText != null) {
-            int descMaxW = paneW - 48;
-            List<FormattedCharSequence> wrapped = tr.split(h3.headerText, descMaxW);
-            int bannerH = wrapped.size() * 12 + 12;
-            int bannerX = navW + 16;
+            int cardX = navW + 16;
+            int cardW = paneW - 32;
+            int textX = cardX + HEADER_CARD_PAD_L;
+            int textMaxW = cardW - HEADER_CARD_PAD_L - HEADER_CARD_PAD_R;
+            List<FormattedCharSequence> wrapped = tr.split(h3.headerText, textMaxW);
+            int cardH = headerCardHeight(tr, h3.headerText, paneW);
 
-            if (contentY + bannerH >= clipTop && contentY <= clipBottom) {
-                ctx.fill(bannerX, contentY, bannerX + descMaxW, contentY + bannerH, UIConstants.CLR_ACCENT);
+            if (contentY + cardH >= clipTop && contentY <= clipBottom) {
+                ctx.fill(cardX, contentY, cardX + cardW, contentY + cardH, UIConstants.CLR_HOME_CARD_BG);
+                ctx.drawBorder(cardX, contentY, cardW, cardH, UIConstants.CLR_HOME_CARD_STROKE);
+                ctx.fill(cardX, contentY, cardX + 4, contentY + cardH, UIConstants.CLR_ACCENT);
                 for (int i = 0; i < wrapped.size(); i++) {
-                    ctx.drawText(tr, wrapped.get(i), bannerX + 8, contentY + 6 + i * 12, 0xFFFFFFFF, false);
+                    ctx.drawText(tr, wrapped.get(i), textX, contentY + 8 + i * 12, UIConstants.CLR_HOME_BODY, false);
                 }
             }
-            contentY += bannerH + 16;
+            contentY += cardH + HEADER_CARD_GAP;
         }
 
         // 遍历每个分区

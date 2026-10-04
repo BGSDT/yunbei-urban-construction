@@ -21,17 +21,23 @@ subprojects { platformProject ->
 
         def loader = platformProject.name
         def loaderTitle = loader == 'neoforge' ? 'NeoForge' : loader.capitalize()
-        def projectId = modrinthConfig.getProperty("project_id_${loader}",
+
+        def cfgProjectId = modrinthConfig.getProperty("project_id_${loader}",
             modrinthConfig.getProperty('project_id', ''))
-        def projectName = modrinthConfig.getProperty('project_name', rootProject.archives_name)
-        def versionType = modrinthConfig.getProperty('version_type', 'release')
+        def cfgProjectName = modrinthConfig.getProperty('project_name', rootProject.archives_name)
+        def cfgVersionType = modrinthConfig.getProperty('version_type', 'release')
+
+        if (!cfgProjectId) {
+            platformProject.logger.warn("[modrinth] 未读到 project_id：请在仓库根目录 modrinth.properties 里" +
+                "设置 project_id（或 project_id_${loader}），否则发布会被 Minotaur 拒绝。")
+        }
 
         platformProject.modrinth {
             token = modrinthConfig.getProperty('token', '')
-            projectId = projectId
+            projectId = cfgProjectId
             versionNumber = "${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
-            versionName = "${projectName} ${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
-            versionType = versionType
+            versionName = "${cfgProjectName} ${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
+            versionType = cfgVersionType
             uploadFile = platformProject.tasks.named('remapJar')
             gameVersions = [rootProject.minecraft_version]
             loaders = [loader]

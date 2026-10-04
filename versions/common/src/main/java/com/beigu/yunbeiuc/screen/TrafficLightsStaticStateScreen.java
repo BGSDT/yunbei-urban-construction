@@ -392,7 +392,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean shouldPauseCompat() {
         return false;
     }
 

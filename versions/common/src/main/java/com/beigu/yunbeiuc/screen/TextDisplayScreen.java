@@ -104,6 +104,14 @@ public class TextDisplayScreen extends Screen {
     private boolean optionsRowVisible = false;
     private final List<ButtonWidget> optionButtons = new ArrayList<>();
     private final List<Object[]> optionGroupTitles = new ArrayList<>();
+
+    // ===== 外部模组扩展：自定义按钮 =====
+    /** 注入到「底部控制行（位移/旋转/缩放/字体/对齐那一行）」的自定义按钮定义。 */
+    private final List<CustomButton> customControlRowButtons = new ArrayList<>();
+    /** 注入到「属性选项行」的自定义按钮定义。 */
+    private final List<CustomButton> customPropertyButtons = new ArrayList<>();
+    /** 每次刷新时创建的底部控制行自定义控件（用于刷新前移除旧控件）。 */
+    private final List<ButtonWidget> builtControlCustomWidgets = new ArrayList<>();
     private boolean suppressTextFieldListener = false;
     private String currentPlaceholderText = "";
     private String currentResolvedText = "";
@@ -551,6 +559,143 @@ public class TextDisplayScreen extends Screen {
         sendUpdateToServer();
     }
 
+    // ==================== 外部模组扩展 API ====================
+    //
+    // 供其他模组直接调用：操作输入框、向底部控制行 / 属性选项行注入按钮、新增文本行。
+    // 标签提供 Component 与 String 两种重载；String 版本签名里不含任何 Minecraft 类型，
+    // 跨映射（如 yarn 项目）调用最省事。
+
+    /** 清空底部输入框（同时把当前选中文本行的文字清空）。 */
+    public void clearInputField() {
+        setInputFieldContent("");
+    }
+
+    /**
+     * 覆盖式设置底部输入框内容，并写回当前选中文本行。
+     *
+     * <p>与 {@link #insertPatternContent(String)} 不同：本方法始终覆盖，不追加；
+     * 当前没有选中行时会自动新建一行。
+     *
+     * @param text 新内容；{@code null} 视为空串
+     */
+    public void setInputFieldContent(String text) {
+        String content = text == null ? "" : text;
+        preciseInputMode = false;
+        if (textLineWidgets.isEmpty() || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) {
+            TextLineData newData = new TextLineData(content);
+            newData.setBuiltin(false);
+            textLineWidgets.add(new TextLineWidget(newData));
+            blockEntity.getTextLines().add(newData);
+            selectedIndex = textLineWidgets.size() - 1;
+            topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
+        } else {
+            textLineWidgets.get(selectedIndex).data.setText(content);
+        }
+        refreshTopPanel();
+        refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
+    /**
+     * 新增一条文本行并选中它。
+     *
+     * @param text 行文本；{@code null} 视为空串
+     * @return 新增行的数据对象，便于调用方继续设置字体 / 颜色 / 位移等属性
+     */
+    public TextLineData addTextLine(String text) {
+        TextLineData newData = new TextLineData(text == null ? "" : text);
+        newData.setBuiltin(false);
+        textLineWidgets.add(new TextLineWidget(newData));
+        blockEntity.getTextLines().add(newData);
+        selectedIndex = textLineWidgets.size() - 1;
+        topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
+        refreshTopPanel();
+        refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+        return newData;
+    }
+
+    /**
+     * 在「底部控制行」（位移 / 旋转 / 缩放 / 字体 / 对齐那一行）追加一个自定义按钮。
+     *
+     * <p>按钮宽度按文字自适应；该行放不下时会自动出现左右滚动按钮。
+     *
+     * @param label   按钮文字
+     * @param onClick 点击回调
+     * @return 自定义按钮句柄，可用于 {@link #removeCustomButton(CustomButton)}
+     */
+    public CustomButton addControlRowButton(Component label, Runnable onClick) {
+        return addControlRowButton(label == null ? "" : label.getString(), onClick);
+    }
+
+    /** {@link #addControlRowButton(Component, Runnable)} 的 String 版本。 */
+    public CustomButton addControlRowButton(String label, Runnable onClick) {
+        CustomButton cb = new CustomButton(label, onClick);
+        customControlRowButtons.add(cb);
+        refreshBottomPanel();
+        return cb;
+    }
+
+    /**
+     * 在「属性选项行」追加一个自定义按钮。
+     *
+     * <p>属性选项行原本只在当前文本行含占位符属性时出现；一旦加入自定义按钮，该行会始终显示。
+     *
+     * @param label   按钮文字
+     * @param onClick 点击回调
+     * @return 自定义按钮句柄，可用于 {@link #removeCustomButton(CustomButton)}
+     */
+    public CustomButton addPropertyButton(Component label, Runnable onClick) {
+        return addPropertyButton(label == null ? "" : label.getString(), onClick);
+    }
+
+    /** {@link #addPropertyButton(Component, Runnable)} 的 String 版本。 */
+    public CustomButton addPropertyButton(String label, Runnable onClick) {
+        CustomButton cb = new CustomButton(label, onClick);
+        customPropertyButtons.add(cb);
+        refreshTopPanel();
+        return cb;
+    }
+
+    /** 移除之前注入的自定义按钮（底部控制行 / 属性选项行均可）。 */
+    public void removeCustomButton(CustomButton button) {
+        if (button == null) return;
+        customControlRowButtons.remove(button);
+        customPropertyButtons.remove(button);
+        refreshTopPanel();
+        refreshBottomPanel();
+    }
+
+    /**
+     * 其他模组注入的自定义按钮定义（标签 + 点击回调）。
+     *
+     * <p>只使用 {@link String} / {@link Runnable}，签名中不含任何 Minecraft 类型，
+     * 因此跨映射（yarn 项目）调用无需重映射。
+     */
+    public static final class CustomButton {
+        public final String label;
+        public final Runnable onClick;
+
+        public CustomButton(String label, Runnable onClick) {
+            this.label = label == null ? "" : label;
+            this.onClick = onClick;
+        }
+    }
+
+    // 依据自定义按钮定义创建控件；w 为宽度，y 为纵坐标（横坐标由所在行布局决定）
+    private ButtonWidget buildCustomButton(CustomButton cb, int w, int y) {
+        return ButtonWidget.builderCompat(Text.literal(cb.label), b -> {
+            if (cb.onClick != null) cb.onClick.run();
+        }).dimensions(0, y, w, BTN_SIZE).build();
+    }
+
+    // 自定义按钮自适应宽度
+    private int customButtonWidth(CustomButton cb) {
+        return Math.max(20, textRenderer.width(Text.literal(cb.label)) + 8);
+    }
+
     private boolean trySelectLine(double mouseX, double mouseY) {
         if (presetSaveMode || presetLoadMode || preciseInputMode || formatPainterMode || presetSelectMode) return false;
         int idx = TextGizmo.pickLine(mouseX, mouseY);
@@ -783,7 +928,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     private void recomputeLayout() {
-        optionsRowVisible = computeOptionsRowVisible();
+        optionsRowVisible = computeOptionsRowVisible() || !customPropertyButtons.isEmpty();
         int optionsH = optionsRowVisible ? OPTIONS_ROW_HEIGHT : 0;
         panelTopY = panelBottomY - SAVE_BTN_ROW_HEIGHT - optionsH - panelTopHeight;
         int rowBtnY = panelBottomY - SAVE_BTN_ROW_HEIGHT + 1;
@@ -917,28 +1062,47 @@ public class TextDisplayScreen extends Screen {
         for (var b : optionButtons) this.remove(b);
         optionButtons.clear();
         optionGroupTitles.clear();
-        if (!optionsRowVisible || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
-        String text = textLineWidgets.get(selectedIndex).data.getText();
+        if (!optionsRowVisible) return;
+
         int x = 5;
         int y = panelBottomY - SAVE_BTN_ROW_HEIGHT - OPTIONS_ROW_HEIGHT + (OPTIONS_ROW_HEIGHT - 20) / 2;
-        for (String key : CustomSignBlockEntity.extractPlaceholderKeys(text)) {
-            List<CustomSignBlockEntity.FieldOptionGroup> groups = blockEntity.getFieldOptions(key);
-            if (groups == null) continue;
-            for (var group : groups) {
-                if (x + 40 > width - 10) return;
-                optionGroupTitles.add(new Object[]{group.title(), x, y + 6});
-                x += textRenderer.width(group.title()) + 6;
-                for (var opt : group.options()) {
-                    int w = Math.max(20, textRenderer.width(opt.label()) + 8);
-                    if (x + w > width - 5) return;
-                    ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(opt.label()), b -> applyOption(group.field(), opt.value()))
-                            .dimensions(x, y, w, 20).build();
-                    btn.active = !opt.current();
-                    optionButtons.add(btn);
-                    this.addDrawableChild(btn);
-                    x += w + 4;
+
+        // 占位符属性选项
+        boolean overflow = false;
+        if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+            String text = textLineWidgets.get(selectedIndex).data.getText();
+            outer:
+            for (String key : CustomSignBlockEntity.extractPlaceholderKeys(text)) {
+                List<CustomSignBlockEntity.FieldOptionGroup> groups = blockEntity.getFieldOptions(key);
+                if (groups == null) continue;
+                for (var group : groups) {
+                    if (x + 40 > width - 10) { overflow = true; break outer; }
+                    optionGroupTitles.add(new Object[]{group.title(), x, y + 6});
+                    x += textRenderer.width(group.title()) + 6;
+                    for (var opt : group.options()) {
+                        int w = Math.max(20, textRenderer.width(opt.label()) + 8);
+                        if (x + w > width - 5) { overflow = true; break outer; }
+                        ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(opt.label()), b -> applyOption(group.field(), opt.value()))
+                                .dimensions(x, y, w, 20).build();
+                        btn.active = !opt.current();
+                        optionButtons.add(btn);
+                        this.addDrawableChild(btn);
+                        x += w + 4;
+                    }
+                    x += 10;
                 }
-                x += 10;
+            }
+        }
+
+        // 外部模组注入的自定义属性按钮（占位符选项已排满时不再追加）
+        if (!overflow) {
+            for (CustomButton cb : customPropertyButtons) {
+                int w = customButtonWidth(cb);
+                if (x + w > width - 5) break;
+                ButtonWidget btn = buildCustomButton(cb, w, y);
+                optionButtons.add(btn);
+                this.addDrawableChild(btn);
+                x += w + 4;
             }
         }
     }
@@ -956,6 +1120,8 @@ public class TextDisplayScreen extends Screen {
     }
 
     private void refreshBottomPanel() {
+        for (ButtonWidget b : builtControlCustomWidgets) this.remove(b);
+        builtControlCustomWidgets.clear();
         this.remove(textField); this.remove(xButton); this.remove(yButton); this.remove(zButton);
         this.remove(rxButton); this.remove(ryButton); this.remove(rzButton);
         this.remove(sxButton); this.remove(syButton); this.remove(szButton);
@@ -1020,6 +1186,12 @@ public class TextDisplayScreen extends Screen {
                 row.add(shadowButton); row.add(outlineButton); row.add(outlineColorButton); row.add(glowButton); row.add(clearFormatButton);
             }
             case ALIGN -> { row.add(hAlignButton); row.add(vAlignButton); }
+        }
+        // 外部模组注入的自定义按钮（排在标准按钮之后）
+        for (CustomButton cb : customControlRowButtons) {
+            ButtonWidget w = buildCustomButton(cb, customButtonWidth(cb), y2);
+            builtControlCustomWidgets.add(w);
+            row.add(w);
         }
         layoutBottomControlRow(row, y2);
     }
@@ -1610,7 +1782,7 @@ public class TextDisplayScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean shouldPauseCompat() {
         return false;
     }
 

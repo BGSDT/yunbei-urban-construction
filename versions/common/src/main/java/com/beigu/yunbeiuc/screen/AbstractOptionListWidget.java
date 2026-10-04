@@ -61,7 +61,7 @@ public abstract class AbstractOptionListWidget<O> extends ElementListWidget<Abst
     }
 
     @Override
-    protected int getScrollbarPositionX() {
+    protected int getScrollbarPositionXCompat() {
         return this.getRowLeft() + this.getRowWidth() + 4;
     }
 

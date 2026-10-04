@@ -280,7 +280,7 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean shouldPauseCompat() {
         return false;
     }
 

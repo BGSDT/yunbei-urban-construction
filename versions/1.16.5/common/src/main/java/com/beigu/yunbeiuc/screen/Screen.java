@@ -63,9 +63,9 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 
     protected <T extends GuiEventListener> T addDrawableChild(T widget) {
         if (widget instanceof AbstractWidget abstractWidget) {
-            addButton(abstractWidget);
+            super.addButton(abstractWidget);
         } else {
-            addWidget(widget);
+            super.addWidget(widget);
             if (widget instanceof Widget renderable) {
                 this.extraRenderables.add(renderable);
             }
@@ -74,7 +74,7 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     }
 
     protected <T extends GuiEventListener> T addSelectableChild(T widget) {
-        return addWidget(widget);
+        return super.addWidget(widget);
     }
 
     protected void remove(GuiEventListener widget) {
@@ -92,12 +92,21 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         this.extraRenderables.clear();
     }
 
-    public void close() { onClose(); }
+    public void close() { super.onClose(); }
 
-    public boolean shouldPause() { return false; }
+    /**
+     * 共享界面覆盖本方法来决定「打开时是否暂停游戏」。
+     *
+     * <p>名字故意带 {@code *Compat} 后缀，<b>不能</b>叫 {@code shouldPause}：
+     * {@code shouldPause} 是 {@code method_25421}（即下面 {@code isPauseScreen}）在 Yarn 里的名字。
+     * 本类同时 {@code @Override} 了 {@code isPauseScreen}，当 jar 由 intermediary 重映射到 Yarn 时，
+     * 该 override 会被改名成 {@code shouldPause}，与同名同签名的方法撞车
+     * （Loom 报 "Mapping target name conflicts detected ... unfixable conflicts"）。
+     */
+    public boolean shouldPauseCompat() { return false; }
 
     @Override
-    public boolean isPauseScreen() { return shouldPause(); }
+    public boolean isPauseScreen() { return shouldPauseCompat(); }
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         return mouseScrolledCompat(mouseX, mouseY, amount);

@@ -75,7 +75,7 @@ public final class HomepageRenderer {
         }
         h += 8;
 
-        h += 18 + 4 + 36 + 8;
+        h += 18 + 4 + projectCardHeight(tr, contentW) + 8;
 
         return h;
     }
@@ -125,9 +125,12 @@ public final class HomepageRenderer {
         return y + 4;
     }
 
+    /** 项目卡片内两个链接按钮之间的竖向间距。 */
+    private static final int LINK_GAP = 4;
+
     private static int drawProjectCard(DrawContext ctx, Font tr, int mx, int my,
                                         int x, int y, int w, int clipTop, int clipBottom) {
-        int cardH = 36;
+        int cardH = projectCardHeight(tr, w);
         if (y + cardH < clipTop || y > clipBottom) return y + cardH;
 
         // 卡片本身不是按钮：整卡不随鼠标悬停变化，仅卡片内的链接有交互反馈
@@ -138,27 +141,50 @@ public final class HomepageRenderer {
         Component cardTitle = Text.translatable("yunbeiuc.gui.homepage.yunbeiuc.title");
         ctx.drawText(tr, cardTitle, x + 14, y + 4, UIConstants.CLR_HEADING, false);
 
-        Component repoLink = Text.translatable("yunbeiuc.gui.homepage.repo.label");
-        int linkY = y + 18;
         int linkW = w - 28;
-        List<FormattedCharSequence> linkLines = tr.split(repoLink, linkW - 8);
-        int linkH = linkLines.size() * 10 + 8;
+        int linkY = y + 18;
+        linkY += drawLinkButton(ctx, tr, mx, my, x + 14, linkY, linkW,
+                "yunbeiuc.gui.homepage.repo.label", "https://github.com/BGSDT/yunbei-urban-construction");
+        linkY += LINK_GAP;
+        linkY += drawLinkButton(ctx, tr, mx, my, x + 14, linkY, linkW,
+                "yunbeiuc.gui.homepage.doc.label", "https://bgsdt.github.io/");
 
-        boolean linkHov = LayoutHelper.isMouseInRect(mx, my, x + 14, linkY, linkW, linkH);
-        ctx.fill(x + 14, linkY, x + 14 + linkW, linkY + linkH, linkHov ? UIConstants.CLR_ACTION_HOVER : UIConstants.CLR_ACTION_FILL);
-        ctx.drawBorder(x + 14, linkY, linkW, linkH, linkHov ? UIConstants.CLR_ACCENT : UIConstants.CLR_ACTION_STROKE);
+        return y + cardH;
+    }
 
-        int clr = linkHov ? UIConstants.CLR_LINK_PRESSED : UIConstants.CLR_LINK;
-        int txtY = linkY + 4;
-        for (FormattedCharSequence line : linkLines) {
+    /** 绘制一个居中文案的链接按钮，返回其占用高度；悬停时记录 URL 供点击打开。 */
+    private static int drawLinkButton(DrawContext ctx, Font tr, int mx, int my,
+                                      int x, int y, int w, String labelKey, String url) {
+        Component label = Text.translatable(labelKey);
+        List<FormattedCharSequence> lines = tr.split(label, w - 8);
+        int h = lines.size() * 10 + 8;
+
+        boolean hov = LayoutHelper.isMouseInRect(mx, my, x, y, w, h);
+        ctx.fill(x, y, x + w, y + h, hov ? UIConstants.CLR_ACTION_HOVER : UIConstants.CLR_ACTION_FILL);
+        ctx.drawBorder(x, y, w, h, hov ? UIConstants.CLR_ACCENT : UIConstants.CLR_ACTION_STROKE);
+
+        int clr = hov ? UIConstants.CLR_LINK_PRESSED : UIConstants.CLR_LINK;
+        int txtY = y + 4;
+        for (FormattedCharSequence line : lines) {
             int lw = tr.width(line);
-            ctx.drawText(tr, line, x + 14 + (linkW - lw) / 2, txtY, clr, false);
+            ctx.drawText(tr, line, x + (w - lw) / 2, txtY, clr, false);
             txtY += 10;
         }
 
-        if (linkHov) PatternAndFontOverlay.setLastHoveredUrl("https://github.com/BGSDT/yunbei-urban-construction");
+        if (hov) PatternAndFontOverlay.setLastHoveredUrl(url);
+        return h;
+    }
 
-        return y + cardH;
+    /** 项目卡片总高度（标题区 + 两个链接按钮 + 间距）；渲染与滚动高度共用，保证一致。 */
+    private static int projectCardHeight(Font tr, int w) {
+        int linkW = w - 28;
+        int repoH = linkHeight(tr, Text.translatable("yunbeiuc.gui.homepage.repo.label"), linkW);
+        int docH = linkHeight(tr, Text.translatable("yunbeiuc.gui.homepage.doc.label"), linkW);
+        return 18 + repoH + LINK_GAP + docH;
+    }
+
+    private static int linkHeight(Font tr, Component label, int linkW) {
+        return tr.split(label, linkW - 8).size() * 10 + 8;
     }
 
     public static boolean openUrl(String url) {

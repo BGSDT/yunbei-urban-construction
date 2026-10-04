@@ -156,14 +156,10 @@ public final class PatternRegistry {
         addSignSections(trafficSigns);
         patternCategory.addSubCategory(trafficSigns);
 
-        // 自定义资源包图案
+        // 自定义资源包图案（纯容器：内容由资源包 ui_definitions/*.json 提供的子分类承载）
         PatternAndFontOverlay.H3Category customPatterns =
                 new PatternAndFontOverlay.H3Category(Text.translatable("yunbeiuc.gui.categories.custom_resource_pack"));
         customPatterns.headerText = Text.translatable("yunbeiuc.gui.sections.custom_patterns.desc");
-        customPatterns.addSection(new PatternAndFontOverlay.H4Section(
-                Text.translatable("yunbeiuc.gui.sections.custom_patterns"),
-                Text.literal(""), VersionServices.resources().create("yunbeiuc", "patterns/"))
-                .setCustomJsonPath("yunbeiuc:patterns/custom_patterns.json"));
         patternCategory.addSubCategory(customPatterns);
 
         // ==================== 字体 ====================
@@ -185,11 +181,6 @@ public final class PatternRegistry {
         PatternAndFontOverlay.H3Category customFonts =
                 new PatternAndFontOverlay.H3Category(Text.translatable("yunbeiuc.gui.categories.custom_resource_pack"));
         customFonts.headerText = Text.translatable("yunbeiuc.gui.sections.custom_fonts.desc");
-        customFonts.addSection(new PatternAndFontOverlay.H4Section(
-                Text.translatable("yunbeiuc.gui.sections.custom_fonts"),
-                Text.literal(""), VersionServices.resources().create("yunbeiuc", "fonts/"))
-                .setFontMode()
-                .setCustomJsonPath("yunbeiuc:fonts/custom_fonts.json"));
         fontCategory.addSubCategory(customFonts);
 
         PatternAndFontOverlay.REGISTRY.add(patternCategory);

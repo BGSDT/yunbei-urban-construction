@@ -11,10 +11,10 @@ public class TextFieldWidget extends EditBox {
         super(font, x, y, width, height, label);
     }
 
-    public String getText() { return getValue(); }
-    public void setText(String value) { setValue(value); }
-    public void setChangedListener(Consumer<String> listener) { setResponder(listener); }
-    public void setPlaceholder(Component placeholder) { setSuggestion(placeholder.getString()); }
+    public String getText() { return super.getValue(); }
+    public void setText(String value) { super.setValue(value); }
+    public void setChangedListener(Consumer<String> listener) { super.setResponder(listener); }
+    public void setPlaceholder(Component placeholder) { super.setSuggestion(placeholder.getString()); }
     public void setPosition(int x, int y) { this.x = x; this.y = y; }
     public int getX() { return x; }
     public int getY() { return y; }

@@ -17,17 +17,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
- * 图案与字体的资源包加载器。
+ * 图案、字体与预设的资源包加载器。
  *
- * <p>职责：从 Minecraft 的资源管理器（{@link ResourceManager}）扫描纹理、解析自定义图案/字体 JSON
- * 与高级自定义 UI 定义 JSON，并把结果写入 {@link PatternAndFontOverlay} 的分类模型（H2/H3/H4）。
+ * <p>职责：从 Minecraft 的资源管理器（{@link ResourceManager}）扫描纹理、解析自定义 UI 定义 JSON
+ * （图案 / 字体 / 预设），并把结果写入 {@link PatternAndFontOverlay} 的分类模型（H2/H3/H4）。
+ *
+ * <p>自定义资源包统一使用 {@code assets/<命名空间>/ui_definitions/cf_<modid>.json}
+ * （见 {@link #CUSTOM_UI_DIR} 与 {@link #CUSTOM_UI_FILES}），同时兼容历史文件名
+ * {@code patterns.json}。三个命名空间（yunbeiuc / ocelotsignmod / ocelotsignyunbei）
+ * 的接口与 JSON 结构完全一致，各自读取自己那份文件。
  *
  * <p>分类结构与内置素材清单（白名单/排除前缀等）仍由
  * {@code com.beigu.yunbeiuc.screen.PatternRegistry} 定义，本类只承担“加载”职责，
@@ -40,6 +41,35 @@ public final class PatternResourceLoader {
 
     /** 日志前缀（原实现位于 {@code PatternRegistry}，迁移后改用本类名）。 */
     private static final String LOG_TAG = "[PatternResourceLoader]";
+
+    /**
+     * 自定义资源包定义目录：读取所有命名空间下的 {@code assets/<命名空间>/ui_definitions/}。
+     * 图案、字体、预设共用同一套接口与 JSON 结构。
+     */
+    public static final String CUSTOM_UI_DIR = "ui_definitions";
+
+    /**
+     * 需要读取的自定义资源包接口文件名：三个命名空间各一个
+     * （yunbeiuc / ocelotsignmod / ocelotsignyunbei，接口与 JSON 结构完全一致）。
+     *
+     * <p>另兼容历史文件名 {@code patterns.json}（与 {@code cf_<modid>.json} 结构一致），
+     * 因此两者都会读取，其余 {@code *.json} 一律忽略。
+     */
+    public static final String[] CUSTOM_UI_FILES = {
+            "cf_yunbeiuc.json",
+            "cf_ocelotsignmod.json",
+            "cf_ocelotsignyunbei.json",
+            "patterns.json"
+    };
+
+    /** 判断资源路径的文件名是否为约定的接口文件（{@code cf_<modid>.json} 或 {@code patterns.json}）。 */
+    public static boolean isCustomUiFile(String path) {
+        String fileName = path.substring(path.lastIndexOf('/') + 1);
+        for (String name : CUSTOM_UI_FILES) {
+            if (name.equals(fileName)) return true;
+        }
+        return false;
+    }
 
     private PatternResourceLoader() {
     }
@@ -67,9 +97,9 @@ public final class PatternResourceLoader {
             }
         }
 
-        loadCustomPatternsFromJson(manager);
-        loadCustomFontsFromJson(manager);
         loadAdvancedCustomUIFromJson(manager);
+        // 资源包预设与图案/字体共用 ui_definitions 目录（见 CUSTOM_UI_DIR）
+        PresetManager.loadFromResourcePacks(manager);
     }
 
     // ==================== 纹理缓存 ====================
@@ -191,177 +221,73 @@ public final class PatternResourceLoader {
         }
     }
 
-    // ==================== 自定义图案 / 字体 JSON ====================
-
-    // 从 JSON 加载自定义图案
-    private static void loadCustomPatternsFromJson(ResourceManager manager) {
-        forEachCustomResourceSection(h2 -> h2.subCategories, "yunbeiuc.gui.tabs.patterns",
-                section -> loadCustomPatternsFromJsonSection(section, manager));
-    }
-
-    // 解析自定义图案 JSON 并追加到指定 Section
-    private static void loadCustomPatternsFromJsonSection(PatternAndFontOverlay.H4Section section, ResourceManager manager) {
-        ResourceLocation jsonId = VersionServices.resources().parse(section.customJsonPath);
-
-        try {
-            List<InputStream> streams = collectAllResourceStreams(manager, jsonId);
-            for (InputStream stream : streams) {
-                try (InputStream in = stream;
-                     InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                    JsonElement root = new JsonParser().parse(reader);
-                    if (root.isJsonArray()) {
-                        for (JsonElement element : root.getAsJsonArray()) {
-                            JsonObject obj = element.getAsJsonObject();
-                            String name = obj.has("name") ? obj.get("name").getAsString() : Text.translatable("yunbeiuc.gui.unnamed").getString();
-                            String texture = obj.has("texture") ? obj.get("texture").getAsString() : "";
-                            String insert = obj.has("insert") ? obj.get("insert").getAsString() : "";
-
-                            if (!texture.isEmpty()) {
-                                section.addWhitelistItem(VersionServices.resources().parse(texture), insert, Text.literal(name));
-                            }
-                        }
-                    }
-                } catch (Exception innerE) {
-                    System.err.println(LOG_TAG + " Failed to parse custom pattern JSON: " + innerE.getMessage());
-                }
-            }
-        } catch (Exception e) {
-            System.err.println(LOG_TAG + " Custom pattern JSON 读取异常: " + e.getMessage());
-        }
-    }
-
-    // 从 JSON 加载自定义字体
-    private static void loadCustomFontsFromJson(ResourceManager manager) {
-        forEachCustomResourceSection(h2 -> h2.subCategories, "yunbeiuc.gui.tabs.fonts",
-                section -> loadCustomFontsFromJsonSection(section, manager));
-    }
-
-    // 解析自定义字体 JSON 并追加到指定 Section
-    private static void loadCustomFontsFromJsonSection(PatternAndFontOverlay.H4Section section, ResourceManager manager) {
-        ResourceLocation jsonId = VersionServices.resources().parse(section.customJsonPath);
-
-        try {
-            List<InputStream> streams = collectAllResourceStreams(manager, jsonId);
-            for (InputStream stream : streams) {
-                try (InputStream in = stream;
-                     InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                    JsonElement root = new JsonParser().parse(reader);
-                    if (root.isJsonArray()) {
-                        for (JsonElement element : root.getAsJsonArray()) {
-                            JsonObject obj = element.getAsJsonObject();
-                            String fontId = obj.has("font_id") ? obj.get("font_id").getAsString() : "";
-                            String name = obj.has("name") ? obj.get("name").getAsString() : Text.translatable("yunbeiuc.gui.unnamed_font").getString();
-
-                            if (!fontId.isEmpty()) {
-                                section.addFontItem(fontId, Text.literal(name));
-                            }
-                        }
-                    }
-                } catch (Exception innerE) {
-                    System.err.println(LOG_TAG + " Failed to parse custom font JSON: " + innerE.getMessage());
-                }
-            }
-        } catch (Exception e) {
-            System.err.println(LOG_TAG + " Custom font JSON 读取异常: " + e.getMessage());
-        }
-    }
-
-    /**
-     * 收集来自所有资源包的目标资源。
-     * <p>遍历所有命名空间与路径匹配的 ResourceLocation，逐个打开同名资源并收集其输入流，
-     * 确保来自多个资源包的同名文件都被加载。
-     *
-     * @param manager 资源管理器
-     * @param targetId 目标资源 ID
-     * @return 所有匹配资源的输入流列表
-     */
-    private static List<InputStream> collectAllResourceStreams(ResourceManager manager, ResourceLocation targetId) {
-        List<InputStream> result = new ArrayList<>();
-        Set<ResourceLocation> matched = new LinkedHashSet<>();
-        try {
-            List<ResourceLocation> allById = VersionServices.resources().listResources(manager,
-                    targetId.getPath(),
-                    id -> id.getNamespace().equals(targetId.getNamespace())
-                            && id.getPath().equals(targetId.getPath())
-            );
-            matched.addAll(allById);
-        } catch (Exception ignored) {
-        }
-        matched.add(targetId);
-
-        for (ResourceLocation id : matched) {
-            try {
-                InputStream stream = VersionServices.resources().openIfPresent(manager, id);
-                if (stream != null) {
-                    result.add(stream);
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return result;
-    }
-
-    // 遍历自定义资源包 Section 并执行操作
-    private static void forEachCustomResourceSection(Function<PatternAndFontOverlay.H2Category, List<PatternAndFontOverlay.H3Category>> childrenSupplier,
-                                                     String tabTranslationKey,
-                                                     Consumer<PatternAndFontOverlay.H4Section> sectionConsumer) {
-        String customPackKey = "yunbeiuc.gui.categories.custom_resource_pack";
-        for (PatternAndFontOverlay.H2Category h2 : PatternAndFontOverlay.REGISTRY) {
-            if (!h2.title.getString().equals(Text.translatable(tabTranslationKey).getString())) continue;
-            for (PatternAndFontOverlay.H3Category h3 : childrenSupplier.apply(h2)) {
-                if (!h3.title.getString().equals(Text.translatable(customPackKey).getString())) continue;
-                for (PatternAndFontOverlay.H4Section section : h3.sections) {
-                    if (section.customJsonPath.isEmpty()) continue;
-                    sectionConsumer.accept(section);
-                }
-            }
-        }
-    }
-
     // ==================== 高级自定义 UI 定义 ====================
 
-    // 从 JSON 加载高级自定义 UI 定义
+    /**
+     * 从所有命名空间下的 {@code ui_definitions/cf_<modid>.json} 加载自定义分类。
+     *
+     * <p>只读取 {@link #CUSTOM_UI_FILES} 中约定的三个文件名；JSON 结构原样解析，不做命名空间改写。
+     * 文件结构（图案 / 字体共用；三个命名空间一致）：
+     * <pre>
+     * {
+     *   "tab": "patterns" | "fonts",
+     *   "category_name": "资源包附加图案",
+     *   "header_text": "自定义告示牌图案资源包",
+     *   "header_text_enabled": true,
+     *   "sections": [ { "title": "...", "description": "...", "basePath": "yunbeiuc:textures/.../", ... } ]
+     * }
+     * </pre>
+     *
+     * <p>只含 {@code presets} 块、没有 {@code sections} 的文件由
+     * {@link PresetManager#loadFromResourcePacks(ResourceManager)} 处理，此处跳过。
+     */
     private static void loadAdvancedCustomUIFromJson(ResourceManager manager) {
-        List<ResourceLocation> resources = VersionServices.resources().listResources(manager, "ui_definitions",
-                id -> id.getPath().endsWith(".json"));
+        List<ResourceLocation> resources = VersionServices.resources().listResources(manager, CUSTOM_UI_DIR,
+                id -> isCustomUiFile(id.getPath()));
 
         for (ResourceLocation resourceId : resources) {
             try {
                 InputStream stream = VersionServices.resources().openIfPresent(manager, resourceId);
-                if (stream != null) {
-                    try (InputStream in = stream;
-                         InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                        JsonObject root = new JsonParser().parse(reader).getAsJsonObject();
+                if (stream == null) continue;
+                try (InputStream in = stream;
+                     InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                    JsonObject root = new JsonParser().parse(reader).getAsJsonObject();
 
-                        String tabType = root.has("tab") ? root.get("tab").getAsString() : "patterns";
-                        boolean isFont = tabType.equals("fonts");
+                    // 只含 presets 的文件交给 PresetManager，不作为图案/字体分类
+                    if (!root.has("sections")) continue;
 
-                        PatternAndFontOverlay.H2Category targetH2 = isFont
-                                ? PatternAndFontOverlay.REGISTRY.get(1) : PatternAndFontOverlay.REGISTRY.get(0);
-                        PatternAndFontOverlay.H3Category customPackH3 = isFont
-                                ? targetH2.subCategories.get(1) : targetH2.subCategories.get(2);
+                    String tabType = root.has("tab") ? root.get("tab").getAsString() : "patterns";
+                    boolean isFont = tabType.equals("fonts");
 
-                        String categoryName = root.has("category_name") ? root.get("category_name").getAsString() : "未命名分类";
-                        PatternAndFontOverlay.H3Category customH3 = new PatternAndFontOverlay.H3Category(Text.literal(categoryName));
+                    // 用翻译键定位 H2/H3，避免依赖 REGISTRY 与 subCategories 的固定下标
+                    PatternAndFontOverlay.H2Category targetH2 = findH2ByKey(isFont
+                            ? "yunbeiuc.gui.tabs.fonts" : "yunbeiuc.gui.tabs.patterns");
+                    if (targetH2 == null) continue;
+                    PatternAndFontOverlay.H3Category customPackH3 = findH3ByKey(targetH2,
+                            "yunbeiuc.gui.categories.custom_resource_pack");
+                    if (customPackH3 == null) continue;
 
-                        customH3.headerText = root.has("header_text")
-                                ? Text.literal(root.get("header_text").getAsString())
-                                : Text.translatable(isFont
-                                        ? "yunbeiuc.gui.sections.custom_fonts.desc"
-                                        : "yunbeiuc.gui.sections.custom_patterns.desc");
+                    String categoryName = root.has("category_name") && !root.get("category_name").getAsString().isEmpty()
+                            ? root.get("category_name").getAsString()
+                            : "未命名分类";
+                    PatternAndFontOverlay.H3Category customH3 = new PatternAndFontOverlay.H3Category(Text.literal(categoryName));
 
-                        if (root.has("sections") && root.get("sections").isJsonArray()) {
-                            JsonArray sectionsArray = root.getAsJsonArray("sections");
-                            for (JsonElement secElement : sectionsArray) {
-                                JsonObject secObj = secElement.getAsJsonObject();
-                                PatternAndFontOverlay.H4Section newSection = parseSectionFromJson(secObj);
-                                customH3.addSection(newSection);
-                                buildTextureCache(newSection, manager);
-                            }
+                    // header_text_enabled 为 false 或 header_text 为空时不显示说明横幅
+                    boolean headerEnabled = !root.has("header_text_enabled") || root.get("header_text_enabled").getAsBoolean();
+                    String headerText = root.has("header_text") ? root.get("header_text").getAsString() : "";
+                    customH3.headerText = (headerEnabled && !headerText.isEmpty()) ? Text.literal(headerText) : null;
+
+                    if (root.has("sections") && root.get("sections").isJsonArray()) {
+                        JsonArray sectionsArray = root.getAsJsonArray("sections");
+                        for (JsonElement secElement : sectionsArray) {
+                            JsonObject secObj = secElement.getAsJsonObject();
+                            PatternAndFontOverlay.H4Section newSection = parseSectionFromJson(secObj);
+                            customH3.addSection(newSection);
+                            buildTextureCache(newSection, manager);
                         }
-
-                        customPackH3.addSubCategory(customH3);
                     }
+
+                    customPackH3.addSubCategory(customH3);
                 }
             } catch (Exception e) {
                 System.err.println(LOG_TAG + " 加载自定义 UI JSON 失败: " + resourceId + " | 错误: " + e.getMessage());
@@ -369,11 +295,30 @@ public final class PatternResourceLoader {
         }
     }
 
+    // 按翻译键查找顶层 H2 分类
+    private static PatternAndFontOverlay.H2Category findH2ByKey(String translationKey) {
+        String want = Text.translatable(translationKey).getString();
+        for (PatternAndFontOverlay.H2Category h2 : PatternAndFontOverlay.REGISTRY) {
+            if (h2.title.getString().equals(want)) return h2;
+        }
+        return null;
+    }
+
+    // 按翻译键查找指定 H2 下的 H3 分类
+    private static PatternAndFontOverlay.H3Category findH3ByKey(PatternAndFontOverlay.H2Category h2, String translationKey) {
+        String want = Text.translatable(translationKey).getString();
+        for (PatternAndFontOverlay.H3Category h3 : h2.subCategories) {
+            if (h3.title.getString().equals(want)) return h3;
+        }
+        return null;
+    }
+
     // 从 JSON 解析 Section
     private static PatternAndFontOverlay.H4Section parseSectionFromJson(JsonObject secObj) {
         Component secTitle = Text.literal(secObj.has("title") ? secObj.get("title").getAsString() : "未命名 Section");
         Component secDesc = Text.literal(secObj.has("description") ? secObj.get("description").getAsString() : "");
-        ResourceLocation basePath = VersionServices.resources().parse(secObj.has("basePath") ? secObj.get("basePath").getAsString() : "minecraft:empty/");
+        ResourceLocation basePath = VersionServices.resources().parse(
+                secObj.has("basePath") ? secObj.get("basePath").getAsString() : "minecraft:empty/");
 
         PatternAndFontOverlay.H4Section newSection = new PatternAndFontOverlay.H4Section(secTitle, secDesc, basePath);
 

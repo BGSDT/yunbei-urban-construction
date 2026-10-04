@@ -542,7 +542,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean shouldPauseCompat() {
         return false;
     }
 
@@ -576,7 +576,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         }
 
         @Override
-        protected int getScrollbarPositionX() {
+        protected int getScrollbarPositionXCompat() {
             return this.left + PANEL_WIDTH - 6;
         }
 

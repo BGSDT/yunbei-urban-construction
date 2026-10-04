@@ -184,21 +184,26 @@ public final class MouseEventHandler {
 
                 int bodyY = curY + headerH;
 
-                // 子项胶囊点击
+                // 子项胶囊点击（支持 H3 多级缩进）
                 if (h2.isExpanded && !h2.subCategories.isEmpty()) {
                     bodyY += UIConstants.CARD_INNER_TOP;
                     int inset = UIConstants.CARD_ITEM_INSET;
-                    int pillX = cardX + inset;
-                    int pillW = cardW - inset * 2;
                     int pillH = UIConstants.CARD_ITEM_H - 4;
 
-                    for (PatternAndFontOverlay.H3Category h3 : h2.subCategories) {
+                    for (PatternAndFontOverlay.NavRow row : PatternAndFontOverlay.collectNavRows(h2)) {
+                        int indent = row.depth * UIConstants.CARD_SUB_INDENT;
+                        int pillX = cardX + inset + indent;
+                        int pillW = cardW - inset * 2 - indent;
                         if (LayoutHelper.isMouseInRect(mx, my, pillX, bodyY, pillW, pillH)) {
                             PatternAndFontOverlay.clearSidebarTop();
                             PatternAndFontOverlay.selectedH2 = h2;
-                            PatternAndFontOverlay.selectedH3 = h3;
+                            PatternAndFontOverlay.selectedH3 = row.h3;
                             PatternAndFontOverlay.isHomeSelected = false;
                             PatternAndFontOverlay.scrollY = 0;
+                            // 含子分类的分类：点击同时展开/收起
+                            if (!row.h3.subCategories.isEmpty()) {
+                                row.h3.isExpanded = !row.h3.isExpanded;
+                            }
                             return true;
                         }
                         bodyY += UIConstants.CARD_ITEM_H;
@@ -248,11 +253,10 @@ public final class MouseEventHandler {
 
         int curY = contentY;
 
-        // 分类说明横幅
+        // 分类说明横幅（主页 header 同款卡片）
         if (selH3.headerText != null) {
-            int descMaxW = paneW - 48;
-            int lines = tr.split(selH3.headerText, descMaxW).size();
-            curY += lines * 12 + 12 + 16;
+            curY += PatternAndFontOverlay.headerCardHeight(tr, selH3.headerText, paneW)
+                    + PatternAndFontOverlay.HEADER_CARD_GAP;
         }
 
         boolean[] consumed = new boolean[1];
