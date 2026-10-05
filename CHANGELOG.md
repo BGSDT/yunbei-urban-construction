@@ -1,3 +1,5 @@
+- **修复专用服务端崩溃**：NeoForge / Forge 专用服务端启动时报 `Attempted to load class com/mojang/blaze3d/vertex/VertexConsumer for invalid dist DEDICATED_SERVER`，模组加载失败。原因是 `VersionAdapterImpl` 的静态初始化会立刻 `new RenderPlatformImpl()` / `new GuiPlatformImpl()`，而这两个类引用了 `com.mojang.blaze3d.*`、`net.minecraft.client.*` 客户端专属类——其中 `RenderPlatformImpl.beginLines()` 把字段 `BufferBuilder` 当作 `VertexConsumer` 返回，类校验必须加载 `VertexConsumer`，于是被 NeoForge 的 `RuntimeDistCleaner` 拒绝。现把客户端专属实现挪进嵌套 Holder 类，服务端永远不触发它的初始化；`TextPlatformImpl.fromLegacyJson` 里的 `Minecraft` 依赖也拆到独立嵌套类。7 个版本同步修复。
+- **修复所有界面渲染崩溃**：`com.beigu.yunbeiuc.screen.Screen` shim 的 `client` / `textRenderer` 字段与 Yarn 映射下的原版 `Screen` 同名字段撞车，`init()` 里的赋值退化成自赋值，`textRenderer` 恒为 null，导致 16 个界面渲染时 `TextRenderer.getWidth` 空指针。现改为 `super.minecraft` / `super.font` 显式限定 owner，并在 `render()` 入口加非空兜底。7 个版本同步修复。
 - **云北路牌路牌设置**：文本编辑界面添加路牌设置页面。可以调整路牌的字体设置（仅对路牌方块新文本行有效）：原版uniform / A字体 / B字体 / C字体 / 路牌自适应。
 - **ABC 交通字体**：新生成的 ABC 文本行自动包裹字体，取消加粗，y 自动下移 1/16，来使视觉平衡。
 - **红绿灯安装方式**：只在魔杖右键的面板内切换，三态为 自适应 → 墙面 → 路杆，**默认自适应**。自适应下模型与图案/读秒 z 跟随背后方块实时变化；手动选定墙面/路杆后固定不变。
@@ -16,7 +18,7 @@
   - **界面**：卡片分组式侧边栏，支持三级菜单（H2 → H3 → 子分类，逐级缩进、可展开/收起），内容区为图案缩略图网格 / 字体卡片列表，均带独立滚动条（滚轮 + 拖动）。
   - **分类说明卡片**：自定义资源包分类顶部的 `header_text` 说明改为与主页 header 一致的卡片样式（底色 + 描边 + 左侧强调条）。
   - **插入**：点图案写入 `-texture <路径>` 指令行，点字体写入 `-json {"font":"...","text":"XXX"}`。
-- **红绿灯读秒炸了修复**：我靠这读秒代码cos蹦蹦炸弹啊，修到凌晨都没修好。
+- **红绿灯读秒炸了修复**：我靠这读秒代码cos蹦蹦炸弹啊，修到凌晨都没修好。炸了两次，修了两次，然后你们才看到两天内发布三种版本。
 - **道路名牌**：自动识别英文字数，如果字数过多，x 轴缩小字体。
 - **发光属性**：为诱导屏设置发光属性。
 - **tooltip提示信息**：为某些路牌方块修正 tooltip 提示信息。

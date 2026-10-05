@@ -48,4 +48,7 @@ artifacts/
 # Modrinth account credentials and local publishing settings
 modrinth.properties
 
+# Local "already published" record written by publish-all.sh / publish-all.bat
+.publish-state
+
 .workbuddy-ai

@@ -6,11 +6,31 @@
 # 用法:
 #   ./publish-all.sh                    发布全部版本
 #   ./publish-all.sh 1.20.1 1.21.1      只发布指定版本
+#   ./publish-all.sh -x 1.20.1          排除指定版本（可重复，也支持 -x 1.20.1,1.21.1）
+#   ./publish-all.sh -s                 跳过已成功发布的版本（见 .publish-state）
+#   ./publish-all.sh -r                 清空发布记录（.publish-state）后退出
 #   ./publish-all.sh -k                 某个版本失败后继续发布其余版本
 #   ./publish-all.sh -n                 干跑（只打印将执行的命令，不发布）
 #   ./publish-all.sh -c                 发布前先执行 clean
-#   ./publish-all.sh -l                 列出可发布版本 + 各自需要的 JDK
+#   ./publish-all.sh -l                 列出可发布版本 + 各自需要的 JDK + 发布记录
 #   ./publish-all.sh -h                 显示帮助
+#
+# 发布记录:
+#   每个版本发布成功后会往仓库根目录 .publish-state 追加一行 "<MC版本> <mod_version>"。
+#   带 -s 时，mod_version 与记录一致的版本会被跳过；mod_version 变了（如 26w40b → 26w40c）
+#   则视为未发布，仍会正常发布（记录不会因为改了版本号而误跳过新版本）。
+#   典型用法：中途某个版本构建失败 → 修好后执行 ./publish-all.sh -s -k，
+#   只会重跑失败 / 未发布的那些版本。
+#
+# 常用组合:
+#   ./publish-all.sh -s -k              断点续发（跳过已发布，失败也继续）
+#   ./publish-all.sh -s -k -x 1.20.1    跳过已发布，并额外排除 1.20.1
+#
+# 常驻排除（不用每次打 -x）:
+#   仓库根目录 publish-skip.txt，一行一个 MC 版本（# 开头为注释，也支持逗号分隔），
+#   每次运行都会自动排除里面列出的版本。
+#   例：文件里写一行 1.16.5 → 以后每次发布都自动跳过 1.16.5；
+#   想重新发布它，把那行删掉（或前面加 #）即可。
 #
 # JDK:
 #   脚本会读每个版本 build.gradle 里的 options.release 自动选 JDK
@@ -24,23 +44,35 @@ set -u
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VERSIONS_DIR="$SCRIPT_DIR/versions"
 TASK="publishModrinth"
+STATE_FILE="$SCRIPT_DIR/.publish-state"
+SKIP_FILE="$SCRIPT_DIR/publish-skip.txt"
 
 keep_going=0
 dry_run=0
 list_only=0
 do_clean=0
+skip_published=0
+reset_state=0
 wanted=()
+excludes=()
 
 usage() {
     cat <<'EOF'
-用法: ./publish-all.sh [版本...] [-k] [-n] [-c] [-l] [-h]
+用法: ./publish-all.sh [版本...] [-x 版本] [-s] [-r] [-k] [-n] [-c] [-l] [-h]
 
-  版本...   只发布这些版本（默认全部）
-  -k        某个版本失败后继续发布其余版本
-  -n        干跑，只打印将执行的命令
-  -c        发布前先执行 clean
-  -l        列出可发布版本 + 各自需要的 JDK
-  -h        显示本帮助
+  版本...     只发布这些版本（默认全部）
+  -x 版本     排除该版本（可重复，也支持 -x 1.20.1,1.21.1）
+  -s          跳过已成功发布的版本（读 .publish-state，且 mod_version 一致才跳）
+  -r          清空发布记录后退出
+  -k          某个版本失败后继续发布其余版本
+  -n          干跑，只打印将执行的命令
+  -c          发布前先执行 clean
+  -l          列出可发布版本 + 各自需要的 JDK + 发布记录
+  -h          显示本帮助
+
+常驻排除: 在仓库根目录 publish-skip.txt 里一行写一个版本（如 1.16.5），
+          以后每次运行都会自动跳过它，不用每次打 -x。
+断点续发: ./publish-all.sh -s -k
 
 JDK 可用环境变量覆盖: JAVA_HOME_17 / JAVA_HOME_21 ...
 EOF
@@ -48,6 +80,19 @@ EOF
 
 while [ $# -gt 0 ]; do
     case "$1" in
+        -x|--exclude)
+            if [ $# -lt 2 ]; then
+                echo "错误: $1 后面需要跟一个版本号，例如 -x 1.20.1" >&2
+                exit 2
+            fi
+            shift
+            IFS=',' read -r -a _ex <<< "$1"
+            for _e in "${_ex[@]}"; do
+                [ -n "$_e" ] && excludes+=("$_e")
+            done
+            ;;
+        -s|--skip-published) skip_published=1 ;;
+        -r|--reset-state)    reset_state=1 ;;
         -k|--keep-going) keep_going=1 ;;
         -n|--dry-run)    dry_run=1 ;;
         -l|--list)       list_only=1 ;;
@@ -62,6 +107,29 @@ done
 if [ ! -d "$VERSIONS_DIR" ]; then
     echo "找不到 versions 目录: $VERSIONS_DIR" >&2
     exit 1
+fi
+
+# ---- publish-skip.txt：常驻排除清单（一行一个版本，# 开头为注释，也支持逗号分隔） ----
+if [ -f "$SKIP_FILE" ]; then
+    while IFS= read -r _line || [ -n "$_line" ]; do
+        _line="${_line%%#*}"                      # 去掉行内注释
+        _line="$(printf '%s' "${_line%$'\r'}" | tr -d '[:space:]')"   # 去空白与 CR
+        [ -n "$_line" ] || continue
+        IFS=',' read -r -a _parts <<< "$_line"
+        for _p in "${_parts[@]}"; do
+            [ -n "$_p" ] && excludes+=("$_p")
+        done
+    done < "$SKIP_FILE"
+fi
+
+if [ "$reset_state" = 1 ]; then
+    if [ -f "$STATE_FILE" ]; then
+        rm -f "$STATE_FILE"
+        echo "已清空发布记录: $STATE_FILE"
+    else
+        echo "发布记录不存在，无需清空: $STATE_FILE"
+    fi
+    exit 0
 fi
 
 # ======================= JDK 选择 =======================
@@ -182,6 +250,41 @@ run_gradle() {
     fi
 }
 
+# ======================= 发布记录 =======================
+
+# 某版本的 mod_version（读 gradle.properties，取不到则为空）
+mod_version_of() {
+    local gp="$VERSIONS_DIR/$1/gradle.properties"
+    [ -f "$gp" ] || return 0
+    sed -n 's/^[[:space:]]*mod_version[[:space:]]*=[[:space:]]*//p' "$gp" \
+        | head -n 1 | tr -d '\r'
+}
+
+# 记录键: "<MC版本> <mod_version>"；mod_version 取不到时退化为 "<MC版本>"
+state_key_of() {
+    local mv
+    mv="$(mod_version_of "$1")"
+    if [ -n "$mv" ]; then printf '%s %s' "$1" "$mv"; else printf '%s' "$1"; fi
+}
+
+# 该版本是否已按「当前 mod_version」成功发布过
+# 逐行比较并容忍 CRLF（.bat 写出的记录是 CRLF）
+state_has() {
+    [ -f "$STATE_FILE" ] || return 1
+    local want line
+    want="$(state_key_of "$1")"
+    while IFS= read -r line; do
+        [ "${line%$'\r'}" = "$want" ] && return 0
+    done < "$STATE_FILE"
+    return 1
+}
+
+# 记录一次成功发布（按 key 去重）
+state_add() {
+    state_has "$1" && return 0
+    printf '%s\n' "$(state_key_of "$1")" >> "$STATE_FILE"
+}
+
 # ======================= 版本列表 =======================
 
 versions=()
@@ -194,11 +297,16 @@ done < <(find "$VERSIONS_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort
 
 if [ "$list_only" = 1 ]; then
     if [ ${#versions[@]} -gt 0 ]; then
+        printf '%-9s %-9s %-8s %s\n' "版本" "Java" "发布记录" "JDK"
         for v in "${versions[@]}"; do
             maj="$(required_major_of "$v")"
             jdk="$(resolve_jdk "$maj" 2>/dev/null)" || true
-            printf '%-8s Java %-3s %s\n' "$v" "$maj" "${jdk:-（未找到，将沿用当前 JAVA_HOME）}"
+            mark="未发布"
+            state_has "$v" && mark="已发布"
+            printf '%-9s %-9s %-8s %s\n' "$v" "$maj" "$mark" "${jdk:-（未找到，将沿用当前 JAVA_HOME）}"
         done
+        echo
+        echo "发布记录文件: $STATE_FILE"
     fi
     exit 0
 fi
@@ -219,7 +327,43 @@ if [ ${#wanted[@]} -gt 0 ]; then
     versions=("${selected[@]}")
 fi
 
+# ---- 排除指定版本（-x） ----
+if [ ${#excludes[@]} -gt 0 ]; then
+    kept=()
+    for v in "${versions[@]}"; do
+        hit=0
+        for e in "${excludes[@]}"; do
+            [ "$v" = "$e" ] && hit=1
+        done
+        if [ "$hit" = 1 ]; then
+            echo "已排除: $v"
+        else
+            kept+=("$v")
+        fi
+    done
+    if [ ${#kept[@]} -gt 0 ]; then versions=("${kept[@]}"); else versions=(); fi
+fi
+
+# ---- 跳过已成功发布的版本（-s） ----
+skipped_published=()
+if [ "$skip_published" = 1 ]; then
+    kept=()
+    for v in "${versions[@]}"; do
+        if state_has "$v"; then
+            echo "已发布，跳过: $v  （记录: $(state_key_of "$v")）"
+            skipped_published+=("$v")
+        else
+            kept+=("$v")
+        fi
+    done
+    if [ ${#kept[@]} -gt 0 ]; then versions=("${kept[@]}"); else versions=(); fi
+fi
+
 if [ ${#versions[@]} -eq 0 ]; then
+    if [ ${#skipped_published[@]} -gt 0 ]; then
+        echo "没有需要发布的版本：其余版本都已在 .publish-state 中记录（用 -r 清空记录，或去掉 -s）。"
+        exit 0
+    fi
     echo "没有可发布的版本（检查 $VERSIONS_DIR 下是否有含 gradlew 的目录）。" >&2
     exit 1
 fi
@@ -230,6 +374,7 @@ gradle_args+=("$TASK")
 
 echo
 echo "将发布 ${#versions[@]} 个版本: ${versions[*]}"
+[ ${#skipped_published[@]} -gt 0 ] && echo "（已跳过已发布: ${skipped_published[*]}）"
 [ "$do_clean" = 1 ] && echo "（发布前会先 clean）"
 [ "$dry_run" = 1 ] && echo "（干跑：不会真正上传）"
 echo
@@ -254,6 +399,8 @@ for v in "${versions[@]}"; do
 
     if run_gradle "$dir" "$jdk" "${gradle_args[@]}"; then
         echo "---- $v 完成 ----"
+        state_add "$v"
+        echo "     已记入 $(basename "$STATE_FILE")（$(state_key_of "$v")）"
     else
         rc=$?
         echo "!!!! $v 失败 (exit=$rc) !!!!" >&2
@@ -269,7 +416,9 @@ echo
 if [ ${#failed[@]} -gt 0 ]; then
     echo "==================== 结果 ===================="
     echo "失败: ${failed[*]}" >&2
+    echo "修好后可直接续发: ./publish-all.sh -s -k（已成功发布的版本会自动跳过）" >&2
     exit 1
 fi
 echo "==================== 结果 ===================="
 echo "全部版本发布完成。"
+[ ${#skipped_published[@]} -gt 0 ] && echo "（已跳过已发布: ${skipped_published[*]}）"

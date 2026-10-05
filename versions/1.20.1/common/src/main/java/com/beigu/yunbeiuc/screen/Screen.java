@@ -18,12 +18,18 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     @Override
     protected void init() {
         super.init();
-        client = minecraft;
-        textRenderer = font;
+        // 必须用 super. 限定：未限定的 font / minecraft 会被 javac 记成「本类」的字段引用，
+        // jar 重映射到 Yarn 后 font -> textRenderer、minecraft -> client，
+        // 与本类同名字段撞车，putfield 退化成自赋值 → textRenderer 恒为 null → 渲染 NPE。
+        client = super.minecraft;
+        textRenderer = super.font;
     }
 
     @Override
     public final void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        // 兜底：字段名与 Yarn 撞车时 init() 可能填不上，这里保证渲染期一定非 null
+        if (this.client == null) this.client = super.minecraft;
+        if (this.textRenderer == null) this.textRenderer = super.font;
         render(new DrawContext(graphics), mouseX, mouseY, delta);
     }
 

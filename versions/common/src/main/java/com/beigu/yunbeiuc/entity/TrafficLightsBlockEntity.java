@@ -352,11 +352,15 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     /**
-     * 获取红灯剩余秒数（只算「当前相位」，不跨相位叠加）。
+     * 获取红灯剩余秒数 —— 距离「本灯所属相位的下一次放行」开始还有多久。
      *
-     * <p>与绿灯一致：本灯被分配到多个相位时，红灯读秒只反映距离最近的那一次相位结束
-     * 还有多久，不把后面连续的红灯相位时长累加进来，避免读秒远大于当前相位剩余时间、
-     * 以及在相位切换时突然跳变。
+     * <p>红灯读秒必须把「当前相位剩余」加上中间各个相位的时长一起累加，
+     * 否则整组红灯都会显示当前相位的同一个剩余值（与各自相位无关）。
+     *
+     * <p>例：4 个相位各 40 秒，当前处在第 1 相位且还剩 37 秒，
+     * 那么第 4 相位的灯应显示 37 + 40 + 40 = 117 秒，而不是 37。
+     *
+     * <p>本灯未分配到任何相位时保持旧行为（显示当前相位剩余），避免读秒消失。
      *
      * <p>向上取整计算，始终显示 1 到红灯总秒数的完整序列，不会出现 0。
      */
@@ -368,10 +372,34 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         if (phaseIndices.contains(currentActivePhase)) return -1;
 
-        int totalTicks = phaseTimes[currentActivePhase] * 20;
-        int remainingTicks = totalTicks - currentTick;
+        // 未分配相位：保留旧行为（当前相位剩余）
+        if (phaseIndices.isEmpty()) {
+            long fallbackTicks = (long) phaseTimes[currentActivePhase] * 20L - currentTick;
+            if (fallbackTicks < 0L) fallbackTicks = 0L;
+            return (int) ((fallbackTicks + 19L) / 20L);
+        }
 
-        return (remainingTicks + 19) / 20;
+        // 从当前相位往后找本灯的下一次放行相位（最多循环一圈）
+        int targetPhase = -1;
+        for (int step = 1; step < phaseCount; step++) {
+            int idx = (currentActivePhase + step) % phaseCount;
+            if (phaseIndices.contains(idx)) {
+                targetPhase = idx;
+                break;
+            }
+        }
+        if (targetPhase < 0) return -1;
+
+        // 当前相位剩余 + 中间各个相位的完整时长
+        long remainingTicks = (long) phaseTimes[currentActivePhase] * 20L - currentTick;
+        for (int step = 1; step < phaseCount; step++) {
+            int idx = (currentActivePhase + step) % phaseCount;
+            if (idx == targetPhase) break;
+            remainingTicks += (long) phaseTimes[idx] * 20L;
+        }
+        if (remainingTicks < 0L) remainingTicks = 0L;
+
+        return (int) ((remainingTicks + 19L) / 20L);
     }
 
     /**
