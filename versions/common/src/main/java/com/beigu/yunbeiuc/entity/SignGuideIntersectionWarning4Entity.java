@@ -57,12 +57,12 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
         boolean isWarning4 = blockStateForDefaults().getBlock() == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4.get();
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning4) {
-            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -13f, 0f, 0.4f));
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -13f, 0f, 0.4f, 0f));
             float textX = direction1 == SignTurnDirection.RIGHT ? -4f : 4f;
             lines.add(SignTextLinesHelper.centered("林萃路", textX, 0f, 0.04f, 0xFFFFFF, "a"));
         } else {
             lines.add(SignTextLinesHelper.centered("澎湖路", 0f, 0f, 0.035f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_intersection_warning_5_{logo2}.png", 0f, 0f, 1.75f));
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_intersection_warning_5_{logo2}.png", 0f, 0f, 1.75f, 0f));
             lines.add(SignTextLinesHelper.centered("{cnLeft}", 16f, 4f, 0.02f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.centered("{cnRight}", -16f, 4f, 0.02f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.centered("{enLeft}", 16f, -4f, 0.02f, 0xFFFFFF, "a"));

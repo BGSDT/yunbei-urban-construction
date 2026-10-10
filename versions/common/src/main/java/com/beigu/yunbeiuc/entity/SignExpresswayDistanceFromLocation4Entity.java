@@ -101,7 +101,7 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         List<TextLineData> lines = new ArrayList<>();
         // 原 renderLogo：仅 ORDINARY_MUNICIPAL（普通公路/省道盾牌）渲染 logo
         if (roadType == RoadType.ORDINARY_MUNICIPAL) {
-            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{" + logoKey + "}.png", -8f, y, 1.55f));
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{" + logoKey + "}.png", -8f, y, 1.55f, 0f));
         }
         TextLineData text = SignTextLinesHelper.left(textPlaceholder, -17f, y, 0.04f, 0xFFFFFF, abcFont);
         text.setZOffset(roadTextZOffset(roadType));

@@ -53,10 +53,10 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow1}.png", -17.5f, 3f, 0.9f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow2}.png", -6f, 3f, 0.9f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow3}.png", 6f, 3f, 0.9f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow4}.png", 17.5f, 3f, 0.9f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow1}.png", -17.5f, 3f, 0.9f, 0f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow2}.png", -6f, 3f, 0.9f, 0f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow3}.png", 6f, 3f, 0.9f, 0f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow4}.png", 17.5f, 3f, 0.9f, 0f));
         setTextLines(lines);
     }
 

@@ -71,7 +71,7 @@ public class SignExpresswayDistanceFromLocation2Entity extends CustomSignBlockEn
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
         lines.add(SignTextLinesHelper.left("璜塘", -15f, 11f, 0.04f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -11f, 0f, 0.65f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -11f, 0f, 0.65f, 0f));
         lines.add(SignTextLinesHelper.centeredWithZ("G42", -11f, -1f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         lines.add(SignTextLinesHelper.left("上海", -15f, -11f, 0.04f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.right("8", 10f, 11f, 0.04f, 0xFFFFFF, "b"));

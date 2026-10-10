@@ -94,7 +94,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         }
 
         if (text.startsWith("-texture")) {
-            String[] parts = text.split("\\s+", 3);
+            String[] parts = text.split("\\s+", 4);
             if (parts.length >= 2) {
                 // 路径支持 {字段名} 占位符（如按枚举/编号选择 logo 纹理），与 -json 分支一致先解析；
                 // ResourceLocation 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
@@ -109,10 +109,17 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                         try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[2]).trim()); }
                         catch (NumberFormatException ignored) {}
                     }
+                    // 可选第四参数：X 轴旋转角度（度），叠加到行 rotX（0 表示不额外旋转）
+                    float rotX = 0f;
+                    if (parts.length >= 4) {
+                        try { rotX = Float.parseFloat(entity.resolvePlaceholders(parts[3]).trim()); }
+                        catch (NumberFormatException ignored) {}
+                    }
                     CustomSignBlockEntity.TextLineData shifted = lineData;
-                    if (xShift != 0f) {
+                    if (xShift != 0f || rotX != 0f) {
                         shifted = lineData.copy();
-                        shifted.setXOffset(lineData.getXOffset() + xShift);
+                        if (xShift != 0f) shifted.setXOffset(lineData.getXOffset() + xShift);
+                        if (rotX != 0f) shifted.setRotX(lineData.getRotX() + rotX);
                     }
                     renderTexture(matrices, vertexConsumers, light, overlay, zOffset, shifted, textureId, editing, gizmoMode, baseFrame);
                 }
