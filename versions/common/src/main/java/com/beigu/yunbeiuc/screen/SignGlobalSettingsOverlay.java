@@ -29,13 +29,14 @@ public final class SignGlobalSettingsOverlay {
     private static final String TITLE = "云北路牌全局设置";
 
     private static final String FONT_SECTION = "全局字体";
-    private static final String FONT_HINT = "仅对之后新生成的文本行生效，不影响已有文本行";
+    private static final String FONT_HINT = "保存后应用到当前路牌文本，并作为后续新文本行的默认字体";
 
     private static final String CONVERT_SECTION = "一键转换自带标签文本";
     private static final String CONVERT_HINT = "按每行自带的 a/b/c 字体改写；原版字体为加粗纯文本";
     private static final String CONVERT_ADAPTIVE = "全部转为自适应字体";
     private static final String CONVERT_VANILLA = "全部转为原版字体";
-    private static final String FOOTER_HINT = "仅改路牌自带的标签行；新增行与图片/矩形指令行不受影响";
+    private static final String SAVE_SETTINGS = "保存设置";
+    private static final String FOOTER_HINT = "Ctrl+S / Enter 保存，Esc 取消；图片与矩形指令行不受影响";
 
     private static final String[] OPTION_LABELS = {"原版 uniform", "交通字体 A", "交通字体 B", "交通字体 C", "路牌自适应"};
     private static final String[] OPTION_NOTES = {"加粗纯文本", "traf_sign_font_a", "traf_sign_font_b", "traf_sign_font_c", "按每行自带字体"};
@@ -65,8 +66,10 @@ public final class SignGlobalSettingsOverlay {
     private static int statusColor = UIConstants.CLR_MUTED;
 
     private static boolean hoverClose = false;
+    private static boolean hoverSave = false;
     private static int hoverOption = -1;
     private static int hoverAction = -1;
+    private static FontMode pendingMode = FontMode.VANILLA;
 
     // 滚动
     private static int scrollOffset = 0;
@@ -86,7 +89,7 @@ public final class SignGlobalSettingsOverlay {
     private static final int[] optionY = new int[OPTION_COUNT];
     private static int convertSectionY, convertHintY;
     private static int adaptiveBtnX, adaptiveBtnY, vanillaBtnX, actionBtnW;
-    private static int statusY, footerY;
+    private static int statusY, saveBtnX, saveBtnY, saveBtnW, footerY;
 
     private SignGlobalSettingsOverlay() {}
 
@@ -97,8 +100,10 @@ public final class SignGlobalSettingsOverlay {
         isVisible = true;
         statusMessage = "";
         statusColor = UIConstants.CLR_MUTED;
+        pendingMode = GlobalFontSettings.getMode();
         scrollOffset = 0;
         draggingThumb = false;
+        hoverSave = false;
         hoverOption = -1;
         hoverAction = -1;
         hoverClose = false;
@@ -109,6 +114,7 @@ public final class SignGlobalSettingsOverlay {
         targetScreen = null;
         statusMessage = "";
         draggingThumb = false;
+        hoverSave = false;
         hoverOption = -1;
         hoverAction = -1;
         hoverClose = false;
@@ -119,6 +125,7 @@ public final class SignGlobalSettingsOverlay {
     private static void runConvert(boolean adaptive) {
         if (targetScreen == null) return;
         int converted = targetScreen.convertBuiltinFontTags(adaptive);
+        pendingMode = GlobalFontSettings.getMode();
         if (converted > 0) {
             statusMessage = "已转换 " + converted + " 行自带标签文本 → "
                     + (adaptive ? "自适应字体" : "原版字体（加粗）");
@@ -127,6 +134,12 @@ public final class SignGlobalSettingsOverlay {
             statusMessage = "没有找到可转换的自带标签文本行";
             statusColor = UIConstants.CLR_MUTED;
         }
+    }
+
+    private static void saveAndClose() {
+        GlobalFontSettings.setMode(pendingMode);
+        if (targetScreen != null) targetScreen.applyGlobalFontSettingToAllLines();
+        close();
     }
 
     // ==================== 布局 ====================
@@ -150,7 +163,7 @@ public final class SignGlobalSettingsOverlay {
         maxScroll = Math.max(0, contentHeight - viewportH);
         scrollOffset = Math.max(0, Math.min(scrollOffset, maxScroll));
 
-        cardH = PAD + HEADER_H + 8 + 1 + 8 + viewportH + 8 + FOOTER_H + PAD;
+        cardH = PAD + HEADER_H + 8 + 1 + 8 + viewportH + 8 + ACTION_H + 6 + FOOTER_H + PAD;
         cardX = Math.max(10, (sw - cardW) / 2);
         cardY = Math.max(10, (sh - cardH) / 2);
         contentX = cardX + PAD;
@@ -180,7 +193,10 @@ public final class SignGlobalSettingsOverlay {
         y += ACTION_H + 8;
         statusY = y;
 
-        footerY = viewportY + viewportH + 8;
+        saveBtnX = contentX;
+        saveBtnY = viewportY + viewportH + 8;
+        saveBtnW = viewportW;
+        footerY = saveBtnY + ACTION_H + 6;
 
         // 滚动条滑块
         thumbW = UIConstants.THUMB_WIDTH;
@@ -235,9 +251,8 @@ public final class SignGlobalSettingsOverlay {
         drawSectionTitle(ctx, tr, FONT_SECTION, fontSectionY);
         ctx.drawText(tr, FONT_HINT, contentX, fontHintY, UIConstants.CLR_MUTED, false);
 
-        FontMode current = GlobalFontSettings.getMode();
         for (int i = 0; i < OPTION_COUNT; i++) {
-            drawOptionRow(ctx, tr, i, optionY[i], OPTION_MODES[i] == current, hoverOption == i);
+            drawOptionRow(ctx, tr, i, optionY[i], OPTION_MODES[i] == pendingMode, hoverOption == i);
         }
 
         drawSectionTitle(ctx, tr, CONVERT_SECTION, convertSectionY);
@@ -249,6 +264,8 @@ public final class SignGlobalSettingsOverlay {
         }
 
         ctx.disableScissor();
+
+        drawActionButton(ctx, tr, SAVE_SETTINGS, saveBtnX, saveBtnY, saveBtnW, hoverSave);
 
         // 滚动条
         if (maxScroll > 0) {
@@ -291,6 +308,7 @@ public final class SignGlobalSettingsOverlay {
 
     private static void updateHover(int mouseX, int mouseY) {
         hoverClose = LayoutHelper.isMouseInRect(mouseX, mouseY, closeX, closeY, CLOSE_SIZE, CLOSE_SIZE);
+        hoverSave = LayoutHelper.isMouseInRect(mouseX, mouseY, saveBtnX, saveBtnY, saveBtnW, ACTION_H);
         hoverOption = -1;
         for (int i = 0; i < OPTION_COUNT; i++) {
             if (inViewport(mouseX, mouseY, optionY[i], OPTION_H)) {
@@ -331,7 +349,13 @@ public final class SignGlobalSettingsOverlay {
             return true;
         }
         if (hoverOption >= 0) {
-            GlobalFontSettings.setMode(OPTION_MODES[hoverOption]);
+            pendingMode = OPTION_MODES[hoverOption];
+            statusMessage = "设置已修改，点击“保存设置”后生效";
+            statusColor = UIConstants.CLR_MUTED;
+            return true;
+        }
+        if (hoverSave) {
+            saveAndClose();
             return true;
         }
         if (hoverAction == 0) {
@@ -368,10 +392,13 @@ public final class SignGlobalSettingsOverlay {
         return true;
     }
 
-    public static boolean keyPressed(int keyCode) {
+    public static boolean keyPressed(int keyCode, int modifiers) {
         if (!isVisible) return false;
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             close();
+        } else if (keyCode == GLFW.GLFW_KEY_ENTER
+                || (keyCode == GLFW.GLFW_KEY_S && (modifiers & GLFW.GLFW_MOD_CONTROL) != 0)) {
+            saveAndClose();
         }
         return true;
     }

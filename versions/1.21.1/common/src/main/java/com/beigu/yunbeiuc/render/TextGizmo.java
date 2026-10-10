@@ -84,6 +84,9 @@ public final class TextGizmo {
         LINE_RECTS.clear();
         rectsActive = true;
         rectsTime = System.currentTimeMillis();
+        Matrix4f pm = RenderSystem.getProjectionMatrix();
+        proj = pm != null ? new Matrix4f(pm) : null;
+        projView = pm != null ? new Matrix4f(pm).mul(RenderSystem.getModelViewMatrix()) : null;
     }
 
     public static void clearRects() {
@@ -419,6 +422,28 @@ public final class TextGizmo {
         return best;
     }
 
+    public static float[] lineRect(int index) {
+        if (!rectsActive || System.currentTimeMillis() - rectsTime > FRESH_MS) return null;
+        LineRect best = null;
+        for (LineRect r : LINE_RECTS) {
+            if (r.index == index && (best == null || r.depth < best.depth)) best = r;
+        }
+        return best == null ? null : new float[]{best.minX, best.minY, best.maxX, best.maxY};
+    }
+    public static List<Integer> pickLinesInRect(double x0, double y0, double x1, double y1) {
+        List<Integer> result = new ArrayList<>();
+        if (!rectsActive || LINE_RECTS.isEmpty()) return result;
+        if (System.currentTimeMillis() - rectsTime > FRESH_MS) return result;
+        double minX = Math.min(x0, x1), minY = Math.min(y0, y1);
+        double maxX = Math.max(x0, x1), maxY = Math.max(y0, y1);
+        for (LineRect r : LINE_RECTS) {
+            if (r.maxX >= minX && r.minX <= maxX && r.maxY >= minY && r.minY <= maxY
+                    && !result.contains(r.index)) {
+                result.add(r.index);
+            }
+        }
+        return result;
+    }
     private static float[] projectGui(float vx, float vy, float vz) {
         if (projView == null) return null;
         Vector4f p = new Vector4f(vx, vy, vz, 1f);

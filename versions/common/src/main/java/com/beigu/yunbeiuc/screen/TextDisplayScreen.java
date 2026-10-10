@@ -41,6 +41,8 @@ public class TextDisplayScreen extends Screen {
     private static final int SAVE_BTN_ROW_HEIGHT = 22;
     private static final int INFO_PANEL_WIDTH = 100;
     private static final float SCALE_DISPLAY_FACTOR = 16f;
+    private static final float POSITION_STEP = 0.1f;
+    private static final float POSITION_ALT_STEP = 0.05f;
     private static final int MAX_LINE_TAB_WIDTH = 300;
     private static final int[] COLOR_PALETTE = {0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFA500, 0x000000};
 
@@ -49,6 +51,7 @@ public class TextDisplayScreen extends Screen {
     private final boolean supportsGlobalFontSetting;
     private final List<TextLineWidget> textLineWidgets = new ArrayList<>();
     private int selectedIndex = -1;
+    private final LinkedHashSet<Integer> selectedLineIndices = new LinkedHashSet<>();
 
     private final List<ButtonWidget> textButtons = new ArrayList<>();
     private ButtonWidget addLineButton;
@@ -119,6 +122,11 @@ public class TextDisplayScreen extends Screen {
     private int grabbedGizmo = -1;
     private float grabValueStart, grabAxisStart, grabSize0, grabLen0;
     private float grabAnglePrev, grabAccumDeg;
+    private final Map<Integer, float[]> gizmoSelectionStart = new HashMap<>();
+    private boolean boxSelecting = false;
+    private boolean boxSelectionAdditive = false;
+    private double boxStartX, boxStartY, boxCurrentX, boxCurrentY;
+    private boolean rotatingView = false;
 
     public TextDisplayScreen(CustomSignBlockEntity blockEntity) {
         super(Text.translatable("gui.yunbeiuc.custom_sign"));
@@ -140,6 +148,51 @@ public class TextDisplayScreen extends Screen {
             if ("a".equals(font) || "b".equals(font) || "c".equals(font)) return font;
         }
         return "a";
+    }
+
+    private TextLineData createUserTextLine(String text) {
+        TextLineData line = new TextLineData(text == null ? "" : text);
+        line.setBuiltin(false);
+        if (supportsGlobalFontSetting) {
+            SignTextLinesHelper.applyGlobalFontSetting(line, signAdaptiveAbcFont());
+        }
+        return line;
+    }
+
+    private List<Integer> selectedTargets() {
+        selectedLineIndices.removeIf(i -> i < 0 || i >= textLineWidgets.size());
+        if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) selectedLineIndices.add(selectedIndex);
+        return new ArrayList<>(selectedLineIndices);
+    }
+
+    private void selectOnlyLine(int index) {
+        selectedLineIndices.clear();
+        if (index >= 0 && index < textLineWidgets.size()) {
+            selectedLineIndices.add(index);
+            selectedIndex = index;
+        } else {
+            selectedIndex = -1;
+        }
+    }
+
+    private void toggleLineSelection(int index) {
+        if (index < 0 || index >= textLineWidgets.size()) return;
+        if (selectedLineIndices.remove(index)) {
+            if (selectedIndex == index) {
+                selectedIndex = selectedLineIndices.isEmpty() ? -1 : selectedLineIndices.stream().reduce((a, b) -> b).orElse(-1);
+            }
+        } else {
+            selectedLineIndices.add(index);
+            selectedIndex = index;
+        }
+    }
+
+    private void refreshSelectionUi() {
+        releaseGizmo();
+        preciseInputMode = false;
+        refreshTopPanel();
+        refreshBottomPanel();
+        if (selectedIndex >= 0) updateBottomPanelDisplay();
     }
 
     private static String lineButtonLabel(String resolvedText) {
@@ -220,23 +273,12 @@ public class TextDisplayScreen extends Screen {
         int lineActionStartX = sw - lineActionTotalW - 4;
         int lineActionY = panelTopY + panelTopHeight + 1;
 
-        copyLineButton = ButtonWidget.builderCompat(Text.literal("复制"), btn -> {
-            if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                clipboardData = textLineWidgets.get(selectedIndex).data.copy();
-                refreshTopPanel();
-            }
-        }).dimensions(lineActionStartX, lineActionY, lineActionBtnW, 20).build();
+        copyLineButton = ButtonWidget.builderCompat(Text.literal("复制"), btn -> copySelectedLine())
+                .dimensions(lineActionStartX, lineActionY, lineActionBtnW, 20).build();
         copyLineButton.visible = false;
 
-        pasteLineButton = ButtonWidget.builderCompat(Text.literal("粘贴"), btn -> {
-            if (clipboardData != null && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                textLineWidgets.get(selectedIndex).data.applyFrom(clipboardData);
-                updateBottomPanelDisplay();
-                refreshTopPanel(); refreshBottomPanel();
-                syncAndUpdateClient();
-                sendUpdateToServer();
-            }
-        }).dimensions(lineActionStartX + (lineActionBtnW + lineActionGap), lineActionY, lineActionBtnW, 20).build();
+        pasteLineButton = ButtonWidget.builderCompat(Text.literal("粘贴"), btn -> pasteSelectedLine())
+                .dimensions(lineActionStartX + (lineActionBtnW + lineActionGap), lineActionY, lineActionBtnW, 20).build();
         pasteLineButton.visible = false;
         pasteLineButton.active = false;
 
@@ -258,13 +300,10 @@ public class TextDisplayScreen extends Screen {
 
         addLineButton = ButtonWidget.builderCompat(Text.literal("+"), button -> {
             if (presetSelectMode || presetSaveMode || presetLoadMode) return;
-            // 用户新增的行一律是「普通行」：不带路牌自带属性（无 builtin 标记，
-            // 也不套用路牌自带的字体标签 / -json 包裹），只有路牌自身生成的行才带这些。
-            TextLineData newData = new TextLineData("Text");
-            newData.setBuiltin(false);
+            TextLineData newData = createUserTextLine("Text");
             textLineWidgets.add(new TextLineWidget(newData));
             blockEntity.getTextLines().add(newData);
-            selectedIndex = textLineWidgets.size() - 1;
+            selectOnlyLine(textLineWidgets.size() - 1);
             topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
             refreshTopPanel(); refreshBottomPanel();
             syncAndUpdateClient();
@@ -308,8 +347,11 @@ public class TextDisplayScreen extends Screen {
         fontSizeButton = ButtonWidget.builderCompat(Text.literal("S"), button -> {
             if (hasControlDown()) enterPreciseMode(2);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                var d = textLineWidgets.get(selectedIndex).data;
-                d.setFontSize(Math.max(0.1f, d.getFontSize() + stepFor(1f/16f, 1f/32f)));
+                float step = stepFor(1f/16f, 1f/32f);
+                for (int index : selectedTargets()) {
+                    var d = textLineWidgets.get(index).data;
+                    d.setFontSize(Math.max(0.1f, d.getFontSize() + step));
+                }
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
@@ -330,7 +372,10 @@ public class TextDisplayScreen extends Screen {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
                 int nh = (d.getAlignment().hAlign + 1) % 3;
-                d.setAlignment(getAlignment(nh, d.getAlignment().vAlign));
+                for (int index : selectedTargets()) {
+                    var line = textLineWidgets.get(index).data;
+                    line.setAlignment(getAlignment(nh, line.getAlignment().vAlign));
+                }
                 hAlignButton.setMessage(Text.literal(getHAlignText(nh)));
                 syncAndUpdateClient();
                 sendUpdateToServer();
@@ -341,7 +386,10 @@ public class TextDisplayScreen extends Screen {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
                 var d = textLineWidgets.get(selectedIndex).data;
                 int nv = (d.getAlignment().vAlign + 1) % 3;
-                d.setAlignment(getAlignment(d.getAlignment().hAlign, nv));
+                for (int index : selectedTargets()) {
+                    var line = textLineWidgets.get(index).data;
+                    line.setAlignment(getAlignment(line.getAlignment().hAlign, nv));
+                }
                 vAlignButton.setMessage(Text.literal(getVAlignText(nv)));
                 syncAndUpdateClient();
                 sendUpdateToServer();
@@ -350,9 +398,11 @@ public class TextDisplayScreen extends Screen {
 
         clearFormatButton = ButtonWidget.builderCompat(Text.literal("✕"), button -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                var d = textLineWidgets.get(selectedIndex).data;
-                d.setBold(false); d.setItalic(false); d.setUnderline(false); d.setShadow(false); d.setOutline(false);
-                d.setColor(0xFFFFFF); d.setFontSize(1.0f); d.setAlignment(CustomSignBlockEntity.TextAlignment.CENTER_CENTER);
+                for (int index : selectedTargets()) {
+                    var d = textLineWidgets.get(index).data;
+                    d.setBold(false); d.setItalic(false); d.setUnderline(false); d.setShadow(false); d.setOutline(false);
+                    d.setColor(0xFFFFFF); d.setFontSize(1.0f); d.setAlignment(CustomSignBlockEntity.TextAlignment.CENTER_CENTER);
+                }
                 colorButton.setMessage(colorMsg(0xFFFFFF));
                 hAlignButton.setMessage(Text.literal("水平居中")); vAlignButton.setMessage(Text.literal("垂直居中"));
                 syncAndUpdateClient();
@@ -365,9 +415,11 @@ public class TextDisplayScreen extends Screen {
         return ButtonWidget.builderCompat(Text.literal(label), button -> {
             if (hasControlDown()) enterPreciseMode(type);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                var d = textLineWidgets.get(selectedIndex).data;
-                float step = stepFor(1.0f, 0.5f);
-                switch (type) { case 0 -> d.setXOffset(d.getXOffset() + step); case 1 -> d.setYOffset(d.getYOffset() + step); case 4 -> d.setZOffset(d.getZOffset() + step); }
+                float step = stepFor(POSITION_STEP, POSITION_ALT_STEP);
+                for (int index : selectedTargets()) {
+                    var d = textLineWidgets.get(index).data;
+                    switch (type) { case 0 -> d.setXOffset(d.getXOffset() + step); case 1 -> d.setYOffset(d.getYOffset() + step); case 4 -> d.setZOffset(d.getZOffset() + step); }
+                }
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
@@ -378,9 +430,11 @@ public class TextDisplayScreen extends Screen {
         return ButtonWidget.builderCompat(Text.literal(label), button -> {
             if (hasControlDown()) enterPreciseMode(type);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                var d = textLineWidgets.get(selectedIndex).data;
                 float step = stepFor(15.0f, 5.0f);
-                switch (type) { case 5 -> d.setRotX(d.getRotX() + step); case 6 -> d.setRotY(d.getRotY() + step); case 7 -> d.setRotZ(d.getRotZ() + step); }
+                for (int index : selectedTargets()) {
+                    var d = textLineWidgets.get(index).data;
+                    switch (type) { case 5 -> d.setRotX(d.getRotX() + step); case 6 -> d.setRotY(d.getRotY() + step); case 7 -> d.setRotZ(d.getRotZ() + step); }
+                }
                 syncAndUpdateClient();
                 sendUpdateToServer();
             }
@@ -391,12 +445,14 @@ public class TextDisplayScreen extends Screen {
         return ButtonWidget.builderCompat(Text.literal(label), button -> {
             if (hasControlDown()) enterPreciseMode(type);
             else if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                var d = textLineWidgets.get(selectedIndex).data;
                 float step = stepFor(1f/16f, 1f/32f);
-                switch (type) {
-                    case 8 -> d.setScaleX(Math.max(0.1f, d.getScaleX() + step));
-                    case 9 -> d.setScaleY(Math.max(0.1f, d.getScaleY() + step));
-                    case 10 -> d.setScaleZ(Math.max(0.1f, d.getScaleZ() + step));
+                for (int index : selectedTargets()) {
+                    var d = textLineWidgets.get(index).data;
+                    switch (type) {
+                        case 8 -> d.setScaleX(Math.max(0.1f, d.getScaleX() + step));
+                        case 9 -> d.setScaleY(Math.max(0.1f, d.getScaleY() + step));
+                        case 10 -> d.setScaleZ(Math.max(0.1f, d.getScaleZ() + step));
+                    }
                 }
                 syncAndUpdateClient();
                 sendUpdateToServer();
@@ -407,7 +463,7 @@ public class TextDisplayScreen extends Screen {
     private ButtonWidget makeToggle(String label, java.util.function.UnaryOperator<net.minecraft.network.chat.Style> sf, java.util.function.Consumer<TextLineData> action) {
         return ButtonWidget.builderCompat(Text.literal(label).withStyle(sf), btn -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size() && !presetSaveMode && !presetLoadMode) {
-                action.accept(textLineWidgets.get(selectedIndex).data);
+                for (int index : selectedTargets()) action.accept(textLineWidgets.get(index).data);
                 sendUpdateToServer();
             }
         }).dimensions(0, 0, BTN_SIZE, BTN_SIZE).build();
@@ -434,7 +490,7 @@ public class TextDisplayScreen extends Screen {
         int currentColor = (type == 3) ? d.getColor() : d.getOutlineColor();
         if (currentColor == -1) currentColor = 0xFFFFFF;
         Minecraft.getInstance().setScreen(new ColorPickerScreen(this, currentColor, c -> {
-            applyColor(type, c, d);
+            for (int index : selectedTargets()) applyColor(type, c, textLineWidgets.get(index).data);
             syncAndUpdateClient();
             sendUpdateToServer();
         }));
@@ -447,7 +503,7 @@ public class TextDisplayScreen extends Screen {
         int ci = -1;
         for (int i = 0; i < COLOR_PALETTE.length; i++) if (COLOR_PALETTE[i] == cur) { ci = i; break; }
         int nc = COLOR_PALETTE[(ci + dir + COLOR_PALETTE.length) % COLOR_PALETTE.length];
-        applyColor(type, nc, d);
+        for (int index : selectedTargets()) applyColor(type, nc, textLineWidgets.get(index).data);
         syncAndUpdateClient();
         sendUpdateToServer();
     }
@@ -503,6 +559,7 @@ public class TextDisplayScreen extends Screen {
 
     private void releaseGizmo() {
         grabbedGizmo = -1;
+        gizmoSelectionStart.clear();
         TextGizmo.grabId = -1;
         TextGizmo.hoverId = -1;
     }
@@ -529,6 +586,15 @@ public class TextDisplayScreen extends Screen {
             grabLen0 = (float) Math.sqrt(sq(TextGizmo.halfWidthBlocks() * d.getScaleX())
                     + sq(TextGizmo.halfHeightBlocks() * d.getScaleY()));
         }
+        gizmoSelectionStart.clear();
+        for (int index : selectedTargets()) {
+            TextLineData line = textLineWidgets.get(index).data;
+            gizmoSelectionStart.put(index, new float[]{
+                    line.getXOffset(), line.getYOffset(), line.getZOffset(),
+                    line.getRotX(), line.getRotY(), line.getRotZ(),
+                    line.getFontSize(), line.getScaleX(), line.getScaleY(), line.getScaleZ()
+            });
+        }
         return true;
     }
 
@@ -544,11 +610,10 @@ public class TextDisplayScreen extends Screen {
         preciseInputMode = false;
         if (textLineWidgets.isEmpty() || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) {
             // 同上：新增行不继承路牌自带属性
-            TextLineData newData = new TextLineData(text);
-            newData.setBuiltin(false);
+            TextLineData newData = createUserTextLine(text);
             textLineWidgets.add(new TextLineWidget(newData));
             blockEntity.getTextLines().add(newData);
-            selectedIndex = textLineWidgets.size() - 1;
+            selectOnlyLine(textLineWidgets.size() - 1);
             topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
         } else {
             textLineWidgets.get(selectedIndex).data.setText(text);
@@ -582,11 +647,10 @@ public class TextDisplayScreen extends Screen {
         String content = text == null ? "" : text;
         preciseInputMode = false;
         if (textLineWidgets.isEmpty() || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) {
-            TextLineData newData = new TextLineData(content);
-            newData.setBuiltin(false);
+            TextLineData newData = createUserTextLine(content);
             textLineWidgets.add(new TextLineWidget(newData));
             blockEntity.getTextLines().add(newData);
-            selectedIndex = textLineWidgets.size() - 1;
+            selectOnlyLine(textLineWidgets.size() - 1);
             topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
         } else {
             textLineWidgets.get(selectedIndex).data.setText(content);
@@ -604,11 +668,10 @@ public class TextDisplayScreen extends Screen {
      * @return 新增行的数据对象，便于调用方继续设置字体 / 颜色 / 位移等属性
      */
     public TextLineData addTextLine(String text) {
-        TextLineData newData = new TextLineData(text == null ? "" : text);
-        newData.setBuiltin(false);
+        TextLineData newData = createUserTextLine(text == null ? "" : text);
         textLineWidgets.add(new TextLineWidget(newData));
         blockEntity.getTextLines().add(newData);
-        selectedIndex = textLineWidgets.size() - 1;
+        selectOnlyLine(textLineWidgets.size() - 1);
         topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
         refreshTopPanel();
         refreshBottomPanel();
@@ -696,18 +759,35 @@ public class TextDisplayScreen extends Screen {
         return Math.max(20, textRenderer.width(Text.literal(cb.label)) + 8);
     }
 
-    private boolean trySelectLine(double mouseX, double mouseY) {
+    private boolean trySelectLine(double mouseX, double mouseY, boolean additive) {
         if (presetSaveMode || presetLoadMode || preciseInputMode || formatPainterMode || presetSelectMode) return false;
         int idx = TextGizmo.pickLine(mouseX, mouseY);
         if (idx < 0 || idx >= textLineWidgets.size()) return false;
-        if (idx == selectedIndex) return true;
-        selectedIndex = idx;
-        releaseGizmo();
-        preciseInputMode = false;
-        refreshTopPanel();
-        refreshBottomPanel();
-        updateBottomPanelDisplay();
+        if (additive) toggleLineSelection(idx);
+        else selectOnlyLine(idx);
+        refreshSelectionUi();
         return true;
+    }
+
+    private void beginBoxSelection(double mouseX, double mouseY, boolean additive) {
+        boxSelecting = true;
+        boxSelectionAdditive = additive;
+        boxStartX = boxCurrentX = mouseX;
+        boxStartY = boxCurrentY = mouseY;
+    }
+
+    private void finishBoxSelection() {
+        double dx = boxCurrentX - boxStartX;
+        double dy = boxCurrentY - boxStartY;
+        if (!boxSelectionAdditive) selectedLineIndices.clear();
+        if (dx * dx + dy * dy >= 16.0) {
+            for (int index : TextGizmo.pickLinesInRect(boxStartX, boxStartY, boxCurrentX, boxCurrentY)) {
+                if (index >= 0 && index < textLineWidgets.size()) selectedLineIndices.add(index);
+            }
+        }
+        selectedIndex = selectedLineIndices.isEmpty() ? -1 : selectedLineIndices.stream().reduce((a, b) -> b).orElse(-1);
+        boxSelecting = false;
+        refreshSelectionUi();
     }
 
     private void applyGizmoDrag(double mouseX, double mouseY) {
@@ -718,7 +798,7 @@ public class TextDisplayScreen extends Screen {
             case TextGizmo.KIND_AXIS -> {
                 Float v = TextGizmo.axisDragValue(axis, mouseX, mouseY);
                 if (v != null) {
-                    float val = snapToStep(grabValueStart + (v - grabAxisStart), stepFor(1.0f, 0.5f));
+                    float val = snapToStep(grabValueStart + (v - grabAxisStart), stepFor(POSITION_STEP, POSITION_ALT_STEP));
                     switch (axis) { case 0 -> d.setXOffset(val); case 1 -> d.setYOffset(val); default -> d.setZOffset(val); }
                 }
             }
@@ -746,6 +826,28 @@ public class TextDisplayScreen extends Screen {
                     float step = stepFor(1f, 0.5f);
                     if (axis == 0) d.setScaleX(clampScaleDisplay(snapToStep(Math.abs(uv[0]) / Math.max(1e-5f, TextGizmo.halfWidthBlocks()) * 16f, step)) / 16f);
                     else d.setScaleY(clampScaleDisplay(snapToStep(Math.abs(uv[1]) / Math.max(1e-5f, TextGizmo.halfHeightBlocks()) * 16f, step)) / 16f);
+                }
+            }
+        }
+        float[] activeStart = gizmoSelectionStart.get(selectedIndex);
+        if (activeStart != null && gizmoSelectionStart.size() > 1) {
+            for (var entry : gizmoSelectionStart.entrySet()) {
+                if (entry.getKey() == selectedIndex || entry.getKey() < 0 || entry.getKey() >= textLineWidgets.size()) continue;
+                TextLineData line = textLineWidgets.get(entry.getKey()).data;
+                float[] start = entry.getValue();
+                if (kind == TextGizmo.KIND_AXIS) {
+                    if (axis == 0) line.setXOffset(start[0] + d.getXOffset() - activeStart[0]);
+                    else if (axis == 1) line.setYOffset(start[1] + d.getYOffset() - activeStart[1]);
+                    else line.setZOffset(start[2] + d.getZOffset() - activeStart[2]);
+                } else if (kind == TextGizmo.KIND_ROT) {
+                    if (axis == 0) line.setRotX(start[3] + d.getRotX() - activeStart[3]);
+                    else if (axis == 1) line.setRotY(start[4] + d.getRotY() - activeStart[4]);
+                    else line.setRotZ(start[5] + d.getRotZ() - activeStart[5]);
+                } else if (kind == TextGizmo.KIND_CORNER && activeStart[6] > 1e-6f) {
+                    line.setFontSize(Math.max(0.1f, start[6] * d.getFontSize() / activeStart[6]));
+                } else if (kind == TextGizmo.KIND_EDGE) {
+                    if (axis == 0 && activeStart[7] > 1e-6f) line.setScaleX(Math.max(0.1f, start[7] * d.getScaleX() / activeStart[7]));
+                    else if (axis == 1 && activeStart[8] > 1e-6f) line.setScaleY(Math.max(0.1f, start[8] * d.getScaleY() / activeStart[8]));
                 }
             }
         }
@@ -798,19 +900,21 @@ public class TextDisplayScreen extends Screen {
         }
         preciseInputField.setChangedListener(text -> {
             if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-                var d = textLineWidgets.get(selectedIndex).data;
                 try {
-                    switch (preciseInputType) {
-                        case 0 -> d.setXOffset(Float.parseFloat(text)); case 1 -> d.setYOffset(Float.parseFloat(text));
-                        case 2 -> d.setFontSize(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
-                        case 3 -> { Integer c = tryParseHex(text); if (c != null) applyColor(3, c, d); }
-                        case 4 -> d.setZOffset(Float.parseFloat(text));
-                        case 5 -> d.setRotX(Float.parseFloat(text)); case 6 -> d.setRotY(Float.parseFloat(text));
-                        case 7 -> d.setRotZ(Float.parseFloat(text));
-                        case 8 -> d.setScaleX(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
-                        case 9 -> d.setScaleY(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
-                        case 10 -> d.setScaleZ(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
-                        case 12 -> { Integer c = tryParseHex(text); if (c != null) applyColor(12, c, d); }
+                    for (int index : selectedTargets()) {
+                        var d = textLineWidgets.get(index).data;
+                        switch (preciseInputType) {
+                            case 0 -> d.setXOffset(Float.parseFloat(text)); case 1 -> d.setYOffset(Float.parseFloat(text));
+                            case 2 -> d.setFontSize(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
+                            case 3 -> { Integer c = tryParseHex(text); if (c != null) applyColor(3, c, d); }
+                            case 4 -> d.setZOffset(Float.parseFloat(text));
+                            case 5 -> d.setRotX(Float.parseFloat(text)); case 6 -> d.setRotY(Float.parseFloat(text));
+                            case 7 -> d.setRotZ(Float.parseFloat(text));
+                            case 8 -> d.setScaleX(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
+                            case 9 -> d.setScaleY(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
+                            case 10 -> d.setScaleZ(Math.max(0.1f, Float.parseFloat(text) / SCALE_DISPLAY_FACTOR));
+                            case 12 -> { Integer c = tryParseHex(text); if (c != null) applyColor(12, c, d); }
+                        }
                     }
                 } catch (NumberFormatException ignored) {}
                 syncAndUpdateClient();
@@ -825,7 +929,7 @@ public class TextDisplayScreen extends Screen {
         for (var data : blockEntity.getTextLines()) {
             textLineWidgets.add(new TextLineWidget(data));
         }
-        if (!textLineWidgets.isEmpty()) { selectedIndex = 0; updateBottomPanelDisplay(); }
+        if (!textLineWidgets.isEmpty()) { selectOnlyLine(0); updateBottomPanelDisplay(); }
     }
 
     private void syncAndUpdateClient() {
@@ -858,7 +962,7 @@ public class TextDisplayScreen extends Screen {
         if (topScrollRight != null) { this.remove(topScrollRight); topScrollRight = null; }
 
         if (textLineWidgets.isEmpty()) {
-            selectedIndex = -1; topScrollOffset = 0;
+            selectedIndex = -1; selectedLineIndices.clear(); topScrollOffset = 0;
         } else {
             int count = textLineWidgets.size();
             if (topScrollOffset > Math.max(0, count - MAX_VISIBLE_TABS)) topScrollOffset = Math.max(0, count - MAX_VISIBLE_TABS);
@@ -900,15 +1004,19 @@ public class TextDisplayScreen extends Screen {
                         else selectedPresetIndices.add(idx);
                         refreshTopPanel();
                     } else if (!presetSaveMode && !presetLoadMode) {
-                        selectedIndex = idx; preciseInputMode = false;
+                        if (hasShiftDown()) toggleLineSelection(idx);
+                        else selectOnlyLine(idx);
+                        preciseInputMode = false;
                         refreshBottomPanel(); refreshTopPanel();
                     }
                 }).dimensions(startX + i * (btnWidth + spacing), panelTopY + 2, btnWidth, btnHeight).build();
-                btn.active = formatPainterMode || presetSelectMode || idx != selectedIndex;
+                btn.active = true;
                 textButtons.add(btn); this.addDrawableChild(btn);
             }
         }
+        selectedLineIndices.removeIf(i -> i < 0 || i >= textLineWidgets.size());
         if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
+        if (selectedIndex >= 0) selectedLineIndices.add(selectedIndex);
         savePresetButton.visible = presetSelectMode && !selectedPresetIndices.isEmpty() && !presetSaveMode && !presetLoadMode;
         boolean showCategoryButtons = isCategoryRowShown();
         posCatButton.visible = showCategoryButtons;
@@ -1300,7 +1408,7 @@ public class TextDisplayScreen extends Screen {
                 for (var d : presets.get(name)) loaded.add(d.copy());
                 blockEntity.getTextLines().addAll(loaded);
                 for (var d : loaded) textLineWidgets.add(new TextLineWidget(d));
-                selectedIndex = textLineWidgets.size() - loaded.size();
+                selectOnlyLine(textLineWidgets.size() - loaded.size());
                 topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
                 presetLoadMode = false;
                 refreshTopPanel(); refreshBottomPanel();
@@ -1328,7 +1436,7 @@ public class TextDisplayScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (SignGlobalSettingsOverlay.isVisible) {
-            SignGlobalSettingsOverlay.keyPressed(keyCode);
+            SignGlobalSettingsOverlay.keyPressed(keyCode, modifiers);
             return true;
         }
         if (PatternAndFontOverlay.isVisible) {
@@ -1346,6 +1454,7 @@ public class TextDisplayScreen extends Screen {
             return true;
         }
         if (presetSaveMode || presetLoadMode) return super.keyPressed(keyCode, scanCode, modifiers);
+        if (handleEditorShortcut(keyCode)) return true;
         if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
             presetSelectMode = true;
             formatPainterMode = false; formatPainterSourceIndex = -1;
@@ -1359,6 +1468,46 @@ public class TextDisplayScreen extends Screen {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private boolean handleEditorShortcut(int keyCode) {
+        boolean ctrl = hasControlDown();
+        if (ctrl && keyCode == GLFW.GLFW_KEY_S) {
+            syncAndUpdateClient();
+            sendUpdateToServer();
+            return true;
+        }
+        if (ctrl && keyCode == GLFW.GLFW_KEY_C) {
+            copySelectedLine();
+            return true;
+        }
+        if (ctrl && keyCode == GLFW.GLFW_KEY_V) {
+            pasteSelectedLine();
+            return true;
+        }
+        if (ctrl && keyCode == GLFW.GLFW_KEY_D) {
+            duplicateSelectedLine();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_DELETE && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+            requestDeleteLine(selectedIndex);
+            return true;
+        }
+        if (!ctrl) {
+            if (keyCode == GLFW.GLFW_KEY_W) { selectCategory(Category.POSITION); return true; }
+            if (keyCode == GLFW.GLFW_KEY_E) { selectCategory(Category.ROTATION); return true; }
+            if (keyCode == GLFW.GLFW_KEY_R) { selectCategory(Category.SCALE); return true; }
+            if (keyCode == GLFW.GLFW_KEY_F) { selectCategory(Category.FONT); return true; }
+            if (keyCode == GLFW.GLFW_KEY_A) { selectCategory(Category.ALIGN); return true; }
+        }
+        float step = stepFor(POSITION_STEP, POSITION_ALT_STEP);
+        if (keyCode == GLFW.GLFW_KEY_LEFT) return nudgeSelectedLine(-step, 0f, 0f);
+        if (keyCode == GLFW.GLFW_KEY_RIGHT) return nudgeSelectedLine(step, 0f, 0f);
+        if (keyCode == GLFW.GLFW_KEY_UP) return nudgeSelectedLine(0f, step, 0f);
+        if (keyCode == GLFW.GLFW_KEY_DOWN) return nudgeSelectedLine(0f, -step, 0f);
+        if (keyCode == GLFW.GLFW_KEY_PAGE_UP) return nudgeSelectedLine(0f, 0f, step);
+        if (keyCode == GLFW.GLFW_KEY_PAGE_DOWN) return nudgeSelectedLine(0f, 0f, -step);
+        return false;
     }
 
     @Override
@@ -1392,23 +1541,17 @@ public class TextDisplayScreen extends Screen {
         if (preciseInputMode) { if (backButton != null && backButton.isMouseOver(mouseX, mouseY)) { exitPreciseMode(); return true; } return super.mouseClicked(mouseX, mouseY, button); }
         if (presetSaveMode || presetLoadMode) return super.mouseClicked(mouseX, mouseY, button);
         if (button == 1 && !presetSelectMode) {
-            if (xButton != null && xButton.visible && xButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(0); return true; }
-            if (yButton != null && yButton.visible && yButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(1); return true; }
-            if (zButton != null && zButton.visible && zButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(4); return true; }
-            if (rxButton != null && rxButton.visible && rxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(5); return true; }
-            if (ryButton != null && ryButton.visible && ryButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(6); return true; }
-            if (rzButton != null && rzButton.visible && rzButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(7); return true; }
-            if (sxButton != null && sxButton.visible && sxButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(8); return true; }
-            if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(9); return true; }
-            if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) { adjustXYZ(10); return true; }
-            if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) { adjustFontSize(); return true; }
-            if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) { cycleColorByType(3, -1); return true; }
-            if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) { cycleColorByType(12, -1); return true; }
+            rotatingView = true;
+            return true;
         }
         boolean consumed = super.mouseClicked(mouseX, mouseY, button);
         if (!consumed && button == 0 && !isOverUiPanel(mouseX, mouseY)) {
             consumed = tryGrabGizmo(mouseX, mouseY);
-            if (!consumed) consumed = trySelectLine(mouseX, mouseY);
+            if (!consumed) consumed = trySelectLine(mouseX, mouseY, hasShiftDown());
+            if (!consumed) {
+                beginBoxSelection(mouseX, mouseY, hasShiftDown());
+                consumed = true;
+            }
         }
         return consumed;
     }
@@ -1417,6 +1560,15 @@ public class TextDisplayScreen extends Screen {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (SignGlobalSettingsOverlay.isVisible) {
             SignGlobalSettingsOverlay.mouseDragged(mouseX, mouseY, button);
+            return true;
+        }
+        if (boxSelecting && button == 0) {
+            boxCurrentX = mouseX;
+            boxCurrentY = mouseY;
+            return true;
+        }
+        if (rotatingView && button == 1) {
+            rotateView(deltaX, deltaY);
             return true;
         }
         if (grabbedGizmo >= 0 && currentGizmoMode() >= 0) {
@@ -1434,6 +1586,16 @@ public class TextDisplayScreen extends Screen {
         }
         if (PatternAndFontOverlay.isVisible) {
             PatternAndFontOverlay.mouseReleased(mouseX, mouseY, button);
+            return true;
+        }
+        if (button == 1 && rotatingView) {
+            rotatingView = false;
+            return true;
+        }
+        if (boxSelecting && button == 0) {
+            boxCurrentX = mouseX;
+            boxCurrentY = mouseY;
+            finishBoxSelection();
             return true;
         }
         if (grabbedGizmo >= 0) {
@@ -1459,7 +1621,7 @@ public class TextDisplayScreen extends Screen {
                 if (child instanceof AbstractWidget widget && widget.visible
                         && widget.isMouseOver(mouseX, mouseY)) {
                     if (amount < 0.0 && isDirectionalStepButton(widget)) {
-                        this.mouseClicked(mouseX, mouseY, 1);
+                        adjustDirectionalButton(widget);
                         return true;
                     }
                     widget.mouseClicked(mouseX, mouseY, 0);
@@ -1475,6 +1637,71 @@ public class TextDisplayScreen extends Screen {
                 || widget == rxButton || widget == ryButton || widget == rzButton
                 || widget == sxButton || widget == syButton || widget == szButton
                 || widget == fontSizeButton || widget == colorButton || widget == outlineColorButton;
+    }
+
+    private void adjustDirectionalButton(AbstractWidget widget) {
+        if (widget == xButton) adjustXYZ(0);
+        else if (widget == yButton) adjustXYZ(1);
+        else if (widget == zButton) adjustXYZ(4);
+        else if (widget == rxButton) adjustXYZ(5);
+        else if (widget == ryButton) adjustXYZ(6);
+        else if (widget == rzButton) adjustXYZ(7);
+        else if (widget == sxButton) adjustXYZ(8);
+        else if (widget == syButton) adjustXYZ(9);
+        else if (widget == szButton) adjustXYZ(10);
+        else if (widget == fontSizeButton) adjustFontSize();
+        else if (widget == colorButton) cycleColorByType(3, -1);
+        else if (widget == outlineColorButton) cycleColorByType(12, -1);
+    }
+
+    private void rotateView(double deltaX, double deltaY) {
+        if (minecraft == null || minecraft.player == null) return;
+        minecraft.player.setYRot(minecraft.player.getYRot() + (float) deltaX * 0.35f);
+        minecraft.player.setXRot(Math.max(-90f, Math.min(90f, minecraft.player.getXRot() + (float) deltaY * 0.35f)));
+    }
+
+    private void copySelectedLine() {
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
+        clipboardData = textLineWidgets.get(selectedIndex).data.copy();
+        refreshTopPanel();
+    }
+
+    private void pasteSelectedLine() {
+        if (clipboardData == null || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
+        textLineWidgets.get(selectedIndex).data.applyFrom(clipboardData);
+        updateBottomPanelDisplay();
+        refreshTopPanel();
+        refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
+    private void duplicateSelectedLine() {
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return;
+        TextLineData copy = textLineWidgets.get(selectedIndex).data.copy();
+        copy.setBuiltin(false);
+        int insertIndex = selectedIndex + 1;
+        textLineWidgets.add(insertIndex, new TextLineWidget(copy));
+        selectOnlyLine(insertIndex);
+        topScrollOffset = Math.max(0, Math.min(selectedIndex, textLineWidgets.size() - MAX_VISIBLE_TABS));
+        refreshTopPanel();
+        refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
+    private boolean nudgeSelectedLine(float dx, float dy, float dz) {
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return false;
+        for (int index : selectedTargets()) {
+            TextLineData line = textLineWidgets.get(index).data;
+            line.setXOffset(line.getXOffset() + dx);
+            line.setYOffset(line.getYOffset() + dy);
+            line.setZOffset(line.getZOffset() + dz);
+        }
+        syncAndUpdateClient();
+        refreshBottomPanel();
+        sendUpdateToServer();
+        return true;
     }
 
     @Override
@@ -1519,7 +1746,18 @@ public class TextDisplayScreen extends Screen {
         Set<Integer> newSet = new HashSet<>();
         for (int idx : selectedPresetIndices) newSet.add(idx > actualIdx ? idx - 1 : idx);
         selectedPresetIndices.clear(); selectedPresetIndices.addAll(newSet);
-        if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
+        LinkedHashSet<Integer> remappedSelection = new LinkedHashSet<>();
+        for (int idx : selectedLineIndices) {
+            if (idx != actualIdx) remappedSelection.add(idx > actualIdx ? idx - 1 : idx);
+        }
+        selectedLineIndices.clear();
+        selectedLineIndices.addAll(remappedSelection);
+        if (selectedLineIndices.isEmpty() && !textLineWidgets.isEmpty()) {
+            selectedIndex = Math.min(actualIdx, textLineWidgets.size() - 1);
+            selectedLineIndices.add(selectedIndex);
+        } else {
+            selectedIndex = selectedLineIndices.isEmpty() ? -1 : selectedLineIndices.stream().reduce((a, b) -> b).orElse(-1);
+        }
         if (formatPainterSourceIndex == actualIdx) { formatPainterMode = false; formatPainterSourceIndex = -1; }
         else if (formatPainterSourceIndex > actualIdx) formatPainterSourceIndex--;
         preciseInputMode = false; refreshTopPanel(); refreshBottomPanel();
@@ -1546,20 +1784,22 @@ public class TextDisplayScreen extends Screen {
 
     private void adjustXYZ(int type) {
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-            var d = textLineWidgets.get(selectedIndex).data;
-            if (type == 5 || type == 6 || type == 7) {
-                float rotStep = -stepFor(15.0f, 5.0f);
-                switch (type) { case 5 -> d.setRotX(d.getRotX() + rotStep); case 6 -> d.setRotY(d.getRotY() + rotStep); case 7 -> d.setRotZ(d.getRotZ() + rotStep); }
-            } else if (type == 8 || type == 9 || type == 10) {
-                float scaleStep = -stepFor(1f/16f, 1f/32f);
-                switch (type) {
-                    case 8 -> d.setScaleX(Math.max(0.1f, d.getScaleX() + scaleStep));
-                    case 9 -> d.setScaleY(Math.max(0.1f, d.getScaleY() + scaleStep));
-                    case 10 -> d.setScaleZ(Math.max(0.1f, d.getScaleZ() + scaleStep));
+            for (int index : selectedTargets()) {
+                var d = textLineWidgets.get(index).data;
+                if (type == 5 || type == 6 || type == 7) {
+                    float rotStep = -stepFor(15.0f, 5.0f);
+                    switch (type) { case 5 -> d.setRotX(d.getRotX() + rotStep); case 6 -> d.setRotY(d.getRotY() + rotStep); case 7 -> d.setRotZ(d.getRotZ() + rotStep); }
+                } else if (type == 8 || type == 9 || type == 10) {
+                    float scaleStep = -stepFor(1f/16f, 1f/32f);
+                    switch (type) {
+                        case 8 -> d.setScaleX(Math.max(0.1f, d.getScaleX() + scaleStep));
+                        case 9 -> d.setScaleY(Math.max(0.1f, d.getScaleY() + scaleStep));
+                        case 10 -> d.setScaleZ(Math.max(0.1f, d.getScaleZ() + scaleStep));
+                    }
+                } else {
+                    float step = -stepFor(POSITION_STEP, POSITION_ALT_STEP);
+                    switch (type) { case 0 -> d.setXOffset(d.getXOffset() + step); case 1 -> d.setYOffset(d.getYOffset() + step); case 4 -> d.setZOffset(d.getZOffset() + step); }
                 }
-            } else {
-                float step = -stepFor(1.0f, 0.5f);
-                switch (type) { case 0 -> d.setXOffset(d.getXOffset() + step); case 1 -> d.setYOffset(d.getYOffset() + step); case 4 -> d.setZOffset(d.getZOffset() + step); }
             }
             syncAndUpdateClient();
             sendUpdateToServer();
@@ -1567,8 +1807,11 @@ public class TextDisplayScreen extends Screen {
     }
     private void adjustFontSize() {
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-            var d = textLineWidgets.get(selectedIndex).data;
-            d.setFontSize(Math.max(0.1f, d.getFontSize() - stepFor(1f/16f, 1f/32f)));
+            float step = stepFor(1f/16f, 1f/32f);
+            for (int index : selectedTargets()) {
+                var d = textLineWidgets.get(index).data;
+                d.setFontSize(Math.max(0.1f, d.getFontSize() - step));
+            }
             syncAndUpdateClient();
             sendUpdateToServer();
         }
@@ -1590,7 +1833,7 @@ public class TextDisplayScreen extends Screen {
         }
 
         blockEntity.setEditingLineIndex(selectedIndex);
-        blockEntity.setEditingGizmoMode(currentGizmoMode());
+        blockEntity.setEditingGizmoMode(selectedIndex >= 0 ? currentGizmoMode() : -2);
 
         if (optionsRowVisible) {
             int oy = panelBottomY - SAVE_BTN_ROW_HEIGHT - OPTIONS_ROW_HEIGHT;
@@ -1655,6 +1898,42 @@ public class TextDisplayScreen extends Screen {
 
         for (int i = 0; i < textButtons.size(); i++) {
             int actualIdx = topScrollOffset + i;
+            if (selectedLineIndices.contains(actualIdx)) {
+                var btn = textButtons.get(i);
+                context.drawBorder(btn.getX() - 1, btn.getY() - 1, btn.getWidth() + 2, btn.getHeight() + 2,
+                        actualIdx == selectedIndex ? 0xFF66FFCC : 0xFF55AAFF);
+            }
+        }
+
+        for (int index : selectedLineIndices) {
+            float[] rect = TextGizmo.lineRect(index);
+            if (rect == null) continue;
+            int x = Math.round(rect[0]);
+            int y = Math.round(rect[1]);
+            int w = Math.max(1, Math.round(rect[2] - rect[0]));
+            int h = Math.max(1, Math.round(rect[3] - rect[1]));
+            context.drawBorder(x, y, w, h, index == selectedIndex ? 0xFF66FFCC : 0xFF55AAFF);
+        }
+
+        if (boxSelecting) {
+            int x0 = (int) Math.min(boxStartX, boxCurrentX);
+            int y0 = (int) Math.min(boxStartY, boxCurrentY);
+            int x1 = (int) Math.max(boxStartX, boxCurrentX);
+            int y1 = (int) Math.max(boxStartY, boxCurrentY);
+            context.fill(x0, y0, x1, y1, 0x3344AAFF);
+            context.drawBorder(x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0), 0xFF66CCFF);
+        }
+
+        if (selectedLineIndices.size() > 1) {
+            String h = "已选 " + selectedLineIndices.size() + " 项 · Shift+左键增减选择 · 拖拽框选 · 右键拖动视角";
+            int badgeWidth = textRenderer.width(h) + 10;
+            context.fill(5, 5, 5 + badgeWidth, 9 + textRenderer.lineHeight, 0xAA222233);
+            context.drawBorder(5, 5, badgeWidth, textRenderer.lineHeight + 4, 0xFF66FFCC);
+            context.drawText(textRenderer, Text.literal(h), 10, 7, 0xFF66FFCC, false);
+        }
+
+        for (int i = 0; i < textButtons.size(); i++) {
+            int actualIdx = topScrollOffset + i;
             if (selectedPresetIndices.contains(actualIdx)) {
                 var btn = textButtons.get(i);
                 context.fill(btn.getX() - 1, btn.getY() - 1, btn.getX() + btn.getWidth() + 1, btn.getY() + btn.getHeight() + 1, 0x6600FF00);
@@ -1664,31 +1943,31 @@ public class TextDisplayScreen extends Screen {
         if (!presetSaveMode && !presetLoadMode && !preciseInputMode) {
             var d = (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) ? textLineWidgets.get(selectedIndex).data : null;
             List<TooltipEntry> tips = new ArrayList<>();
-            if (xButton != null && xButton.visible && xButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 坐标", d != null ? String.format("当前值 %.1f", d.getXOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (yButton != null && yButton.visible && yButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 坐标", d != null ? String.format("当前值 %.1f", d.getYOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (zButton != null && zButton.visible && zButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 坐标", d != null ? String.format("当前值 %.1f", d.getZOffset()) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (rxButton != null && rxButton.visible && rxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotX()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (ryButton != null && ryButton.visible && ryButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotY()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (rzButton != null && rzButton.visible && rzButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotZ()) : null, "左键 +15° | 右键 -15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (sxButton != null && sxButton.visible && sxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 右键 -1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (xButton != null && xButton.visible && xButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 坐标", d != null ? String.format("当前值 %.1f", d.getXOffset()) : null, "左键 +0.1 | 滚轮上/下 ±0.1", "Alt ±0.05 | Shift ±0.4 | Ctrl+点击精准输入"));
+            if (yButton != null && yButton.visible && yButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 坐标", d != null ? String.format("当前值 %.1f", d.getYOffset()) : null, "左键 +0.1 | 滚轮上/下 ±0.1", "Alt ±0.05 | Shift ±0.4 | Ctrl+点击精准输入"));
+            if (zButton != null && zButton.visible && zButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 坐标", d != null ? String.format("当前值 %.1f", d.getZOffset()) : null, "左键 +0.1 | 滚轮上/下 ±0.1", "Alt ±0.05 | Shift ±0.4 | Ctrl+点击精准输入"));
+            if (rxButton != null && rxButton.visible && rxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotX()) : null, "左键 +15° | 滚轮上/下 ±15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (ryButton != null && ryButton.visible && ryButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotY()) : null, "左键 +15° | 滚轮上/下 ±15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (rzButton != null && rzButton.visible && rzButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotZ()) : null, "左键 +15° | 滚轮上/下 ±15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
+            if (sxButton != null && sxButton.visible && sxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
+            if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
             if (shadowButton != null && shadowButton.visible && shadowButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("阴影", "原版阴影，点击开关"));
             if (outlineButton != null && outlineButton.visible && outlineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("描边", "点击开关文字描边（颜色见右侧 ■）"));
-            if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 右键反向切换 | Ctrl+点击打开色盘"));
+            if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 滚轮反向切换 | Ctrl+点击打开色盘"));
             if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击打开色盘"));
             if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
             if (patternButton != null && patternButton.visible && patternButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("图案", "打开图案与字体选择界面", "点击「插入」把图案/字体写入当前文本行"));
-            if (settingsButton != null && settingsButton.visible && settingsButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("设置", "点击打开「云北路牌全局设置」页面", "页内为全局字体：原版uniform / A字体 / B字体 / C字体 / 路牌自适应"));
-            if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移", "点击显示 X/Y/Z 坐标按钮", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));
-            if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转", "点击显示 RX/RY/RZ 旋转按钮", "可在世界中拖拽圆环旋转（Shift/Alt 调整步长）"));
-            if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放", "点击显示 SX/SY/SZ 缩放按钮", "可拖拽绿框角点等比缩放、边点单轴缩放（Shift/Alt 调整步长）"));
-            if (fontCatButton != null && fontCatButton.visible && fontCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("字体", "点击显示字号/颜色/加粗/斜体/下划线/阴影/清空格式按钮"));
-            if (alignCatButton != null && alignCatButton.visible && alignCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("对齐", "点击显示水平/垂直对齐按钮"));
-            if (copyLineButton != null && copyLineButton.visible && copyLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("复制", "复制该文本行的全部属性"));
-            if (pasteLineButton != null && pasteLineButton.visible && pasteLineButton.isMouseOver(mouseX, mouseY)) tips.add(clipboardData != null ? TooltipEntry.of("粘贴", "将复制的属性覆盖到该文本行") : TooltipEntry.of("粘贴（已锁定）", "请先点击复制按钮复制一个文本行"));
-            if (deleteLineButton != null && deleteLineButton.visible && deleteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("删除", "删除该文本行"));
+            if (settingsButton != null && settingsButton.visible && settingsButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("设置", "点击打开「云北路牌全局设置」页面", "Ctrl+S / Enter 保存，Esc 取消"));
+            if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移 · W", "方向键调整 X/Y，PageUp/PageDown 调整 Z", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));
+            if (rotCatButton != null && rotCatButton.visible && rotCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("旋转 · E", "点击显示 RX/RY/RZ 旋转按钮", "可在世界中拖拽圆环旋转（Shift/Alt 调整步长）"));
+            if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放 · R", "点击显示 SX/SY/SZ 缩放按钮", "可拖拽绿框角点等比缩放、边点单轴缩放（Shift/Alt 调整步长）"));
+            if (fontCatButton != null && fontCatButton.visible && fontCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("字体 · F", "点击显示字号/颜色/加粗/斜体/下划线/阴影/清空格式按钮"));
+            if (alignCatButton != null && alignCatButton.visible && alignCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("对齐 · A", "点击显示水平/垂直对齐按钮"));
+            if (copyLineButton != null && copyLineButton.visible && copyLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("复制", "Ctrl+C：复制该文本行的全部属性"));
+            if (pasteLineButton != null && pasteLineButton.visible && pasteLineButton.isMouseOver(mouseX, mouseY)) tips.add(clipboardData != null ? TooltipEntry.of("粘贴", "Ctrl+V：将复制的属性覆盖到该文本行") : TooltipEntry.of("粘贴（已锁定）", "请先点击复制按钮或按 Ctrl+C"));
+            if (deleteLineButton != null && deleteLineButton.visible && deleteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("删除", "Delete：删除该文本行", "Ctrl+D：复制一份当前文本行"));
             if (formatPainterButton != null && formatPainterButton.visible && formatPainterButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("格式刷", "将颜色/对齐/加粗/斜体/下划线/阴影/字号", "复制到另一文本行（不含文字、位移、旋转）"));
             if (!tips.isEmpty()) drawTooltip(context, mouseX, mouseY, tips);
         }
@@ -1765,8 +2044,34 @@ public class TextDisplayScreen extends Screen {
         return converted;
     }
 
+    public int applyGlobalFontSettingToAllLines() {
+        GlobalFontSettings.FontMode mode = GlobalFontSettings.getMode();
+        int changed = 0;
+        for (TextLineWidget widget : textLineWidgets) {
+            TextLineData line = widget.data;
+            if (!SignTextLinesHelper.canApplyFont(line.getText())) continue;
+            String font = switch (mode) {
+                case VANILLA -> "";
+                case ABC_A -> "a";
+                case ABC_B -> "b";
+                case ABC_C -> "c";
+                case ADAPTIVE -> SignTextLinesHelper.lineAbcFont(line);
+            };
+            SignTextLinesHelper.forceFont(line, font);
+            changed++;
+        }
+        if (changed > 0) {
+            syncAndUpdateClient();
+            refreshTopPanel();
+            refreshBottomPanel();
+            sendUpdateToServer();
+        }
+        return changed;
+    }
+
     @Override
     public void onClose() {
+        rotatingView = false;
         PatternAndFontOverlay.closeOverlay();
         SignGlobalSettingsOverlay.close();
         TextGizmo.clear();
@@ -1776,6 +2081,7 @@ public class TextDisplayScreen extends Screen {
 
     @Override
     public void removed() {
+        rotatingView = false;
         blockEntity.setEditingLineIndex(-1);
         blockEntity.setEditingGizmoMode(-1);
         super.removed();

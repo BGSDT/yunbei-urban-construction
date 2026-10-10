@@ -1,6 +1,3 @@
-// Shared Modrinth publishing setup for every supported Minecraft version.
-// Credentials deliberately live outside this file in the repository-root
-// modrinth.properties file, which is ignored by Git.
 def modrinthConfig = new Properties()
 def modrinthConfigFile = rootProject.file('../../modrinth.properties')
 if (modrinthConfigFile.isFile()) {
@@ -14,26 +11,19 @@ subprojects { platformProject ->
         return
     }
 
-    // The root build script applies Loom in a later subprojects block. Defer
-    // this setup until then so remapJar is guaranteed to exist.
     platformProject.plugins.withId('dev.architectury.loom') {
         platformProject.apply plugin: 'com.modrinth.minotaur'
 
         def loader = platformProject.name
         def loaderTitle = loader == 'neoforge' ? 'NeoForge' : loader.capitalize()
-
         def cfgProjectId = modrinthConfig.getProperty("project_id_${loader}",
             modrinthConfig.getProperty('project_id', ''))
         def cfgProjectName = modrinthConfig.getProperty('project_name', rootProject.archives_name)
         def cfgVersionType = modrinthConfig.getProperty('version_type', 'release')
-
-        if (!cfgProjectId) {
-            platformProject.logger.warn("[modrinth] 未读到 project_id：请在仓库根目录 modrinth.properties 里" +
-                "设置 project_id（或 project_id_${loader}），否则发布会被 Minotaur 拒绝。")
-        }
+        def cfgToken = modrinthConfig.getProperty('token', '')
 
         platformProject.modrinth {
-            token = modrinthConfig.getProperty('token', '')
+            token = cfgToken
             projectId = cfgProjectId
             versionNumber = "${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
             versionName = "${cfgProjectName} ${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
@@ -43,6 +33,19 @@ subprojects { platformProject ->
             loaders = [loader]
             if (changelogFile.isFile()) {
                 changelog = changelogFile.getText('UTF-8')
+            }
+        }
+
+        platformProject.tasks.named('modrinth').configure {
+            doFirst {
+                if (!cfgProjectId) {
+                    throw new GradleException(
+                        "Missing project_id (or project_id_${loader}) in repository-root modrinth.properties.")
+                }
+                if (!cfgToken) {
+                    throw new GradleException(
+                        'Missing token in repository-root modrinth.properties.')
+                }
             }
         }
 

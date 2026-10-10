@@ -47,8 +47,9 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         List<CustomSignBlockEntity.TextLineData> lines = entity.getTextLines();
         int editingIndex = entity.getEditingLineIndex();
-        int gizmoMode = editingIndex >= 0 ? entity.getEditingGizmoMode() : -1;
-        if (editingIndex >= 0) TextGizmo.beginFrameRects();
+        int editingMode = entity.getEditingGizmoMode();
+        int gizmoMode = editingIndex >= 0 ? editingMode : -1;
+        if (editingIndex >= 0 || editingMode == -2) TextGizmo.beginFrameRects();
         for (int i = 0; i < lines.size(); i++) {
             gizmoLineIndex = i;
             renderTextLine(entity, matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex, gizmoMode, baseFrame);

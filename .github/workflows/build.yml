@@ -8,11 +8,54 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-1-18-2:
-    name: Minecraft 1.18.2 (Fabric + Forge)
+  build:
+    name: Minecraft ${{ matrix.minecraft }} (${{ matrix.loaders }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: 1.16.5
+            java: 17
+            loaders: Fabric + Forge
+            forge: true
+            neoforge: false
+          - minecraft: 1.17.1
+            java: 17
+            loaders: Fabric + Forge
+            forge: true
+            neoforge: false
+          - minecraft: 1.18.2
+            java: 17
+            loaders: Fabric + Forge
+            forge: true
+            neoforge: false
+          - minecraft: 1.19.2
+            java: 17
+            loaders: Fabric + Forge
+            forge: true
+            neoforge: false
+          - minecraft: 1.19.4
+            java: 17
+            loaders: Fabric + Forge
+            forge: true
+            neoforge: false
+          - minecraft: 1.20.1
+            java: 17
+            loaders: Fabric + Forge
+            forge: true
+            neoforge: false
+          - minecraft: 1.21.1
+            java: 21
+            loaders: Fabric + NeoForge
+            forge: false
+            neoforge: true
 
     steps:
       - name: Checkout repository
@@ -21,37 +64,49 @@ jobs:
       - name: Validate Gradle wrappers
         uses: gradle/actions/wrapper-validation@v4
 
-      - name: Set up Java 21
+      - name: Set up Java ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: ${{ matrix.java }}
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build Fabric and Forge
-        working-directory: versions/1.18.2
+      - name: Build ${{ matrix.loaders }}
+        working-directory: versions/${{ matrix.minecraft }}
         run: |
           chmod +x ./gradlew
           ./gradlew clean build --no-daemon --stacktrace
 
-      - name: Upload Fabric 1.18.2
+      - name: Upload Fabric ${{ matrix.minecraft }}
         uses: actions/upload-artifact@v4
         with:
-          name: yunbeiuc-fabric-1.18.2
+          name: yunbeiuc-fabric-${{ matrix.minecraft }}
           if-no-files-found: error
           path: |
-            versions/1.18.2/fabric/build/libs/*.jar
-            !versions/1.18.2/fabric/build/libs/*-sources.jar
-            !versions/1.18.2/fabric/build/libs/*-dev-shadow.jar
+            versions/${{ matrix.minecraft }}/fabric/build/libs/*.jar
+            !versions/${{ matrix.minecraft }}/fabric/build/libs/*-sources.jar
+            !versions/${{ matrix.minecraft }}/fabric/build/libs/*-dev-shadow.jar
 
-      - name: Upload Forge 1.18.2
+      - name: Upload Forge ${{ matrix.minecraft }}
+        if: ${{ matrix.forge }}
         uses: actions/upload-artifact@v4
         with:
-          name: yunbeiuc-forge-1.18.2
+          name: yunbeiuc-forge-${{ matrix.minecraft }}
           if-no-files-found: error
           path: |
-            versions/1.18.2/forge/build/libs/*.jar
-            !versions/1.18.2/forge/build/libs/*-sources.jar
-            !versions/1.18.2/forge/build/libs/*-dev-shadow.jar
+            versions/${{ matrix.minecraft }}/forge/build/libs/*.jar
+            !versions/${{ matrix.minecraft }}/forge/build/libs/*-sources.jar
+            !versions/${{ matrix.minecraft }}/forge/build/libs/*-dev-shadow.jar
+
+      - name: Upload NeoForge ${{ matrix.minecraft }}
+        if: ${{ matrix.neoforge }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: yunbeiuc-neoforge-${{ matrix.minecraft }}
+          if-no-files-found: error
+          path: |
+            versions/${{ matrix.minecraft }}/neoforge/build/libs/*.jar
+            !versions/${{ matrix.minecraft }}/neoforge/build/libs/*-sources.jar
+            !versions/${{ matrix.minecraft }}/neoforge/build/libs/*-dev-shadow.jar
