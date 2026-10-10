@@ -365,6 +365,24 @@ public final class MouseEventHandler {
             }
             int cardH = UIConstants.FONT_CARD_H + UIConstants.FONT_CARD_GAP;
             curY += !eff.fontItems.isEmpty() ? eff.fontItems.size() * cardH : 30;
+        } else if (eff.isLabeledMode) {
+            if (!eff.labeledItems.isEmpty()) {
+                int idx = GridRenderer.getLabeledItemIndex(tr, mx, my, paneW, curY, clipTop, clipBottom,
+                        eff.labeledItems);
+                if (idx >= 0) {
+                    PatternAndFontOverlay.LabeledItem item = eff.labeledItems.get(idx);
+                    if (!item.insertContent.isEmpty()) {
+                        insertText(item.insertContent);
+                    } else {
+                        insertTex(item.textureId);
+                    }
+                    consumed[0] = true;
+                    return curY;
+                }
+                curY += GridRenderer.labeledHeight(tr, paneW, eff.labeledItems);
+            } else {
+                curY += 30;
+            }
         } else if (eff.isWhitelistMode) {
             if (!eff.whitelistItems.isEmpty()) {
                 int idx = GridRenderer.getGridItemIndex(mx, my, paneW, curY, clipTop, clipBottom, eff.whitelistItems.size());

@@ -47,6 +47,26 @@ public final class PatternAndFontOverlay {
         }
     }
 
+    /**
+     * 标签按钮项（「图案集整合」专用）。
+     *
+     * <p>与 {@link WhitelistPatternItem} 的区别：白名单网格只画缩略图、靠肉眼辨认，
+     * 适合按纹理浏览；标签按钮则把 {@link #displayName} 直接画在按钮上，
+     * 适合承载「标志牌实体里的枚举 / 选项组」——那些选项本来就有中文名
+     * （如「国家高速公路（2位数）」「国道」），有文字才找得到。
+     */
+    public static class LabeledItem {
+        public final ResourceLocation textureId;
+        public final String insertContent;
+        public final Component displayName;
+
+        public LabeledItem(ResourceLocation textureId, String insertContent, Component displayName) {
+            this.textureId = textureId;
+            this.insertContent = insertContent;
+            this.displayName = displayName;
+        }
+    }
+
     public static class FontItem {
         public final String fontId;
         public final Component displayName;
@@ -86,6 +106,28 @@ public final class PatternAndFontOverlay {
 
         public boolean isWhitelistMode = false;
         public final List<WhitelistPatternItem> whitelistItems = new ArrayList<>();
+
+        /** 标签按钮模式：把 {@link LabeledItem#displayName} 画在按钮上，换行平铺（「图案集整合」用） */
+        public boolean isLabeledMode = false;
+        public final List<LabeledItem> labeledItems = new ArrayList<>();
+
+        /**
+         * 「图案集整合」专用：本分组对应哪些「实体选项组标题」。
+         *
+         * <p>text 编辑面板只列出「当前选中文本行的实体真的会给出的选项组」所对应的图案集，
+         * 所以靠标题匹配——标题写死成实体里那几个中文字面量（高速Logo / 底色 / 普通公路Logo /
+         * 箭头 / 转向 / 方向），这样不受语言文件影响，也不受 {@code logo1} 这种
+         * 「高速Logo 和 转向 共用同一个占位符键」的歧义影响。
+         */
+        public final List<String> matchTitles = new ArrayList<>();
+
+        /**
+         * 「图案集整合」专用：本分组绑定的占位符键（如 {@code arrow1}）。
+         *
+         * <p>给资源包 {@code cpl_*.json} 的自定义分组用——它们没有对应实体，只能靠这里声明的键
+         * 决定「当前文本行含该占位符时才在 text 编辑面板里列出」；留空则只在图案库中出现。
+         */
+        public final List<String> bindKeys = new ArrayList<>();
 
         public boolean isFontMode = false;
         public final List<FontItem> fontItems = new ArrayList<>();
@@ -158,6 +200,35 @@ public final class PatternAndFontOverlay {
 
         public H4Section addWhitelistItem(ResourceLocation textureId, String insertContent, Component displayName) {
             this.whitelistItems.add(new WhitelistPatternItem(textureId, insertContent, displayName));
+            return this;
+        }
+
+        /** 开启标签按钮模式（「图案集整合」用）。 */
+        public H4Section setLabeledMode() {
+            this.isLabeledMode = true;
+            return this;
+        }
+
+        /**
+         * 添加一个标签按钮。
+         *
+         * @param insertContent 自定义插入内容；传空串时按 {@code -texture <textureId>} 插入
+         */
+        public H4Section addLabeledItem(ResourceLocation textureId, String insertContent, Component displayName) {
+            this.labeledItems.add(new LabeledItem(textureId, insertContent, displayName));
+            return this;
+        }
+
+        /** 绑定一个「实体选项组标题」（见 {@link #matchTitles}）。 */
+        public H4Section addMatchTitle(String title) {
+            if (title != null && !title.isEmpty()) this.matchTitles.add(title);
+            return this;
+        }
+
+        /** 绑定一个占位符键（见 {@link #bindKeys}）。 */
+        public H4Section addBindKeys(String... keys) {
+            if (keys == null) return this;
+            for (String k : keys) if (k != null && !k.isEmpty()) this.bindKeys.add(k);
             return this;
         }
 
@@ -841,6 +912,9 @@ public final class PatternAndFontOverlay {
         if (section.isFontMode) {
             return curY + GridRenderer.renderFontList(ctx, tr, mx, my, paneW, clipTop, clipBottom,
                     section.fontItems, navW + 24, curY);
+        } else if (section.isLabeledMode) {
+            return curY + GridRenderer.renderLabeledGrid(ctx, tr, mx, my, paneW, clipTop, clipBottom,
+                    section.labeledItems, navW + 24, curY);
         } else if (section.isWhitelistMode) {
             return curY + GridRenderer.renderWhitelistGrid(ctx, tr, mx, my, paneW, clipTop, clipBottom,
                     section.whitelistItems, navW + 24, curY);

@@ -3,14 +3,18 @@ import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.api.text.Text;
 import com.beigu.yunbeiuc.util.PatternResourceLoader;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 
 public final class PatternRegistry {
 
-    /** 内置标志纹理根目录。 */
+    /** 内置标志纹理根目录（拆分图案：散件）。 */
     private static final String SIGN_TEXTURE_PATH = "textures/block/sign/";
+
+    /** 拼接图案纹理根目录（sign_assembled/：已经拼好的整块标志）。 */
+    private static final String ASSEMBLED_TEXTURE_PATH = "textures/block/sign_assembled/";
 
     /** 基本图案：车道箭头、导向箭头，以及禁令/指示标志中的转向箭头（WHITELIST 精确匹配文件名）。 */
     private static final String[] BASIC_PATTERN_TEXTURES = {
@@ -150,11 +154,30 @@ public final class PatternRegistry {
                 new PatternAndFontOverlay.H3Category(Text.translatable("yunbeiuc.gui.categories.yunbeiuc_builtin"));
         patternCategory.addSubCategory(insertGuide);
 
-        // 交通标志：按文件名前缀切分内置标志纹理
+        // 交通标志（父级容器）：下挂 拆分图案 / 拼接图案 两个子分类
         PatternAndFontOverlay.H3Category trafficSigns =
                 new PatternAndFontOverlay.H3Category(Text.translatable("yunbeiuc.gui.categories.traffic_signs"));
-        addSignSections(trafficSigns);
+        trafficSigns.headerText = Text.translatable("yunbeiuc.gui.sections.traffic_signs.desc");
+
+        // 拆分图案：按文件名前缀切分的散件标志纹理（箭头、编号底、各类标志等）
+        PatternAndFontOverlay.H3Category splitPatterns =
+                new PatternAndFontOverlay.H3Category(Text.translatable("yunbeiuc.gui.categories.split_patterns"));
+        addSignSections(splitPatterns);
+        trafficSigns.addSubCategory(splitPatterns);
+
+        // 拼接图案：sign_assembled/ 下已经拼好的整块标志，分 禁令 / 指示 / 警告 三部分
+        PatternAndFontOverlay.H3Category assembledPatterns =
+                new PatternAndFontOverlay.H3Category(Text.translatable("yunbeiuc.gui.categories.assembled_patterns"));
+        addAssembledSections(assembledPatterns);
+        trafficSigns.addSubCategory(assembledPatterns);
+
         patternCategory.addSubCategory(trafficSigns);
+
+        // 图案集整合：把各标志牌实体内置的「选项 → 图案」枚举按选项名集中列出
+        PatternAndFontOverlay.H3Category patternSets =
+                new PatternAndFontOverlay.H3Category(Text.translatable("yunbeiuc.gui.categories.pattern_sets"));
+        addPatternSetSections(patternSets);
+        patternCategory.addSubCategory(patternSets);
 
         // 自定义资源包图案（纯容器：内容由资源包 ui_definitions/*.json 提供的子分类承载）
         PatternAndFontOverlay.H3Category customPatterns =
@@ -299,6 +322,27 @@ public final class PatternRegistry {
                         "sign_circle")));
     }
 
+    // ==================== 拼接图案 ====================
+    //
+    // sign_assembled/ 下放的是「已经拼好的整块标志」（256×256，含底板/形状/图形），
+    // 与「拆分图案」里那些需要自己拼的散件相对。按文件名前缀分三部分。
+    private static void addAssembledSections(PatternAndFontOverlay.H3Category parent) {
+        // 顺序与「拆分图案」的 禁令 → 指示 → 警告 保持一致
+        addAssembledSection(parent, "assembled_prohibition", "sign_prohibition");
+        addAssembledSection(parent, "assembled_indication", "sign_indication");
+        addAssembledSection(parent, "assembled_warning", "sign_warning");
+    }
+
+    // 添加一个「拼接图案」分区（标题/描述取自 yunbeiuc.gui.sections.<sectionKey>[.desc]）
+    private static void addAssembledSection(PatternAndFontOverlay.H3Category parent,
+                                            String sectionKey, String... prefixes) {
+        parent.addSection(new PatternAndFontOverlay.H4Section(
+                Text.translatable("yunbeiuc.gui.sections." + sectionKey),
+                Text.translatable("yunbeiuc.gui.sections." + sectionKey + ".desc"),
+                VersionServices.resources().create("yunbeiuc", ASSEMBLED_TEXTURE_PATH))
+                .setExtensionFilter(PatternAndFontOverlay.FilterMode.PREFIX, prefixes));
+    }
+
     // 构造一个标志分区（标题/描述取自 yunbeiuc.gui.sections.<sectionKey>[.desc]，描述键留空则不显示描述行）
     private static PatternAndFontOverlay.H4Section newSignSection(String sectionKey) {
         return new PatternAndFontOverlay.H4Section(
@@ -326,6 +370,106 @@ public final class PatternRegistry {
     // 合并多个文件名数组
     private static String[] mergeNames(String[]... arrays) {
         return Arrays.stream(arrays).flatMap(Arrays::stream).toArray(String[]::new);
+    }
+
+    // ==================== 图案集整合 ====================
+    //
+    // 收录「各标志牌实体内置的枚举 / 选项组」到纹理的对应关系：
+    // 每个选项在牌子上是一次选择（如高速公路牌的「国家高速公路（2位数）」），
+    // 在图案库里则变成一个带中文名的按钮，点击插入对应的 -texture。
+    //
+    // 注意：这里引用的纹理在其它分区（底图图案 / 基本图案 / 指示标志 / 城市快速路和高速公路）
+    // 中已经存在，本栏提供的是「按选项名检索」的第二入口，不新增任何资源。
+    private static void addPatternSetSections(PatternAndFontOverlay.H3Category parent) {
+        // A. 高速 Logo —— SignExpressway* 共 8 个实体共用的「高速Logo」选项组
+        //    纹理模板 sign_expressway_{logo1}.png
+        parent.addSection(newPatternSetSection("expressway_logo")
+                .addMatchTitle("高速Logo")
+                .addLabeledItem(signTexture("sign_expressway_national_logo_1.png"), "", setLabel("ew_nat_1"))
+                .addLabeledItem(signTexture("sign_expressway_national_logo_2.png"), "", setLabel("ew_nat_2"))
+                .addLabeledItem(signTexture("sign_expressway_provincial_logo_1.png"), "", setLabel("ew_prov_1"))
+                .addLabeledItem(signTexture("sign_expressway_provincial_logo_2.png"), "", setLabel("ew_prov_2")));
+
+        // B. 底图底色 —— ZonesBoardImageEntity 的「底色」选项组（BoardImage）
+        //    纹理模板 sign_{logo}.png
+        parent.addSection(newPatternSetSection("board_color")
+                .addMatchTitle("底色")
+                .addLabeledItem(signTexture("sign_red_number_logo.png"), "", setLabel("board_red"))
+                .addLabeledItem(signTexture("sign_yellow_number_logo.png"), "", setLabel("board_yellow"))
+                .addLabeledItem(signTexture("sign_white_number_logo.png"), "", setLabel("board_white"))
+                .addLabeledItem(signTexture("sign_expressway_logo.png"), "", setLabel("board_expressway")));
+
+        // C. 普通公路 Logo —— SignExpresswayDistanceFromLocation4Entity 的「普通公路Logo」选项组
+        parent.addSection(newPatternSetSection("municipal_logo")
+                .addMatchTitle("普通公路Logo")
+                .addLabeledItem(signTexture("sign_ordinary_municipal_road_logo_1.png"), "", setLabel("mun_3"))
+                .addLabeledItem(signTexture("sign_ordinary_municipal_road_logo_2.png"), "", setLabel("mun_4")));
+
+        // D. 车道箭头 —— SignGuideLaneIndicator1Entity 的「箭头」选项组（ArrowDirection）
+        //    纹理模板 sign_guide_lane_arrow_{arrow}.png；枚举里的 LEFT_TURN_AROUND 用 straight_left_turn_around
+        parent.addSection(newPatternSetSection("lane_arrow")
+                .addMatchTitle("箭头")
+                .addLabeledItem(signTexture("sign_guide_lane_arrow_left_turn.png"), "", setLabel("lane_left_turn"))
+                .addLabeledItem(signTexture("sign_guide_lane_arrow_straight.png"), "", setLabel("lane_straight"))
+                .addLabeledItem(signTexture("sign_guide_lane_arrow_right_turn.png"), "", setLabel("lane_right_turn"))
+                .addLabeledItem(signTexture("sign_guide_lane_arrow_straight_left_turn.png"), "", setLabel("lane_sl_turn"))
+                .addLabeledItem(signTexture("sign_guide_lane_arrow_straight_right_turn.png"), "", setLabel("lane_sr_turn"))
+                .addLabeledItem(signTexture("sign_guide_lane_arrow_straight_left_turn_around.png"), "", setLabel("lane_uturn")));
+
+        // E. 路口转向 —— SignGuideIntersection* 几个实体的「转向」选项组（SignTurnDirection）
+        //    纹理模板 sign_indication_{logo}.png
+        parent.addSection(newPatternSetSection("turn_direction")
+                .addMatchTitle("转向")
+                .addLabeledItem(signTexture("sign_indication_left.png"), "", setLabel("turn_left"))
+                .addLabeledItem(signTexture("sign_indication_straight.png"), "", setLabel("turn_straight"))
+                .addLabeledItem(signTexture("sign_indication_right.png"), "", setLabel("turn_right")));
+
+        // F. 方向 —— SignExpresswayDirection5Entity 的「方向」选项组（SignCompassDirection）
+        //    纹理模板 sign_expressway_{direction1}.png
+        parent.addSection(newPatternSetSection("compass")
+                .addMatchTitle("方向")
+                .addLabeledItem(signTexture("sign_expressway_north.png"), "", setLabel("compass_n"))
+                .addLabeledItem(signTexture("sign_expressway_south.png"), "", setLabel("compass_s"))
+                .addLabeledItem(signTexture("sign_expressway_west.png"), "", setLabel("compass_w"))
+                .addLabeledItem(signTexture("sign_expressway_east.png"), "", setLabel("compass_e")));
+    }
+
+    /**
+     * 取「图案集整合」分类（内置 6 组 + 资源包 {@code cpl_*.json} 追加的自定义组）。
+     *
+     * <p>供 text 编辑面板把图案集按钮直接列进面板（见 {@code TextDisplayScreen#refreshPatternSetRow()}）；
+     * 首次调用会顺带完成内置注册，{@link #registerBuiltInPatterns()} 自带幂等保护，重复调用无副作用。
+     *
+     * @return 该 H3 分类；注册尚未完成时返回 {@code null}
+     */
+    public static PatternAndFontOverlay.H3Category getPatternSetCategory() {
+        registerBuiltInPatterns();
+        String want = Text.translatable("yunbeiuc.gui.categories.pattern_sets").getString();
+        for (PatternAndFontOverlay.H2Category h2 : PatternAndFontOverlay.REGISTRY) {
+            for (PatternAndFontOverlay.H3Category h3 : h2.subCategories) {
+                if (h3.title.getString().equals(want)) return h3;
+            }
+        }
+        return null;
+    }
+
+    // 构造一个「图案集整合」分组（标题/描述取自 yunbeiuc.gui.pattern_sets.<key>[.desc]）
+    private static PatternAndFontOverlay.H4Section newPatternSetSection(String key) {
+        return new PatternAndFontOverlay.H4Section(
+                Text.translatable("yunbeiuc.gui.pattern_sets." + key),
+                Text.translatable("yunbeiuc.gui.pattern_sets." + key + ".desc"),
+                VersionServices.resources().create("yunbeiuc", SIGN_TEXTURE_PATH))
+                .setLabeledMode();
+    }
+
+    // 内置标志纹理的 ResourceLocation（插入时按 -texture <id> 写入文本行）
+    private static ResourceLocation signTexture(String fileName) {
+        return VersionServices.resources().create("yunbeiuc", SIGN_TEXTURE_PATH + fileName);
+    }
+
+    // 选项按钮的中文标签（yunbeiuc.gui.pattern_sets.opt.<key>）
+    private static Component setLabel(String key) {
+        return Text.translatable("yunbeiuc.gui.pattern_sets.opt." + key);
     }
 
     // 递归寻找首个叶子 H3 节点

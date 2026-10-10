@@ -249,6 +249,8 @@ public final class LayoutHelper {
         if (eff.isFontMode) {
             int cardH = UIConstants.FONT_CARD_H + UIConstants.FONT_CARD_GAP;
             h += !eff.fontItems.isEmpty() ? eff.fontItems.size() * cardH : 30;
+        } else if (eff.isLabeledMode) {
+            h += GridRenderer.labeledHeight(tr, paneW, eff.labeledItems);
         } else if (eff.isWhitelistMode) {
             if (!eff.whitelistItems.isEmpty()) {
                 int cols = Math.max(1, (paneW - 48) / (UIConstants.CELL_SIZE + UIConstants.CELL_GAP_X));

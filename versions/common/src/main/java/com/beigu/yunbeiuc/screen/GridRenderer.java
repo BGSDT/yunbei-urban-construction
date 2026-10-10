@@ -291,4 +291,130 @@ public final class GridRenderer {
 
         return idx;
     }
+
+    // ==================== 标签按钮网格（图案集整合） ====================
+
+    /**
+     * 标签按钮布局结果。
+     *
+     * <p>{@code rects} 每 4 个元素描述一个按钮的 x / y / w / h；{@code totalHeight} 为整块内容高度。
+     */
+    public static final class LabeledLayout {
+        public final int[] rects;
+        public final int totalHeight;
+
+        LabeledLayout(int[] rects, int totalHeight) {
+            this.rects = rects;
+            this.totalHeight = totalHeight;
+        }
+    }
+
+    /**
+     * 计算标签按钮的换行平铺布局。
+     *
+     * <p>渲染、命中检测、滚动高度预算三处都调用本方法，保证三者永远一致
+     * （否则会出现「按钮画在这里、点在那里」或「底部内容滚不到」的错位）。
+     *
+     * <p>换行只按相对宽度判断，不依赖 {@code startY}，因此高度预算可以在不知道实际起始 Y 的情况下算准。
+     */
+    public static LabeledLayout layoutLabeled(Font tr, int paneW, int startX, int startY,
+                                              List<PatternAndFontOverlay.LabeledItem> items) {
+        int avail = Math.max(1, paneW - 48);
+        int n = items.size();
+        int[] rects = new int[n * 4];
+
+        int rowH = UIConstants.LABEL_BTN_HEIGHT;
+        int relX = 0;
+        int y = startY;
+
+        for (int i = 0; i < n; i++) {
+            Component label = items.get(i).displayName;
+            // 单个按钮不超过可用宽度，避免超长标签把行撑破
+            int w = Math.min(avail, tr.width(label) + UIConstants.LABEL_BTN_PAD_X * 2);
+
+            if (relX > 0 && relX + w > avail) {
+                relX = 0;
+                y += rowH + UIConstants.LABEL_BTN_GAP_Y;
+            }
+
+            rects[i * 4] = startX + relX;
+            rects[i * 4 + 1] = y;
+            rects[i * 4 + 2] = w;
+            rects[i * 4 + 3] = rowH;
+
+            relX += w + UIConstants.LABEL_BTN_GAP_X;
+        }
+
+        return new LabeledLayout(rects, n == 0 ? 0 : (y - startY) + rowH);
+    }
+
+    /**
+     * 标签按钮区的内容高度（供滚动条预算使用，与 {@link #renderLabeledGrid} 的返回值一致）。
+     */
+    public static int labeledHeight(Font tr, int paneW, List<PatternAndFontOverlay.LabeledItem> items) {
+        if (items == null || items.isEmpty()) return 30;
+        return layoutLabeled(tr, paneW, 0, 0, items).totalHeight;
+    }
+
+    /**
+     * 渲染标签按钮区。
+     *
+     * @return 内容高度
+     */
+    public static int renderLabeledGrid(DrawContext ctx, Font tr,
+                                        double mx, double my,
+                                        int paneW, int clipTop, int clipBottom,
+                                        List<PatternAndFontOverlay.LabeledItem> items,
+                                        int startX, int startY) {
+        if (items == null || items.isEmpty()) {
+            ctx.drawText(tr, Text.translatable("yunbeiuc.gui.no_images"),
+                    startX, startY, UIConstants.CLR_MUTED, false);
+            return 30;
+        }
+
+        LabeledLayout layout = layoutLabeled(tr, paneW, startX, startY, items);
+
+        for (int i = 0; i < items.size(); i++) {
+            int x = layout.rects[i * 4];
+            int y = layout.rects[i * 4 + 1];
+            int w = layout.rects[i * 4 + 2];
+            int h = layout.rects[i * 4 + 3];
+
+            if (y + h < clipTop || y > clipBottom) continue;
+
+            boolean isHov = LayoutHelper.isMouseInRect(mx, my, x, y, w, h);
+
+            ctx.fill(x, y, x + w, y + h, isHov ? UIConstants.CLR_BTN_HOVER : UIConstants.CLR_BTN_FILL);
+            ctx.drawBorder(x, y, w, h, isHov ? UIConstants.CLR_ACCENT : UIConstants.CLR_BTN_STROKE);
+
+            Component label = items.get(i).displayName;
+            int lw = tr.width(label);
+            ctx.drawText(tr, label, x + (w - lw) / 2, y + (h - 8) / 2,
+                    isHov ? UIConstants.CLR_ACCENT : UIConstants.CLR_BTN_LABEL, false);
+        }
+
+        return layout.totalHeight;
+    }
+
+    /**
+     * 命中检测：返回点击到的标签按钮索引，未命中返回 -1。
+     */
+    public static int getLabeledItemIndex(Font tr, double mx, double my, int paneW,
+                                          int startY, int clipTop, int clipBottom,
+                                          List<PatternAndFontOverlay.LabeledItem> items) {
+        if (items == null || items.isEmpty()) return -1;
+        if (my < clipTop || my > clipBottom) return -1;
+
+        int startX = SidebarState.getEffectiveWidth() + 24;
+        LabeledLayout layout = layoutLabeled(tr, paneW, startX, startY, items);
+
+        for (int i = 0; i < items.size(); i++) {
+            if (LayoutHelper.isMouseInRect(mx, my,
+                    layout.rects[i * 4], layout.rects[i * 4 + 1],
+                    layout.rects[i * 4 + 2], layout.rects[i * 4 + 3])) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

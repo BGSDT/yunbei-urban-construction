@@ -57,6 +57,13 @@ public final class UIConstants {
     public static final int FILTER_PILL_HEIGHT = 16;
     public static final int FILTER_PILL_SPACING = 5;
 
+    // 标签按钮（图案集整合）
+    public static final int LABEL_BTN_HEIGHT = 20;
+    /** 按钮左右内边距（单侧），按钮宽度 = 文字宽 + 2 × 本值 */
+    public static final int LABEL_BTN_PAD_X = 10;
+    public static final int LABEL_BTN_GAP_X = 8;
+    public static final int LABEL_BTN_GAP_Y = 8;
+
     // 底部操作按钮
     public static final int CLOSE_BTN_WIDTH = 160;
     public static final int CLOSE_BTN_HEIGHT = 24;
