@@ -12,13 +12,17 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
-        maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
-        maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
+        if (System.getenv('CI') != 'true') {
+            maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
+            maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
+        }
         mavenCentral()
         maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
         maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
         maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
-        maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
+        if (System.getenv('CI') != 'true') {
+            maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
+        }
     }
 }
 

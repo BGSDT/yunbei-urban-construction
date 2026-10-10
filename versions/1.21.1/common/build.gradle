@@ -27,19 +27,25 @@ sourceSets {
 // repositories local to this project so LWJGL/Minecraft libraries are visible
 // during common configuration as well as on platform projects.
 repositories {
-    maven {
-        name = 'MavenCentralLWJGL'
-        url = 'https://maven.aliyun.com/repository/central/'
-        content { includeGroup 'org.lwjgl' }
+    if (System.getenv('CI') != 'true') {
+        maven {
+            name = 'MavenCentralLWJGL'
+            url = 'https://maven.aliyun.com/repository/central/'
+            content { includeGroup 'org.lwjgl' }
+        }
     }
     maven {
         name = 'MavenCentralLWJGLFallback'
         url = 'https://repo.maven.apache.org/maven2/'
         content { includeGroup 'org.lwjgl' }
     }
-    maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
-    maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
-    maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
+    if (System.getenv('CI') != 'true') {
+        maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
+        maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
+    }
+    if (System.getenv('CI') != 'true') {
+        maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
+    }
     mavenCentral()
     maven { name = 'NeoForged'; url = 'https://maven.neoforged.net/releases/' }
     maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
