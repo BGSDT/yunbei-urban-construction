@@ -1656,8 +1656,7 @@ public class TextDisplayScreen extends Screen {
 
     private void rotateView(double deltaX, double deltaY) {
         if (minecraft == null || minecraft.player == null) return;
-        minecraft.player.setYRot(minecraft.player.getYRot() + (float) deltaX * 0.35f);
-        minecraft.player.setXRot(Math.max(-90f, Math.min(90f, minecraft.player.getXRot() + (float) deltaY * 0.35f)));
+        minecraft.player.turn(deltaX * (7.0 / 3.0), deltaY * (7.0 / 3.0));
     }
 
     private void copySelectedLine() {
