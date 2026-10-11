@@ -30,6 +30,10 @@ import java.util.List;
  * {@code patterns.json}。三个命名空间（yunbeiuc / ocelotsignmod / ocelotsignyunbei）
  * 的接口与 JSON 结构完全一致，各自读取自己那份文件。
  *
+ * <p>图案集另有独立接口 {@code ui_definitions/cpl_<modid>.json}
+ * （见 {@link #CUSTOM_PATTERN_SET_FILES}）：{@code cf_} 管「图案 / 字体注册」，
+ * {@code cpl_} 管「图案集」（按选项名组织的带标签按钮组，追加到「图案集整合」分类）。
+ *
  * <p>分类结构与内置素材清单（白名单/排除前缀等）仍由
  * {@code com.beigu.yunbeiuc.screen.PatternRegistry} 定义，本类只承担“加载”职责，
  * 不改变任何分类规则。
@@ -71,6 +75,28 @@ public final class PatternResourceLoader {
         return false;
     }
 
+    /**
+     * 图案集（「图案集整合」）接口文件名：三个命名空间各一个。
+     *
+     * <p>与 {@link #CUSTOM_UI_FILES} 分工不同：{@code cf_<modid>.json} 负责「图案 / 字体注册」
+     * （按纹理目录划分区），{@code cpl_<modid>.json} 负责「图案集」——按选项名把若干纹理
+     * 组织成一组带标签的按钮，追加到「图案集整合」分类中。两套文件互不影响，可同时存在。
+     */
+    public static final String[] CUSTOM_PATTERN_SET_FILES = {
+            "cpl_yunbeiuc.json",
+            "cpl_ocelotsignmod.json",
+            "cpl_ocelotsignyunbei.json"
+    };
+
+    /** 判断资源路径的文件名是否为约定的图案集接口文件（{@code cpl_<modid>.json}）。 */
+    public static boolean isPatternSetFile(String path) {
+        String fileName = path.substring(path.lastIndexOf('/') + 1);
+        for (String name : CUSTOM_PATTERN_SET_FILES) {
+            if (name.equals(fileName)) return true;
+        }
+        return false;
+    }
+
     private PatternResourceLoader() {
     }
 
@@ -98,6 +124,7 @@ public final class PatternResourceLoader {
         }
 
         loadAdvancedCustomUIFromJson(manager);
+        loadCustomPatternSetsFromJson(manager);
         // 资源包预设与图案/字体共用 ui_definitions 目录（见 CUSTOM_UI_DIR）
         PresetManager.loadFromResourcePacks(manager);
     }
@@ -362,5 +389,116 @@ public final class PatternResourceLoader {
         }
 
         return newSection;
+    }
+
+    // ==================== 图案集（cpl_<modid>.json） ====================
+
+    /**
+     * 从 {@code ui_definitions/cpl_<modid>.json} 加载资源包提供的图案集分组，
+     * 追加到「图案集整合」分类（排在内置 6 组之后）。
+     *
+     * <p>与 {@code cf_<modid>.json} 的分工：{@code cf_} 注册「按纹理目录划分」的图案 / 字体分区，
+     * 本文件则定义「按选项名组织」的图案集——每组是一排带中文标签的按钮，点击插入对应纹理。
+     * 两者可同时存在，互不影响。
+     *
+     * <p>文件结构：
+     * <pre>
+     * {
+     *   "groups": [
+     *     {
+     *       "title": "豹猫指示牌图案集",
+     *       "description": "可选，分组下方的说明",
+     *       "match": ["箭头"],
+     *       "keys": ["arrow1", "arrow2"],
+     *       "items": [
+     *         { "label": "左转", "texture": "ocelotsign:textures/block/sign/xxx.png" },
+     *         { "label": "禁停", "texture": "...", "insert": "-texture ..." }
+     *       ]
+     *     }
+     *   ]
+     * }
+     * </pre>
+     *
+     * <p>{@code texture} 必填（缺失的项会被跳过）；{@code insert} 可选，
+     * 留空时按 {@code -texture <texture>} 插入。
+     *
+     * <p>{@code match} / {@code keys} 可选，两者都只影响「text 编辑面板里这一组什么时候出现」：
+     * <ul>
+     *   <li>{@code match}：实体选项组标题（如 {@code "箭头"}）。当前选中文本行含占位符、
+     *       且这块牌子自己声明了同名选项组时，本组才出现在面板里。</li>
+     *   <li>{@code keys}：占位符键（如 {@code "arrow1"}）。当前选中文本行含其中任一键即出现。</li>
+     * </ul>
+     * 两者都不写时，本组只在图案库里出现，不会出现在 text 编辑面板。
+     */
+    private static void loadCustomPatternSetsFromJson(ResourceManager manager) {
+        List<ResourceLocation> resources = VersionServices.resources().listResources(manager, CUSTOM_UI_DIR,
+                id -> isPatternSetFile(id.getPath()));
+
+        for (ResourceLocation resourceId : resources) {
+            try {
+                InputStream stream = VersionServices.resources().openIfPresent(manager, resourceId);
+                if (stream == null) continue;
+                try (InputStream in = stream;
+                     InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                    JsonObject root = new JsonParser().parse(reader).getAsJsonObject();
+
+                    if (!root.has("groups") || !root.get("groups").isJsonArray()) continue;
+
+                    PatternAndFontOverlay.H2Category patternTab = findH2ByKey("yunbeiuc.gui.tabs.patterns");
+                    if (patternTab == null) continue;
+                    PatternAndFontOverlay.H3Category patternSets = findH3ByKey(patternTab,
+                            "yunbeiuc.gui.categories.pattern_sets");
+                    if (patternSets == null) continue;
+
+                    for (JsonElement groupEl : root.getAsJsonArray("groups")) {
+                        if (!groupEl.isJsonObject()) continue;
+                        PatternAndFontOverlay.H4Section section = parsePatternSetGroup(groupEl.getAsJsonObject());
+                        if (section != null) patternSets.addSection(section);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println(LOG_TAG + " 加载图案集 JSON 失败: " + resourceId + " | 错误: " + e.getMessage());
+            }
+        }
+    }
+
+    // 解析一个图案集分组；无有效条目时返回 null（不往分类里塞空分组）
+    private static PatternAndFontOverlay.H4Section parsePatternSetGroup(JsonObject groupObj) {
+        String title = groupObj.has("title") ? groupObj.get("title").getAsString() : "未命名图案集";
+        String description = groupObj.has("description") ? groupObj.get("description").getAsString() : "";
+
+        PatternAndFontOverlay.H4Section section = new PatternAndFontOverlay.H4Section(
+                Text.literal(title), Text.literal(description),
+                VersionServices.resources().create("yunbeiuc", "textures/block/sign/"))
+                .setLabeledMode();
+
+        // 可选：绑定实体选项组标题（match）/ 占位符键（keys），决定在 text 编辑面板里何时列出本组
+        if (groupObj.has("match") && groupObj.get("match").isJsonArray()) {
+            for (JsonElement t : groupObj.getAsJsonArray("match")) {
+                if (t.isJsonPrimitive()) section.addMatchTitle(t.getAsString());
+            }
+        }
+        if (groupObj.has("keys") && groupObj.get("keys").isJsonArray()) {
+            for (JsonElement k : groupObj.getAsJsonArray("keys")) {
+                if (k.isJsonPrimitive()) section.addBindKeys(k.getAsString());
+            }
+        }
+
+        if (groupObj.has("items") && groupObj.get("items").isJsonArray()) {
+            for (JsonElement itemEl : groupObj.getAsJsonArray("items")) {
+                if (!itemEl.isJsonObject()) continue;
+                JsonObject itemObj = itemEl.getAsJsonObject();
+
+                String texture = itemObj.has("texture") ? itemObj.get("texture").getAsString() : "";
+                if (texture.isEmpty()) continue;
+
+                String label = itemObj.has("label") ? itemObj.get("label").getAsString() : texture;
+                String insert = itemObj.has("insert") ? itemObj.get("insert").getAsString() : "";
+
+                section.addLabeledItem(VersionServices.resources().parse(texture), insert, Text.literal(label));
+            }
+        }
+
+        return section.labeledItems.isEmpty() ? null : section;
     }
 }

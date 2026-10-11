@@ -76,8 +76,8 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -6f, 10f, 0.65f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 6f, 10f, 0.65f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -6f, 10f, 0.65f, 0f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 6f, 10f, 0.65f, 0f));
         lines.add(SignTextLinesHelper.centeredWithZ("G40", -6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         lines.add(SignTextLinesHelper.centeredWithZ("G42", 6f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         lines.add(SignTextLinesHelper.centered("南通", -7f, 1f, 0.035f, 0xFFFFFF, "a"));

@@ -108,6 +108,9 @@ public class TextDisplayScreen extends Screen {
     private final List<ButtonWidget> optionButtons = new ArrayList<>();
     private final List<Object[]> optionGroupTitles = new ArrayList<>();
 
+    // 注：「图案集整合」不另起一条，而是**追加进上面这条属性选项行**（见 extraPatternSetSections()）。
+    // 内置 6 组对应的路牌实体自己就会返回同名选项组，行里本来就有，再起一条会出现两个条。
+
     // ===== 外部模组扩展：自定义按钮 =====
     /** 注入到「底部控制行（位移/旋转/缩放/字体/对齐那一行）」的自定义按钮定义。 */
     private final List<CustomButton> customControlRowButtons = new ArrayList<>();
@@ -1036,7 +1039,8 @@ public class TextDisplayScreen extends Screen {
     }
 
     private void recomputeLayout() {
-        optionsRowVisible = computeOptionsRowVisible() || !customPropertyButtons.isEmpty();
+        optionsRowVisible = computeOptionsRowVisible() || !customPropertyButtons.isEmpty()
+                || !extraPatternSetSections().isEmpty();
         int optionsH = optionsRowVisible ? OPTIONS_ROW_HEIGHT : 0;
         panelTopY = panelBottomY - SAVE_BTN_ROW_HEIGHT - optionsH - panelTopHeight;
         int rowBtnY = panelBottomY - SAVE_BTN_ROW_HEIGHT + 1;
@@ -1157,6 +1161,87 @@ public class TextDisplayScreen extends Screen {
 
     private record PagedRowInfo(int start, int lastShown) {}
 
+    // ==================== 图案集整合 → 属性选项行 ====================
+
+    /**
+     * 需要追加到属性选项行里的「图案集」分组。
+     *
+     * <p>判定走屏幕原本就有的那套占位符机制：先
+     * {@link CustomSignBlockEntity#extractPlaceholderKeys(String)} 取当前选中行的占位符键，
+     * 再问 {@code blockEntity.getFieldOptions(key)} 拿到「这块牌子自己声明的选项组标题」。
+     *
+     * <p><b>内置 6 组一律不追加</b>：对应的路牌实体放置出来时，{@code getFieldOptions()} 本来就会
+     * 返回同名选项组（高速Logo / 底色 / 普通公路Logo / 箭头 / 转向 / 方向），属性选项行里已经有那排
+     * 按钮了；再追加一遍就会在同一行里出现两组同名按钮。所以这里按 {@code matchTitles} 把它们排除。
+     *
+     * <p>命中条件（满足任一即追加）：
+     * <ol>
+     *   <li>{@code bindKeys} 绑定的占位符键出现在本行里（资源包 {@code cpl_*.json} 用）；</li>
+     *   <li><b>本行当前用的纹理就属于这一组</b>——从图案库/本行点了一个图案集按钮后，行文本被换成
+     *       字面 {@code -texture <path>}、占位符没了，实体也就不再返回选项组；靠这一条兜住，
+     *       属性条不会消失，还能接着换同一组里的其它图案。</li>
+     * </ol>
+     *
+     * <p>没有选中行时返回空列表。追加进同一条行，不另起一条。
+     */
+    private List<PatternAndFontOverlay.H4Section> extraPatternSetSections() {
+        List<PatternAndFontOverlay.H4Section> out = new ArrayList<>();
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return out;
+        PatternAndFontOverlay.H3Category sets = PatternRegistry.getPatternSetCategory();
+        if (sets == null) return out;
+
+        String lineText = textLineWidgets.get(selectedIndex).data.getText();
+        List<String> keys = CustomSignBlockEntity.extractPlaceholderKeys(lineText);
+        Set<String> activeTitles = new HashSet<>();
+        for (String key : keys) {
+            List<CustomSignBlockEntity.FieldOptionGroup> groups = blockEntity.getFieldOptions(key);
+            if (groups == null) continue;
+            for (CustomSignBlockEntity.FieldOptionGroup g : groups) activeTitles.add(g.title());
+        }
+
+        for (PatternAndFontOverlay.H4Section sec : sets.sections) {
+            if (!sec.isLabeledMode || sec.labeledItems.isEmpty()) continue;
+            // 实体自己已经给出同名选项组 → 行里本来就有，绝不重复追加（避免同一行两组同名按钮）
+            boolean covered = false;
+            for (String t : sec.matchTitles) {
+                if (activeTitles.contains(t)) { covered = true; break; }
+            }
+            if (covered) continue;
+
+            boolean hit = false;
+            for (String k : sec.bindKeys) {
+                if (keys.contains(k)) { hit = true; break; }
+            }
+            if (!hit) hit = lineUsesPatternSet(lineText, sec);
+            if (hit) out.add(sec);
+        }
+        return out;
+    }
+
+    /** 当前行文本里是否直接用了某个纹理（按 {@code -texture <path>} 的文件名比对）。 */
+    private static boolean lineUsesTexture(String lineText, ResourceLocation textureId) {
+        if (lineText == null || lineText.isEmpty() || textureId == null) return false;
+        String want = fileName(textureId.getPath());
+        for (String token : lineText.split("\\s+")) {
+            if (fileName(token).equals(want)) return true;
+        }
+        return false;
+    }
+
+    /** 当前行是否已经用了某个图案集分组里的任一纹理。 */
+    private static boolean lineUsesPatternSet(String lineText, PatternAndFontOverlay.H4Section sec) {
+        for (PatternAndFontOverlay.LabeledItem item : sec.labeledItems) {
+            if (lineUsesTexture(lineText, item.textureId)) return true;
+        }
+        return false;
+    }
+
+    private static String fileName(String path) {
+        if (path == null) return "";
+        int slash = path.lastIndexOf('/');
+        return slash >= 0 ? path.substring(slash + 1) : path;
+    }
+
     private boolean computeOptionsRowVisible() {
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return false;
         for (String key : CustomSignBlockEntity.extractPlaceholderKeys(textLineWidgets.get(selectedIndex).data.getText())) {
@@ -1174,13 +1259,14 @@ public class TextDisplayScreen extends Screen {
 
         int x = 5;
         int y = panelBottomY - SAVE_BTN_ROW_HEIGHT - OPTIONS_ROW_HEIGHT + (OPTIONS_ROW_HEIGHT - 20) / 2;
+        String lineText = (selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
+                ? textLineWidgets.get(selectedIndex).data.getText() : "";
 
         // 占位符属性选项
         boolean overflow = false;
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
-            String text = textLineWidgets.get(selectedIndex).data.getText();
             outer:
-            for (String key : CustomSignBlockEntity.extractPlaceholderKeys(text)) {
+            for (String key : CustomSignBlockEntity.extractPlaceholderKeys(lineText)) {
                 List<CustomSignBlockEntity.FieldOptionGroup> groups = blockEntity.getFieldOptions(key);
                 if (groups == null) continue;
                 for (var group : groups) {
@@ -1211,6 +1297,32 @@ public class TextDisplayScreen extends Screen {
                 optionButtons.add(btn);
                 this.addDrawableChild(btn);
                 x += w + 4;
+            }
+        }
+
+        // 「图案集整合」里那些「实体没提供同名选项组」的自定义分组（见 extraPatternSetSections()）：
+        // 追加进同一条属性选项行，不另起一条，所以不会出现两个条。
+        if (!overflow) {
+            for (PatternAndFontOverlay.H4Section sec : extraPatternSetSections()) {
+                if (x + 40 > width - 10) return;
+                optionGroupTitles.add(new Object[]{sec.title.getString(), x, y + 6});
+                x += textRenderer.width(sec.title) + 6;
+                for (PatternAndFontOverlay.LabeledItem item : sec.labeledItems) {
+                    int w = Math.max(20, textRenderer.width(item.displayName) + 8);
+                    if (x + w > width - 5) return;
+                    final String insert = item.insertContent;
+                    final ResourceLocation texture = item.textureId;
+                    ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(item.displayName.getString()), b -> {
+                        if (insert != null && !insert.isEmpty()) insertPatternContent(insert);
+                        else if (texture != null) insertPatternContent("-texture " + texture);
+                    }).dimensions(x, y, w, 20).build();
+                    // 本行当前就是这个图案 → 置灰，与内置选项组「当前值不可点」保持一致
+                    btn.active = !lineUsesTexture(lineText, texture);
+                    optionButtons.add(btn);
+                    this.addDrawableChild(btn);
+                    x += w + 4;
+                }
+                x += 10;
             }
         }
     }

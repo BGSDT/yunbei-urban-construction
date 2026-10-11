@@ -239,6 +239,12 @@ public class ModBlockEntities {
                     () -> VersionServices.blockEntities().create(SignExpresswayExit8Entity::new,
                             SignBlocks.SIGN_EXPRESSWAY_EXIT_8.get()));
 
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayExit1Entity>> SIGN_EXPRESSWAY_EXIT_1_ENTITY =
+            BES.register("sign_expressway_exit_1_entity",
+                    () -> VersionServices.blockEntities().create(SignExpresswayExit1Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_EXIT_1.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_EXIT_2.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_EXIT_3.get()));
     public static final RegistrySupplier<BlockEntityType<ZonesBoard1Entity>> ZONES_BOARD_1_ENTITY =
             BES.register("zones_board_1_entity",
                     () -> VersionServices.blockEntities().create(ZonesBoard1Entity::new,

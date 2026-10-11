@@ -81,10 +81,10 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -8f, 9f, 0.65f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 8f, 9f, 0.65f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{dir1}.png", -18.5f, 9.25f, 0.4f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{dir2}.png", 18.5f, 9.25f, 0.4f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -8f, 9f, 0.65f, 0f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 8f, 9f, 0.65f, 0f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{dir1}.png", -18.5f, 9.25f, 0.4f, 0f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{dir2}.png", 18.5f, 9.25f, 0.4f, 0f));
         lines.add(SignTextLinesHelper.centered("汕头", -14f, -2f, 0.03f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.centered("贺州", 14.5f, -2f, 0.03f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.centered("133", 19.75f, 20.5f, 0.03f, 0x2D9B47, "b"));

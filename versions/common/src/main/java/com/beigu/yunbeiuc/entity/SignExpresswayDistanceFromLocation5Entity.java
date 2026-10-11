@@ -105,11 +105,11 @@ public class SignExpresswayDistanceFromLocation5Entity extends CustomSignBlockEn
         lines.add(SignTextLinesHelper.right("km", 17.5f, 0.5f, 0.025f, 0xFFFFFF, "b"));
         lines.add(SignTextLinesHelper.right("km", 17.5f, -7.5f, 0.025f, 0xFFFFFF, "b"));
         lines.add(SignTextLinesHelper.right("km", 17.5f, -13.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -7f, 10f, 0.65f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -7f, 10f, 0.65f, 0f));
         lines.add(SignTextLinesHelper.centeredWithZ("S10", -7f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 7f, 10f, 0.65f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", 7f, 10f, 0.65f, 0f));
         lines.add(SignTextLinesHelper.centeredWithZ("S52", 7f, 9.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo3}.png", -13f, -9f, 0.65f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo3}.png", -13f, -9f, 0.65f, 0f));
         lines.add(SignTextLinesHelper.centeredWithZ("G3", -13f, -9.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
         setTextLines(lines);
     }
