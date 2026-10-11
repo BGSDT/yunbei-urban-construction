@@ -104,17 +104,17 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                         try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[2]).trim()); }
                         catch (NumberFormatException ignored) {}
                     }
-                    // 可选第四参数：X 轴旋转角度（度），叠加到行 rotX（0 表示不额外旋转）
-                    float rotX = 0f;
+                    // 可选第四参数：Z 轴旋转角度（度），叠加到行 rotZ（0 表示不额外旋转）
+                    float rotZ = 0f;
                     if (parts.length >= 4) {
-                        try { rotX = Float.parseFloat(entity.resolvePlaceholders(parts[3]).trim()); }
+                        try { rotZ = Float.parseFloat(entity.resolvePlaceholders(parts[3]).trim()); }
                         catch (NumberFormatException ignored) {}
                     }
                     CustomSignBlockEntity.TextLineData shifted = lineData;
-                    if (xShift != 0f || rotX != 0f) {
+                    if (xShift != 0f || rotZ != 0f) {
                         shifted = lineData.copy();
                         if (xShift != 0f) shifted.setXOffset(lineData.getXOffset() + xShift);
-                        if (rotX != 0f) shifted.setRotX(lineData.getRotX() + rotX);
+                        if (rotZ != 0f) shifted.setRotZ(lineData.getRotZ() + rotZ);
                     }
                     renderTexture(matrices, vertexConsumers, light, overlay, zOffset, shifted, textureId, editing, gizmoMode, baseFrame);
                 }

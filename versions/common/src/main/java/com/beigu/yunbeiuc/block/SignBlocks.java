@@ -471,6 +471,9 @@ public class SignBlocks {
 
     public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_EXIT_8 = register("sign_expressway_exit_8", () -> new SignExpresswayExit8(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
 
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_EXIT_1 = register("sign_expressway_exit_1", () -> new SignExpresswayExit1(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_EXIT_2 = register("sign_expressway_exit_2", () -> new SignExpresswayExit1(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
+    public static final RegistrySupplier<Block> SIGN_EXPRESSWAY_EXIT_3 = register("sign_expressway_exit_3", () -> new SignExpresswayExit1(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> SIGN_CUSTOM_EXPRESSWAY_1 = register("sign_custom_expressway_1", () -> new CustomSignTypeBlock(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> SIGN_CUSTOM_EXPRESSWAY_2 = register("sign_custom_expressway_2", () -> new CustomSignTypeBlock(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> SIGN_CUSTOM_EXPRESSWAY_3 = register("sign_custom_expressway_3", () -> new CustomSignTypeBlock(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));

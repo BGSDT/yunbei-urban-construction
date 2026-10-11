@@ -42,17 +42,17 @@ public final class SignTextLinesHelper {
     }
 
     /**
-     * 同上，额外指定该贴图行的 X 轴旋转角度（单位：度）。
+     * 同上，额外指定该贴图行的 Z 轴旋转角度（单位：度）。
      *
-     * <p>旋转值直接写入行的 {@code rotX} 字段（随 NBT 持久化），渲染贴图时由
+     * <p>旋转值直接写入行的 {@code rotZ} 字段（随 NBT 持久化），渲染贴图时由
      * {@code applyRotation} 应用，与文本行共用同一套旋转机制。
      */
-    public static TextLineData logo(String texturePath, float andX, float andY, float size, float rotX) {
+    public static TextLineData logo(String texturePath, float andX, float andY, float size, float rotZ) {
         TextLineData line = new TextLineData("-texture " + texturePath);
         line.setXOffset(andX);
         line.setYOffset(andY);
         line.setZOffset(0);
-        line.setRotX(rotX);
+        line.setRotZ(rotZ);
         line.setColor(0xFFFFFF);
         line.setAlignment(TextAlignment.CENTER_CENTER);
         line.setBold(false);

@@ -950,6 +950,9 @@ public class ModItems {
 
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_8 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_EXIT_8, ALL_SIGN_ITEMS);
 
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_1 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_EXIT_1, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_2 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_EXIT_2, ALL_SIGN_ITEMS);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_3 = registerBlockItem(SignBlocks.SIGN_EXPRESSWAY_EXIT_3, ALL_SIGN_ITEMS);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_1 = registerBlockItem(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_1, ALL_SIGN_ITEMS);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_2 = registerBlockItem(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_2, ALL_SIGN_ITEMS);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_3 = registerBlockItem(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_3, ALL_SIGN_ITEMS);
