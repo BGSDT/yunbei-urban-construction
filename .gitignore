@@ -6,6 +6,7 @@ build/
 out/
 classes/
 .gradle-user
+.gradle-clean
 .port-tools
 
 # eclipse
