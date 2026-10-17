@@ -177,6 +177,14 @@ public static final DeferredRegister<Block> BLOCKS = VersionServices.registries(
     public static final RegistrySupplier<Block> INSTRUMENT_LANE_INDICATOR = BLOCKS.register("instrument_lane_indicator", () -> new InstrumentLaneIndicator(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).requiresCorrectToolForDrops().noOcclusion()));
     public static final RegistrySupplier<Block> INSTRUMENT_STROBE_LIGHT = BLOCKS.register("instrument_strobe_light", () -> new InstrumentStrobeLight(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).requiresCorrectToolForDrops().noOcclusion()));
 
+    // 道口警示荧光（行人优先）：支持红绿灯链接，红灯相位点亮的红色款与绿灯相位点亮的绿色款
+    public static final RegistrySupplier<Block> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED = BLOCKS.register("instrument_warning_crossing_fluorescent_red",
+            () -> new InstrumentWarningCrossingFluorescent(warningCrossingProperties(TrafficLightsBlock.LightState.RED), TrafficLightsBlock.LightState.RED));
+    public static final RegistrySupplier<Block> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT = BLOCKS.register("instrument_warning_crossing_fluorescent_red_text",
+            () -> new InstrumentWarningCrossingFluorescent(warningCrossingProperties(TrafficLightsBlock.LightState.RED), TrafficLightsBlock.LightState.RED));
+    public static final RegistrySupplier<Block> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT = BLOCKS.register("instrument_warning_crossing_fluorescent_green_text",
+            () -> new InstrumentWarningCrossingFluorescent(warningCrossingProperties(TrafficLightsBlock.LightState.GREEN), TrafficLightsBlock.LightState.GREEN));
+
     public static final RegistrySupplier<Block> ROAD_RAILINGS_IRON = BLOCKS.register("road_railings_iron", () -> new RoadRailings(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> ROAD_RAILINGS_IRON_ENDING_1 = BLOCKS.register("road_railings_iron_ending_1", () -> new RoadRailings(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> ROAD_RAILINGS_IRON_ENDING_2 = BLOCKS.register("road_railings_iron_ending_2", () -> new RoadRailings(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
@@ -235,5 +243,17 @@ public static final DeferredRegister<Block> BLOCKS = VersionServices.registries(
 
     public static void init() {
         BLOCKS.register();
+    }
+
+    /**
+     * 道口警示荧光的公共属性：只有灯色等于 {@code litState} 时才发光（亮度 15），熄灭时不发光。
+     *
+     * <p>发光亮度与方块状态的切换都由链接组驱动（见 {@code TrafficLightsBlockEntity#updateLightState()}）。
+     */
+    private static BlockBehaviour.Properties warningCrossingProperties(TrafficLightsBlock.LightState litState) {
+        return VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(state -> state.getValue(TrafficLightsBlock.LIGHT_STATE) == litState ? 15 : 0);
     }
 }

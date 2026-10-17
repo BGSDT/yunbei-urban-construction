@@ -54,6 +54,11 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.CORNER_GUARD_BLACK_LEFT.get(), RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.CORNER_GUARD_BLACK_RIGHT.get(), RenderType.cutout());
 
+        // 道口警示荧光：牌子贴图是带透明通道的（X 形牌 / 文字牌），必须走 cutout，否则透明处会变黑
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get(), RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get(), RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT.get(), RenderType.cutout());
+
         SignBlocks.entries().forEach(blockRegistrySupplier -> BlockRenderLayerMap.INSTANCE.putBlock(blockRegistrySupplier.get(), RenderType.cutout()));
 
         BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);
@@ -61,6 +66,8 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY.get(), RoadNameSignBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), TrafficLightsBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLOCK_ENTITY.get(), TrafficLightsPavementIntegrationBlockEntityRenderer::new);
+        // 道口警示荧光：同样画红绿灯图案/读秒（复用同一渲染器）
+        BlockEntityRendererRegistry.register(ModBlockEntities.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_ENTITY.get(), TrafficLightsBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.GANTRY_FRAME_LED_ENTITY.get(), GantryFrameLedEntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_LED_ENTITY.get(), RoadPoleLedEntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY.get(), SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer::new);

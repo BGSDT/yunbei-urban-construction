@@ -36,6 +36,18 @@ public class ModBlockEntities {
                             MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()));
 
+    /**
+     * 道口警示荧光：复用 {@link TrafficLightsBlockEntity}（链接组、时序、相位逻辑全在里面），
+     * 但单独注册一个方块实体类型——这样 {@code TrafficLightsBlockEntityRenderer} 不会把它
+     * 当成红绿灯灯头去画图案与读秒，本方块完全由方块状态模型表现亮/灭。
+     */
+    public static final RegistrySupplier<BlockEntityType<TrafficLightsBlockEntity>> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_ENTITY =
+            BES.register("instrument_warning_crossing_fluorescent_entity",
+                    () -> VersionServices.blockEntities().create(TrafficLightsBlockEntity::new,
+                            MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get(),
+                            MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get(),
+                            MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT.get()));
+
     public static final RegistrySupplier<BlockEntityType<TrafficLightsPavementIntegrationBlockEntity>> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLOCK_ENTITY =
             BES.register("traffic_lights_pavement_integration_block_entity",
                     () -> VersionServices.blockEntities().create(TrafficLightsPavementIntegrationBlockEntity::new,

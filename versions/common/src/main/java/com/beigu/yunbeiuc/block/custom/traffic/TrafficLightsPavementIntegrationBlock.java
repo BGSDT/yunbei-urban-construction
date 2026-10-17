@@ -160,6 +160,8 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
         ItemStack heldItem = player.getItemInHand(hand);
 
+        // LINK_WAND（组网 + 轨道链接）需要落到物品自己的 useOn 上处理，
+        // 这里必须放行；否则方块消费掉右键后 useOn 永远不会被调用。
         if (heldItem.getItem() == ModItems.LINK_WAND.get()) {
             return InteractionResult.PASS;
         }

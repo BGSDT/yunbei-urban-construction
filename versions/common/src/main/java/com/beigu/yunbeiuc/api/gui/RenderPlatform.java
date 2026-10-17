@@ -21,7 +21,20 @@ public interface RenderPlatform {
         LINE_STRIP
     }
 
-        /** Starts a `POSITION_COLOR` batch and returns the consumer to write vertices into. */
+    /**
+     * Starts a `POSITION_COLOR` batch and returns the consumer to write vertices into.
+     *
+     * <p><b>这套 {@code POSITION_COLOR} 顶点只适合 GUI 一类不带着色器的场景。</b>
+     * 画**世界坐标线段**不要用它：1.17+ 的 {@code rendertype_lines} 着色器把顶点「法线」
+     * 当作线段另一端的方向（{@code rendertype_lines.vsh} 用的是 {@code Position + Normal}），
+     * 靠它在屏幕上把线段撑成有宽度的四边形；顶点格式缺了 Normal 时
+     * {@code normalize(0)} 得到 NaN，<b>线段会被静默丢弃，且不报任何错</b>。
+     *
+     * <p>世界坐标线段请直接用原版 {@code RenderType.lines()}（与 MTR 的
+     * {@code mtr.client.IDrawing#drawLine} 同一条路，着色器 / 顶点格式 / 混合 /
+     * NO_CULL / 线宽来源都由它配好），参考
+     * {@code com.beigu.yunbeiuc.render.RailPhaseWandRenderer}。
+     */
     VertexConsumer beginLines(LinePrimitive primitive);
 
     /** Finishes and submits the batch started by {@link #beginLines}. */

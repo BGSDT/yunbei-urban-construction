@@ -24,6 +24,7 @@ public final class RenderPlatformImpl implements RenderPlatform {
                        com.mojang.blaze3d.vertex.PoseStack matrices, float x, float y, float z) {
         consumer.vertex(matrices.last().pose(), x, y, z);
     }
+
     @Override
     public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
                        com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
@@ -39,9 +40,12 @@ public final class RenderPlatformImpl implements RenderPlatform {
         consumer.vertex(pose.pose(), x, y, z).color(red, green, blue, alpha).uv(u, v)
                 .overlayCoords(overlay).uv2(light).normal(pose.normal(), normalX, normalY, normalZ).endVertex();
     }
-    @Override public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
+
+    @Override
+    public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
         matrices.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
     }
+
     @Override
     public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();

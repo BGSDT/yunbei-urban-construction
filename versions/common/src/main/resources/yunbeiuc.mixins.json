@@ -1,9 +1,14 @@
 {
   "required": false,
+  "minVersion": "0.8",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "com.beigu.yunbeiuc.mixin.YunbeiucMixinPlugin",
+  "package": "com.beigu.yunbeiuc.mixin",
   "mixins": [
+    "TrainServerRailSignalMixin"
   ],
   "client": [
+    "RenderTrainsRailHighlightMixin"
   ],
   "injectors": {
     "defaultRequire": 1

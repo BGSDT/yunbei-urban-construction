@@ -64,8 +64,10 @@ public class ModItems {
     }
 
     // ===== Wand Items =====
+    // 普通魔杖：本来就是 mod 的「万能魔杖」（龙门架 / 道闸 / 路灯 / 路牌 / 红绿灯面板都认它），
+    // 现在再加上「查看与编辑轨道相位」这一块（手持显示高亮、瞄准轨道右键开相位界面）。
     public static final RegistrySupplier<Item> WAND = registerToolItem("wand",
-            () -> new Item(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
+            () -> new PhaseWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> TREE_WAND = registerToolItem("tree_wand",
             () -> new TreeWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1).durability(9), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> WATER_WAND = registerToolItem("water_wand",
@@ -198,6 +200,10 @@ public class ModItems {
     public static final RegistrySupplier<Item> INSTRUMENT_FEE_DISPLAY = municipal(MunicipalBlocks.INSTRUMENT_FEE_DISPLAY);
     public static final RegistrySupplier<Item> INSTRUMENT_LANE_INDICATOR = municipal(MunicipalBlocks.INSTRUMENT_LANE_INDICATOR);
     public static final RegistrySupplier<Item> INSTRUMENT_STROBE_LIGHT = municipal(MunicipalBlocks.INSTRUMENT_STROBE_LIGHT);
+
+    public static final RegistrySupplier<Item> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED = municipal(MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED);
+    public static final RegistrySupplier<Item> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT = municipal(MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT);
+    public static final RegistrySupplier<Item> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT = municipal(MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT);
     public static final RegistrySupplier<Item> ROAD_RAILINGS_IRON = municipal(MunicipalBlocks.ROAD_RAILINGS_IRON);
     public static final RegistrySupplier<Item> ROAD_RAILINGS_IRON_ENDING_1 = municipal(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_1);
     public static final RegistrySupplier<Item> ROAD_RAILINGS_IRON_ENDING_2 = municipal(MunicipalBlocks.ROAD_RAILINGS_IRON_ENDING_2);
@@ -965,6 +971,9 @@ public class ModItems {
 
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_8 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_8);
 
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_1 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_1);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_2 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_2);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_3 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_3);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_1 = sign(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_1);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_2 = sign(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_2);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_3 = sign(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_3);

@@ -4,6 +4,9 @@ import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.network.NetworkCompat;
 import com.beigu.yunbeiuc.network.ModMessages;
 import com.beigu.yunbeiuc.network.TrafficLightsGroupSyncPacket;
+import com.beigu.yunbeiuc.signal.ClientRailGroupIndex;
+import com.beigu.yunbeiuc.signal.RailPhaseBinding;
+import com.beigu.yunbeiuc.signal.RailSignalRegistry;
 
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
@@ -11,6 +14,7 @@ import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -33,6 +37,14 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private List<Integer> phaseIndices = new ArrayList<>();
     private String groupId = null;
     private List<BlockPos> groupPositions = new ArrayList<>();
+
+    /**
+     * 本组已链接的 MTR 轨道及其相位（组内共享，与 phaseTimes 同级）。
+     *
+     * <p>由「轨道相位魔杖」写入。红绿灯每 tick 把这些轨道的实时信号状态推给
+     * {@link RailSignalRegistry}，MTR 列车据此在红灯相位前停车。
+     */
+    private List<RailPhaseBinding> railBindings = new ArrayList<>();
 
     private int[] phaseTimes = null;
     private int phaseCount = 0;
@@ -78,7 +90,19 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private int fixedSeconds = 10;
 
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
+        this(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    /**
+     * 指定方块实体类型的构造函数。
+     *
+     * <p>本类被多个方块实体类型复用（普通红绿灯、道口警示荧光……），而 {@code BlockEntity}
+     * 的类型在构造时就固定下来、之后无法更改。若只写死红绿灯那一个类型，其它方块实例会
+     * 顶着错误的类型：存档重载时被 {@code BlockEntityType#isValid} 判为非法而丢掉方块实体
+     * （链接组状态全丢），客户端还会按错误类型去找渲染器（被当成红绿灯画上箭头/圆点图案）。
+     */
+    public TrafficLightsBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
 
         // 雾灯方块默认设置为色闪黄色（COLOR_FLASH）
         Block block = state.getBlock();
@@ -90,7 +114,15 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     // ==================== Tick 逻辑 ====================
 
     public void tick() {
-        if (level == null || level .isClientSide || !cycleActive || groupId == null || phaseTimes == null || phaseCount <= 0) {
+        if (level == null || level .isClientSide) {
+            return;
+        }
+
+        // 轨道信号每 tick 刷新：即使相位循环未运行（cycleActive=false）也要刷新，
+        // 未运行一律视为红灯，避免残留绿灯状态让列车闯过。
+        publishRailSignals();
+
+        if (!cycleActive || groupId == null || phaseTimes == null || phaseCount <= 0) {
             return;
         }
 
@@ -180,6 +212,16 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             normalized = normalized.subList(0, maxAllowed);
         }
         phaseIndices = new ArrayList<>(normalized);
+
+        // 相位表被缩短后，清掉轨道绑定里指向不存在相位的位
+        if (railBindings != null && !railBindings.isEmpty()) {
+            final long valid = maskOf(phaseCount);
+            for (RailPhaseBinding binding : railBindings) {
+                if ((binding.getPhaseMask() & ~valid) != 0L) {
+                    binding.setPhaseMask(binding.getPhaseMask() & valid);
+                }
+            }
+        }
     }
 
     private void updateLightState() {
@@ -204,14 +246,12 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         int yellowStartTick = totalTicks - YELLOW_DURATION;
         int flashStartTick = yellowStartTick - FLASH_DURATION;
 
-        boolean continuesGreen = phaseIndices.contains(currentActivePhase)
-                && phaseIndices.contains((currentActivePhase + 1) % phaseCount);
-
+        // 注意：这里**不做**「下一相位也放行 → 连续绿灯、跳过黄灯」的判断。
+        // 一盏灯被分配到多个相位时，每个相位的最后 3 秒仍然必须是黄灯 3、2、1，
+        // 否则相位结束时读秒会算出 0（绿灯剩余被减掉黄灯时长、又夹到 0），
+        // 与单相位灯的读秒行为对不上。
         if (phaseIndices.contains(currentActivePhase)) {
-            if (continuesGreen) {
-                // 下一相位对本灯同样为绿灯，视为连续相位，不出现黄灯/闪烁，直接保持绿灯
-                lightState = TrafficLightsBlock.LightState.GREEN;
-            } else if (isPavementLight) {
+            if (isPavementLight) {
                 // 人行道红绿灯：黄灯时间并入绿色，最后3秒闪烁（原黄灯位置闪烁）
                 if (currentTick < yellowStartTick) {
                     lightState = TrafficLightsBlock.LightState.GREEN;
@@ -269,11 +309,211 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 tl.phaseCount = this.phaseCount;
                 tl.cycleActive = this.cycleActive;
                 tl.cycleStartGameTime = this.cycleStartGameTime;
+                tl.railBindings = new ArrayList<>(this.railBindings);
                 tl.updateLightState();
             } else {
                 unloadGroup();
                 return;
             }
+        }
+    }
+
+    // ==================== 轨道相位绑定（供「轨道相位魔杖」使用） ====================
+
+    /** 本组已链接的轨道（只读）。 */
+    public List<RailPhaseBinding> getRailBindings() {
+        return Collections.unmodifiableList(railBindings);
+    }
+
+    /** 相位组锚点：组内第一个成员坐标；未分组时用自身坐标。 */
+    public BlockPos groupAnchor() {
+        return groupPositions.isEmpty() ? worldPosition : groupPositions.get(0);
+    }
+
+    /** 相位掩码的合法范围（低 {@code phaseCount} 位）。 */
+    public static long maskOf(int phaseCount) {
+        if (phaseCount <= 0) return 0L;
+        if (phaseCount >= RailPhaseBinding.MAX_PHASES) return -1L;
+        return (1L << phaseCount) - 1L;
+    }
+
+    /** 查一条已绑定的轨道；没有则返回 null。 */
+    public RailPhaseBinding findRailBinding(BlockPos start, BlockPos end) {
+        for (RailPhaseBinding binding : railBindings) {
+            if (binding.matches(start, end)) {
+                return binding;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 把一条轨道绑定到本相位组（已存在则保留其原有相位勾选）。
+     *
+     * <p>新绑定的轨道默认只勾选「相位 1」放行（与旧版单相位逻辑一致），
+     * 具体放行哪些相位由玩家在轨道相位界面里勾选。
+     *
+     * @param start 轨道起点节点
+     * @param end   轨道终点节点
+     */
+    public boolean addRailBinding(BlockPos start, BlockPos end, Player player) {
+        if (level == null || level .isClientSide) return false;
+        if (start.equals(end)) {
+            message(player, "§c起点与终点不能是同一个节点！");
+            return false;
+        }
+        if (groupId == null) {
+            message(player, "§c此红绿灯未链接到任何组！");
+            return false;
+        }
+        // 这里**故意不检查相位时间表**。组网时 setGroup() 会把时间表清空，而轨道正是在
+        // 成组那一刻写进来的（见 LinkWand#finalizeGroup），所以要求「先有时间表」会让
+        // 「组网 + 链接轨道一次做完」永远失败，玩家只能设完时间表再链接一遍。
+        // 没有时间表时 publishRailSignals 推的是「不放行」，列车会停在这条轨道前，
+        // 与整组灯都是红灯的状态一致；设好时间表后下一个 tick 就按相位正常放行了。
+
+        final boolean isNew = findRailBinding(start, end) == null;
+        if (isNew) {
+            railBindings.add(new RailPhaseBinding(start, end, RailPhaseBinding.bit(0)));
+        }
+
+        propagateRailBindings();
+        publishRailSignals();
+        markGroupStateDirty();
+        if (isNew) {
+            message(player, "§a已链接轨道 §6" + start.toShortString() + " → " + end.toShortString()
+                    + " §7(共 " + railBindings.size() + " 条)。瞄准轨道右键可编辑放行相位");
+        } else {
+            message(player, "§7这条轨道已在本组中 §7(共 " + railBindings.size() + " 条)");
+        }
+        return true;
+    }
+
+    /**
+     * 覆盖设置某条轨道的相位勾选掩码（由轨道相位界面提交）。
+     *
+     * <p>掩码会被裁剪到本组的相位数量范围内，避免出现指向不存在相位的位。
+     *
+     * @return 是否找到了这条轨道并成功更新
+     */
+    public boolean setRailBindingMask(BlockPos start, BlockPos end, long phaseMask, Player player) {
+        if (level == null || level .isClientSide) return false;
+        final RailPhaseBinding binding = findRailBinding(start, end);
+        if (binding == null) {
+            message(player, "§c这条轨道尚未链接到本组！");
+            return false;
+        }
+
+        final long clamped = phaseMask & maskOf(phaseCount);
+        if (binding.getPhaseMask() == clamped) {
+            return true;
+        }
+        binding.setPhaseMask(clamped);
+
+        propagateRailBindings();
+        publishRailSignals();
+        markGroupStateDirty();
+        message(player, "§a已更新轨道 §6" + start.toShortString() + " → " + end.toShortString()
+                + " §a放行相位 §6" + describeMask(clamped, phaseCount)
+                + " §7(共 " + railBindings.size() + " 条)");
+        return true;
+    }
+
+    /** 把掩码描述成「1, 3」这样的相位编号串；空掩码显示为「无」。 */
+    public static String describeMask(long mask, int phaseCount) {
+        if (mask == 0L) return "无";
+        final StringBuilder sb = new StringBuilder();
+        final int limit = Math.min(phaseCount <= 0 ? RailPhaseBinding.MAX_PHASES : phaseCount,
+                RailPhaseBinding.MAX_PHASES);
+        for (int i = 0; i < limit; i++) {
+            if ((mask & RailPhaseBinding.bit(i)) == 0L) continue;
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(i + 1);
+        }
+        return sb.length() == 0 ? "无" : sb.toString();
+    }
+
+    /** 解除一条轨道的绑定。 */
+    public boolean removeRailBinding(BlockPos start, BlockPos end, Player player) {
+        if (level == null || level .isClientSide) return false;
+
+        boolean removed = railBindings.removeIf(binding -> binding.matches(start, end));
+        if (!removed) {
+            message(player, "§c这条轨道尚未链接到本组！");
+            return false;
+        }
+
+        propagateRailBindings();
+        publishRailSignals();
+        markGroupStateDirty();
+        message(player, "§a已解除轨道 §6" + start.toShortString() + " → " + end.toShortString()
+                + " §7(剩余 " + railBindings.size() + " 条)");
+        return true;
+    }
+
+    /** 清空本组全部轨道绑定。 */
+    public void clearRailBindings(Player player) {
+        if (level == null || level .isClientSide) return;
+        final int count = railBindings.size();
+        railBindings.clear();
+        propagateRailBindings();
+        RailSignalRegistry.removeGroup(groupAnchor());
+        markGroupStateDirty();
+        message(player, "§a已清空本组轨道绑定 §7(共 " + count + " 条)");
+    }
+
+    /** 把轨道绑定同步给组内其它成员（与时间表同步同一套思路）。 */
+    private void propagateRailBindings() {
+        if (level == null || level .isClientSide || groupId == null) return;
+        for (BlockPos pos : groupPositions) {
+            if (pos.equals(this.worldPosition)) continue;
+            if (!level.isLoaded(pos)) continue;
+            if (level.getBlockEntity(pos) instanceof TrafficLightsBlockEntity tl && tl != this) {
+                tl.railBindings = new ArrayList<>(this.railBindings);
+            }
+        }
+    }
+
+    /**
+     * 把本组所有已绑定轨道的实时信号状态推给 {@link RailSignalRegistry}。
+     *
+     * <p>每 tick 调用一次。轨道只要有一个被勾选的相位正处于活动状态即放行；
+     * 掩码为 0（一个相位都没勾选）时恒为红灯。
+     * 没有任何绑定时清除本组的注册，避免解绑后残留旧状态拦车。
+     */
+    private void publishRailSignals() {
+        if (level == null || level .isClientSide) return;
+        final BlockPos anchor = groupAnchor();
+        if (railBindings.isEmpty()) {
+            RailSignalRegistry.removeGroup(anchor);
+            return;
+        }
+        for (RailPhaseBinding binding : railBindings) {
+            RailSignalRegistry.publish(binding.railProduct(), anchor, binding.getPhaseMask(),
+                    isMaskActive(binding.getPhaseMask()));
+        }
+    }
+
+    /** 掩码里任意一个相位处于活动状态即放行（掩码为 0 → 恒为红灯）。 */
+    public boolean isMaskActive(long mask) {
+        if (mask == 0L) return false;
+        if (!cycleActive || phaseTimes == null || phaseCount <= 0) return false;
+        if (level == null || cycleStartGameTime == Long.MIN_VALUE) return false;
+        normalizePhaseData();
+        refreshPhaseProgress();
+        return currentActivePhase >= 0
+                && currentActivePhase < RailPhaseBinding.MAX_PHASES
+                && (mask & RailPhaseBinding.bit(currentActivePhase)) != 0L;
+    }
+
+    /** 某个相位当前是否放行（活动相位与之相同且循环在运行）。 */
+    public boolean isPhaseActive(int phaseIndex) {
+        return isMaskActive(RailPhaseBinding.bit(phaseIndex));
+    }
+
+    private static void message(Player player, String text) {
+        if (player != null) {
+            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal(text), true);
         }
     }
 
@@ -307,7 +547,8 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         // 人行道灯：黄灯时间段视为绿灯闪烁，继续返回剩余秒数
         // 普通灯：黄灯时间段返回-1（由getYellowRemainingSeconds处理）
-        if (currentTick >= yellowStartTick && !isPavementLight && !phaseIndices.contains((currentActivePhase + 1) % phaseCount)) {
+        // 不区分「下一相位是否也放行」：每个相位结束前 3 秒都是黄灯，绿灯读秒一律让位
+        if (currentTick >= yellowStartTick && !isPavementLight) {
             return -1;
         }
 
@@ -337,9 +578,6 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         refreshPhaseProgress();
 
         if (!phaseIndices.contains(currentActivePhase)) return -1;
-
-        // 与下一相位相接为连续绿灯时，中间不出现黄灯
-        if (phaseIndices.contains((currentActivePhase + 1) % phaseCount)) return -1;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
         int yellowStartTick = totalTicks - YELLOW_DURATION;
@@ -518,6 +756,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         stopCycle();
 
+        // 组被拆除：先按锚点清掉运行期的轨道信号，避免残留红灯拦车
+        if (level != null && !level .isClientSide) {
+            RailSignalRegistry.removeGroup(groupAnchor());
+        }
+
         if (level != null && !level .isClientSide && groupPositions != null) {
             for (BlockPos pos : groupPositions) {
                 if (pos.equals(this.worldPosition)) continue;
@@ -528,6 +771,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                     tl.phaseTimes = null;
                     tl.phaseCount = 0;
                     tl.phaseIndices.clear();
+                    tl.railBindings.clear();
                     tl.directionType = DirectionType.STRAIGHT_CIRCLE;
                     tl.cycleStartGameTime = Long.MIN_VALUE;
                     tl.stopCycle();
@@ -541,6 +785,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         phaseTimes = null;
         phaseCount = 0;
         phaseIndices.clear();
+        railBindings.clear();
         directionType = DirectionType.STRAIGHT_CIRCLE;
         cycleStartGameTime = Long.MIN_VALUE;
         markGroupStateDirty();
@@ -566,10 +811,14 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.phaseTimes = null;
         this.phaseCount = 0;
         this.phaseIndices.clear();
+        this.railBindings.clear();
         this.currentTick = 0;
         this.currentActivePhase = 0;
         this.cycleActive = false;
         this.cycleStartGameTime = Long.MIN_VALUE;
+        if (level != null && !level .isClientSide) {
+            RailSignalRegistry.removeGroup(groupAnchor());
+        }
         if (level != null && !level .isClientSide) {
             BlockState state = getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
@@ -645,6 +894,66 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public int getPhaseCount() {
         return phaseCount;
+    }
+
+    /**
+     * 当前活动相位序号（0 起）；尚未设置时间表时返回 -1。
+     *
+     * <p>相位是按 {@link #cycleStartGameTime} + **本地游戏刻**现算的
+     * （见 {@link #refreshPhaseProgress()}），组内每盏灯都用同一个起点推算，
+     * 因此**客户端也能拿到正确的值**，不需要额外同步包。
+     * 轨道相位界面与轨道高亮线都靠它判断「这条轨道现在是否被放行」。
+     */
+    public int getActivePhase() {
+        if (phaseTimes == null || phaseCount <= 0) return -1;
+        refreshPhaseProgress();
+        return currentActivePhase;
+    }
+
+    /** 相位循环是否已启动；未启动时相位不推进，也不应被当作放行。 */
+    public boolean isCycleActive() {
+        return cycleActive;
+    }
+
+    /**
+     * 这条轨道此刻的「红绿灯状态」——放行就是绿、黄灯段就是黄、不放行就是红。
+     *
+     * <p>用的是与灯本身**完全同一套逻辑**（见 {@link #updateLightState()}）：
+     * 只是把灯的 {@code phaseIndices}（哪些相位放行这盏灯）换成轨道的相位掩码
+     * （{@link RailPhaseBinding#getPhaseMask()}，哪些相位放行这条轨道）。
+     * 于是轨道高亮线的颜色会跟着那盏灯一起从绿 → 绿闪 → 黄 → 红变化。
+     *
+     * @return {@code GREEN} 放行中；{@code GRAY} 放行但正在绿闪；
+     *         {@code YELLOW} 黄灯段（马上变红）；{@code RED} 当前相位不放行这条轨道。
+     */
+    public TrafficLightsBlock.LightState getRailLightState(RailPhaseBinding binding) {
+        if (binding == null || phaseTimes == null || phaseCount <= 0 || level == null) {
+            return TrafficLightsBlock.LightState.RED;
+        }
+        refreshPhaseProgress();
+        if (!cycleActive || currentActivePhase < 0 || currentActivePhase >= phaseCount) {
+            return TrafficLightsBlock.LightState.RED;
+        }
+
+        // 当前相位不放行这条轨道 —— 红灯（掩码为 0 的「永不放行」也走这一支）
+        if (!binding.isPhaseEnabled(currentActivePhase)) {
+            return TrafficLightsBlock.LightState.RED;
+        }
+
+        final int totalTicks = phaseTimes[currentActivePhase] * 20;
+        final int yellowStartTick = totalTicks - YELLOW_DURATION;
+        final int flashStartTick = yellowStartTick - FLASH_DURATION;
+
+        if (currentTick < flashStartTick) {
+            return TrafficLightsBlock.LightState.GREEN;
+        }
+        if (currentTick < yellowStartTick) {
+            final int flashPhase = (currentTick - flashStartTick) / FLASH_INTERVAL;
+            return (flashPhase % 2 == 0)
+                    ? TrafficLightsBlock.LightState.GRAY
+                    : TrafficLightsBlock.LightState.GREEN;
+        }
+        return TrafficLightsBlock.LightState.YELLOW;
     }
 
     public List<Integer> getPhaseIndices() {
@@ -757,8 +1066,27 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             }
         }
 
+        // 轨道相位绑定（旧存档没有该字段时为空列表）
+        railBindings = new ArrayList<>();
+        if (nbt.contains("railBindings")) {
+            CompoundTag bindingsTag = nbt.getCompound("railBindings");
+            int size = bindingsTag.getInt("size");
+            for (int i = 0; i < size; i++) {
+                if (bindingsTag.contains("b" + i)) {
+                    railBindings.add(RailPhaseBinding.fromNbt(bindingsTag.getCompound("b" + i)));
+                }
+            }
+        }
+
         // 兼容旧存档：校正 phaseCount 与 phaseTimes 长度，并钳制相位索引
         normalizePhaseData();
+
+        // 客户端：把本组锚点登记进「相位组索引」。手持普通魔杖时要显示周围所有已链接
+        // 轨道，而物品上不记任何「我在哪一组」，所以改成从世界里找（见 ClientRailGroupIndex）。
+        // 每次同步数据都会走到这里，区块重新加载 / 换世界后索引都能自动补回来。
+        if (level != null && level .isClientSide && isInGroup() && !railBindings.isEmpty()) {
+            ClientRailGroupIndex.register(level, groupAnchor());
+        }
     }
 
     @Override
@@ -796,6 +1124,15 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 positionsTag.put("pos" + i, writePos(groupPositions.get(i)));
             }
             nbt.put("groupPositions", positionsTag);
+        }
+
+        if (railBindings != null && !railBindings.isEmpty()) {
+            CompoundTag bindingsTag = new CompoundTag();
+            bindingsTag.putInt("size", railBindings.size());
+            for (int i = 0; i < railBindings.size(); i++) {
+                bindingsTag.put("b" + i, railBindings.get(i).toNbt());
+            }
+            nbt.put("railBindings", bindingsTag);
         }
 
         super.saveAdditionalCompat(nbt);

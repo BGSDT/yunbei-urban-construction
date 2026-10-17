@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "yunbeiuc:block/instrument_warning_crossing_fluorescent_red"
+    },
+    "facing=east": {
+      "model": "yunbeiuc:block/instrument_warning_crossing_fluorescent_red",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "yunbeiuc:block/instrument_warning_crossing_fluorescent_red",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "yunbeiuc:block/instrument_warning_crossing_fluorescent_red",
+      "y": 270
+    }
+  }
+}

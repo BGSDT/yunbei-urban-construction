@@ -37,7 +37,21 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         this.textRenderer = ctx.getFont();
     }
 
+    /**
+     * 道口警示荧光的图案位置（X 恒为 0）。
+     *
+     * <p>整根立杆只有一块牌，不像红绿灯灯头有红/黄/绿三个灯位，所以 Y/Z 固定、不随灯色分状态。
+     *
+     * <p>取值由模型换算而来（模型单位）：牌心 y=25 → {@code 25/16 - 0.5 = 1.0625}；
+     * 牌面 z=6.15 → {@code 0.5 - 6.1/16 = 0.12}（略在牌面前方，避免与牌面 z-fighting）。
+     * 该换算与既有红绿灯一致：竖装灯牌面 z=13.5 → {@code 0.5 - 13.5/16 = -0.34375}，代码里写的是 -0.33。
+     */
+    private static final float WARNING_CROSSING_PATTERN_Y = 1.0625f;
+    private static final float WARNING_CROSSING_PATTERN_Z = 0.12f;
+
     private float getZOffset(TrafficLightsBlock.MountType mountType, Block currentBlock) {
+        // 道口警示荧光：整根立杆自带牌面，与墙面/路杆安装方式无关，用固定偏移
+        if (isWarningCrossingBlock(currentBlock)) return WARNING_CROSSING_PATTERN_Z;
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) return 0.16f;
         if (mountType == TrafficLightsBlock.MountType.POLE) {
             if (isPavementBlock(currentBlock)) return -0.46f;
@@ -58,6 +72,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         return currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
+    }
+
+    /** 道口警示荧光（三款）：共用同一套图案定位。 */
+    private static boolean isWarningCrossingBlock(Block block) {
+        return block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get()
+                || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get()
+                || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT.get();
     }
 
     private static final ResourceLocation LEFT_TURN_RED = new ResourceLocation(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/left_turn_red.png");
@@ -136,9 +157,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
     private void renderPavementSeconds(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
-        if (entity.isInGroup()) {
+        if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
-
+
             remaining = info.getActiveRemaining();
             if (remaining < 0) {
                 return;
@@ -341,7 +362,12 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float y = 0;
         float z = 0;
 
-        if (isPavementBlock(currentBlock)) {
+        if (isWarningCrossingBlock(currentBlock)) {
+            // 道口警示荧光：整根立杆只有一块牌，图案固定居中，不按灯色分三个位置
+            x = 0f;
+            y = WARNING_CROSSING_PATTERN_Y;
+            z = WARNING_CROSSING_PATTERN_Z;
+        } else if (isPavementBlock(currentBlock)) {
             if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) x = 5f / 16f;
             y = switch (lightState) {
                 case RED, YELLOW -> 3.85f / 16f;
@@ -495,9 +521,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         boolean showSeconds = entity.isShowSeconds();
 
         // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
-        if (entity.isInGroup()) {
+        if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
-
+
             remaining = info.getActiveRemaining();
             if (remaining < 0) {
                 return;
@@ -588,9 +614,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         }
 
         // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
-        if (entity.isInGroup()) {
+        if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
-
+
             remaining = info.getActiveRemaining();
             if (remaining < 0) {
                 return;

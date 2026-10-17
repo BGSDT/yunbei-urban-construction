@@ -215,7 +215,13 @@ public class TrafficLightsPatternPreset {
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()
-                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()
+                    // 道口警示荧光三款：同样是「一块牌一个图案」，按普通红绿灯处理。
+                    // 不补进来的话 fromBlock 返回 null，相位预设会直接判成
+                    // "组内包含预设无法识别的红绿灯类型" —— 图案与相位就一条都写不进去。
+                    || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get()
+                    || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get()
+                    || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT.get()) {
                 return NORMAL;
             }
             if (block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
