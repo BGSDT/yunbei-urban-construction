@@ -54,7 +54,6 @@ public class CustomSignUpdatePacket {
             sign.setTextLines(textLines);
             sign.setChanged();
 
-            // 通知客户端重新读取方块实体数据
             player.getCommandSenderWorld().sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), VersionServices.blocks().updateAll());
 
         }

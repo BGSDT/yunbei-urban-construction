@@ -7,11 +7,6 @@ import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
 
-/**
- * 「云北城建内置」插入方式说明页 — 海燕蓝主题
- *
- * @see PatternAndFontOverlay
- */
 public final class YunbeiUCIntegration {
 
     private static final String[] DISPLAY_KEYS = {
@@ -35,9 +30,6 @@ public final class YunbeiUCIntegration {
         hoveredInsertText = null;
     }
 
-    /**
-     * 渲染插入方式说明页。
-     */
     public static void render(DrawContext ctx, Font tr, int winW, int winH,
                               int mx, int my, int navW) {
         double scrollVal = PatternAndFontOverlay.scrollY;
@@ -59,11 +51,6 @@ public final class YunbeiUCIntegration {
                 clipH, mx, my);
     }
 
-    /**
-     * 处理插入方式按钮的点击事件。
-     *
-     * @return 若点击被消费返回 {@code true}
-     */
     public static boolean handleClick(int mx, int my, int winW, int winH, int navW) {
         if (hoveredInsertText != null) {
             String text = hoveredInsertText;
@@ -74,9 +61,6 @@ public final class YunbeiUCIntegration {
         return false;
     }
 
-    /**
-     * 计算内容总高度。
-     */
     public static int getContentHeight(int paneW, Font tr) {
         int h = 22;
         int btnW = 50;
@@ -95,7 +79,6 @@ public final class YunbeiUCIntegration {
         return h;
     }
 
-    // 渲染方法行
     private static int renderMethodRows(DrawContext ctx, Font tr, int mx, int my,
                                          int winW, int paneW, int navW, int curY,
                                          int clipTop, int clipBottom) {

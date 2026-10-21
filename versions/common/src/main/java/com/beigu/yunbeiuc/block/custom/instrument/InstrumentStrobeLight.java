@@ -28,11 +28,9 @@ public class InstrumentStrobeLight extends TickingBlock {
 
     private static final VoxelShape SHAPE = Block.box(0, -0.5, 0, 16, 8.75, 16);
 
-    // 状态持续时间（tick）
-    private static final int FLASH_DURATION = 5; // 0.25s
-    private static final int FINAL_OFF_DURATION = 20; // 1s
+    private static final int FLASH_DURATION = 5;
+    private static final int FINAL_OFF_DURATION = 20;
 
-    // 状态序列（使用int数组表示：0=红, 1=蓝, 2=全灭, 3=全亮）
     private static final int[] STATE_SEQUENCE;
     private static final int[] STATE_DURATIONS;
 
@@ -40,39 +38,34 @@ public class InstrumentStrobeLight extends TickingBlock {
         java.util.List<Integer> sequence = new java.util.ArrayList<>();
         java.util.List<Integer> durations = new java.util.ArrayList<>();
 
-        // (红0.25s + alloff0.25s) * 4
         for (int i = 0; i < 4; i++) {
-            sequence.add(0); // 红
+            sequence.add(0);
             durations.add(FLASH_DURATION);
-            sequence.add(2); // 全灭
+            sequence.add(2);
             durations.add(FLASH_DURATION);
         }
 
-        // (蓝0.25s + alloff0.25s) * 4
         for (int i = 0; i < 4; i++) {
-            sequence.add(1); // 蓝
+            sequence.add(1);
             durations.add(FLASH_DURATION);
-            sequence.add(2); // 全灭
+            sequence.add(2);
             durations.add(FLASH_DURATION);
         }
 
-        // (all0.25s + alloff0.25s) * 4
         for (int i = 0; i < 4; i++) {
-            sequence.add(3); // 全亮
+            sequence.add(3);
             durations.add(FLASH_DURATION);
-            sequence.add(2); // 全灭
+            sequence.add(2);
             durations.add(FLASH_DURATION);
         }
 
-        // 最后alloff 1s
-        sequence.add(2); // 全灭
+        sequence.add(2);
         durations.add(FINAL_OFF_DURATION);
 
         STATE_SEQUENCE = sequence.stream().mapToInt(Integer::intValue).toArray();
         STATE_DURATIONS = durations.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    // 序列索引：直接记录当前在 STATE_SEQUENCE 中的位置，避免靠状态反推导致的重复状态无法区分
     public static final IntegerProperty INDEX = IntegerProperty.create("index", 0, STATE_SEQUENCE.length - 1);
 
     public InstrumentStrobeLight(BlockBehaviour.Properties properties) {
@@ -108,7 +101,6 @@ public class InstrumentStrobeLight extends TickingBlock {
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!world.isClientSide) {
-            // 从当前序列位置开始，安排下一次 tick
             VersionServices.blocks().scheduleBlockTick(world, pos, this, STATE_DURATIONS[state.getValue(INDEX)]);
         }
     }
@@ -116,31 +108,27 @@ public class InstrumentStrobeLight extends TickingBlock {
     @Override
     protected void tickCompat(BlockState state, ServerLevel world, BlockPos pos) {
         if (!world.isClientSide) {
-            // 直接读取当前序列索引，推进到下一步
             int currentIndex = state.getValue(INDEX);
             int nextIndex = (currentIndex + 1) % STATE_SEQUENCE.length;
 
-            // 更新方块状态
             BlockState nextState = getStateForSequenceIndex(nextIndex, state);
             world.setBlock(pos, nextState, VersionServices.blocks().updateAll());
 
-            // 安排下一个tick
             VersionServices.blocks().scheduleBlockTick(world, pos, this, STATE_DURATIONS[nextIndex]);
         }
     }
 
-    // 根据序列索引获取方块状态
     private BlockState getStateForSequenceIndex(int index, BlockState currentState) {
         int seqState = STATE_SEQUENCE[index];
         BlockState state = currentState.setValue(INDEX, index);
         return switch (seqState) {
-            case 0 -> // 红
+            case 0 ->
                     state.setValue(STATE, State.RED);
-            case 1 -> // 蓝
+            case 1 ->
                     state.setValue(STATE, State.BLUE);
-            case 2 -> // 全灭
+            case 2 ->
                     state.setValue(STATE, State.ALL_OFF);
-            case 3 -> // 全亮
+            case 3 ->
                     state.setValue(STATE, State.ALL);
             default -> state;
         };

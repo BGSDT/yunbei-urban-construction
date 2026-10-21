@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
-/** Widget construction for the Minecraft 1.16.5 GUI API. */
 public final class GuiPlatformImpl implements GuiPlatform {
     @Override
     public ButtonWidget createButton(Component label, int x, int y, int width, int height,

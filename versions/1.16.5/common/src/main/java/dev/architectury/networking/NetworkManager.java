@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-/** 1.16.5 bridge for Architectury's pre-dev package name. */
 public final class NetworkManager {
     private NetworkManager() {}
 

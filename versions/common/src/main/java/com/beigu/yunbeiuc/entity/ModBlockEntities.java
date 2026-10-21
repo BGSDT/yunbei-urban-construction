@@ -9,7 +9,6 @@ import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-
 public class ModBlockEntities {
 
     public static final DeferredRegister<BlockEntityType<?>> BES =
@@ -36,11 +35,6 @@ public class ModBlockEntities {
                             MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()));
 
-    /**
-     * 道口警示荧光：复用 {@link TrafficLightsBlockEntity}（链接组、时序、相位逻辑全在里面），
-     * 但单独注册一个方块实体类型——这样 {@code TrafficLightsBlockEntityRenderer} 不会把它
-     * 当成红绿灯灯头去画图案与读秒，本方块完全由方块状态模型表现亮/灭。
-     */
     public static final RegistrySupplier<BlockEntityType<TrafficLightsBlockEntity>> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_ENTITY =
             BES.register("instrument_warning_crossing_fluorescent_entity",
                     () -> VersionServices.blockEntities().create(TrafficLightsBlockEntity::new,

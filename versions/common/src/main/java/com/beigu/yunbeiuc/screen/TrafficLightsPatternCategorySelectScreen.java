@@ -10,11 +10,8 @@ import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 相位预设"一级菜单"：列出所有二级菜单（分类），选中后进入该分类查看/管理其中的预设
- * （原本的预设选择界面 {@link TrafficLightsPatternSelectScreen} 现在作为二级菜单使用）。
- * 入口：已完成时间表设置的红绿灯（TrafficLightsScreen）的"使用相位预设"按钮。
- */
+// 相位预设一级菜单：列出所有分类，选中后进入该分类管理其中的预设。
+
 public class TrafficLightsPatternCategorySelectScreen extends Screen {
     private static final int RIGHT_PANEL_WIDTH = 220;
     private static final int RIGHT_PANEL_HEIGHT = 170;

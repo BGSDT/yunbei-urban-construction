@@ -50,10 +50,6 @@ public final class TextGizmo {
     private static Matrix4f frameInv;
     private static Matrix4f baseFrameInv;
     private static Matrix4f proj;
-    /**
-     * 1.21 的方块实体 PoseStack 只含相机相对平移，相机旋转由着色器的 modelView 施加，
-     * 所以 frame 里的坐标要先用 modelView 变换才是裁剪空间，拾取必须与绘制用同一套矩阵。
-     */
     private static Matrix4f projView;
     private static float bs = 1f;
     private static float halfWpx;
@@ -169,7 +165,6 @@ public final class TextGizmo {
             baseFrameInv = null;
         }
         proj = new Matrix4f(pm);
-        // 与绘制保持一致：绘制时顶点走的是 着色器(proj × modelView)，拾取也必须用同一个组合矩阵
         projView = new Matrix4f(pm).mul(RenderSystem.getModelViewMatrix());
         halfWpx = halfWBlocks / bs;
         halfHpx = halfHBlocks / bs;

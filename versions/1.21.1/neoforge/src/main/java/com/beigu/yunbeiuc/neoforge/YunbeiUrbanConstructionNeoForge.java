@@ -10,7 +10,6 @@ public final class YunbeiUrbanConstructionNeoForge {
     public YunbeiUrbanConstructionNeoForge(IEventBus modEventBus) {
         YunbeiUrbanConstruction.init();
 
-
         modEventBus.addListener(YunbeiUrbanConstructionNeoForgeClient::onClientSetup);
     }
 }

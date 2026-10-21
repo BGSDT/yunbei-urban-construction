@@ -9,14 +9,6 @@ import net.minecraft.util.Mth;
 import java.awt.Color;
 import java.util.function.Consumer;
 
-/**
- * 通用 HSB 色盘选择界面：饱和度/亮度方块 + 色相条 + 十六进制/RGB 输入框，仿照 MTR 的
- * WidgetColorSelector 设计，使用当前版本适配层提供的原版 GUI API
- * （Screen/ButtonWidget/TextFieldWidget/DrawContext）重新实现——MTR 原版依赖其自有的
- * ButtonMapper/ScreenMapper/Tesselator 等抽象类，本项目未引入，无法直接复用。
- * 关闭方式：点击"确定"才会通过 callback 回传选中颜色（0xRRGGBB）；点击"取消"或按 ESC
- * 直接返回上一界面，不触发 callback，颜色不变。
- */
 public class ColorPickerScreen extends Screen {
     private static final int SQUARE_SIZE = 80;
     private static final int SQUARE_STEP = 4;

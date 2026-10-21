@@ -18,20 +18,13 @@ public class  ModMessages {
     public static final ResourceLocation UPDATE_CUSTOM_SIGN = id("update_custom_sign");
     public static final ResourceLocation UPDATE_CUSTOM_SIGN_FIELD = id("update_custom_sign_field");
     public static final ResourceLocation SYNC_TRAFFIC_LIGHTS_GROUP = id("sync_traffic_lights_group");
-    /** S2C：服务端确认瞄准的轨道后，让客户端打开轨道相位界面。 */
     public static final ResourceLocation OPEN_RAIL_PHASE = id("open_rail_phase");
-    /** C2S：轨道相位界面保存勾选的相位。 */
     public static final ResourceLocation UPDATE_RAIL_PHASE = id("update_rail_phase");
-    /** C2S：客户端瞄准到一条轨道，请求打开它的相位界面。 */
     public static final ResourceLocation AIM_RAIL_PHASE = id("aim_rail_phase");
     private static ResourceLocation id(String path) {
         return VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, path);
     }
 
-    /**
-     * S2C 接收器。客户端与服务端都会调用 {@code YunbeiUrbanConstruction.init()}，
-     * 因此在这里统一注册即可；S2C 包只在 1.16.5 / 1.17.1 会被真正发出。
-     */
     @SuppressWarnings("removal")
     public static void registerS2CPackets() {
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, SYNC_TRAFFIC_LIGHTS_GROUP, (buf, context) -> {

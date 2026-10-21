@@ -18,12 +18,9 @@ import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 相位分配预设选择/应用界面（二级菜单）：列出所属分类下已保存的预设，选中后应用到点击的
- * 红绿灯所在链接组。服务端会做"完美嵌入"校验，全部匹配才写入，否则回复失败原因，
- * 不会做任何修改。
- * 入口：一级菜单 {@link TrafficLightsPatternCategorySelectScreen} 选中分类后"进入分类"。
- */
+// 相位分配预设选择界面（二级菜单）：列出所属分类下的预设，应用到点击的红绿灯所在链接组。
+// 服务端做「完美嵌入」校验，全部匹配才写入。
+
 public class TrafficLightsPatternSelectScreen extends Screen {
     private static final int RIGHT_PANEL_WIDTH = 220;
     private static final int RIGHT_PANEL_HEIGHT = 210;
@@ -53,17 +50,14 @@ public class TrafficLightsPatternSelectScreen extends Screen {
     protected void init() {
         super.init();
         presetNames.clear();
-        // 判断当前分类是否为资源包内置分类（非用户创建）
         boolean isBuiltInCategory = TrafficLightsPatternPresetLoader.isBuiltInCategory(category);
         if (isBuiltInCategory) {
-            // 资源包内置分类：仅从 TrafficLightsPatternPresetLoader 中筛选该分类下的预设
             for (var entry : TrafficLightsPatternPresetLoader.getPresets().entrySet()) {
                 if (category.equals(entry.getValue().getCategory())) {
                     presetNames.add(entry.getKey());
                 }
             }
         } else {
-            // 用户创建分类或固定分类"默认分类"：从 TrafficLightsPatternPresetManager 中筛选
             for (var entry : TrafficLightsPatternPresetManager.getPresets().entrySet()) {
                 if (category.equals(entry.getValue().getCategory())) {
                     presetNames.add(entry.getKey());
@@ -107,7 +101,6 @@ public class TrafficLightsPatternSelectScreen extends Screen {
                 .build();
         this.deleteButton.active = selectedName != null && !TrafficLightsPatternPresetLoader.isBuiltIn(selectedName);
         this.addDrawableChild(this.deleteButton);
-        // 资源包内置分类只承载资源包内置预设，不允许在此新建用户预设
         this.newButton = ButtonWidget.builderCompat(Text.literal("新建预设"), button -> openPatternEditor(false))
                 .dimensions(panelX + 20, panelY + 134, buttonWidth, 20)
                 .build();

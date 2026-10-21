@@ -33,11 +33,9 @@ public class RoadNameSignBlockUpdatePacket {
         if (player.getCommandSenderWorld().hasChunkAt(pos)) {
             BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
             if (blockEntity instanceof RoadNameSignBlockEntity signEntity) {
-                // 更新数据
                 signEntity.setChineseText(chineseText);
                 signEntity.setEnglishText(englishText);
 
-                // 标记需要保存和同步
                 signEntity.setChanged();
             }
         }

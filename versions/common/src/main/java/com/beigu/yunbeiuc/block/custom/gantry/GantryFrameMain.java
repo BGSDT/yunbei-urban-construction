@@ -54,11 +54,9 @@ public class GantryFrameMain extends Block {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        // 玩家放置时朝向玩家正面
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection());
     }
 
-    // ==================== 核心修复：邻接更新 ====================
     @Override
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (direction.getAxis().isHorizontal()) {
@@ -71,7 +69,7 @@ public class GantryFrameMain extends Block {
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onPlace(state, world, pos, oldState, notify);
         if (!world.isClientSide) {
-            updateConnectedFrames(world, pos); // 只在服务端更新
+            updateConnectedFrames(world, pos);
         }
     }
 
@@ -79,17 +77,13 @@ public class GantryFrameMain extends Block {
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         super.onRemove(state, world, pos, newState, moved);
         if (!state.is(newState.getBlock()) && !world.isClientSide) {
-            updateConnectedFrames(world, pos); // 破坏时刷新整条链
+            updateConnectedFrames(world, pos);
         }
     }
 
-    // ==================== 核心修复：类型计算逻辑 ====================
     private BlockState updateMainType(BlockState state, LevelAccessor world, BlockPos pos) {
-        // 找到最左侧的龙门架方块
         BlockPos leftmostPos = findLeftFrame(world, pos);
-        // 计算从左数的序号
         int index = getPositionFromLeft(world, leftmostPos, pos);
-        // 奇数=1 偶数=2
         GantryFrameMainType type = index % 2 == 1 ?
                 GantryFrameMainType.GANTRY_FRAME_MAIN_1 :
                 GantryFrameMainType.GANTRY_FRAME_MAIN_2;
@@ -97,7 +91,6 @@ public class GantryFrameMain extends Block {
         return state.setValue(MAIN_TYPE, type);
     }
 
-    // 安全查找最左侧方块（防越界）
     private BlockPos findLeftFrame(LevelAccessor world, BlockPos startPos) {
         BlockPos current = startPos;
         BlockPos nextWest = current.west();
@@ -109,7 +102,6 @@ public class GantryFrameMain extends Block {
         return current;
     }
 
-    // 计算从左到右的位置序号
     private int getPositionFromLeft(LevelAccessor world, BlockPos leftPos, BlockPos targetPos) {
         int count = 1;
         BlockPos current = leftPos;
@@ -122,14 +114,11 @@ public class GantryFrameMain extends Block {
         return count;
     }
 
-    // 判断是否是同一个龙门架方块（统一判断逻辑）
     private boolean isSameFrame(LevelAccessor world, BlockPos pos) {
         return world.getBlockState(pos).getBlock() instanceof GantryFrameMain;
     }
 
-    // ==================== 核心修复：连锁更新整条线 ====================
     private void updateConnectedFrames(Level world, BlockPos pos) {
-        // 先找到最左和最右，更新整条链
         BlockPos leftmost = findLeftFrame(world, pos);
         BlockPos current = leftmost;
 
@@ -137,7 +126,6 @@ public class GantryFrameMain extends Block {
             BlockState state = world.getBlockState(current);
             BlockState newState = updateMainType(state, world, current);
 
-            // 只有状态不同才更新，避免无限递归
             if (!newState.equals(state)) {
                 world.setBlock(current, newState, VersionServices.blocks().updateClients() | VersionServices.blocks().updateImmediate());
             }
@@ -146,7 +134,6 @@ public class GantryFrameMain extends Block {
         }
     }
 
-    // ==================== 枚举不变 ====================
     public enum GantryFrameMainType implements StringRepresentable {
         GANTRY_FRAME_MAIN_1("gantry_frame_main_1"),
         GANTRY_FRAME_MAIN_2("gantry_frame_main_2");

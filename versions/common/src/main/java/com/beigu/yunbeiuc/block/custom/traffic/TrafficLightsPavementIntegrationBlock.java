@@ -36,6 +36,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+// 人行道一体化红绿灯方块：相位/图案逻辑与 TrafficLightsBlock 同一套，只是模型与贴图不同。
+
 public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
     public static final EnumProperty<TriplePart> PART = EnumProperty.create("part", TriplePart.class);
@@ -46,7 +48,6 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        // MOUNT 由 TrafficLightsBlock 的构造函数写入默认状态，必须出现在本子类的定义里
         builder.add(FACING, LIGHT_STATE, TYPE, MOUNT, PART);
     }
 
@@ -116,8 +117,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                 case TOP -> pos.below(2);
             };
 
-            // 方块实体只挂在 BOTTOM 上；在它被移除前记录，供 onRemove 拆除链接组
-            TrafficLightsGroupTracker.track(world, bottomPos);
+            TrafficLightsGroupTracker.track(world, bottomPos, player);
 
             for (int i = 0; i < 3; i++) {
                 BlockPos currentPos = bottomPos.above(i);
@@ -135,14 +135,6 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
     @Override
     protected BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state) {
-        // 只有「本方块、且明确不是 BOTTOM 段」才不挂方块实体（方块实体只挂在最下面一段）。
-        //
-        // 关键点：state 可能是 air 之类的外来状态——vanilla 放置方块 / 提升待定方块实体时
-        // 都会用位置上的旧状态来调用工厂。此时绝不能返回 null：
-        // 1.16.5 的 LevelChunk#getBlockEntity(BlockPos) 走 EntityCreationType.CHECK，
-        // 只查表 + 提升待定 NBT，**不会按方块补建方块实体**（只有 IMMEDIATE 才建）。
-        // 也就是说 setBlockState 这次调用是唯一一次创建机会，错过之后这个位置就永远没有
-        // 方块实体了——表现为链接魔杖右键提示"这不是一个红绿灯"。
         if (state.hasProperty(PART) && state.getValue(PART) != TriplePart.BOTTOM) {
             return null;
         }
@@ -160,8 +152,6 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
         ItemStack heldItem = player.getItemInHand(hand);
 
-        // LINK_WAND（组网 + 轨道链接）需要落到物品自己的 useOn 上处理，
-        // 这里必须放行；否则方块消费掉右键后 useOn 永远不会被调用。
         if (heldItem.getItem() == ModItems.LINK_WAND.get()) {
             return InteractionResult.PASS;
         }
@@ -171,16 +161,13 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                 BlockEntity blockEntity = world.getBlockEntity(bottomPos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
                     if (!trafficLightsBE.isInGroup()) {
-                        // 未分组：打开静态状态设置界面
                         openStaticStateScreen(bottomPos);
                         return InteractionResult.sidedSuccess(true);
                     }
                     if (!trafficLightsBE.hasTimings()) {
-                        // 已分组但未设置时间表：打开时间设置界面
                         openTimingScreen(bottomPos);
                         return InteractionResult.sidedSuccess(true);
                     }
-                    // 已分组且已设置时间：打开显示界面
                     openDisplayScreen(bottomPos);
                 }
             }
@@ -209,16 +196,12 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                     || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
 
             if (isCountdownTimer) {
-                // 读秒器：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
                 Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
             } else if (isShanghai) {
-                // 上海红绿灯：有方向列表 + 秒数输入 + 是否显示秒数开关
                 Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
             } else if (isPavement) {
-                // 人行道红绿灯：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
                 Minecraft.getInstance().setScreen(new TrafficLightsSimpleStaticStateScreen(pos));
             } else {
-                // 普通红绿灯（含单灯横式/竖式）：有方向列表，无秒数相关控件
                 Minecraft.getInstance().setScreen(new TrafficLightsStaticStateScreen(pos));
             }
         }

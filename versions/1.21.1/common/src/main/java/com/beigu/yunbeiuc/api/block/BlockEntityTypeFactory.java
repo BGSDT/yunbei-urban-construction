@@ -11,11 +11,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.function.BiFunction;
 
-/**
- * BlockEntityType.Builder.of 的形参类型 BlockEntityType.BlockEntitySupplier 在官方 mappings 中是
- * private（只有 Forge 补丁会把它公开），因此编译期无法传入实现。这里一并按“签名”反射查找，
- * 不依赖任何方法名字符串，从而不受各加载器符号重映射影响；且只在注册阶段调用一次。
- */
 final class BlockEntityTypeFactory {
     private BlockEntityTypeFactory() {}
 

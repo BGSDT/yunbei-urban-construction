@@ -7,13 +7,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-/**
- * Minecraft 1.17.1 block entity compatibility base.
- *
- * <p>1.17.1 still stores through {@code save(CompoundTag)} / {@code load(CompoundTag)} - the
- * {@code saveAdditional} / {@code saveWithoutMetadata} split arrived later - and builds its update
- * packet by hand.
- */
 public abstract class BlockEntityMapper extends BlockEntity {
     protected BlockEntityMapper(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);

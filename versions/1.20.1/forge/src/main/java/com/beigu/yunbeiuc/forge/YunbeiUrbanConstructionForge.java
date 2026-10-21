@@ -16,7 +16,6 @@ public final class YunbeiUrbanConstructionForge {
         EventBuses.registerModEventBus(YunbeiUrbanConstruction.MOD_ID, modEventBus);
         YunbeiUrbanConstruction.init();
 
-
         modEventBus.addListener(YunbeiUrbanConstructionForgeClient::onClientSetup);
     }
 }

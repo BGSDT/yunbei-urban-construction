@@ -27,7 +27,6 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
 
     public SignGuideIntersectionAdvanceWarning3Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -47,7 +46,6 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
         this.enText6 = nbt.getString("enText6");
         this.cnText7 = nbt.getString("cnText7");
         this.enText7 = nbt.getString("enText7");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -71,17 +69,6 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideIntersectionAdvanceWarning3EntityRenderer 的固定布局生成默认文本行（颜色均为白色）：
-     * 原渲染器按方块身份区分（同一方块类注册了 WARNING_3 / WARNING_4 两个方块）：
-     * WARNING_3 → renderCenteredText(cnText2, 0, 8, 0.03) / (enText2, 0, 4, 0.023) / (cnText4, -14, 4, 0.03)
-     *             / (enText4, -14, 0, 0.023) / (cnText5, -14, -4, 0.03) / (enText5, -14, -8, 0.023)
-     *             / (cnText6, 14, 4, 0.03) / (enText6, 14, 0, 0.023) / (cnText7, 14, -4, 0.03) / (enText7, 14, -8, 0.023)；
-     * WARNING_4 → (text1, 0, -9, 0.03) / (cnText2, 0, 6, 0.03) / (enText2, 0, 3, 0.023) / (cnText3, 0, 13, 0.03)
-     *             / (enText3, 0, 10, 0.023) / (cnText4, -14, 8, 0.03) / (enText4, -14, 4, 0.023) / (cnText5, -14, 0, 0.03)
-     *             / (enText5, -14, -4, 0.023) / (cnText6, 14, 8, 0.03) / (enText6, 14, 4, 0.023) / (cnText7, 14, 0, 0.03)
-     *             / (enText7, 14, -4, 0.023)。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         boolean isWarning3 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3.get();

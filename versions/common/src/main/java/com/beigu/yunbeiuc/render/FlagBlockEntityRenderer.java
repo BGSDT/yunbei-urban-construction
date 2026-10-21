@@ -24,7 +24,6 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
         String flagId = entity.getFlagId();
         if (flagId == null || flagId.isEmpty()) return;
 
-        // 从 FlagLoader 获取旗帜数据
         CustomFlag flag = FlagLoader.getFlag(flagId);
         if (flag == null) return;
 
@@ -33,7 +32,6 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
         try {
             matrices.pushPose();
 
-            // 旗帜尺寸
             float flagWidth = 0.6f;
             float flagHeight = flagWidth * 2.67f;
 
@@ -69,10 +67,8 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
         float halfWidth = width / 2;
         float halfHeight = height / 2;
 
-        // 渲染正面（方块朝向的面）
         renderFace(entry, vertexConsumer, facing, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.0f, light, overlay);
 
-        // 渲染背面（与正面相对的面）
         Direction backFace = facing.getOpposite();
         renderFace(entry, vertexConsumer, backFace, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.0f, light, overlay);
     }

@@ -91,7 +91,6 @@ public class BarrierGate1PoleLongitudinal extends Block {
         return state.setValue(POLE_TYPE, isNormalGateBelow ? PoleType.OFFSET : PoleType.NORMAL);
     }
 
-    // 柱子类型枚举
     public enum PoleType implements StringRepresentable {
         NORMAL("normal"),
         OFFSET("offset");

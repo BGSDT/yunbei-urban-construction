@@ -108,15 +108,8 @@ public class TextDisplayScreen extends Screen {
     private final List<ButtonWidget> optionButtons = new ArrayList<>();
     private final List<Object[]> optionGroupTitles = new ArrayList<>();
 
-    // 注：「图案集整合」不另起一条，而是**追加进上面这条属性选项行**（见 extraPatternSetSections()）。
-    // 内置 6 组对应的路牌实体自己就会返回同名选项组，行里本来就有，再起一条会出现两个条。
-
-    // ===== 外部模组扩展：自定义按钮 =====
-    /** 注入到「底部控制行（位移/旋转/缩放/字体/对齐那一行）」的自定义按钮定义。 */
     private final List<CustomButton> customControlRowButtons = new ArrayList<>();
-    /** 注入到「属性选项行」的自定义按钮定义。 */
     private final List<CustomButton> customPropertyButtons = new ArrayList<>();
-    /** 每次刷新时创建的底部控制行自定义控件（用于刷新前移除旧控件）。 */
     private final List<ButtonWidget> builtControlCustomWidgets = new ArrayList<>();
     private boolean suppressTextFieldListener = false;
     private String currentPlaceholderText = "";
@@ -368,7 +361,6 @@ public class TextDisplayScreen extends Screen {
         shadowButton = makeToggle("D", s -> s.withBold(true), d -> { d.setShadow(!d.isShadow()); syncAndUpdateClient(); });
         outlineButton = makeToggle("O", s -> s.withBold(true), d -> { d.setOutline(!d.isOutline()); syncAndUpdateClient(); });
         outlineColorButton = makeColorCycleButton(12);
-        // 发光：该行用原版全亮光照渲染（荧光效果）
         glowButton = makeToggle("L", s -> s.withBold(true), d -> { d.setGlowing(!d.isGlowing()); syncAndUpdateClient(); });
 
         hAlignButton = ButtonWidget.builderCompat(Text.literal("水平居中"), button -> {
@@ -612,7 +604,6 @@ public class TextDisplayScreen extends Screen {
         if (text == null) return;
         preciseInputMode = false;
         if (textLineWidgets.isEmpty() || selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) {
-            // 同上：新增行不继承路牌自带属性
             TextLineData newData = createUserTextLine(text);
             textLineWidgets.add(new TextLineWidget(newData));
             blockEntity.getTextLines().add(newData);
@@ -627,25 +618,10 @@ public class TextDisplayScreen extends Screen {
         sendUpdateToServer();
     }
 
-    // ==================== 外部模组扩展 API ====================
-    //
-    // 供其他模组直接调用：操作输入框、向底部控制行 / 属性选项行注入按钮、新增文本行。
-    // 标签提供 Component 与 String 两种重载；String 版本签名里不含任何 Minecraft 类型，
-    // 跨映射（如 yarn 项目）调用最省事。
-
-    /** 清空底部输入框（同时把当前选中文本行的文字清空）。 */
     public void clearInputField() {
         setInputFieldContent("");
     }
 
-    /**
-     * 覆盖式设置底部输入框内容，并写回当前选中文本行。
-     *
-     * <p>与 {@link #insertPatternContent(String)} 不同：本方法始终覆盖，不追加；
-     * 当前没有选中行时会自动新建一行。
-     *
-     * @param text 新内容；{@code null} 视为空串
-     */
     public void setInputFieldContent(String text) {
         String content = text == null ? "" : text;
         preciseInputMode = false;
@@ -664,12 +640,6 @@ public class TextDisplayScreen extends Screen {
         sendUpdateToServer();
     }
 
-    /**
-     * 新增一条文本行并选中它。
-     *
-     * @param text 行文本；{@code null} 视为空串
-     * @return 新增行的数据对象，便于调用方继续设置字体 / 颜色 / 位移等属性
-     */
     public TextLineData addTextLine(String text) {
         TextLineData newData = createUserTextLine(text == null ? "" : text);
         textLineWidgets.add(new TextLineWidget(newData));
@@ -683,20 +653,10 @@ public class TextDisplayScreen extends Screen {
         return newData;
     }
 
-    /**
-     * 在「底部控制行」（位移 / 旋转 / 缩放 / 字体 / 对齐那一行）追加一个自定义按钮。
-     *
-     * <p>按钮宽度按文字自适应；该行放不下时会自动出现左右滚动按钮。
-     *
-     * @param label   按钮文字
-     * @param onClick 点击回调
-     * @return 自定义按钮句柄，可用于 {@link #removeCustomButton(CustomButton)}
-     */
     public CustomButton addControlRowButton(Component label, Runnable onClick) {
         return addControlRowButton(label == null ? "" : label.getString(), onClick);
     }
 
-    /** {@link #addControlRowButton(Component, Runnable)} 的 String 版本。 */
     public CustomButton addControlRowButton(String label, Runnable onClick) {
         CustomButton cb = new CustomButton(label, onClick);
         customControlRowButtons.add(cb);
@@ -704,20 +664,10 @@ public class TextDisplayScreen extends Screen {
         return cb;
     }
 
-    /**
-     * 在「属性选项行」追加一个自定义按钮。
-     *
-     * <p>属性选项行原本只在当前文本行含占位符属性时出现；一旦加入自定义按钮，该行会始终显示。
-     *
-     * @param label   按钮文字
-     * @param onClick 点击回调
-     * @return 自定义按钮句柄，可用于 {@link #removeCustomButton(CustomButton)}
-     */
     public CustomButton addPropertyButton(Component label, Runnable onClick) {
         return addPropertyButton(label == null ? "" : label.getString(), onClick);
     }
 
-    /** {@link #addPropertyButton(Component, Runnable)} 的 String 版本。 */
     public CustomButton addPropertyButton(String label, Runnable onClick) {
         CustomButton cb = new CustomButton(label, onClick);
         customPropertyButtons.add(cb);
@@ -725,7 +675,6 @@ public class TextDisplayScreen extends Screen {
         return cb;
     }
 
-    /** 移除之前注入的自定义按钮（底部控制行 / 属性选项行均可）。 */
     public void removeCustomButton(CustomButton button) {
         if (button == null) return;
         customControlRowButtons.remove(button);
@@ -734,12 +683,6 @@ public class TextDisplayScreen extends Screen {
         refreshBottomPanel();
     }
 
-    /**
-     * 其他模组注入的自定义按钮定义（标签 + 点击回调）。
-     *
-     * <p>只使用 {@link String} / {@link Runnable}，签名中不含任何 Minecraft 类型，
-     * 因此跨映射（yarn 项目）调用无需重映射。
-     */
     public static final class CustomButton {
         public final String label;
         public final Runnable onClick;
@@ -750,14 +693,12 @@ public class TextDisplayScreen extends Screen {
         }
     }
 
-    // 依据自定义按钮定义创建控件；w 为宽度，y 为纵坐标（横坐标由所在行布局决定）
     private ButtonWidget buildCustomButton(CustomButton cb, int w, int y) {
         return ButtonWidget.builderCompat(Text.literal(cb.label), b -> {
             if (cb.onClick != null) cb.onClick.run();
         }).dimensions(0, y, w, BTN_SIZE).build();
     }
 
-    // 自定义按钮自适应宽度
     private int customButtonWidth(CustomButton cb) {
         return Math.max(20, textRenderer.width(Text.literal(cb.label)) + 8);
     }
@@ -1161,29 +1102,6 @@ public class TextDisplayScreen extends Screen {
 
     private record PagedRowInfo(int start, int lastShown) {}
 
-    // ==================== 图案集整合 → 属性选项行 ====================
-
-    /**
-     * 需要追加到属性选项行里的「图案集」分组。
-     *
-     * <p>判定走屏幕原本就有的那套占位符机制：先
-     * {@link CustomSignBlockEntity#extractPlaceholderKeys(String)} 取当前选中行的占位符键，
-     * 再问 {@code blockEntity.getFieldOptions(key)} 拿到「这块牌子自己声明的选项组标题」。
-     *
-     * <p><b>内置 6 组一律不追加</b>：对应的路牌实体放置出来时，{@code getFieldOptions()} 本来就会
-     * 返回同名选项组（高速Logo / 底色 / 普通公路Logo / 箭头 / 转向 / 方向），属性选项行里已经有那排
-     * 按钮了；再追加一遍就会在同一行里出现两组同名按钮。所以这里按 {@code matchTitles} 把它们排除。
-     *
-     * <p>命中条件（满足任一即追加）：
-     * <ol>
-     *   <li>{@code bindKeys} 绑定的占位符键出现在本行里（资源包 {@code cpl_*.json} 用）；</li>
-     *   <li><b>本行当前用的纹理就属于这一组</b>——从图案库/本行点了一个图案集按钮后，行文本被换成
-     *       字面 {@code -texture <path>}、占位符没了，实体也就不再返回选项组；靠这一条兜住，
-     *       属性条不会消失，还能接着换同一组里的其它图案。</li>
-     * </ol>
-     *
-     * <p>没有选中行时返回空列表。追加进同一条行，不另起一条。
-     */
     private List<PatternAndFontOverlay.H4Section> extraPatternSetSections() {
         List<PatternAndFontOverlay.H4Section> out = new ArrayList<>();
         if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()) return out;
@@ -1201,7 +1119,6 @@ public class TextDisplayScreen extends Screen {
 
         for (PatternAndFontOverlay.H4Section sec : sets.sections) {
             if (!sec.isLabeledMode || sec.labeledItems.isEmpty()) continue;
-            // 实体自己已经给出同名选项组 → 行里本来就有，绝不重复追加（避免同一行两组同名按钮）
             boolean covered = false;
             for (String t : sec.matchTitles) {
                 if (activeTitles.contains(t)) { covered = true; break; }
@@ -1218,7 +1135,6 @@ public class TextDisplayScreen extends Screen {
         return out;
     }
 
-    /** 当前行文本里是否直接用了某个纹理（按 {@code -texture <path>} 的文件名比对）。 */
     private static boolean lineUsesTexture(String lineText, ResourceLocation textureId) {
         if (lineText == null || lineText.isEmpty() || textureId == null) return false;
         String want = fileName(textureId.getPath());
@@ -1228,7 +1144,6 @@ public class TextDisplayScreen extends Screen {
         return false;
     }
 
-    /** 当前行是否已经用了某个图案集分组里的任一纹理。 */
     private static boolean lineUsesPatternSet(String lineText, PatternAndFontOverlay.H4Section sec) {
         for (PatternAndFontOverlay.LabeledItem item : sec.labeledItems) {
             if (lineUsesTexture(lineText, item.textureId)) return true;
@@ -1262,7 +1177,6 @@ public class TextDisplayScreen extends Screen {
         String lineText = (selectedIndex >= 0 && selectedIndex < textLineWidgets.size())
                 ? textLineWidgets.get(selectedIndex).data.getText() : "";
 
-        // 占位符属性选项
         boolean overflow = false;
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             outer:
@@ -1288,7 +1202,6 @@ public class TextDisplayScreen extends Screen {
             }
         }
 
-        // 外部模组注入的自定义属性按钮（占位符选项已排满时不再追加）
         if (!overflow) {
             for (CustomButton cb : customPropertyButtons) {
                 int w = customButtonWidth(cb);
@@ -1300,8 +1213,6 @@ public class TextDisplayScreen extends Screen {
             }
         }
 
-        // 「图案集整合」里那些「实体没提供同名选项组」的自定义分组（见 extraPatternSetSections()）：
-        // 追加进同一条属性选项行，不另起一条，所以不会出现两个条。
         if (!overflow) {
             for (PatternAndFontOverlay.H4Section sec : extraPatternSetSections()) {
                 if (x + 40 > width - 10) return;
@@ -1316,7 +1227,6 @@ public class TextDisplayScreen extends Screen {
                         if (insert != null && !insert.isEmpty()) insertPatternContent(insert);
                         else if (texture != null) insertPatternContent("-texture " + texture);
                     }).dimensions(x, y, w, 20).build();
-                    // 本行当前就是这个图案 → 置灰，与内置选项组「当前值不可点」保持一致
                     btn.active = !lineUsesTexture(lineText, texture);
                     optionButtons.add(btn);
                     this.addDrawableChild(btn);
@@ -1407,7 +1317,6 @@ public class TextDisplayScreen extends Screen {
             }
             case ALIGN -> { row.add(hAlignButton); row.add(vAlignButton); }
         }
-        // 外部模组注入的自定义按钮（排在标准按钮之后）
         for (CustomButton cb : customControlRowButtons) {
             ButtonWidget w = buildCustomButton(cb, customButtonWidth(cb), y2);
             builtControlCustomWidgets.add(w);
@@ -2124,26 +2033,14 @@ public class TextDisplayScreen extends Screen {
         blockEntity.getTextLines().addAll(updatedLines);
     }
 
-    /**
-     * 「全局设置」页的「一键转换」：把路牌自带行上的字体标签统一改写为自适应字体或原版字体。
-     *
-     * <p>只处理路牌自带的行（{@code builtin}），并且跳过 {@code -texture} / {@code -rect}
-     * 这类指令行（改写会破坏它们）；用户自己新增的行不受影响。
-     *
-     * @param adaptive {@code true} = 全部转为自适应字体；{@code false} = 全部转为原版 uniform
-     * @return 实际改写的行数
-     */
     public int convertBuiltinFontTags(boolean adaptive) {
         int converted = 0;
         for (TextLineData line : blockEntity.getTextLines()) {
             if (line == null || !line.isBuiltin()) continue;
             if (!SignTextLinesHelper.canApplyFont(line.getText())) continue;
-            // 每行用它自己该用的字体（方块自带布局写入的 a/b/c，缺失时按内容推断），
-            // 而不是统一塞同一个字体——否则中英文混排的牌子会全部变成 a。
             SignTextLinesHelper.forceFont(line, adaptive ? SignTextLinesHelper.lineAbcFont(line) : "");
             converted++;
         }
-        // 同步全局字体模式，使本次转换结果与后续新生成的行保持一致
         GlobalFontSettings.setMode(adaptive ? GlobalFontSettings.FontMode.ADAPTIVE
                 : GlobalFontSettings.FontMode.VANILLA);
         if (converted > 0) {

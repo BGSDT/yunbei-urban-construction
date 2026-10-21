@@ -19,7 +19,6 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
 
     public SignExpresswayEntranceAdvance1Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_1_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -30,9 +29,7 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
-        // 旧存档兼容：无 logoType1 键时按原逻辑（国/省道 × 编号位数）推导初始值
         this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -48,13 +45,6 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayEntranceAdvance1EntityRenderer 的固定布局生成默认文本行：
-     * renderExpresswayLogo(expressway1, 0, 7, size 0.65) → -texture 行，纹理由 {logo1} 占位符按国道/省道×编号位数选择；
-     * renderCenteredText(text1, -7, -2, 0.035) / renderCenteredText(text2, 7, -2, 0.035)；
-     * renderExpresswayText(expresswayNumber1, 0, 6.5, 0.045, zOffsetDelta 0.002)。
-     * 原单位编号 +1px 自动 X 偏移为动态布局逻辑，默认行不含（一位数编号将偏左约 1 像素）。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -122,7 +112,6 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         }
     }
 
-    /** 旧存档兼容推导：按 expressway1 国/省道 × expresswayNumber1 编号位数还原 logo 纹理段 */
     private String legacyLogoType1() {
         boolean hasDigits = expresswayNumber1 != null && expresswayNumber1.matches(".*\\d.*");
         String digits = expresswayNumber1 == null ? "" : expresswayNumber1.replaceAll("[^0-9]", "");

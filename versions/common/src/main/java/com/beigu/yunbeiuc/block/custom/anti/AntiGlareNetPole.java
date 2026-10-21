@@ -114,9 +114,6 @@ public class AntiGlareNetPole extends Block {
 
         AntiGlareNetPoleType newType;
 
-        // 修正逻辑：
-        // 右边有防眩网 → right 状态（防眩网在右边，支柱右边有连接）
-        // 左边有防眩网 → left 状态（防眩网在左边，支柱左边有连接）
         if (hasNetOnRight && !hasNetOnLeft) {
             newType = AntiGlareNetPoleType.ANTI_GLARE_NET_POLE_RIGHT;
         } else if (hasNetOnLeft && !hasNetOnRight) {
@@ -129,15 +126,14 @@ public class AntiGlareNetPole extends Block {
     }
 
     private Direction getRelativeLeft(Direction facing) {
-        return facing.getCounterClockWise(); // 左侧方向
+        return facing.getCounterClockWise();
     }
 
     private Direction getRelativeRight(Direction facing) {
-        return facing.getClockWise(); // 右侧方向
+        return facing.getClockWise();
     }
 
     private boolean hasAntiGlareNet(LevelAccessor world, BlockPos pos) {
-        // 替换 ModBlocks.ANTI_GLARE_NET 为您的实际防眩网方块
         return world.getBlockState(pos).getBlock() == MunicipalBlocks.ANTI_GLARE_NET.get();
     }
 

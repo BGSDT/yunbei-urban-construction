@@ -91,11 +91,6 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         renderDirectionText(matrices, vertexConsumers, light, facing, "enRightBack", true, false, false);
     }
 
-    /**
-     * 计算 X 方向额外缩放系数。
-     * 只对英文小字号生效。
-     * 超过 ENGLISH_FREE_CHARS 后，每多 1 个字符，X 缩放直接减少 X_SCALE_DECREASE_PER_CHAR。
-     */
     private float getXScaleFactor(String text, boolean isSmallScale) {
         if (!isSmallScale) {
             return 1.0f;
@@ -131,7 +126,6 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         float centeredY = andY / 16f;
         matrices.translate(centeredX, centeredY, zOffset / 16f);
 
-        // 只额外压缩 X 方向，Y / Z 保持原缩放
         matrices.scale(scaleValue * xScaleFactor, -scaleValue, scaleValue);
 
         int textColor = isSmallScale ? 0X000000 : 0xFFFFFF;

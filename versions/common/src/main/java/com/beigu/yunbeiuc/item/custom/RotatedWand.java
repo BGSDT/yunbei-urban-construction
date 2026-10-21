@@ -29,22 +29,18 @@ public class RotatedWand extends ItemCompat {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        // 获取当前方块状态
         BlockState state = context.getLevel().getBlockState(context.getClickedPos());
         Block block = state.getBlock();
 
-        // 检查方块是否有水平朝向属性
         if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
             Direction currentFacing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
             Direction newFacing = getClockwiseDirection(currentFacing);
 
-            // 更新方块状态
             context.getLevel() .setBlock(
                     context.getClickedPos(),
                     state.setValue(BlockStateProperties.HORIZONTAL_FACING, newFacing), VersionServices.blocks().updateAll()
             );
 
-            // 消耗耐久度
             if (context.getPlayer() != null && !context.getPlayer().isCreative()) {
                 ItemCompat.hurtAndBreakCompat(context.getItemInHand(), 1, context.getPlayer(), context.getHand());
             }
@@ -52,10 +48,8 @@ public class RotatedWand extends ItemCompat {
             return InteractionResult.SUCCESS;
         }
 
-        // 对于使用FACING属性的方块（如楼梯）
         else if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
             Direction currentFacing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-            // 只处理水平方向
             if (currentFacing.getAxis().isHorizontal()) {
                 Direction newFacing = getClockwiseDirection(currentFacing);
 
@@ -75,17 +69,16 @@ public class RotatedWand extends ItemCompat {
         return InteractionResult.PASS;
     }
 
-    // 关键修复：正确的顺时针方向转换
     private Direction getClockwiseDirection(Direction current) {
         switch (current) {
             case NORTH:
-                return Direction.EAST;  // 北 → 东
+                return Direction.EAST;
             case EAST:
-                return Direction.SOUTH; // 东 → 南
+                return Direction.SOUTH;
             case SOUTH:
-                return Direction.WEST;  // 南 → 西
+                return Direction.WEST;
             case WEST:
-                return Direction.NORTH; // 西 → 北
+                return Direction.NORTH;
             default:
                 return current;
         }

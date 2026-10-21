@@ -46,33 +46,25 @@ public class TreeWand extends ItemCompat {
 
             if (state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.DIRT) || state.is(Blocks.PODZOL)) {
                 if (serverWorld.getBlockState(abovePos).isAir()) {
-                    // 保存原始方块状态
                     BlockState originalState = serverWorld.getBlockState(pos);
 
-                    // 使用原版树木生成机制
                     boolean success = false;
 
-                    // 尝试使用OakTreeGrower生成树木
-                    // 不直接放置树苗，使用生成器在上方位置生成完整的树
                     success = VersionServices.blocks().growOakTree(serverWorld, abovePos);
 
                     if (success) {
-                        // 播放音效和显示消息
                         serverWorld.playSound(null, abovePos, SoundEvents.GRASS_PLACE,
                                 SoundSource.BLOCKS, 1.0F, 1.0F);
                         player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.success"), true);
 
-                        // 非创造模式消耗耐久
                         if (!player.isCreative()) {
                             ItemCompat.hurtAndBreakCompat(context.getItemInHand(), 1, player, context.getHand());
                         }
 
                         return InteractionResult.SUCCESS;
                     } else {
-                        // 确保恢复原始方块状态，移除可能留下的树苗
                         serverWorld.setBlock(pos, originalState, 3);
 
-                        // 如果上方变成了树苗，恢复为空气
                         if (serverWorld.getBlockState(abovePos).is(Blocks.OAK_SAPLING)) {
                             serverWorld.setBlock(abovePos, originalAboveState, 3);
                         }

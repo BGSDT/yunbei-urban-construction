@@ -20,6 +20,8 @@ import net.minecraft.core.Direction;
 import com.mojang.math.Axis;
 import org.joml.Matrix4f;
 
+// 人行道一体化红绿灯渲染器：与人行横道信号灯同一套灯色与读秒显示。
+
 public class TrafficLightsPavementIntegrationBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsPavementIntegrationBlockEntity> {
 
     private static final ResourceLocation PAVEMENT_RED = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/pavement_red.png");
@@ -43,7 +45,6 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
         TrafficLightsBlockEntity.DirectionType directionType = entity.getDirectionType();
         float zOffset = 0.19f;
 
-        // 正面渲染
         renderLogo(matrices, vertexConsumers, light, overlay, facing, lightState, zOffset, false, directionType);
         renderPedestrianText(matrices, vertexConsumers, light, facing, lightState, zOffset, false);
 
@@ -51,7 +52,6 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
             renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, lightState, zOffset, false);
         }
 
-        // 反面渲染
         renderLogo(matrices, vertexConsumers, light, overlay, facing, lightState, zOffset, true, directionType);
         renderPedestrianText(matrices, vertexConsumers, light, facing, lightState, zOffset, true);
 
@@ -63,7 +63,6 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
     private void renderLogo(PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay,
                            Direction facing, TrafficLightsBlock.LightState lightState, float zOffset, boolean isBack,
                            TrafficLightsBlockEntity.DirectionType directionType) {
-        // COLOR_FLASH 图案的色闪逻辑：与灯的GRAY闪烁同步（0.5s一闪），隐藏阶段不渲染
         if (directionType == TrafficLightsBlockEntity.DirectionType.COLOR_FLASH) {
             long currentTimeMillis = System.currentTimeMillis();
             int flashPhase = (int) ((currentTimeMillis / 500) % 2);
@@ -72,7 +71,6 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
             }
         }
 
-        // SLOW_FLASH 图案的慢闪逻辑：与灯的GRAY闪烁同步（0.5s一闪），隐藏阶段不渲染
         if (directionType == TrafficLightsBlockEntity.DirectionType.SLOW_FLASH) {
             long currentTimeMillis = System.currentTimeMillis();
             int flashPhase = (int) ((currentTimeMillis / 500) % 2);
@@ -91,16 +89,13 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
 
         matrices.pushPose();
 
-        // 移动到方块中心
         matrices.translate(0.5, 0.5, 0.5);
         matrices.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
 
-        // 反面需要旋转180度
         if (isBack) {
             matrices.mulPose(Axis.YP.rotationDegrees(180));
         }
 
-        // Logo的Y位置：红灯在上方，绿灯在下方
         float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
                 ? 35f / 16f : 27f / 16f;
 
@@ -125,25 +120,23 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
         String text;
         int color;
 
-        // 根据灯光状态显示不同的文字
         if (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW) {
             text = "行人禁止通行";
-            color = 0xFF0000; // 红色
+            color = 0xFF0000;
         } else if (lightState == TrafficLightsBlock.LightState.GREEN) {
             text = "行人可以通行";
-            color = 0x39FF00; // 绿色
+            color = 0x39FF00;
         } else {
-            return; // GRAY状态不显示文字
+            return;
         }
 
         float baseY = 10.85f / 16f;
 
         float scaleValue = 0.027f;
 
-        // 竖排显示：每个字单独渲染，从上到下排列
         char[] chars = text.toCharArray();
-        float lineHeight = 0.25f; // 每行间距
-        float startY = baseY + (chars.length - 1) * lineHeight / 2f; // 居中起始位置
+        float lineHeight = 0.25f;
+        float startY = baseY + (chars.length - 1) * lineHeight / 2f;
 
         for (int i = 0; i < chars.length; i++) {
             matrices.pushPose();
@@ -151,7 +144,6 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
             matrices.translate(0.5, 0.5, 0.5);
             matrices.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
 
-            // 反面需要旋转180度
             if (isBack) {
                 matrices.mulPose(Axis.YP.rotationDegrees(180));
             }
@@ -160,13 +152,11 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
             matrices.translate(0f, currentY, zOffset);
             matrices.scale(scaleValue, -scaleValue, scaleValue);
 
-            // 使用 Minecraft 原生 Font 渲染单个字
             Component styledText = Text.literal(String.valueOf(chars[i])).setStyle(Style.EMPTY.withBold(true)
                     .withFont(ResourceLocation.fromNamespaceAndPath("minecraft", "uniform")));
             int textWidth = this.textRenderer.width(styledText);
             int textHeight = this.textRenderer.lineHeight;
 
-            // 居中对齐
             float centeredX = -textWidth / 2f;
 
             this.textRenderer.drawInBatch(styledText, centeredX, -textHeight / 2.0f, color, false,
@@ -201,7 +191,6 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
         matrices.translate(0.5, 0.5, 0.5);
         matrices.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
 
-        // 反面需要旋转180度
         if (isBack) {
             matrices.mulPose(Axis.YP.rotationDegrees(180));
         }
@@ -232,7 +221,6 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer implements Bloc
 
         matrices.translate(0f, 0.0f, 0.01f);
 
-        // 渲染实际数字
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, text, color,
                 0, -2.5f, 0,

@@ -2,7 +2,6 @@ package dev.architectury.platform;
 
 import java.nio.file.Path;
 
-/** 1.16.5 bridge for Architectury's pre-dev package name. */
 public final class Platform {
     private Platform() {}
     public static Path getGameFolder() { return me.shedaniel.architectury.platform.Platform.getGameFolder(); }

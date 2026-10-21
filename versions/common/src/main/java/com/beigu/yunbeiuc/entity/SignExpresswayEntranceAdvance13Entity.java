@@ -24,7 +24,6 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
 
     public SignExpresswayEntranceAdvance13Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_13_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -35,14 +34,12 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         this.expressway2 = Expressway.fromName(nbt.getString("expressway2"));
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
         this.expresswayNumber2 = nbt.getString("expresswayNumber2");
-        // 旧存档兼容：无 logoTypeN 键时按原逻辑（国/省道 × 编号位数）推导初始值
         this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
         this.text4 = nbt.getString("text4");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -63,16 +60,6 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayEntranceAdvance13EntityRenderer 的固定布局生成默认文本行：
-     * renderExpresswayLogo(expressway1, -6, 10, size 0.65) / renderExpresswayLogo(expressway2, 6, 10, size 0.65)
-     * → 两个 -texture 行，纹理由 {logo1}/{logo2} 占位符按国道/省道×编号位数选择；
-     * renderExpresswayText(expresswayNumber1, -6, 9.5, 0.045, zOffsetDelta 0.002) /
-     * renderExpresswayText(expresswayNumber2, 6, 9.5, 0.045, zOffsetDelta 0.002)；
-     * renderCenteredText(text1, -7, 1, 0.035) / renderCenteredText(text2, -7, -6, 0.035) /
-     * renderCenteredText(text3, 7, 1, 0.035) / renderCenteredText(text4, 7, -6, 0.035)，均 0xFFFFFF。
-     * 原单位编号 +1px 自动 X 偏移为动态布局逻辑，默认行不含（一位数编号将偏左约 1 像素）。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -192,7 +179,6 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         return kind + "_logo_" + (oneDigit ? "2" : "1");
     }
 
-    /** 旧存档兼容推导：按 expresswayN 国/省道 × expresswayNumberN 编号位数还原 logo 纹理段 */
     private String legacyLogoType1() {
         return expresswayLogoTexture(expressway1, expresswayNumber1);
     }

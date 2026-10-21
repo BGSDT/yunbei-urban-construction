@@ -21,8 +21,6 @@ public final class BlockPlatformImpl implements BlockPlatform {
     }
     @Override public BlockBehaviour.Properties copyProperties(Block source) { return BlockBehaviour.Properties.copy(source); }
     @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color) {
-        // 1.16.5 only exposes map color when Properties is created. All callers copy
-        // CYAN_TERRACOTTA, so retaining the copied color is the closest compatible form.
         return properties;
     }
     @Override public int updateAll() { return 3; }

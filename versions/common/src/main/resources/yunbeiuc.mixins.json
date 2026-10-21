@@ -5,10 +5,12 @@
   "plugin": "com.beigu.yunbeiuc.mixin.YunbeiucMixinPlugin",
   "package": "com.beigu.yunbeiuc.mixin",
   "mixins": [
-    "TrainServerRailSignalMixin"
+    "TrainServerRailSignalMixin",
+    "VehicleRailSignalMixin"
   ],
   "client": [
-    "RenderTrainsRailHighlightMixin"
+    "RenderTrainsRailHighlightMixin",
+    "RenderRailsRailHighlightMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -8,7 +8,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-/** Drawing operations for the Minecraft 1.16.5 GUI API. */
 public final class RenderPlatformImpl implements RenderPlatform {
     @Override
     public void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
@@ -31,6 +30,20 @@ public final class RenderPlatformImpl implements RenderPlatform {
     }
 
     @Override
+    public void line(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                     com.mojang.blaze3d.vertex.PoseStack.Pose pose,
+                     float x1, float y1, float z1, float x2, float y2, float z2,
+                     float red, float green, float blue, float alpha) {
+        final float dx = x2 - x1;
+        final float dy = y2 - y1;
+        final float dz = z2 - z1;
+        consumer.vertex(pose.pose(), x1, y1, z1).color(red, green, blue, alpha)
+                .normal(pose.normal(), dx, dy, dz).endVertex();
+        consumer.vertex(pose.pose(), x2, y2, z2).color(red, green, blue, alpha)
+                .normal(pose.normal(), dx, dy, dz).endVertex();
+    }
+
+    @Override
     public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
                        com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
                        int red, int green, int blue, int alpha, float u, float v, int overlay, int light,
@@ -43,7 +56,6 @@ public final class RenderPlatformImpl implements RenderPlatform {
     }
     @Override
     public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
-        // 1.16.5 takes the raw OpenGL draw mode instead of a VertexFormat.Mode enum.
         int glMode = primitive == LinePrimitive.LINE_STRIP ? 3 : 1;
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(glMode, DefaultVertexFormat.POSITION_COLOR);

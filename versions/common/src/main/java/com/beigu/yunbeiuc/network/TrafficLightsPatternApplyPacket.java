@@ -11,10 +11,8 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * C2S：把一个相位分配预设应用到点击的红绿灯所在的链接组。
- * 服务端做"完美嵌入"校验，全部匹配才对组内所有红绿灯写入图案与相位。
- */
+// C2S：把相位分配预设应用到点击的红绿灯所在链接组；服务端做「完美嵌入」校验，全部匹配才写入。
+
 public class TrafficLightsPatternApplyPacket {
     private final BlockPos pos;
     private final TrafficLightsPatternPreset preset;

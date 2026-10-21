@@ -46,7 +46,6 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         boolean direction6 = blockStateForDefaults().getBlock() == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get();

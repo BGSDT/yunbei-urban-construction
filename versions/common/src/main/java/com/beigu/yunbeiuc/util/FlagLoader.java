@@ -21,10 +21,8 @@ public class FlagLoader {
         CUSTOM_FLAGS.clear();
 
         try {
-            // 按命名空间统计旗帜数量
             Map<String, Integer> namespaceCounts = new LinkedHashMap<>();
 
-            // 遍历所有命名空间，直接查找 flags_yunbeiuc.json
             for (String namespace : resourceManager.getNamespaces()) {
                 ResourceLocation fileId = VersionServices.resources().create(namespace, "flags_yunbeiuc.json");
 
@@ -76,7 +74,6 @@ public class FlagLoader {
                 }
             }
 
-            // 输出汇总信息
             if (!namespaceCounts.isEmpty()) {
                 for (Map.Entry<String, Integer> entry : namespaceCounts.entrySet()) {
                     System.out.println("加载旗帜: 命名空间 " + entry.getKey() + " | 共 " + entry.getValue() + " 个");
@@ -88,7 +85,6 @@ public class FlagLoader {
         }
     }
 
-    // 下面的方法完全不用改
     public static Map<String, CustomFlag> getCustomFlags() {
         return Collections.unmodifiableMap(CUSTOM_FLAGS);
     }

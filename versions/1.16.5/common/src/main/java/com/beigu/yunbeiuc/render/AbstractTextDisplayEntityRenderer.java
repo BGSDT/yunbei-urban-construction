@@ -105,7 +105,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                         try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[2]).trim()); }
                         catch (NumberFormatException ignored) {}
                     }
-                    // 可选第四参数：Z 轴旋转角度（度），叠加到行 rotZ（0 表示不额外旋转）
                     float rotZ = 0f;
                     if (parts.length >= 4) {
                         try { rotZ = Float.parseFloat(entity.resolvePlaceholders(parts[3]).trim()); }
@@ -241,7 +240,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     }
 
     private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, MultiBufferSource vertexConsumers, int light) {
-        // 本行开启发光：用原版全亮光照渲染，不受环境光影响
         int textLight = lineData.isGlowing() ? 0xF000F0 : light;
         boolean outline = lineData.isOutline();
         boolean shadow = lineData.isShadow();
@@ -251,13 +249,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 f.drawInBatch(renderText, x, y, lineData.getColor(), true,
                         matrix, vertexConsumers, false, 0, textLight);
             }
-            // 1.16.5 的 Font 没有 drawInBatch8xOutline（1.17+ 才有），
-            // 之前这里用「画一遍阴影 + 画一遍正文」顶替，看起来根本没有描边。
-            // 这里按原版 8x 描边的做法：先在 8 个方向各偏移 1 像素画一圈描边色，再画正文。
             int outlineColor = resolveOutlineColor(lineData);
-            // 关键：必须把描边色写进组件自身的 style。
-            // 1.16.5 的 Font 逐字取色时 style 颜色优先于传入的 color，
-            // 所以 -json 文本里带的样式颜色会盖掉描边色，导致描边与正文同色 → 看上去没有描边。
             Component outlineText = renderText.copy()
                     .withStyle(s -> s.withColor(net.minecraft.network.chat.TextColor.fromRgb(outlineColor & 0xFFFFFF)));
             for (int dx = -1; dx <= 1; dx++) {
@@ -275,19 +267,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         }
     }
 
-    /**
-     * 决定这一行实际使用的描边颜色。
-     *
-     * <p>未设置（-1）时用黑色；若描边色与文字色相同，自动改用反差色
-     * （文字偏亮 → 黑边，文字偏暗 → 白边），否则描边与正文同色、等于看不见。
-     */
-    /**
-     * 立即模式绘制前，把已经排队的文本/贴图批次刷掉。
-     *
-     * <p>1.16.5 的 {@code MultiBufferSource.BufferSource} 与 {@code Tesselator} 共用同一个
-     * {@code BufferBuilder}；若仍有批次处于 building 状态，紧接着的 {@code begin()} 会抛
-     * {@code IllegalStateException}。所以画描边边框之前必须先 flush。
-     */
     private static void flushBatch(MultiBufferSource vertexConsumers) {
         if (vertexConsumers instanceof MultiBufferSource.BufferSource queued) {
             queued.endBatch();
@@ -301,7 +280,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (outlineRgb != textRgb) return outlineRgb;
 
         int r = (textRgb >> 16) & 0xFF, g = (textRgb >> 8) & 0xFF, b = textRgb & 0xFF;
-        // 用感知亮度判断正文偏亮还是偏暗
         int luma = (r * 299 + g * 587 + b * 114) / 1000;
         return luma >= 128 ? 0x000000 : 0xFFFFFF;
     }
@@ -343,8 +321,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.getBuilder();
-        // 1.16.5 是固定管线：POSITION_COLOR 顶点没有 UV，纹理开启时会被当前绑定的贴图调制
-        // （采样到透明像素 → 颜色发透明）。这里显式关闭纹理，画完再恢复。
         RenderSystem.disableTexture();
         buffer.begin(4, DefaultVertexFormat.POSITION_COLOR);
         buffer.vertex(matrix, -halfW, -halfH, 0).color(r, g, b, a).endVertex();
@@ -359,7 +335,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
 
-        // 「描边」开关：矩形也画一圈描边色边框
         if (lineData.isOutline()) {
             flushBatch(vertexConsumers);
             renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
@@ -414,7 +389,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
             immediate.endBatch();
         }
 
-        // 「描边」开关：图片也画一圈描边色边框
         if (lineData.isOutline()) {
             flushBatch(vertexConsumers);
             renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
@@ -449,8 +423,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.getBuilder();
-        // 1.16.5 是固定管线：POSITION_COLOR 顶点没有 UV，纹理开启时会被当前绑定的贴图调制
-        // （采样到透明像素 → 颜色发透明）。这里显式关闭纹理，画完再恢复。
         RenderSystem.disableTexture();
         buffer.begin(4, DefaultVertexFormat.POSITION_COLOR);
         addOutlineBar(buffer, matrix, x0, y0, x1, y0 + thicknessY, r, g, b, a);

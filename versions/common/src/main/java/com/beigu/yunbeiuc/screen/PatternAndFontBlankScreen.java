@@ -34,7 +34,6 @@ public class PatternAndFontBlankScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (PatternAndFontOverlay.isVisible) {
             PatternAndFontOverlay.mouseClicked(mouseX, mouseY, button);
-            // 浮层在插入内容或点击返回按钮后会自行关闭，此时同步关闭本界面
             if (!PatternAndFontOverlay.isVisible) {
                 close();
             }

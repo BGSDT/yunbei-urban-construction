@@ -21,14 +21,6 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     private transient int editingLineIndex = -1;
     private transient int editingGizmoMode = -1;
 
-    /**
-     * 构造时传入的方块状态。
-     *
-     * <p>1.16.5 / 1.17.1 的 {@code BlockEntity} 构造函数不保存方块状态，其
-     * {@code getBlockState()} 会去读 {@code level}；而方块实体是"先构造、后 setLevel"，
-     * 构造期间 {@code level == null}，此时调用 {@code getBlockState()} 直接空指针。
-     * 因此把构造参数缓存下来，供构造期的默认文本行判断使用。
-     */
     private final BlockState initialState;
 
     public CustomSignBlockEntity(BlockPos pos, BlockState state) {
@@ -40,13 +32,6 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         this.initialState = state;
     }
 
-    /**
-     * 取方块状态，可在构造期安全调用。
-     *
-     * <p>{@code level} 未就绪时返回构造参数缓存的方块状态，避免
-     * {@code BlockEntity#getBlockState()} 在构造期空指针崩溃；{@code level}
-     * 就绪后行为与 {@code getBlockState()} 完全一致。
-     */
     protected BlockState blockStateForDefaults() {
         if (level == null && initialState != null) return initialState;
         return getBlockState();
@@ -95,10 +80,8 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     @Nullable @Override public ClientboundBlockEntityDataPacket getUpdatePacket() { return createUpdatePacket(); }
     private static final java.util.regex.Pattern PLACEHOLDER_PATTERN = java.util.regex.Pattern.compile("\\{(\\w+)\\}");
 
-    /** 按字段名取占位符值；子类 override 提供固定 NBT 字段映射，未知字段返回 null（保留原文） */
     public String getPlaceholderValue(String key) { return null; }
 
-    /** 将文本中的 {字段名} 占位符替换为字段值 */
     public String resolvePlaceholders(String text) {
         if (text == null || text.indexOf('{') < 0) return text;
         java.util.regex.Matcher m = PLACEHOLDER_PATTERN.matcher(text);
@@ -140,7 +123,6 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         private boolean bold, italic, underline, shadow;
         private boolean outline;
         private int outlineColor = 0x000000;
-        /** 该行是否发光（用原版全亮光照渲染，即"荧光"效果） */
         private boolean glowing = false;
         private float fontSize;
 
@@ -227,7 +209,6 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             data.outline = nbt.getBoolean("outline");data.outlineColor = nbt.contains("outlineColor") ? nbt.getInt("outlineColor") : 0x000000;
             data.glowing = nbt.getBoolean("glowing");
             data.fontSize = nbt.contains("fontSize") ? nbt.getFloat("fontSize") : 1.0f;
-            // 旧存档无该字段：默认空串（未指定字体）
             data.abcFont = nbt.contains("abcFont") ? nbt.getString("abcFont") : "";
             data.scaleX = nbt.contains("scaleX") ? nbt.getFloat("scaleX") : 1.0f;
             data.scaleY = nbt.contains("scaleY") ? nbt.getFloat("scaleY") : 1.0f;

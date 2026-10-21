@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
-/** Waterlogged-slab base: keeps a double slab from being waterlogged. */
 public abstract class WaterloggedSlabCompat extends BlockCompat implements SimpleWaterloggedBlock {
     protected WaterloggedSlabCompat(BlockBehaviour.Properties properties) {
         super(properties);

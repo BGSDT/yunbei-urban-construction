@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.function.Function;
 
-/** 1.16.5 bridge for the renamed renderer registry. */
 public final class BlockEntityRendererRegistry {
     private BlockEntityRendererRegistry() {}
 

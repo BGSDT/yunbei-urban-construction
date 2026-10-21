@@ -9,10 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- * 红绿灯方向列表条目图标：把 {@link TrafficLightsBlockEntity.DirectionType} 映射到对应的
- * 红色状态贴图（复用 {@code textures/block/lights/*_red.png}），用于替代原先的纯色色块。
- */
+// 方向列表条目图标：DirectionType -> textures/block/lights/*_red.png。
+
 public final class TrafficLightsDirectionIcons {
     private static final Map<TrafficLightsBlockEntity.DirectionType, AbstractOptionListWidget.Icon> ICONS = new EnumMap<>(TrafficLightsBlockEntity.DirectionType.class);
 

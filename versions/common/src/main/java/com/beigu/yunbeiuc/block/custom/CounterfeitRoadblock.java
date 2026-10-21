@@ -85,9 +85,7 @@ public class CounterfeitRoadblock extends BlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
 
-        // 检查玩家是否手持 ModItem.Wand
         if (heldItem.getItem() == ModItems.WAND.get() && !world .isClientSide) {
-            // 切换整个连接组的状态
             toggleConnectedGroup(world, pos, state.getValue(FACING), !state.getValue(ACTIVE));
             return InteractionResult.SUCCESS;
         }
@@ -110,7 +108,6 @@ public class CounterfeitRoadblock extends BlockCompat {
             return;
         }
 
-        // 切换当前方块
         if (state.getValue(ACTIVE) != newActiveState) {
             world.setBlock(pos, state.setValue(ACTIVE, newActiveState), VersionServices.blocks().updateAll());
             world.playSound(null, pos,
@@ -118,7 +115,6 @@ public class CounterfeitRoadblock extends BlockCompat {
                     SoundSource.BLOCKS, 1.0F, 1.0F);
         }
 
-        // 递归检查左右相邻的方块
         Direction leftDir = facing.getCounterClockWise();
         Direction rightDir = facing.getClockWise();
 

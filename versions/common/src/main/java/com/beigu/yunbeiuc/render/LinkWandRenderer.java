@@ -52,7 +52,6 @@ public class LinkWandRenderer {
         for (BlockPos pos : linkedPositions) {
             if (!(client.level.getBlockEntity(pos) instanceof TrafficLightsBlockEntity)) continue;
 
-            // 描边跟随方块实际碰撞箱大小
             VoxelShape shape = client.level.getBlockState(pos).getShape(client.level, pos);
             AABB box = shape.bounds().move(pos).inflate(0.002);
 
@@ -63,7 +62,6 @@ public class LinkWandRenderer {
             float b = 0.0f;
             float a = 0.8f;
 
-            // 绘制完整的碰撞箱描边
             render.vertex(lineBuffer, matrices.last(), (float) box.minX, (float) box.minY, (float) box.minZ, r, g, b, a);
             render.vertex(lineBuffer, matrices.last(), (float) box.maxX, (float) box.minY, (float) box.minZ, r, g, b, a);
             render.vertex(lineBuffer, matrices.last(), (float) box.maxX, (float) box.minY, (float) box.maxZ, r, g, b, a);

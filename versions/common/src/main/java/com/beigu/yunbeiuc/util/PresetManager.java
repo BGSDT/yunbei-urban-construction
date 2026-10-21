@@ -13,44 +13,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 
-/**
- * 告示牌文本预设管理。
- *
- * <p>预设来源有两处，合并后统一由 {@link #getPresets()} 提供：
- * <ol>
- *   <li><b>资源包</b>：{@code assets/<命名空间>/ui_definitions/cf_<modid>.json} 中的 {@code "presets"} 块
- *       （与图案/字体共用同一目录与接口；读取的三个文件名见
- *       {@link PatternResourceLoader#CUSTOM_UI_FILES}）；</li>
- *   <li><b>用户</b>：游戏目录下的 {@code yunbeiuc_presets.json}（用户新建/删除，持久化到磁盘）。</li>
- * </ol>
- * 同名时用户预设覆盖资源包预设。
- *
- * <p>资源包预设 JSON 结构（与 {@code yunbeiuc_presets.json} 的文本行一致）：
- * <pre>
- * {
- *   "presets": {
- *     "我的预设": [ { "text": "...", "xOffset": 0, "yOffset": 0, "zOffset": 0,
- *                     "color": 16777215, "bold": false, "italic": false, "underline": false,
- *                     "shadow": false, "fontSize": 1.0, "alignment": "CENTER_CENTER" } ]
- *   }
- * }
- * </pre>
- */
 public class PresetManager {
     private static final Path PRESET_FILE = Platform.getGameFolder().resolve("yunbeiuc_presets.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String LOG_TAG = "[PresetManager]";
 
-    /** 资源包提供的预设（只读，随资源包重载刷新）。 */
     private static final Map<String, List<TextLineData>> packPresets = new LinkedHashMap<>();
-    /** 用户预设（持久化到游戏目录文件）。 */
     private static final Map<String, List<TextLineData>> userPresets = new LinkedHashMap<>();
-    /** 合并视图：资源包预设 + 用户预设（用户优先）。 */
     private static final Map<String, List<TextLineData>> presets = new LinkedHashMap<>();
 
     public static Map<String, List<TextLineData>> getPresets() { return presets; }
 
-    /** 是否为资源包提供的预设（不会随用户删除而写入磁盘）。 */
     public static boolean isPackPreset(String name) { return packPresets.containsKey(name); }
 
     public static void addPreset(String name, List<TextLineData> lines) {
@@ -61,13 +34,10 @@ public class PresetManager {
 
     public static void removePreset(String name) {
         boolean changed = userPresets.remove(name) != null;
-        // 资源包预设允许在本次会话中移除（不写盘，重载资源包后恢复）
         packPresets.remove(name);
         rebuild();
         if (changed) save();
     }
-
-    // ==================== 用户预设（游戏目录文件） ====================
 
     public static void load() {
         userPresets.clear();
@@ -102,15 +72,6 @@ public class PresetManager {
         }
     }
 
-    // ==================== 资源包预设（cf_<modid>.json / patterns.json 的 presets 块） ====================
-
-    /**
-     * 从所有命名空间下的 {@code ui_definitions/cf_<modid>.json}（兼容 {@code patterns.json}）
-     * 读取 {@code presets} 块并合并。
-     * 读取的文件名与 {@link PatternResourceLoader#CUSTOM_UI_FILES} 保持一致。
-     *
-     * @param manager 资源管理器
-     */
     public static void loadFromResourcePacks(ResourceManager manager) {
         packPresets.clear();
         try {
@@ -140,8 +101,6 @@ public class PresetManager {
         }
         rebuild();
     }
-
-    // ==================== 内部 ====================
 
     private static void rebuild() {
         presets.clear();

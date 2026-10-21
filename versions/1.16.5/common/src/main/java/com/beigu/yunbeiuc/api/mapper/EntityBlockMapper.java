@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-/** Bridges the 1.16.5 no-position block-entity factory to the shared factory. */
 public abstract class EntityBlockMapper extends BaseEntityBlock implements BlockCompatHooks {
     protected EntityBlockMapper(BlockBehaviour.Properties properties) {
         super(properties);

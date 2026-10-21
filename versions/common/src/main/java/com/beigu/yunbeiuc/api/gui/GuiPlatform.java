@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
-/** Version-sensitive widget construction. Each Minecraft version supplies an implementation. */
 public interface GuiPlatform {
     ButtonWidget createButton(Component label, int x, int y, int width, int height,
                               Consumer<ButtonWidget> action);

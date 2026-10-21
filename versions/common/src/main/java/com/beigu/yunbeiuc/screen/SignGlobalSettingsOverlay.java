@@ -6,24 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import org.lwjgl.glfw.GLFW;
 
-/**
- * 「云北路牌全局设置」全屏页面。
- *
- * <p>由文本编辑界面（{@link TextDisplayScreen}）的「设置」按钮打开。全屏覆盖，
- * 沿用项目其它界面的方角面板与海燕蓝配色（不使用圆角）。
- *
- * <p>两块内容：
- * <ol>
- *   <li><b>全局字体</b>：原版 uniform / 交通字体 A·B·C / 路牌自适应，决定之后新生成文本行的字体；</li>
- *   <li><b>一键转换</b>：把已放置路牌「自带行」的字体标签统一改写为自适应字体或原版字体
- *       （自适应按每行各自的 a/b/c；原版则加粗）。用户自己新增的行不参与。</li>
- * </ol>
- *
- * <p>内容区比视口高，因此带滚动条：滚轮滚动，也可以按住滚动条拖动。
- *
- * <p>契约与 {@link PatternAndFontOverlay} 相同：静态 {@link #isVisible} 控制显隐，
- * 渲染与输入事件由宿主界面转发；本页自行绘制与命中测试。
- */
 public final class SignGlobalSettingsOverlay {
 
     private static final String TITLE = "云北路牌全局设置";
@@ -71,7 +53,6 @@ public final class SignGlobalSettingsOverlay {
     private static int hoverAction = -1;
     private static FontMode pendingMode = FontMode.VANILLA;
 
-    // 滚动
     private static int scrollOffset = 0;
     private static int maxScroll = 0;
     private static int contentHeight = 0;
@@ -81,7 +62,6 @@ public final class SignGlobalSettingsOverlay {
     private static int dragStartMouseY = 0;
     private static int dragStartScroll = 0;
 
-    // 布局结果（已含滚动偏移）
     private static int cardX, cardY, cardW, cardH;
     private static int contentX, contentW;
     private static int titleY, closeX, closeY;
@@ -92,8 +72,6 @@ public final class SignGlobalSettingsOverlay {
     private static int statusY, saveBtnX, saveBtnY, saveBtnW, footerY;
 
     private SignGlobalSettingsOverlay() {}
-
-    // ==================== 显隐 ====================
 
     public static void open(TextDisplayScreen screen) {
         targetScreen = screen;
@@ -120,8 +98,6 @@ public final class SignGlobalSettingsOverlay {
         hoverClose = false;
     }
 
-    // ==================== 一键转换 ====================
-
     private static void runConvert(boolean adaptive) {
         if (targetScreen == null) return;
         int converted = targetScreen.convertBuiltinFontTags(adaptive);
@@ -141,8 +117,6 @@ public final class SignGlobalSettingsOverlay {
         if (targetScreen != null) targetScreen.applyGlobalFontSettingToAllLines();
         close();
     }
-
-    // ==================== 布局 ====================
 
     private static int computeContentHeight() {
         return SECTION_TITLE_H + SECTION_HINT_H + 6
@@ -175,7 +149,6 @@ public final class SignGlobalSettingsOverlay {
         closeX = cardX + cardW - PAD - CLOSE_SIZE;
         closeY = cardY + PAD + (HEADER_H - CLOSE_SIZE) / 2;
 
-        // 内容区内的相对布局，再减去滚动偏移得到屏幕坐标
         int y = viewportY - scrollOffset;
         fontSectionY = y; y += SECTION_TITLE_H;
         fontHintY = y; y += SECTION_HINT_H + 6;
@@ -198,7 +171,6 @@ public final class SignGlobalSettingsOverlay {
         saveBtnW = viewportW;
         footerY = saveBtnY + ACTION_H + 6;
 
-        // 滚动条滑块
         thumbW = UIConstants.THUMB_WIDTH;
         thumbX = viewportX + viewportW - thumbW - 3;
         if (maxScroll > 0) {
@@ -217,22 +189,17 @@ public final class SignGlobalSettingsOverlay {
                 && my >= viewportY && my <= viewportY + viewportH;
     }
 
-    // ==================== 渲染 ====================
-
     public static void render(DrawContext ctx, int mouseX, int mouseY) {
         if (!isVisible) return;
         Font tr = Minecraft.getInstance().font;
         layout();
         updateHover(mouseX, mouseY);
 
-        // 全屏遮罩：本页是全屏页面，背后不再显示文本编辑界面
         ctx.fill(0, 0, LayoutHelper.getScreenWidth(), LayoutHelper.getScreenHeight(), DIM);
 
-        // 卡片（方角）
         ctx.fill(cardX, cardY, cardX + cardW, cardY + cardH, UIConstants.CLR_CONTENT_BG);
         ctx.drawBorder(cardX, cardY, cardW, cardH, UIConstants.CLR_CONTENT_BORDER);
 
-        // 标题 + 关闭
         ctx.fill(contentX, titleY - 1, contentX + ACCENT_BAR_W, titleY + 9, UIConstants.CLR_ACCENT);
         ctx.drawText(tr, TITLE, contentX + ACCENT_BAR_W + 6, titleY, UIConstants.CLR_HEADING, false);
 
@@ -245,7 +212,6 @@ public final class SignGlobalSettingsOverlay {
         int headerDivider = viewportY - 5;
         ctx.fill(contentX, headerDivider, contentX + viewportW, headerDivider + 1, UIConstants.CLR_CONTENT_DIVIDER);
 
-        // ---- 可滚动内容区 ----
         ctx.enableScissor(viewportX, viewportY, viewportX + viewportW, viewportY + viewportH);
 
         drawSectionTitle(ctx, tr, FONT_SECTION, fontSectionY);
@@ -267,7 +233,6 @@ public final class SignGlobalSettingsOverlay {
 
         drawActionButton(ctx, tr, SAVE_SETTINGS, saveBtnX, saveBtnY, saveBtnW, hoverSave);
 
-        // 滚动条
         if (maxScroll > 0) {
             ctx.fill(thumbX, viewportY + 2, thumbX + thumbW, viewportY + viewportH - 2, UIConstants.CLR_TRACK);
             boolean thumbHover = draggingThumb
@@ -284,7 +249,6 @@ public final class SignGlobalSettingsOverlay {
         ctx.drawText(tr, text, contentX + ACCENT_BAR_W + 6, y + 3, UIConstants.CLR_ACCENT, false);
     }
 
-    /** 单行选项卡：选中态用填充 + 左侧强调条，悬停态用浅色底（方角）。 */
     private static void drawOptionRow(DrawContext ctx, Font tr, int index, int y, boolean selected, boolean hovered) {
         int fill = selected ? UIConstants.CLR_NAVItemSelected
                 : (hovered ? UIConstants.CLR_NAV_PILL_HOVER : UIConstants.CLR_CELL_FILL);
@@ -330,8 +294,6 @@ public final class SignGlobalSettingsOverlay {
         scrollOffset = Math.max(0, Math.min(scrollOffset + amount, maxScroll));
     }
 
-    // ==================== 输入 ====================
-
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!isVisible) return false;
         layout();
@@ -366,11 +328,9 @@ public final class SignGlobalSettingsOverlay {
             runConvert(false);
             return true;
         }
-        // 全屏页面：卡片外的点击也一并吞掉，避免影响底层界面
         return true;
     }
 
-    /** 拖动滚动条滑块。 */
     public static boolean mouseDragged(double mouseX, double mouseY, int button) {
         if (!isVisible) return false;
         if (!draggingThumb || maxScroll <= 0) return true;

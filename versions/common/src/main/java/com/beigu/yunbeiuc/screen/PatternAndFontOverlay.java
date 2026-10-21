@@ -15,8 +15,6 @@ import java.util.List;
 
 public final class PatternAndFontOverlay {
 
-    // ==================== 数据模型 ====================
-
     public enum FilterMode {
         WHITELIST,
         BLACKLIST,
@@ -47,14 +45,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /**
-     * 标签按钮项（「图案集整合」专用）。
-     *
-     * <p>与 {@link WhitelistPatternItem} 的区别：白名单网格只画缩略图、靠肉眼辨认，
-     * 适合按纹理浏览；标签按钮则把 {@link #displayName} 直接画在按钮上，
-     * 适合承载「标志牌实体里的枚举 / 选项组」——那些选项本来就有中文名
-     * （如「国家高速公路（2位数）」「国道」），有文字才找得到。
-     */
     public static class LabeledItem {
         public final ResourceLocation textureId;
         public final String insertContent;
@@ -90,15 +80,12 @@ public final class PatternAndFontOverlay {
         public int activeStyleIndex = 0;
         public boolean isExpanded = true;
 
-        /** 子分区（树形嵌套，父分区只作容器、可整体收起；与 useStyles 的标签切换不同） */
         public boolean useChildSections = false;
         public final List<H4Section> childSections = new ArrayList<>();
 
         public FilterMode extFilterMode = FilterMode.NONE;
         public final List<String> extFilterList = new ArrayList<>();
-        /** 附加排除前缀：主过滤器通过后，文件名命中任一前缀即剔除（默认空，不影响原有过滤行为） */
         public final List<String> extExcludePrefixes = new ArrayList<>();
-        /** 附加精确排除：主过滤器通过后，文件名与之完全相同即剔除（默认空） */
         public final List<String> extExcludeNames = new ArrayList<>();
 
         public int activeTabIndex = 0;
@@ -107,26 +94,11 @@ public final class PatternAndFontOverlay {
         public boolean isWhitelistMode = false;
         public final List<WhitelistPatternItem> whitelistItems = new ArrayList<>();
 
-        /** 标签按钮模式：把 {@link LabeledItem#displayName} 画在按钮上，换行平铺（「图案集整合」用） */
         public boolean isLabeledMode = false;
         public final List<LabeledItem> labeledItems = new ArrayList<>();
 
-        /**
-         * 「图案集整合」专用：本分组对应哪些「实体选项组标题」。
-         *
-         * <p>text 编辑面板只列出「当前选中文本行的实体真的会给出的选项组」所对应的图案集，
-         * 所以靠标题匹配——标题写死成实体里那几个中文字面量（高速Logo / 底色 / 普通公路Logo /
-         * 箭头 / 转向 / 方向），这样不受语言文件影响，也不受 {@code logo1} 这种
-         * 「高速Logo 和 转向 共用同一个占位符键」的歧义影响。
-         */
         public final List<String> matchTitles = new ArrayList<>();
 
-        /**
-         * 「图案集整合」专用：本分组绑定的占位符键（如 {@code arrow1}）。
-         *
-         * <p>给资源包 {@code cpl_*.json} 的自定义分组用——它们没有对应实体，只能靠这里声明的键
-         * 决定「当前文本行含该占位符时才在 text 编辑面板里列出」；留空则只在图案库中出现。
-         */
         public final List<String> bindKeys = new ArrayList<>();
 
         public boolean isFontMode = false;
@@ -156,7 +128,6 @@ public final class PatternAndFontOverlay {
             return this;
         }
 
-        /** 开启子分区模式：本分区作为容器，内容全部由 {@link #addChildSection} 添加的子分区承载。 */
         public H4Section enableChildSections() {
             this.useChildSections = true;
             return this;
@@ -179,14 +150,12 @@ public final class PatternAndFontOverlay {
             return this;
         }
 
-        /** 在主过滤器之上追加排除前缀（例如"sign_guide 全部，但去掉 sign_guide_roadside_facility"）。 */
         public H4Section setExtensionExclude(String... prefixes) {
             this.extExcludePrefixes.clear();
             for (String prefix : prefixes) this.extExcludePrefixes.add(prefix);
             return this;
         }
 
-        /** 在主过滤器之上追加精确排除的文件名（含扩展名），用于剔除已归入其它分类的素材。 */
         public H4Section setExtensionExcludeNames(String... fileNames) {
             this.extExcludeNames.clear();
             for (String fileName : fileNames) this.extExcludeNames.add(fileName);
@@ -203,29 +172,21 @@ public final class PatternAndFontOverlay {
             return this;
         }
 
-        /** 开启标签按钮模式（「图案集整合」用）。 */
         public H4Section setLabeledMode() {
             this.isLabeledMode = true;
             return this;
         }
 
-        /**
-         * 添加一个标签按钮。
-         *
-         * @param insertContent 自定义插入内容；传空串时按 {@code -texture <textureId>} 插入
-         */
         public H4Section addLabeledItem(ResourceLocation textureId, String insertContent, Component displayName) {
             this.labeledItems.add(new LabeledItem(textureId, insertContent, displayName));
             return this;
         }
 
-        /** 绑定一个「实体选项组标题」（见 {@link #matchTitles}）。 */
         public H4Section addMatchTitle(String title) {
             if (title != null && !title.isEmpty()) this.matchTitles.add(title);
             return this;
         }
 
-        /** 绑定一个占位符键（见 {@link #bindKeys}）。 */
         public H4Section addBindKeys(String... keys) {
             if (keys == null) return this;
             for (String k : keys) if (k != null && !k.isEmpty()) this.bindKeys.add(k);
@@ -290,12 +251,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /**
-     * 侧边栏中的一行 H3 分类（含缩进层级）。
-     *
-     * <p>用于支持 H2 → H3 → 子分类 的多级菜单：{@code depth} 为 0 表示 H3 直属 H2，
-     * 每深入一层 +1，渲染时按 {@code depth * UIConstants.CARD_SUB_INDENT} 缩进。
-     */
     public static class NavRow {
         public final H3Category h3;
         public final int depth;
@@ -306,7 +261,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /** 深度优先收集某 H2 下当前可见的全部 H3 行（收起的分支不展开）。 */
     public static List<NavRow> collectNavRows(H2Category h2) {
         List<NavRow> rows = new ArrayList<>();
         for (H3Category h3 : h2.subCategories) {
@@ -323,8 +277,6 @@ public final class PatternAndFontOverlay {
             }
         }
     }
-
-    // ==================== 全局状态 ====================
 
     public static final List<H2Category> REGISTRY = new ArrayList<>();
 
@@ -353,14 +305,11 @@ public final class PatternAndFontOverlay {
 
     public static boolean isDataLoaded = false;
 
-    // ==================== 导航逻辑代理 ====================
-
     public static void resetForReload() {
         REGISTRY.clear();
         isDataLoaded = false;
         selectedH2 = null;
         selectedH3 = null;
-        // 资源包可能更换了同名纹理，尺寸缓存必须一并失效
         TextureAspectCache.clear();
     }
 
@@ -382,8 +331,6 @@ public final class PatternAndFontOverlay {
         String key = Text.translatable("yunbeiuc.gui.categories.yunbeiuc_builtin").getString();
         return selectedH3.title.getString().equals(key);
     }
-
-    // ==================== 主渲染入口 ====================
 
     public static void render(DrawContext ctx, int mouseX, int mouseY) {
         if (!isVisible) return;
@@ -415,7 +362,6 @@ public final class PatternAndFontOverlay {
         paintNavPanel(ctx, tr, mouseX, mouseY, navW, navClipH);
         paintContentPane(ctx, tr, mouseX, mouseY, winW, winH, paneW, clipTop, clipBottom);
 
-        // 内容区边框（与侧边栏同风格；左边界与侧边栏右边框共用，不重复绘制）
         ctx.fill(navW, 0, winW, 1, UIConstants.CLR_CONTENT_BORDER);
         ctx.fill(navW, winH - 1, winW, winH, UIConstants.CLR_CONTENT_BORDER);
         ctx.fill(winW - 1, 0, winW, winH, UIConstants.CLR_CONTENT_BORDER);
@@ -462,17 +408,13 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    // ==================== 导航栏渲染（卡片分组式） ====================
-
     private static void paintNavPanel(DrawContext ctx, Font tr, int mx, int my, int navW, int clipH) {
         int winH = LayoutHelper.getScreenHeight();
 
-        // 背景
         ctx.fill(0, 0, navW, winH, UIConstants.CLR_NAV_BG);
         ctx.fill(0, 0, navW, UIConstants.TOP_BAR_HEIGHT, UIConstants.CLR_NAV_TOPBAR);
         ctx.fill(0, UIConstants.TOP_BAR_HEIGHT - 1, navW, UIConstants.TOP_BAR_HEIGHT, UIConstants.CLR_NAV_DIVIDER);
 
-        // 顶栏：收起按钮 + 标题
         boolean isToggleHover = LayoutHelper.isMouseInRect(mx, my, 4, 5, 22, 22);
         if (isToggleHover) {
             ctx.fill(4, 5, 26, 27, UIConstants.CLR_NAV_ITEM_HOVER);
@@ -489,7 +431,6 @@ public final class PatternAndFontOverlay {
         int curY = UIConstants.TOP_BAR_HEIGHT + UIConstants.NAV_PAD - (int) sidebarScrollY;
 
         if (SidebarState.isCollapsed()) {
-            // ---- 收起模式：图标方块 ----
             curY = paintCollapsedIcon(ctx, tr, mx, my, navW, curY, "\u2302", isHomeSelected);
             for (H2Category h2 : REGISTRY) {
                 String abbr = getH2Abbreviation(h2);
@@ -497,11 +438,9 @@ public final class PatternAndFontOverlay {
                 curY = paintCollapsedIcon(ctx, tr, mx, my, navW, curY, abbr, active);
             }
         } else {
-            // ---- 展开模式：主页卡片 ----
             curY = paintHomeCard(ctx, tr, mx, my, navW, curY);
             curY += UIConstants.CARD_GAP;
 
-            // ---- H2 分组卡片 ----
             for (H2Category h2 : REGISTRY) {
                 curY = paintH2Card(ctx, tr, mx, my, navW, curY, h2);
                 curY += UIConstants.CARD_GAP;
@@ -513,18 +452,15 @@ public final class PatternAndFontOverlay {
         LayoutHelper.renderScrollbar(ctx, 0, UIConstants.TOP_BAR_HEIGHT, navW,
                 clipH, sidebarScrollY, maxSidebarScrollY, clipH, mx, my);
 
-        // 侧边栏边框：最后绘制，压在滚动条与内容之上
         ctx.drawBorder(0, 0, navW, winH, UIConstants.CLR_NAV_BORDER);
     }
 
-    // 汉堡图标
     private static void drawHamburger(DrawContext ctx, int x, int y, int color) {
         ctx.fill(x, y, x + 14, y + 2, color);
         ctx.fill(x, y + 5, x + 14, y + 7, color);
         ctx.fill(x, y + 10, x + 14, y + 12, color);
     }
 
-    // 主页卡片
     private static int paintHomeCard(DrawContext ctx, Font tr,
                                      int mx, int my, int navW, int curY) {
         int x = UIConstants.NAV_PAD;
@@ -536,11 +472,9 @@ public final class PatternAndFontOverlay {
                 : (hov ? UIConstants.CLR_CARD_HEADER_BG_HOVER : UIConstants.CLR_CARD_HEADER_BG);
         int border = isHomeSelected ? UIConstants.CLR_ACCENT : UIConstants.CLR_CARD_BORDER;
 
-        // 直角卡片：直接铺底 + 描边
         ctx.fill(x, curY, x + w, curY + h, bg);
         ctx.drawBorder(x, curY, w, h, border);
 
-        // 左侧强调竖条（选中态）
         if (isHomeSelected) {
             ctx.fill(x + 1, curY + 6, x + 1 + UIConstants.NAV_ACCENT_BAR_W, curY + h - 6,
                     UIConstants.CLR_ACCENT);
@@ -548,7 +482,6 @@ public final class PatternAndFontOverlay {
 
         int iconX = x + 12;
         int iconY = curY + (h - 8) / 2;
-        // 房子图标（用像素块拼）
         ctx.fill(iconX + 3, iconY, iconX + 5, iconY + 2, UIConstants.CLR_NAVTextPri);
         ctx.fill(iconX + 1, iconY + 2, iconX + 7, iconY + 4, UIConstants.CLR_NAVTextPri);
         ctx.fill(iconX + 1, iconY + 4, iconX + 7, iconY + 8, UIConstants.CLR_NAVTextPri);
@@ -560,7 +493,6 @@ public final class PatternAndFontOverlay {
         return curY + h;
     }
 
-    // H2 分组卡片
     private static int paintH2Card(DrawContext ctx, Font tr,
                                    int mx, int my, int navW, int curY, H2Category h2) {
         int x = UIConstants.NAV_PAD;
@@ -569,25 +501,20 @@ public final class PatternAndFontOverlay {
 
         int totalH = LayoutHelper.calculateH2CardHeight(h2, tr);
 
-        // 卡片底（整卡背景，直角）
         ctx.fill(x, curY, x + w, curY + totalH, UIConstants.CLR_CARD_BG);
         ctx.drawBorder(x, curY, w, totalH, UIConstants.CLR_CARD_BORDER);
 
-        // 头部（单独一层底色，与整卡顶部对齐）
         boolean headerHov = LayoutHelper.isMouseInRect(mx, my, x, curY, w, headerH);
         int headerBg = headerHov ? UIConstants.CLR_CARD_HEADER_BG_HOVER : UIConstants.CLR_CARD_HEADER_BG;
         ctx.fill(x + 1, curY + 1, x + w - 1, curY + headerH, headerBg);
 
-        // 箭头
         String arrow = h2.isExpanded ? "\u25BE" : "\u25B8";
         ctx.drawText(tr, arrow, x + 10, curY + (headerH - 8) / 2,
                 headerHov ? UIConstants.CLR_NAVTextPri : UIConstants.CLR_NAVTextSec, false);
 
-        // 标题
         ctx.drawText(tr, h2.title.getString(), x + 24, curY + (headerH - 8) / 2,
                 UIConstants.CLR_NAVTextPri, false);
 
-        // 计数徽章
         int count = h2.subCategories.size();
         if (count > 0 && h2.isExpanded) {
             String cs = String.valueOf(count);
@@ -600,7 +527,6 @@ public final class PatternAndFontOverlay {
 
         int bodyY = curY + headerH;
 
-        // 子项胶囊（支持 H3 多级缩进）
         if (h2.isExpanded && !h2.subCategories.isEmpty()) {
             bodyY += UIConstants.CARD_INNER_TOP;
             for (NavRow row : collectNavRows(h2)) {
@@ -612,7 +538,6 @@ public final class PatternAndFontOverlay {
         return curY + totalH;
     }
 
-    // H3 胶囊项（按 depth 缩进；含子分类时显示展开/收起箭头）
     private static void paintH3Pill(DrawContext ctx, Font tr,
                                     int mx, int my, int cardX, int cardW, int y, NavRow row) {
         int inset = UIConstants.CARD_ITEM_INSET;
@@ -628,7 +553,6 @@ public final class PatternAndFontOverlay {
 
         if (isSelected) {
             ctx.fill(px, y, px + pw, y + ph, UIConstants.CLR_NAV_PILL_SEL);
-            // 左侧强调竖条
             ctx.fill(px + 2, y + 5, px + 2 + UIConstants.NAV_ACCENT_BAR_W, y + ph - 5,
                     UIConstants.CLR_ACCENT);
         } else if (isHov) {
@@ -646,7 +570,6 @@ public final class PatternAndFontOverlay {
         ctx.drawText(tr, h3.title.getString(), textX, y + (ph - 8) / 2, txtClr, false);
     }
 
-    // 收起模式图标方块
     private static int paintCollapsedIcon(DrawContext ctx, Font tr,
                                           int mx, int my, int navW, int curY,
                                           String iconText, boolean isSelected) {
@@ -672,8 +595,6 @@ public final class PatternAndFontOverlay {
         String title = h2.title.getString();
         return title.length() >= 2 ? title.substring(0, 2) : title;
     }
-
-    // ==================== 内容区渲染 ====================
 
     private static void paintContentPane(DrawContext ctx, Font tr, int mx, int my,
                                          int winW, int winH, int paneW, int clipTop, int clipBottom) {
@@ -710,20 +631,10 @@ public final class PatternAndFontOverlay {
                 clipBottom - clipTop, scrollY, maxScrollY, clipBottom - clipTop, mx, my);
     }
 
-    // ==================== 分区内容渲染 ====================
-
-    /** 说明卡片左内边距（4px 强调条 + 10px 间距）。 */
     private static final int HEADER_CARD_PAD_L = 14;
-    /** 说明卡片右内边距。 */
     private static final int HEADER_CARD_PAD_R = 10;
-    /** 说明卡片与下方分区之间的间距。 */
     public static final int HEADER_CARD_GAP = 16;
 
-    /**
-     * 分类说明卡片的高度（换行行数 × 行高 + 上下内边距）。
-     *
-     * <p>渲染、滚动高度与点击命中三处共用，保证完全一致。
-     */
     public static int headerCardHeight(Font tr, Component headerText, int paneW) {
         int cardW = paneW - 32;
         int textMaxW = cardW - HEADER_CARD_PAD_L - HEADER_CARD_PAD_R;
@@ -735,7 +646,6 @@ public final class PatternAndFontOverlay {
         int navW = SidebarState.getEffectiveWidth();
         H3Category h3 = selectedH3;
 
-        // 分类说明文字（主页 header 同款卡片：底色 + 描边 + 左侧强调条）
         if (h3.headerText != null) {
             int cardX = navW + 16;
             int cardW = paneW - 32;
@@ -755,12 +665,10 @@ public final class PatternAndFontOverlay {
             contentY += cardH + HEADER_CARD_GAP;
         }
 
-        // 遍历每个分区
         for (int secIdx = 0; secIdx < h3.sections.size(); secIdx++) {
             contentY = paintSectionNode(ctx, tr, mx, my, winW, paneW, clipTop, clipBottom,
                     h3.sections.get(secIdx), contentY, 0);
 
-            // ---- 分区间隔线 ----
             if (secIdx < h3.sections.size() - 1) {
                 contentY += 6;
                 if (contentY >= clipTop && contentY <= clipBottom) {
@@ -773,14 +681,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    /**
-     * 渲染单个分区（含其子分区），返回推进后的 contentY。
-     *
-     * <p>分区标题行始终可点击收起；{@code useChildSections} 的分区自身不承载内容，
-     * 而是按 {@code indent} 逐层缩进渲染子分区，每个子分区各自独立折叠。
-     *
-     * @param indent 子分区缩进层级，顶层为 0
-     */
     private static int paintSectionNode(DrawContext ctx, Font tr, int mx, int my,
                                         int winW, int paneW, int clipTop, int clipBottom,
                                         H4Section section, int contentY, int indent) {
@@ -792,13 +692,11 @@ public final class PatternAndFontOverlay {
         int titleY = contentY;
         boolean expanded = section.isExpanded;
 
-        // 描述行先解析出来：左侧装饰竖条要一直延伸到底，与介绍文字底边对齐
         List<FormattedCharSequence> descLines = null;
         int descMaxW = secMaxW - 10;
         if (expanded && eff.description != null && !eff.description.getString().isEmpty()) {
             descLines = tr.split(eff.description, descMaxW);
         }
-        // 竖条底边：收起或无描述时只包住标题行，展开且有描述时包住标题行 + 全部描述行
         int accentBottom = titleY + 16;
         if (descLines != null && !descLines.isEmpty()) {
             accentBottom = titleY + 20 + descLines.size() * 12;
@@ -816,9 +714,7 @@ public final class PatternAndFontOverlay {
         }
         contentY += 20;
 
-        // 收起时只保留标题行，描述/子分区/内容全部隐藏
         if (expanded) {
-            // ---- 分区描述（小字灰色） ----
             if (descLines != null) {
                 for (int i = 0; i < descLines.size(); i++) {
                     if (contentY + 12 >= clipTop && contentY <= clipBottom) {
@@ -830,7 +726,6 @@ public final class PatternAndFontOverlay {
             }
 
             if (section.useChildSections && !section.childSections.isEmpty()) {
-                // ---- 子分区：递归渲染，逐层缩进 ----
                 for (int i = 0; i < section.childSections.size(); i++) {
                     contentY = paintSectionNode(ctx, tr, mx, my, winW, paneW, clipTop, clipBottom,
                             section.childSections.get(i), contentY, indent + 1);
@@ -838,7 +733,6 @@ public final class PatternAndFontOverlay {
                 }
                 contentY += 4;
             } else {
-                // ---- 筛选标签栏 ----
                 if (section.useSubfolders && !section.subFolders.isEmpty()) {
                     contentY = paintTabBar(ctx, tr, mx, my, winW, section.subFolders, section.activeTabIndex, contentY);
                 }
@@ -851,7 +745,6 @@ public final class PatternAndFontOverlay {
                     contentY = paintTabBar(ctx, tr, mx, my, winW, styleTabs, section.activeStyleIndex, contentY);
                 }
 
-                // ---- 内容网格/列表 ----
                 contentY = paintSectionItems(ctx, tr, mx, my, paneW, clipTop, clipBottom, eff, contentY);
             }
         }
@@ -927,7 +820,6 @@ public final class PatternAndFontOverlay {
         }
     }
 
-    // 关闭按钮
     private static void paintCloseButton(DrawContext ctx, Font tr, int mx, int my,
                                          int winW, int paneW, int winH) {
         int navW = SidebarState.getEffectiveWidth();
@@ -943,8 +835,6 @@ public final class PatternAndFontOverlay {
         int lw = tr.width(label);
         ctx.drawText(tr, label, btnX + (UIConstants.CLOSE_BTN_WIDTH - lw) / 2, btnY + 7, UIConstants.CLR_BTN_LABEL, false);
     }
-
-    // ==================== 插入代理 ====================
 
     public static TextDisplayScreen targetScreen = null;
 
@@ -962,8 +852,6 @@ public final class PatternAndFontOverlay {
         isVisible = false;
     }
 
-    // ==================== 事件代理 ====================
-
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
         return MouseEventHandler.mouseClicked(mouseX, mouseY, button);
     }
@@ -975,8 +863,6 @@ public final class PatternAndFontOverlay {
     public static boolean mouseReleased(double mouseX, double mouseY, int button) {
         return MouseEventHandler.mouseReleased(mouseX, mouseY, button);
     }
-
-    // ==================== URL 悬停状态 ====================
 
     private static String lastHoveredUrl = null;
 

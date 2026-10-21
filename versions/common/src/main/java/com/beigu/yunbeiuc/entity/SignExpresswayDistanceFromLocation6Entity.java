@@ -26,7 +26,6 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
 
     public SignExpresswayDistanceFromLocation6Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -43,10 +42,8 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
         this.expressway2 = Expressway.fromName(nbt.getString("expressway2"));
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
         this.expresswayNumber2 = nbt.getString("expresswayNumber2");
-        // 旧存档兼容：无 logoTypeN 键时按原逻辑（国/省道 × 编号位数）推导初始值
         this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -69,18 +66,6 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayDistanceFromLocation6EntityRenderer 的固定布局生成默认文本行：
-     * renderLeftAlignedText(text1..3, -7, 8/-3/-10, 0.04)、
-     * renderRightAlignedText(length1..3, 13.5, 8/-3/-10, 0.04)、
-     * renderRightAlignedText("km", 17.5, 7.5/-3.5/-10.5, 0.025)、
-     * renderExpresswayLogo(expressway1, -14, 8, 0.65)、
-     * renderExpresswayText(expresswayNumber1, -14, 7.5, 0.045, zOffsetDelta 0.002, CENTER)、
-     * renderExpresswayLogo(expressway2, -14, -5.5, 0.65)、
-     * renderExpresswayText(expresswayNumber2, -14, -6, 0.045, zOffsetDelta 0.002, CENTER)。
-     * 原单位编号 +1px 自动 X 偏移为动态布局逻辑，默认行不含；
-     * logo 的 +1px 偏移（宽版 _1 纹理）由 {logo1x}/{logo2x} 占位符动态补充。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -172,16 +157,13 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
             case "length3" -> length3;
             case "expresswayNumber1" -> expresswayNumber1;
             case "expresswayNumber2" -> expresswayNumber2;
-            // 高速盾牌 logo 纹理：national/provincial × logo_1(宽)/logo_2(窄) 四选一枚举字段
             case "logo1" -> logoType1;
             case "logo2" -> logoType2;
-            // 对应原 renderExpresswayLogo 的宽版 _1 纹理 +1px X 偏移
-            case "logo1x", "logo2x" -> "0"; // 兼容旧存档已保存的行；默认行不再附加偏移，X 由玩家在编辑界面调整
+            case "logo1x", "logo2x" -> "0";
             default -> null;
         };
     }
 
-    // 旧存档兼容推导：原 {logoN} 的派生逻辑——国道/省道 × 编号位数（1 位数字用窄版 logo_2，其余 logo_1）
     private String legacyLogoType1() {
         return expresswayLogoTexture(expressway1, expresswayNumber1);
     }
@@ -215,13 +197,11 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
         }
     }
 
-    /** 与原渲染器 switch 一致：省道用 provincial，无数字或多位数字用宽版 _1 */
     private static String expresswayLogoTexture(Expressway expressway, String expresswayNumber) {
         String kind = expressway == Expressway.PROVINCIAL ? "provincial" : "national";
         return kind + "_logo_" + (isNarrowLogo(expresswayNumber) ? "2" : "1");
     }
 
-    /** 原判定：编号为空或不含数字视为宽版（_1）；提取出的数字串长度为 1 视为窄版（_2） */
     private static boolean isNarrowLogo(String expresswayNumber) {
         if (expresswayNumber == null || expresswayNumber.trim().isEmpty() || !expresswayNumber.matches(".*\\d.*")) {
             return false;

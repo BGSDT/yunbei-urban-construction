@@ -15,6 +15,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+// 相位分配预设：一组红绿灯的 directionType + phaseIndices 模板，按「方位+类型」分桶后整体嵌入链接组。
+
 public class TrafficLightsPatternPreset {
 
     private String name = "";
@@ -56,9 +58,6 @@ public class TrafficLightsPatternPreset {
         this.slots = slots;
     }
 
-    /**
-     * 获取显式设置的颜色，-1 表示未设置。
-     */
     public int getColor() {
         return color;
     }
@@ -216,9 +215,6 @@ public class TrafficLightsPatternPreset {
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()
-                    // 道口警示荧光三款：同样是「一块牌一个图案」，按普通红绿灯处理。
-                    // 不补进来的话 fromBlock 返回 null，相位预设会直接判成
-                    // "组内包含预设无法识别的红绿灯类型" —— 图案与相位就一条都写不进去。
                     || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get()
                     || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get()
                     || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT.get()) {
@@ -335,10 +331,6 @@ public class TrafficLightsPatternPreset {
         return false;
     }
 
-    /**
-     * 按给定的旋转步数（每步 90°，沿 N->E->S->W 方向循环）尝试匹配实际成员与预设槽位。
-     * 只做计算与校验，不写入任何数据；成功时把待写入的目标一并算好交给调用方统一应用。
-     */
     private MatchResult matchWithRotation(List<Member> memberList, double centroidX, double centroidZ,
                                            Map<Direction8, Map<MemberKind, List<Slot>>> slotBuckets, int rotation) {
         Map<Direction8, Map<MemberKind, List<Member>>> memberBuckets = new EnumMap<>(Direction8.class);
@@ -414,9 +406,6 @@ public class TrafficLightsPatternPreset {
         return result;
     }
 
-    /**
-     * 把方位沿 N->E->S->W->N 顺序旋转 steps 个 90° 步长（Direction8 的枚举顺序恰好是这个循环顺序）。
-     */
     private static Direction8 rotate(Direction8 dir, int steps) {
         Direction8[] values = Direction8.values();
         return values[(dir.ordinal() + steps) % values.length];

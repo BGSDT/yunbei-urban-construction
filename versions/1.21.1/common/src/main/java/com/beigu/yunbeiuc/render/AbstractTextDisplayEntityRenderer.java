@@ -42,7 +42,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float zOffset = getZOffset(entity);
         int effectiveLight = entity.isGlowingText() ? LightTexture.FULL_BRIGHT : light;
 
-        // 子类渲染固定内容（如枚举驱动的 logo 纹理），在动态文本行之前
         renderFixedContent(entity, matrices, vertexConsumers, tickDelta, light, overlay, zOffset);
 
         List<CustomSignBlockEntity.TextLineData> lines = entity.getTextLines();
@@ -58,18 +57,14 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.popPose();
     }
 
-    // 子类实现前置变换（平移/旋转）
     protected abstract void applyTransforms(PoseStack matrices, T entity);
 
-    // 子类实现 Z 轴偏移
     protected abstract float getZOffset(T entity);
 
-    // 子类可选渲染固定内容（枚举驱动的 logo 纹理等），在动态文本行之前执行；默认不渲染
     protected void renderFixedContent(T entity, PoseStack matrices, MultiBufferSource vertexConsumers,
                                       float tickDelta, int light, int overlay, float zOffset) {
     }
 
-    // 检查纹理资源是否真实存在，避免渲染缺失纹理时反复刷错误日志
     private boolean textureExists(ResourceLocation id) {
         try {
             return Minecraft.getInstance().getResourceManager().getResource(id).isPresent();
@@ -97,20 +92,13 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (text.startsWith("-texture")) {
             String[] parts = text.split("\\s+", 4);
             if (parts.length >= 2) {
-                // 路径支持 {字段名} 占位符（如按枚举/编号选择 logo 纹理），与 -json 分支一致先解析；
-                // ResourceLocation 仅允许小写字符，大写字母会导致 tryParse 失败而回退为文本渲染，这里统一转小写
                 ResourceLocation textureId = ResourceLocation.tryParse(entity.resolvePlaceholders(parts[1]).trim().toLowerCase(Locale.ROOT));
-                // 仅当路径以 .png 结尾且资源真实存在时才按贴图渲染；
-                // 目录条目会被 getResource 误判为存在（jar 内含目录项），必须用后缀过滤掉，否则输入过程会反复报错；
-                // 无效路径（占位符按字段条件返回空、资源不存在、格式错误）静默跳过整行，不回退为文本渲染
                 if (textureId != null && textureId.getPath().endsWith(".png") && textureExists(textureId)) {
-                    // 可选第三参数：x 偏移占位符（单位同 xOffset，如窄/宽版 logo 联动的 ±1px），叠加到行 xOffset
                     float xShift = 0f;
                     if (parts.length >= 3) {
                         try { xShift = Float.parseFloat(entity.resolvePlaceholders(parts[2]).trim()); }
                         catch (NumberFormatException ignored) {}
                     }
-                    // 可选第四参数：Z 轴旋转角度（度），叠加到行 rotZ（0 表示不额外旋转）
                     float rotZ = 0f;
                     if (parts.length >= 4) {
                         try { rotZ = Float.parseFloat(entity.resolvePlaceholders(parts[3]).trim()); }
@@ -187,8 +175,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
-        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch();
         }
@@ -219,7 +205,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 .withUnderlined(lineData.isUnderline())
                 .withFont(ResourceLocation.fromNamespaceAndPath("minecraft", "uniform"));
 
-        // 渲染时解析 {字段名} 占位符为固定 NBT 字段的值
         Component renderText = Text.literal(entity.resolvePlaceholders(lineData.getText())).setStyle(style);
         int textWidth = this.textRenderer.width(renderText);
         int textHeight = this.textRenderer.lineHeight;
@@ -237,8 +222,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-        // 行内容走缓冲层帧末绘制，下方描边/gizmo 为立即模式绘制——
-        // 编辑行先 flush 缓冲层，否则帧末内容会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch();
         }
@@ -251,7 +234,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     }
 
     private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, MultiBufferSource vertexConsumers, int light) {
-        // 本行开启发光：用原版全亮光照渲染，不受环境光影响
         int textLight = lineData.isGlowing() ? 0xF000F0 : light;
         boolean outline = lineData.isOutline();
         boolean shadow = lineData.isShadow();
@@ -260,8 +242,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
                 this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), true,
                         matrix, vertexConsumers, Font.DisplayMode.NORMAL, 0, textLight);
             }
-            // 原版 8x 描边同样按 style 取色：-json 文本自带的样式颜色会盖掉描边色，
-            // 必须把描边色写进组件自身的 style，否则描边与正文同色、看起来没有描边。
             int outlineColor = resolveOutlineColor(lineData);
             Component outlineText = renderText.copy()
                     .withStyle(s -> s.withColor(net.minecraft.network.chat.TextColor.fromRgb(outlineColor & 0xFFFFFF)));
@@ -278,7 +258,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
         float zPos = lineData.getZOffset() / 16f + zOffset;
-        // 矩形大小乘以 fontSize 及 XY 缩放；矩形本身在局部 z=0 平面上，scaleZ 对其无可见效果
         float scale = lineData.getFontSize();
         float halfW = width / 16f / 2f * scale * lineData.getScaleX();
         float halfH = height / 16f / 2f * scale * lineData.getScaleY();
@@ -323,7 +302,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
 
-        // 「描边」开关：矩形也画一圈描边色边框
         if (lineData.isOutline()) {
             flushBatch(vertexConsumers);
             renderEditingOutline(matrices, -halfW, -halfH, halfW * 2, halfH * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
@@ -374,13 +352,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.addVertex(positionMatrix, halfWidth, halfHeight, 0).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
         consumer.addVertex(positionMatrix, -halfWidth, halfHeight, 0).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
 
-        // 图片顶点在缓冲层，gizmo 轴/描边为立即模式——编辑行先 flush 贴图层，
-        // 否则帧末绘制图片时会覆盖 gizmo 轴与编辑描边
         if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
             immediate.endBatch();
         }
 
-        // 「描边」开关：图片也画一圈描边色边框
         if (lineData.isOutline()) {
             flushBatch(vertexConsumers);
             renderEditingOutline(matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
@@ -396,20 +371,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.popPose();
     }
 
-    // 在当前矩阵局部坐标系内绘制一个包住 (left,top)-(left+w,top+h) 区域的绿色描边矩形框，用于标注正在编辑的文本行
-    // unitScale：局部坐标 1 单位对应的方块尺寸（1 像素 = 1/16 方块）；scaleX/scaleY 为矩阵所含缩放，
-    // 用于抵消厚度被放大，保证描边在世界空间中恒为 0.25px 粗
-    /**
-     * 该行实际使用的描边颜色：未设置(-1)用黑色；与文字颜色相同时自动取反差色，
-     * 否则描边和正文同色、等于看不见。
-     */
-    /**
-     * 立即模式绘制前，把已经排队的文本/贴图批次刷掉。
-     *
-     * <p>1.16.5 的 {@code MultiBufferSource.BufferSource} 与 {@code Tesselator} 共用同一个
-     * {@code BufferBuilder}；若仍有批次处于 building 状态，紧接着的 {@code begin()} 会抛
-     * {@code IllegalStateException}。所以画描边边框之前必须先 flush。
-     */
     private static void flushBatch(MultiBufferSource vertexConsumers) {
         if (vertexConsumers instanceof MultiBufferSource.BufferSource queued) {
             queued.endBatch();

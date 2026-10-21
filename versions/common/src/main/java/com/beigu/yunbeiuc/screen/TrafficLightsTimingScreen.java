@@ -21,6 +21,8 @@ import net.minecraft.core.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
+// 相位时间表设置界面：编辑相位数量与每个相位的时长。
+
 public class TrafficLightsTimingScreen extends Screen {
     private static final GuiPlatform GUI = VersionServices.gui();
     private static final RenderPlatform RENDER = VersionServices.render();
@@ -115,14 +117,6 @@ public class TrafficLightsTimingScreen extends Screen {
             timingFields.add(field);
         }
 
-        // 移除创建相位预设按钮
-        // int patternButtonY = panelY + panelHeight() - 60;
-        // this.addDrawableChild(
-        //         ButtonWidget.builderCompat(Text.literal("创建相位预设"), button -> openPatternEditor())
-        //                 .dimensions(panelX + PANEL_WIDTH / 2 - 80, patternButtonY, 160, 20)
-        //                 .build()
-        // );
-
         int buttonY = panelY + panelHeight() - 35;
         this.saveButton = this.addDrawableChild(
                 GUI.createButton(Text.translatable("text.yunbeiuc.traffic_lights_timing.save"),
@@ -186,7 +180,6 @@ public class TrafficLightsTimingScreen extends Screen {
         packet.write(buf);
         NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_TIMING, buf);
 
-        // 保存时才应用mountType的更改
         if (pendingMountType != null) {
             TrafficLightsBlock.MountType currentType = getCurrentMountType();
             if (pendingMountType != currentType) {

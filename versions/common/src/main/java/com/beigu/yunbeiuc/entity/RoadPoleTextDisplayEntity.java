@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
 
 public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
-    // 旧数据字段（仅用于兼容读取）
     private String legacyText = "";
     private int legacyColor = 0x000000;
     private int legacyFontSize = 25;
@@ -33,7 +32,7 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
 
             TextLineData line = new TextLineData(legacyText);
             line.setColor(legacyColor);
-            line.setFontSize(legacyFontSize / 100.0f); // 假设25对应0.25f
+            line.setFontSize(legacyFontSize / 100.0f);
             line.setAlignment(TextAlignment.CENTER_CENTER);
             line.setBuiltin(true);
             getTextLines().add(line);
@@ -48,13 +47,12 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
         if (getTextLines().isEmpty()) {
             TextLineData line = new TextLineData(text);
             line.setFontSize(DEFAULT_FONT_SIZE);
-            // 系统 API 兜底创建的行：删除时 UI 需二次确认
             line.setBuiltin(true);
             getTextLines().add(line);
         } else {
             getTextLines().get(0).setText(text);
         }
-        setTextLines(getTextLines()); // 触发更新
+        setTextLines(getTextLines());
     }
 
     public int getColor() {
@@ -71,7 +69,7 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
         } else {
             getTextLines().get(0).setColor(color);
         }
-        setTextLines(getTextLines()); // 触发更新
+        setTextLines(getTextLines());
     }
 
     public int getFontSize() {
@@ -88,7 +86,7 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
         } else {
             getTextLines().get(0).setFontSize(fontSize / 100.0f);
         }
-        setTextLines(getTextLines()); // 触发更新
+        setTextLines(getTextLines());
     }
 
     public float getRed() {

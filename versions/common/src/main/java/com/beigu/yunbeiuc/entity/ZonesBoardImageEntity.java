@@ -19,7 +19,6 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
 
     public ZonesBoardImageEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ZONES_BOARD_IMAGE_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -31,7 +30,6 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
         this.andX = nbt.getFloat("andX");
         this.andY = nbt.getFloat("andY");
         this.andScale = nbt.getFloat("andScale");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -47,16 +45,6 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 ZonesBoardImageEntityRenderer 的固定布局生成默认文本行（先 logo 后文本，文本覆盖在 logo 之上）：
-     * renderLogo(image, andX, 4 + andY, size)——纹理由 {logo} 占位符按 image 枚举选择，
-     *             size = (EXPRESSWAY ? 1 : 0.75) + andScale，Z 为渲染器基準（POLE_L -1.75 / POLE_H -1.79 / NORMAL -1.43）；
-     * renderBoardText(text1, andX, 4 + andY)——居中锚点，Z 比 logo 靠前 0.01（centeredWithZ 0.01f），
-     *             scale = (EXPRESSWAY ? 0.02 : 0.03) + andScale * 0.02，
-     *             颜色 RED → 0xFFFFFF、EXPRESSWAY → 0x2D9B47、其余 0x000000。
-     * 原渲染器按 NBT 字段 andX/andY/andScale 动态布局，迁移后在生成默认行时取其当前值（新放置均为 0），
-     * 之后行偏移/字号由 TextLines UI 直接编辑，字段保留用于旧存档读取与公共 API 兼容。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         boolean expressway = image == BoardImage.EXPRESSWAY;
@@ -117,7 +105,6 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
     public String getPlaceholderValue(String key) {
         return switch (key) {
             case "text1" -> text1;
-            // 对应原 renderLogo：按 image 枚举选择纹理文件名段
             case "logo" -> switch (image) {
                 case RED -> "sign_red_number_logo";
                 case YELLOW -> "sign_yellow_number_logo";

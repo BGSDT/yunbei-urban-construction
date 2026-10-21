@@ -22,8 +22,6 @@ public class ZonesBoardImageEntityRenderer extends AbstractTextDisplayEntityRend
 
     @Override
     protected float getZOffset(ZonesBoardImageEntity entity) {
-        // 原渲染器 logo 使用自定义绝对 Z（renderTextureWithCustomZ，非标准基準值）；
-        // 文本行比 logo 靠前 0.01 方块（默认行 zOffset = 0.01 * 16）
         return switch (SignTypeConverter.convert(entity.getBlockState().getValue(ZonesBoardImage.TYPE))) {
             case POLE_L -> -1.75f;
             case POLE_H -> -1.79f;

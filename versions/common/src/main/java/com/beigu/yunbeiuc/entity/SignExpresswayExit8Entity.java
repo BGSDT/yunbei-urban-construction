@@ -25,7 +25,6 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
 
     public SignExpresswayExit8Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_8_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -40,11 +39,9 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
         this.text2 = nbt.getString("text2");
         this.expresswayNumber1 = nbt.getString("expresswayNumber1");
         this.expresswayNumber2 = nbt.getString("expresswayNumber2");
-        // 旧存档兼容：无 logoTypeN 键时按原逻辑（国/省道 × 编号位数）推导初始值
         this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
         this.exitNumber = nbt.getString("exitNumber");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -66,18 +63,6 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayExit8EntityRenderer 的固定布局生成默认文本行：
-     * renderExpresswayLogo(expressway1, -8, 9, size 0.65) / renderExpresswayLogo(expressway2, 8, 9, size 0.65)
-     * → 两个 -texture 行，纹理由 {logo1}/{logo2} 占位符按国道/省道×编号位数选择；
-     * renderDirectionLogo(direction1, -18.5, 9.25, size 0.4) / renderDirectionLogo(direction2, 18.5, 9.25, size 0.4)
-     * → 两个 -texture 行，纹理由 {dir1}/{dir2} 占位符按方向枚举选择；
-     * renderCenteredText(text1, -14, -2, 0.03, 0xFFFFFF) / renderCenteredText(text2, 14.5, -2, 0.03, 0xFFFFFF)；
-     * renderCenteredText(exitNumber, 19.75, 20.5, 0.03, 0x2D9B47)；
-     * renderExpresswayText(expresswayNumber1, -7.5, 8.5, 0.045, zOffsetDelta 0.002) /
-     * renderExpresswayText(expresswayNumber2, 7.5, 8.5, 0.045, zOffsetDelta 0.002)。
-     * 原单位编号 +1px 自动 X 偏移为动态布局逻辑，默认行不含（一位数编号将偏左约 1 像素）。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -167,7 +152,6 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
             case "exitNumber" -> exitNumber;
             case "logo1" -> logoType1;
             case "logo2" -> logoType2;
-            // 对应原 renderDirectionLogo：方向枚举 → 纹理名段（north/east/south/west）
             case "dir1" -> direction1 == null ? SignCompassDirection.EAST.getName() : direction1.getName();
             case "dir2" -> direction2 == null ? SignCompassDirection.EAST.getName() : direction2.getName();
             default -> null;
@@ -219,7 +203,6 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
         return kind + "_logo_" + (oneDigit ? "2" : "1");
     }
 
-    /** 旧存档兼容推导：按 expresswayN 国/省道 × expresswayNumberN 编号位数还原 logo 纹理段 */
     private String legacyLogoType1() {
         return expresswayLogoTexture(expressway1, expresswayNumber1);
     }

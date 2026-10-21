@@ -22,7 +22,6 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
 
     public SignGuideIntersectionAdvanceWarning1WuhanEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -37,7 +36,6 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
         this.enText4 = nbt.getString("enText4");
         this.cnText5 = nbt.getString("cnText5");
         this.enText5 = nbt.getString("enText5");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -56,14 +54,6 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideIntersectionAdvanceWarning1WuhanEntityRenderer 的固定布局生成默认文本行：
-     * 原渲染器按方块身份区分（同一方块类注册了 WUHAN_LEFT / WUHAN_STRAIGHT / WUHAN_RIGHT 三个方块）：
-     * WUHAN_RIGHT → renderCenteredText(text1, 16.5, 12, 0.023, 0x275aa8) / (text2, 16.5, -12, 0.023, 0x275aa8)，
-     *               (cnText3, -6, 12, 0.03) / (enText3, -6, 8, 0.023) / (cnText4, -6, 1, 0.03) / (enText4, -6, -3, 0.023)
-     *               / (cnText5, -6, -10, 0.03) / (enText5, -6, -14, 0.023)，其余白色；
-     * 其余（LEFT/STRAIGHT）→ 各行 x 取反（text1/text2 为 -16.5，其余为 6）。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         boolean isRight = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get();

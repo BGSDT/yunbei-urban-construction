@@ -9,19 +9,15 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-/**
- * 1.21.1 network bridge: Architectury 13 carries a {@link RegistryFriendlyByteBuf} in its
- * resource-location packet API, while the shared screens build plain buffers.
- */
 public final class NetworkCompat {
     private NetworkCompat() {
     }
 
-    /** Buffer used by the shared screens to write a packet payload. */
     public static FriendlyByteBuf newBuffer() {
         return new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess());
     }
 
+    @SuppressWarnings("removal")
     public static void sendToServer(ResourceLocation id, FriendlyByteBuf buf) {
         if (buf instanceof RegistryFriendlyByteBuf registryBuffer) {
             NetworkManager.sendToServer(id, registryBuffer);
@@ -30,10 +26,7 @@ public final class NetworkCompat {
         }
     }
 
-    /**
-     * Server -> client push. Only actually used on 1.16.5 / 1.17.1 (see {@code BlockEntityMapper});
-     * it still has to exist here so the shared code compiles on every version.
-     */
+    @SuppressWarnings("removal")
     public static void sendToPlayer(ServerPlayer player, ResourceLocation id, FriendlyByteBuf buf) {
         RegistryFriendlyByteBuf registryBuffer = buf instanceof RegistryFriendlyByteBuf existing
                 ? existing

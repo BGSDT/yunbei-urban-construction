@@ -15,6 +15,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 
+// 带读秒的静态灯态设置界面。
+
 public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
     private final BlockPos pos;
     private TrafficLightsBlock.LightState selectedColor = TrafficLightsBlock.LightState.RED;
@@ -33,7 +35,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
         this.pos = pos;
 
-        // 读取当前颜色
         TrafficLightsBlockEntity blockEntity = Minecraft.getInstance().level != null
                 ? (TrafficLightsBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos) : null;
         if (blockEntity != null) {
@@ -57,7 +58,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
             this.shouldShowCountdown = blockEntity.isShowSeconds();
         }
 
-        // 显示读秒开关
         this.addDrawableChild(
                 ButtonWidget.builderCompat(
                         Text.literal(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"),
@@ -72,14 +72,12 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                         .build()
         );
 
-        // 秒数输入框（不显示读秒时锁定）
         secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, panelY + 90, 160, 20, Text.literal(""));
         secondsField.setMaxLength(3);
         secondsField.setText(blockEntity != null ? String.valueOf(blockEntity.getFixedSeconds()) : "10");
         secondsField.setEditable(shouldShowCountdown);
         this.addDrawableChild(secondsField);
 
-        // 颜色按钮 - 三个颜色
         int colorButtonY = panelY + 130;
         this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
@@ -100,7 +98,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                         .build()
         );
 
-        // 保存取消按钮
         this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
                         .dimensions(panelX + 40, panelY + 260, 60, 20)
@@ -128,7 +125,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
         );
     }
 
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
@@ -141,11 +137,9 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                 0xFFFFFF
         );
 
-        // 面板背景
         context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
         context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        // 面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights_static_state.settings_title"),
@@ -154,7 +148,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                 0xFFCCCCCC
         );
 
-        // 秒数标签
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.literal("固定秒数:"),
@@ -162,7 +155,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // 颜色标签
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights_static_state.color_label"),
@@ -170,7 +162,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // 警告文本 - 移到底部
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.literal("§e设置链接组时间序列后数据将被清除"),
@@ -216,7 +207,6 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
             packet.write(buf);
             NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
 
-            // 保存时才应用mountType的更改
             if (pendingMountType != null && blockEntity != null && blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) {
                 TrafficLightsBlock.MountType currentType = blockEntity.getBlockState().getValue(TrafficLightsBlock.TYPE);
                 if (pendingMountType != currentType) {

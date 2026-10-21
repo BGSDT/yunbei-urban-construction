@@ -25,7 +25,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public class SoundBarrier2 extends DirectionalBlockCompat {
-    public static final IntegerProperty LAYER = IntegerProperty.create("layer", 0, 2); // 0=底, 1=中, 2=顶
+    public static final IntegerProperty LAYER = IntegerProperty.create("layer", 0, 2);
 
     private static final VoxelShape SHAPE_N = Block.box(0, 0, 6.5, 16, 16, 9.5);
     private static final VoxelShape SHAPE_S = Block.box(0, 0, 6.5, 16, 16, 9.5);

@@ -13,13 +13,6 @@ public final class GridRenderer {
     private GridRenderer() {
     }
 
-    // ==================== 图案网格（大缩略图） ====================
-
-    /**
-     * 渲染白名单图案网格。
-     *
-     * @return 网格总高度
-     */
     public static int renderWhitelistGrid(DrawContext ctx, Font tr,
                                           double mx, double my,
                                           int paneW, int clipTop, int clipBottom,
@@ -51,11 +44,6 @@ public final class GridRenderer {
         return rows * (UIConstants.CELL_SIZE + UIConstants.CELL_GAP_Y) - UIConstants.CELL_GAP_Y;
     }
 
-    /**
-     * 渲染缓存纹理图案网格。
-     *
-     * @return 网格总高度
-     */
     public static int renderCachedTextureGrid(DrawContext ctx, Font tr,
                                               double mx, double my,
                                               int paneW, int clipTop, int clipBottom,
@@ -86,48 +74,27 @@ public final class GridRenderer {
         return rows * (UIConstants.CELL_SIZE + UIConstants.CELL_GAP_Y) - UIConstants.CELL_GAP_Y;
     }
 
-    // 绘制单个大缩略图方块
     private static void drawTile(DrawContext ctx, int x, int y, ResourceLocation texId,
                                  double mx, double my) {
         int s = UIConstants.CELL_SIZE;
         boolean isHov = LayoutHelper.isMouseInRect(mx, my, x, y, s, s);
 
-        // 背景
         ctx.fill(x, y, x + s, y + s, isHov ? UIConstants.CLR_BTN_HOVER : UIConstants.CLR_CELL_FILL);
         ctx.drawBorder(x, y, s, s, isHov ? UIConstants.CLR_ACCENT : UIConstants.CLR_CELL_OUTLINE);
 
-        // 纹理：显式开启 alpha 混合，使带透明通道的 PNG 正确叠加到格子背景上
-        // （只开不关——界面其余部分的面板底色/边框同样是半透明的，依赖 blend 状态）
-        //
-        // 关键修复：按源纹理真实像素尺寸绘制。
-        // 原先固定传 regionWidth=regionHeight=28，而 blit 会按 256×256 图集换算 UV
-        // （28/256），对 64×64 等非 256 纹理取到的是错误区域，表现为「比例截取不对」；
-        // 同时强制 28×28 正方形会把非正方形标志拉伸变形。
-        // TextureAspectCache.drawFitted 用真实宽高作 region/texture 尺寸，
-        // UV 恰好覆盖整张图（0..1），并在格子内等比居中、不拉伸不变形。
         int pad = 4;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         int[] fitted = TextureAspectCache.drawFitted(ctx, texId,
                 x + pad, y + pad, s - pad * 2, s - pad * 2);
         if (fitted == null) {
-            // 尺寸读取失败（纹理缺失/格式异常）时不绘制纹理，
-            // 只保留格子底色与边框，避免用猜测的图集尺寸画出错误区域
         }
 
-        // hover 时顶部高亮条
         if (isHov) {
             ctx.fill(x, y, x + s, y + 3, UIConstants.CLR_ACCENT);
         }
     }
 
-    // ==================== 字体卡片列表 ====================
-
-    /**
-     * 渲染字体卡片列表。
-     *
-     * @return 列表总高度
-     */
     public static int renderFontList(DrawContext ctx, Font tr,
                                      double mx, double my,
                                      int paneW, int clipTop, int clipBottom,
@@ -153,26 +120,21 @@ public final class GridRenderer {
 
             boolean isHov = LayoutHelper.isMouseInRect(mx, my, cardX, cy, cardW, cardH);
 
-            // 卡片背景
             int bg = isHov ? UIConstants.CLR_BTN_HOVER : UIConstants.CLR_HOME_CARD_BG;
             ctx.fill(cardX, cy, cardX + cardW, cy + cardH, bg);
             ctx.drawBorder(cardX, cy, cardW, cardH,
                     isHov ? UIConstants.CLR_ACCENT : UIConstants.CLR_HOME_CARD_STROKE);
 
-            // 左侧蓝色强调条
             ctx.fill(cardX, cy, cardX + accentW, cy + cardH, UIConstants.CLR_ACCENT);
 
-            // 字体名称（用默认字体渲染，保证可读性）
             String name = item.displayName.getString();
             ctx.drawText(tr, name, cardX + accentW + 10, cy + 6,
                     UIConstants.CLR_HEADING, false);
 
-            // 预览文字：用该字体自身渲染，直观展示字形风格
             Component preview = buildFontPreview(item.fontId);
             ctx.drawText(tr, preview, cardX + accentW + 10, cy + 22,
                     UIConstants.CLR_BODY_TEXT, false);
 
-            // 右侧标签
             Component tag = Text.translatable("yunbeiuc.gui.button.insert");
             int tagW = tr.width(tag) + 12;
             int tagX = cardX + cardW - tagW - 8;
@@ -188,13 +150,6 @@ public final class GridRenderer {
         return fontItems.size() * (cardH + gap) - gap;
     }
 
-    /**
-     * 构造字体预览文字：套用 {@code fontId} 指定的字体。
-     *
-     * <p>通过 {@link Style#withFont(ResourceLocation)} 让 Minecraft 的字体系统
-     * 自动查找并应用对应字体（如 {@code yunbeiuc:traf_sign_font_a}）。
-     * 若该字体未注册 / JSON 缺失，MC 会自动回退到默认字体，不会崩溃。
-     */
     private static Component buildFontPreview(String fontId) {
         Component preview = Text.literal("AaBbCc 123");
         if (fontId == null || fontId.isEmpty()) {
@@ -207,29 +162,18 @@ public final class GridRenderer {
             ResourceLocation id = createResourceLocation(namespace, path);
             return preview.copy().withStyle(Style.EMPTY.withFont(id));
         } catch (Throwable t) {
-            // 任何异常（含反射失败、fontId 非法）都退回默认字体
             return preview;
         }
     }
 
-    /**
-     * 跨版本创建 {@link ResourceLocation}。
-     *
-     * <p>1.21+ 构造器私有，须用 {@code fromNamespaceAndPath(namespace, path)}；
-     * 1.20.6 及以前构造器公开，直接反射调用 {@code new ResourceLocation(ns, path)}。
-     * 这里优先尝试新 API，失败则回退到构造器。
-     */
     private static ResourceLocation createResourceLocation(String namespace, String path)
             throws ReflectiveOperationException {
-        // 1.21+
         try {
             return (ResourceLocation) ResourceLocation.class
                     .getMethod("fromNamespaceAndPath", String.class, String.class)
                     .invoke(null, namespace, path);
         } catch (NoSuchMethodException ignored) {
-            // 低版本没有该静态方法，继续走构造器
         }
-        // 1.20.6 及以前
         return (ResourceLocation) ResourceLocation.class
                 .getConstructor(String.class, String.class)
                 .newInstance(namespace, path);
@@ -254,7 +198,6 @@ public final class GridRenderer {
 
         if (col >= cols) return -1;
 
-        // 检查是否在 tile 本身范围内（而非 gap 区域）
         int tileX = col * (UIConstants.CELL_SIZE + UIConstants.CELL_GAP_X);
         int tileY = row * (UIConstants.CELL_SIZE + UIConstants.CELL_GAP_Y);
         if (relX - tileX > UIConstants.CELL_SIZE) return -1;
@@ -266,11 +209,6 @@ public final class GridRenderer {
         return idx;
     }
 
-    /**
-     * 获取字体卡片点击位置的索引。
-     *
-     * @return 点击的条目索引，未命中返回 -1
-     */
     public static int getFontItemIndex(double mx, double my, int paneW,
                                        int startY, int clipTop, int clipBottom,
                                        int itemCount) {
@@ -292,13 +230,6 @@ public final class GridRenderer {
         return idx;
     }
 
-    // ==================== 标签按钮网格（图案集整合） ====================
-
-    /**
-     * 标签按钮布局结果。
-     *
-     * <p>{@code rects} 每 4 个元素描述一个按钮的 x / y / w / h；{@code totalHeight} 为整块内容高度。
-     */
     public static final class LabeledLayout {
         public final int[] rects;
         public final int totalHeight;
@@ -309,14 +240,6 @@ public final class GridRenderer {
         }
     }
 
-    /**
-     * 计算标签按钮的换行平铺布局。
-     *
-     * <p>渲染、命中检测、滚动高度预算三处都调用本方法，保证三者永远一致
-     * （否则会出现「按钮画在这里、点在那里」或「底部内容滚不到」的错位）。
-     *
-     * <p>换行只按相对宽度判断，不依赖 {@code startY}，因此高度预算可以在不知道实际起始 Y 的情况下算准。
-     */
     public static LabeledLayout layoutLabeled(Font tr, int paneW, int startX, int startY,
                                               List<PatternAndFontOverlay.LabeledItem> items) {
         int avail = Math.max(1, paneW - 48);
@@ -329,7 +252,6 @@ public final class GridRenderer {
 
         for (int i = 0; i < n; i++) {
             Component label = items.get(i).displayName;
-            // 单个按钮不超过可用宽度，避免超长标签把行撑破
             int w = Math.min(avail, tr.width(label) + UIConstants.LABEL_BTN_PAD_X * 2);
 
             if (relX > 0 && relX + w > avail) {
@@ -348,19 +270,11 @@ public final class GridRenderer {
         return new LabeledLayout(rects, n == 0 ? 0 : (y - startY) + rowH);
     }
 
-    /**
-     * 标签按钮区的内容高度（供滚动条预算使用，与 {@link #renderLabeledGrid} 的返回值一致）。
-     */
     public static int labeledHeight(Font tr, int paneW, List<PatternAndFontOverlay.LabeledItem> items) {
         if (items == null || items.isEmpty()) return 30;
         return layoutLabeled(tr, paneW, 0, 0, items).totalHeight;
     }
 
-    /**
-     * 渲染标签按钮区。
-     *
-     * @return 内容高度
-     */
     public static int renderLabeledGrid(DrawContext ctx, Font tr,
                                         double mx, double my,
                                         int paneW, int clipTop, int clipBottom,
@@ -396,9 +310,6 @@ public final class GridRenderer {
         return layout.totalHeight;
     }
 
-    /**
-     * 命中检测：返回点击到的标签按钮索引，未命中返回 -1。
-     */
     public static int getLabeledItemIndex(Font tr, double mx, double my, int paneW,
                                           int startY, int clipTop, int clipBottom,
                                           List<PatternAndFontOverlay.LabeledItem> items) {

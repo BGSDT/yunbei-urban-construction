@@ -108,42 +108,34 @@ public class RoadPoleLed extends CustomTextDisplayBlock {
         boolean topEdge = upSteps == 0;
         boolean bottomEdge = downSteps == 0;
 
-        // 3x3 完整网格（高>=3 且 宽>=3）: 1-9
         if (height >= 3 && width >= 3) {
             int col = leftEdge ? 0 : (rightEdge ? 2 : 1);
             int row = topEdge ? 0 : (bottomEdge ? 2 : 1);
             return getGridType(row, col);
         }
 
-        // 2xN：高度=2，宽度>=2（取第1行和第3行）: 1-9
         if (height == 2 && width >= 2) {
             int row = topEdge ? 0 : 2;
             int col = leftEdge ? 0 : (rightEdge ? 2 : 1);
             return getGridType(row, col);
         }
 
-        // Nx2：高度>=2，宽度=2（取第1列和第3列）: 1-9
         if (height >= 2 && width == 2) {
             int row = topEdge ? 0 : (bottomEdge ? 2 : 1);
             int col = leftEdge ? 0 : 2;
             return getGridType(row, col);
         }
 
-        // 1xN 横向条（高=1 宽>=2）: 10-12
-        // [10] [11] [11] ... [12]
         if (height == 1 && width >= 2) {
             int col = leftEdge ? 0 : (rightEdge ? 2 : 1);
             return getBarType(col);
         }
 
-        // Nx1 纵向条（高>=2 宽=1）: 13-15
-        // [13] [14] [14] ... [15]
         if (height >= 2 && width == 1) {
             int row = topEdge ? 0 : (bottomEdge ? 2 : 1);
             return getColumnType(row);
         }
 
-        // 单个或其他：16
         return Type.SINGLE;
     }
 
@@ -197,15 +189,11 @@ public class RoadPoleLed extends CustomTextDisplayBlock {
     }
 
     public enum Type implements StringRepresentable {
-        // 九宫格 1-9
         POS_1("1"), POS_2("2"), POS_3("3"),
         POS_4("4"), POS_5("5"), POS_6("6"),
         POS_7("7"), POS_8("8"), POS_9("9"),
-        // 横向条 10-12: [10] [11] [12]
         BAR_LEFT("10"), BAR_CENTER("11"), BAR_RIGHT("12"),
-        // 纵向条 13-15: [13] [14] [15]
         COLUMN_TOP("13"), COLUMN_CENTER("14"), COLUMN_BOTTOM("15"),
-        // 单个
         SINGLE("16");
 
         private final String name;

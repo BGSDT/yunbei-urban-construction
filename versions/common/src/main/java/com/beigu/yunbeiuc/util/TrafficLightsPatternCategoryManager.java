@@ -19,32 +19,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 相位预设"二级菜单"（分类）的持久化管理。
- * 文件位于游戏目录：yunbeiuc_pattern_categories.json，只存用户新建分类的 名称->颜色。
- * 一个固定分类（默认分类）始终存在、不写入文件、不可删除：
- * - DEFAULT_CATEGORY：承载旧存档中没有分类字段、或用户未指定分类时归入的预设。
- * 资源包内置分类（通过 {@link TrafficLightsPatternPresetLoader#getBuiltInCategoryNames()} 获取）
- * 同样不可删除、不持久化，但数量和名称由资源包 JSON 动态决定。
- */
+// 相位预设分类的持久化：yunbeiuc_pattern_categories.json 只存用户新建分类的 名称->颜色。
+// 默认分类与资源包内置分类始终存在、不可删除、不写入文件。
+
 public class TrafficLightsPatternCategoryManager {
     public static final String DEFAULT_CATEGORY = "默认分类";
 
     private static final Path CATEGORY_FILE = Platform.getGameFolder().resolve("yunbeiuc_pattern_categories.json");
-    // 用户新建分类：名称 -> 显式颜色（-1 表示未设置，展示时按名称哈希派生）
     private static final Map<String, Integer> userCategories = new LinkedHashMap<>();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /**
-     * 是否为固定分类或资源包内置分类（始终存在，不可删除，不持久化）。
-     */
     public static boolean isFixedCategory(String name) {
         return DEFAULT_CATEGORY.equals(name) || TrafficLightsPatternPresetLoader.isBuiltInCategory(name);
     }
 
-    /**
-     * 全部分类名称：资源包内置分类在前，固定分类"默认分类"次之，用户新建分类按创建顺序在后。
-     */
     public static List<String> getCategoryNames() {
         List<String> names = new ArrayList<>();
         names.addAll(TrafficLightsPatternPresetLoader.getBuiltInCategoryNames());
@@ -53,10 +41,6 @@ public class TrafficLightsPatternCategoryManager {
         return names;
     }
 
-    /**
-     * 分类在列表中展示的颜色：资源包内置分类若在 JSON 中显式指定 "color" 则优先使用；
-     * 用户分类已显式设置则直接返回；否则（含"默认分类"）按名称哈希派生固定的伪随机颜色。
-     */
     public static int getColor(String name) {
         int builtIn = TrafficLightsPatternPresetLoader.getBuiltInCategoryColor(name);
         if (builtIn != -1) {
@@ -69,11 +53,6 @@ public class TrafficLightsPatternCategoryManager {
         return TrafficLightsPatternPreset.hashColor(name);
     }
 
-    /**
-     * 新建分类。名称不可为空、不可与已有分类（含固定分类）重名。
-     *
-     * @return null 表示新建成功；非 null 时为失败原因
-     */
     public static String addCategory(String name, int color) {
         if (name == null || name.trim().isEmpty()) {
             return "分类名称不能为空！";
@@ -87,9 +66,6 @@ public class TrafficLightsPatternCategoryManager {
         return null;
     }
 
-    /**
-     * 用户分类可删除的条件：不是固定分类或资源包内置分类，且该分类下已没有任何用户预设。
-     */
     public static boolean canDelete(String name) {
         if (isFixedCategory(name) || !userCategories.containsKey(name)) {
             return false;

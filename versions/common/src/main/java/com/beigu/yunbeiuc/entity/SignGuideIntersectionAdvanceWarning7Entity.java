@@ -20,7 +20,6 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
 
     public SignGuideIntersectionAdvanceWarning7Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_7_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -33,7 +32,6 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -50,18 +48,8 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideIntersectionAdvanceWarning7EntityRenderer 的固定布局生成默认文本行：
-     * renderDirectionLogo(direction1, andX -13, 12, size 0.4) / renderDirectionLogo(direction2, -13, 0, 0.4)
-     * / renderDirectionLogo(direction3, -13, -12, 0.4)，其中 adjustedX = (direction == RIGHT) ? 13 : -13
-     * （右转整行 X 镜像），迁移为按当前 direction1/2/3 直接生成行 xOffset，切换转向时由 applyFieldOption
-     * 同步更新（见 mirrorLines）；
-     * renderTextWithDirectionAdjustment(text1, 6, 12, 0.035) / (text2, 6, 0, 0.035) / (text3, 6, -12, 0.035)——
-     * 原渲染器按方向枚举镜像行 X（RIGHT 时取反），迁移方式同 logo 行。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        // 原渲染器右转时整行 X 镜像：logo ±13、文本 ±6（旧存档 direction 已为 RIGHT 时同样生效）
         float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
         float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
         float logo3X = direction3 == SignTurnDirection.RIGHT ? 13f : -13f;
@@ -113,7 +101,6 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
     @Override
     public String getPlaceholderValue(String key) {
         return switch (key) {
-            // 对应原 renderDirectionLogo：方向枚举选择直行箭头纹理（left/straight/right）
             case "logo1" -> logoName(direction1);
             case "logo2" -> logoName(direction2);
             case "logo3" -> logoName(direction3);
@@ -161,13 +148,6 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
         }
     }
 
-    /**
-     * 对应原渲染器的右转 X 镜像：direction 为 RIGHT 时整行 X 取反
-     * （renderDirectionLogo adjustedX = (texture==RIGHT) ? -andX : andX，andX=-13 → RIGHT 时 13；
-     *   renderTextWithDirectionAdjustment adjustedX = (direction==RIGHT) ? -6 : 6）。
-     * logo 行按 {logoN} 占位符定位；文本行默认文本为固定字面量，按 builtin 标记 + 出现顺序
-     * 定位（第 1/2/3 条对应 direction1/2/3）。UI 新增的自定义行（无 builtin 标记）不触碰。
-     */
     private void mirrorLines() {
         float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
         float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
@@ -200,7 +180,6 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
             case RIGHT -> "right";
         };
     }
-
 
     private void markDirtyAndUpdate() {
         setChanged();

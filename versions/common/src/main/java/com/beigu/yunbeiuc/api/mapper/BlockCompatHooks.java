@@ -13,11 +13,6 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.List;
 
-/**
- * Version-neutral hooks for vanilla methods whose signatures changed between Minecraft
- * versions. The version-specific base classes route the vanilla callbacks to these hooks,
- * so shared block/item code only ever overrides the hooks.
- */
 public interface BlockCompatHooks {
     default void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag flag) { }
 

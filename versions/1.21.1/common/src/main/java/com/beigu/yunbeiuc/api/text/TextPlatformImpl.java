@@ -23,11 +23,6 @@ public final class TextPlatformImpl implements TextPlatform {
         return ClientJson.parse(json);
     }
 
-    /*
-     * 客户端专属解析放在独立的嵌套类里：专用服务端只会加载 TextPlatformImpl 本身
-     * （方块 / 物品注册会用到 Text.literal / Text.translatable），不会走到这里，
-     * 于是也不会去链接 net.minecraft.client.Minecraft。
-     */
     private static final class ClientJson {
         private static Component parse(String json) {
             net.minecraft.client.Minecraft client = net.minecraft.client.Minecraft.getInstance();

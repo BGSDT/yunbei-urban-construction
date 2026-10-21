@@ -63,9 +63,6 @@ public class ModItems {
         return registerBlockItem(blockSupplier, ALL_SIGN_ITEMS, SIGN_TAB);
     }
 
-    // ===== Wand Items =====
-    // 普通魔杖：本来就是 mod 的「万能魔杖」（龙门架 / 道闸 / 路灯 / 路牌 / 红绿灯面板都认它），
-    // 现在再加上「查看与编辑轨道相位」这一块（手持显示高亮、瞄准轨道右键开相位界面）。
     public static final RegistrySupplier<Item> WAND = registerToolItem("wand",
             () -> new PhaseWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> TREE_WAND = registerToolItem("tree_wand",
@@ -79,7 +76,6 @@ public class ModItems {
     public static final RegistrySupplier<Item> TEXT_COPY_WAND = registerToolItem("text_copy_wand",
             () -> new TextCopyWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
 
-    // ===== Municipal BlockItems =====
     public static final RegistrySupplier<Item> ROAD_POLE_FOUNDATIONS = municipal(MunicipalBlocks.ROAD_POLE_FOUNDATIONS);
     public static final RegistrySupplier<Item> ROAD_POLE_FOUNDATIONS_SLAB = municipal(MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB);
     public static final RegistrySupplier<Item> ROAD_POLE_LONGITUDINAL = municipal(MunicipalBlocks.ROAD_POLE_LONGITUDINAL);
@@ -250,7 +246,6 @@ public class ModItems {
     public static final RegistrySupplier<Item> BARRIER_GATE_1_POLE_HORIZONTAL = municipal(MunicipalBlocks.BARRIER_GATE_1_POLE_HORIZONTAL);
     public static final RegistrySupplier<Item> BARRIER_GATE_1_POLE_LONGITUDINAL = municipal(MunicipalBlocks.BARRIER_GATE_1_POLE_LONGITUDINAL);
 
-    // ===== Road BlockItems =====
     public static final RegistrySupplier<Item> ROAD_BLOCK = road(RoadBlocks.ROAD_BLOCK);
     public static final RegistrySupplier<Item> ROAD_FULL_OF_WHITE = road(RoadBlocks.ROAD_FULL_OF_WHITE);
     public static final RegistrySupplier<Item> ROAD_FULL_OF_YELLOW = road(RoadBlocks.ROAD_FULL_OF_YELLOW);
@@ -590,7 +585,6 @@ public class ModItems {
     public static final RegistrySupplier<Item> ARROW_2_LEFT_TURN_AROUND_SINGLE_GROUND_MARK = road(RoadBlocks.ARROW_2_LEFT_TURN_AROUND_SINGLE_GROUND_MARK);
     public static final RegistrySupplier<Item> ARROW_2_RIGHT_TURN_AROUND_SINGLE_GROUND_MARK = road(RoadBlocks.ARROW_2_RIGHT_TURN_AROUND_SINGLE_GROUND_MARK);
 
-    // ===== Sign BlockItems =====
     public static final RegistrySupplier<Item> SIGN_STOP = sign(SignBlocks.SIGN_STOP);
     public static final RegistrySupplier<Item> SIGN_YIELD = sign(SignBlocks.SIGN_YIELD);
     public static final RegistrySupplier<Item> SIGN_YIELD_TO_ONCOMING_TRAFFIC = sign(SignBlocks.SIGN_YIELD_TO_ONCOMING_TRAFFIC);

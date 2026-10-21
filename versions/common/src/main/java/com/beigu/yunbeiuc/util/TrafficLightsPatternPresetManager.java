@@ -16,12 +16,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 红绿灯相位分配预设的 JSON 存储管理。
- * 文件位于游戏目录：yunbeiuc_pattern_presets.json。
- * 预设随客户端保存（单人即本存档目录），应用时把预设完整数据通过
- * C2S 包发给服务端执行，服务端无需持久化。
- */
+// 相位分配预设的 JSON 存储：yunbeiuc_pattern_presets.json，随客户端保存，应用时整包发给服务端。
+
 public class TrafficLightsPatternPresetManager {
     private static final Path PRESET_FILE = Platform.getGameFolder().resolve("yunbeiuc_pattern_presets.json");
     private static final Map<String, TrafficLightsPatternPreset> presets = new LinkedHashMap<>();
@@ -55,7 +51,6 @@ public class TrafficLightsPatternPresetManager {
                 preset.setName(key);
                 preset.setPhaseCount(d.has("phaseCount") ? d.get("phaseCount").getAsInt() : 4);
                 preset.setColor(d.has("color") ? d.get("color").getAsInt() : -1);
-                // 旧存档缺失分类字段时归入"默认分类"，兼容二级菜单功能上线前保存的预设
                 preset.setCategory(d.has("category") ? d.get("category").getAsString() : TrafficLightsPatternCategoryManager.DEFAULT_CATEGORY);
                 List<TrafficLightsPatternPreset.Slot> slots = new ArrayList<>();
                 if (d.has("slots") && d.get("slots").isJsonArray()) {

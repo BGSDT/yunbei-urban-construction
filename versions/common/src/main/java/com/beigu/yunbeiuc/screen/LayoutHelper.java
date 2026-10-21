@@ -4,11 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 
-/**
- * 布局与渲染辅助工具 — 海燕蓝主题
- *
- * @see PatternAndFontOverlay
- */
 public final class LayoutHelper {
     private LayoutHelper() {
     }
@@ -21,15 +16,11 @@ public final class LayoutHelper {
         return section;
     }
 
-    // ==================== 卡片分组式侧边栏高度 ====================
-
-    /** 侧边栏「主页」卡片高度。 */
     public static int getHomeCardHeight() {
         return SidebarState.isCollapsed() ? UIConstants.NAV_ICON_ROW_H
                 : UIConstants.CARD_HEADER_H;
     }
 
-    /** H2 分组卡片高度（含展开的子项；子分类按当前可见行数计入）。 */
     public static int calculateH2CardHeight(PatternAndFontOverlay.H2Category h2, Font tr) {
         if (SidebarState.isCollapsed()) return UIConstants.NAV_ICON_ROW_H;
         int h = UIConstants.CARD_HEADER_H;
@@ -65,8 +56,6 @@ public final class LayoutHelper {
         return UIConstants.CARD_ITEM_H;
     }
 
-    // ==================== 递归渲染（旧接口，新 UI 不再直接使用） ====================
-
     public static int renderH4SectionDynamic(DrawContext ctx, Font tr, double mx, double my,
                                              PatternAndFontOverlay.H4Section section, int indent, int y,
                                              PatternAndFontOverlay.H3Category parentH3) {
@@ -89,39 +78,23 @@ public final class LayoutHelper {
         return null;
     }
 
-    // ==================== 圆角绘制 ====================
-
-    /**
-     * 绘制圆角矩形填充。
-     *
-     * <p>圆角采用逐行扫描：第 i 行（自上而下）对应的圆纵向距离 dy = r - i - 0.5，
-     * 该行左右各缩进 dx = r - sqrt(r² - dy²)。i=0 时缩进最大，i→r 时缩进趋近 0，
-     * 与下方直边平滑衔接。
-     */
     public static void drawRoundedRect(DrawContext ctx, int x, int y, int w, int h, int color) {
         if (w <= 0 || h <= 0) return;
         int r = Math.min(Math.min(w, h) / 2, 6);
         if (r < 1) { ctx.fill(x, y, x + w, y + h, color); return; }
 
-        // 中部矩形（避开四角）
         ctx.fill(x + r, y, x + w - r, y + h, color);
         ctx.fill(x, y + r, x + r, y + h - r, color);
         ctx.fill(x + w - r, y + r, x + w, y + h - r, color);
 
-        // 四角逐行补齐
         for (int i = 0; i < r; i++) {
             double dy = r - i - 0.5;
             int dx = r - (int) Math.round(Math.sqrt(Math.max(0.0, r * r - dy * dy)));
-            // 上角
             ctx.fill(x + dx, y + i, x + w - dx, y + i + 1, color);
-            // 下角（与上角对称）
             ctx.fill(x + dx, y + h - i - 1, x + w - dx, y + h - i, color);
         }
     }
 
-    /**
-     * 绘制圆角边框（仅描边）。圆角部分与 {@link #drawRoundedRect} 使用同一套 dy 映射。
-     */
     public static void drawRoundedBorder(DrawContext ctx, int x, int y, int w, int h, int r, int color) {
         if (w <= 0 || h <= 0) return;
         r = Math.min(r, Math.min(w, h) / 2);
@@ -130,41 +103,27 @@ public final class LayoutHelper {
             return;
         }
 
-        // 直边
         ctx.fill(x + r, y, x + w - r, y + 1, color);
         ctx.fill(x + r, y + h - 1, x + w - r, y + h, color);
         ctx.fill(x, y + r, x + 1, y + h - r, color);
         ctx.fill(x + w - 1, y + r, x + w, y + h - r, color);
 
-        // 四角弧线
         for (int i = 0; i < r; i++) {
             double dy = r - i - 0.5;
             int dx = r - (int) Math.round(Math.sqrt(Math.max(0.0, r * r - dy * dy)));
-            // 左上
             ctx.fill(x + dx, y + i, x + dx + 1, y + i + 1, color);
-            // 右上
             ctx.fill(x + w - dx - 1, y + i, x + w - dx, y + i + 1, color);
-            // 左下
             ctx.fill(x + dx, y + h - i - 1, x + dx + 1, y + h - i, color);
-            // 右下
             ctx.fill(x + w - dx - 1, y + h - i - 1, x + w - dx, y + h - i, color);
         }
     }
 
-    /**
-     * 绘制圆角面板：填充 + 1px 圆角边框。
-     */
     public static void drawRoundedPanel(DrawContext ctx, int x, int y, int w, int h, int r,
                                         int fillColor, int borderColor) {
         drawRoundedRect(ctx, x, y, w, h, fillColor);
         drawRoundedBorder(ctx, x, y, w, h, r, borderColor);
     }
 
-    // ==================== 圆角滚动条 ====================
-
-    /**
-     * 渲染圆角滚动条（轨道 + 滑块）。
-     */
     public static void renderScrollbar(DrawContext ctx, int x, int y, int w, int h,
                                        double scrollVal, double maxScroll, int windowH,
                                        double mx, double my) {
@@ -173,10 +132,8 @@ public final class LayoutHelper {
         int thumbW = UIConstants.THUMB_WIDTH;
         int sbX = x + w - thumbW - 3;
 
-        // 圆角轨道
         drawRoundedRect(ctx, sbX, y + 2, thumbW, h - 4, UIConstants.CLR_TRACK);
 
-        // 滑块
         float trackRatio = (float) windowH / (float) (windowH + maxScroll);
         int thumbH = Math.max(UIConstants.THUMB_MIN_SIZE, (int) ((h - 4) * trackRatio));
         float scrollRatio = maxScroll <= 0 ? 0 : (float) (scrollVal / maxScroll);
@@ -186,8 +143,6 @@ public final class LayoutHelper {
         int thumbClr = isHov ? UIConstants.CLR_SLIDER_HOVER : UIConstants.CLR_SLIDER;
         drawRoundedRect(ctx, sbX, thumbY, thumbW, thumbH, thumbClr);
     }
-
-    // ==================== 内容高度 ====================
 
     public static int getTotalMainContentHeight(int paneW, Font tr) {
         if (PatternAndFontOverlay.isHomeSelected) {
@@ -217,17 +172,11 @@ public final class LayoutHelper {
         return h + 12;
     }
 
-    /**
-     * 单个分区的内容高度（含子分区），与 {@code PatternAndFontOverlay.paintSectionNode} 的推进保持一致。
-     *
-     * @param indent 子分区缩进层级，顶层为 0
-     */
     private static int getSectionNodeHeight(PatternAndFontOverlay.H4Section section, int paneW,
                                             Font tr, int indent) {
         PatternAndFontOverlay.H4Section eff = effective(section);
         int h = 20;
 
-        // 收起的分区只占标题行高度
         if (!section.isExpanded) return h;
 
         if (eff.description != null && !eff.description.getString().isEmpty()) {

@@ -28,6 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// 红绿灯方块实体渲染：灯珠/图案/读秒文字，手持魔杖时额外画「方向 + 相位 x / n」悬浮字。
+// 各版本只有渲染 API 不同，逻辑保持一致。
+
 public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsBlockEntity> {
     private final Font textRenderer;
 
@@ -37,20 +40,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         this.textRenderer = ctx.getFont();
     }
 
-    /**
-     * 道口警示荧光的图案位置（X 恒为 0）。
-     *
-     * <p>整根立杆只有一块牌，不像红绿灯灯头有红/黄/绿三个灯位，所以 Y/Z 固定、不随灯色分状态。
-     *
-     * <p>取值由模型换算而来（模型单位）：牌心 y=25 → {@code 25/16 - 0.5 = 1.0625}；
-     * 牌面 z=6.15 → {@code 0.5 - 6.1/16 = 0.12}（略在牌面前方，避免与牌面 z-fighting）。
-     * 该换算与既有红绿灯一致：竖装灯牌面 z=13.5 → {@code 0.5 - 13.5/16 = -0.34375}，代码里写的是 -0.33。
-     */
     private static final float WARNING_CROSSING_PATTERN_Y = 1.0625f;
     private static final float WARNING_CROSSING_PATTERN_Z = 0.12f;
 
     private float getZOffset(TrafficLightsBlock.MountType mountType, Block currentBlock) {
-        // 道口警示荧光：整根立杆自带牌面，与墙面/路杆安装方式无关，用固定偏移
         if (isWarningCrossingBlock(currentBlock)) return WARNING_CROSSING_PATTERN_Z;
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) return 0.16f;
         if (mountType == TrafficLightsBlock.MountType.POLE) {
@@ -74,7 +67,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
     }
 
-    /** 道口警示荧光（三款）：共用同一套图案定位。 */
     private static boolean isWarningCrossingBlock(Block block) {
         return block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get()
                 || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get()
@@ -226,31 +218,22 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     private void renderLogo(PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Direction facing, TrafficLightsBlockEntity.DirectionType directionType, TrafficLightsBlock.LightState lightState, Block currentBlock, TrafficLightsBlock.MountType mountType) {
         ResourceLocation texture;
 
-        // COLOR_FLASH 图案的慢闪逻辑：与灯的GRAY闪烁同步（0.5s一闪）
         if (directionType == TrafficLightsBlockEntity.DirectionType.COLOR_FLASH) {
-            // 使用与BlockEntity.tick()相同的闪烁逻辑
-            // FLASH_INTERVAL = 10 ticks = 0.5s
             long currentTimeMillis = System.currentTimeMillis();
             int flashPhase = (int) ((currentTimeMillis / 500) % 2);
             if (flashPhase == 0) {
-                // GRAY相位（隐藏阶段），不渲染
                 return;
             }
-            // flashPhase == 1 时为GREEN相位（显示阶段），继续渲染
         }
 
-        // SLOW_FLASH 图案的慢闪逻辑：与灯的GRAY闪烁同步（0.5s一闪）
         if (directionType == TrafficLightsBlockEntity.DirectionType.SLOW_FLASH) {
             long currentTimeMillis = System.currentTimeMillis();
             int flashPhase = (int) ((currentTimeMillis / 500) % 2);
             if (flashPhase == 0) {
-                // GRAY相位（隐藏阶段），不渲染
                 return;
             }
-            // flashPhase == 1 时为GREEN相位（显示阶段），继续渲染
         }
 
-        // 人行道红绿灯的特殊处理
         if (isPavementBlock(currentBlock)) {
             texture = switch (lightState) {
                 case RED, YELLOW -> PAVEMENT_RED;
@@ -363,7 +346,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float z = 0;
 
         if (isWarningCrossingBlock(currentBlock)) {
-            // 道口警示荧光：整根立杆只有一块牌，图案固定居中，不按灯色分三个位置
             x = 0f;
             y = WARNING_CROSSING_PATTERN_Y;
             z = WARNING_CROSSING_PATTERN_Z;
@@ -385,13 +367,11 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
-            // 单灯横式（含雾灯）：图案在中心 x=0, y=0
             x = 0;
             y = 0;
             z = getZOffset(mountType, currentBlock);
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL.get()) {
-            // 单灯竖式：图案在中心 x=0, y=0
             x = 0;
             y = 0;
             z = getZOffset(mountType, currentBlock);
@@ -460,7 +440,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         String directionText = getDirectionText(entity.getDirectionType());
         if (isPavementBlock(currentBlock)) directionText = "人行道";
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) directionText = "倒计时器";
-        // 单灯红绿灯直接显示图案文本，不显示"单灯横式/竖式"
         String phaseText;
         List<Integer> phaseIndices = new ArrayList<>(entity.getPhaseIndices());
         Collections.sort(phaseIndices);
@@ -485,7 +464,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float bgY2 = totalHeight + padding;
 
         Matrix4f matrix = matrices.last().pose();
-        // 1.18.2 Font supplies the text background through drawInBatch.
 
         textRenderer.drawInBatch(
                 Text.literal(directionText),
@@ -520,7 +498,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
 
-        // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
 
@@ -529,18 +506,15 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 return;
             }
         } else {
-            // 静态状态：如果关闭显示读秒，直接返回
             if (!showSeconds) {
                 return;
             }
-            // 如果是黄灯，不显示读秒
             if (lightState == TrafficLightsBlock.LightState.YELLOW) {
                 return;
             }
             remaining = entity.getFixedSeconds();
         }
 
-        // 颜色直接由方块状态中的 LIGHT_STATE 决定，与灯模型同步
         int color = switch (lightState) {
             case RED -> 0xFF0000;
             case YELLOW -> 0xFFF000;
@@ -557,7 +531,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.translate(0.5f, 0.0f, getZOffset(mountType, currentBlock));
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
-        // 背景 88 始终显示
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, "88", 0X2e3134,
                 0, -6f, 0,
@@ -574,7 +547,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             return;
         }
 
-        // 相位组中：判断是否显示实际数字
         if (entity.isInGroup()) {
             int displayMode = entity.getCountdownDisplayMode();
             int threshold = entity.getCountdownThreshold();
@@ -608,12 +580,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         boolean showSeconds = entity.isShowSeconds();
         boolean isTaipei = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
 
-        // 上海红绿灯黄灯时始终隐藏读秒（台北式黄灯显示剩余秒数）
         if (lightState == TrafficLightsBlock.LightState.YELLOW && !isTaipei) {
             return;
         }
 
-        // 如果在相位组中，使用相位剩余时间；否则使用静态固定秒数
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
 
@@ -622,15 +592,12 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 return;
             }
         } else {
-            // 静态状态：如果关闭显示读秒，直接返回
             if (!showSeconds) {
                 return;
             }
             remaining = entity.getFixedSeconds();
         }
 
-        // 颜色直接由方块状态中的 LIGHT_STATE 决定，与灯模型同步
-        // 黄灯颜色仅台北式生效（上海式黄灯直接隐藏读秒）
         int color = switch (lightState) {
             case RED -> 0xFF0000;
             case YELLOW -> 0xFFF000;
@@ -644,9 +611,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.mulPose(Vector3f.YP.rotationDegrees(-facing.toYRot()));
 
         float scaleValue = 0.085f;
-        // 上海式：读秒在右侧；台北式：读秒在最左侧红灯的左边，留出间隔
         float textX = isTaipei ? -11.65f / 16f + 0.25f : 0.25f;
-        // 读秒与灯面共用 getZOffset 值；读秒为双层渲染（背景88+数字），整体加偏移浮出灯面
         matrices.translate(textX, 0.0f, getZOffset(mountType, currentBlock) + 0.02f);
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
@@ -714,9 +679,6 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     }
 
     private ResourceLocation getAnimatedGreenTaipeiFrame() {
-        // 动画循环：1234554321，总长10帧，每帧0.1s，总周期1s
-        // cyclePosition: 0,1,2,3,4,5,6,7,8,9
-        // frameIndex:    0,1,2,3,4,4,3,2,1,0
         long currentTimeMillis = System.currentTimeMillis();
         int cyclePosition = (int) ((currentTimeMillis / 100) % 10);
 

@@ -6,10 +6,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 
-/**
- * C2S：TextDisplayScreen 选项行按钮对固定 NBT 字段的修改（field+value），
- * 服务端经 CustomSignBlockEntity.applyFieldOption 写回（子类映射到对应 setter）。
- */
 public class CustomSignFieldUpdatePacket {
     private final BlockPos pos;
     private final String field;

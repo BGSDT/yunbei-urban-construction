@@ -18,7 +18,6 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
 
     public SignGuideIntersectionWarning4Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_INTERSECTION_WARNING_4_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -27,7 +26,6 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
         super.loadCompat(nbt);
         this.direction1 = SignTurnDirection.fromName(nbt.getString("direction1"), SignTurnDirection.STRAIGHT);
         this.text1 = nbt.getString("text1");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -40,18 +38,6 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideIntersectionWarning4EntityRenderer 的固定布局生成默认文本行，
-     * 原渲染器按方块身份分支（同一方块类注册了 WARNING_4 / WARNING_5 两个方块）：
-     * WARNING_4 → renderDirectionLogo(direction1, andX -13, 0, size 0.4)——adjustedX = (direction == RIGHT) ? 13 : -13
-     *             （右转箭头整行 X 镜像）不再自动附加，默认按非镜像方向（左转/直行）生成静态 X，右转时由玩家调整；
-     *             renderText1(text1, andX 4, 0, 0.04)——x = (direction == RIGHT) ? -4 : 4，文本行无 xShift 机制，
-     *             默认行按生成时的 direction1 取静态位置，之后改动 direction1 需手动调整该行 xOffset；
-     * WARNING_5 → renderCenteredText(text1, 0, 0, 0.035)（先绘制，位于背景 logo 之下）→
-     *             renderBackgroundLogo(direction1, 0, 0, size 1.75)（warning_5 系列纹理）→
-     *             renderDirectionText 四条方位文本（按方块朝向取中/英文，cn 在 y=4、en 在 y=-4，
-     *             左侧 x=16、右侧 x=-16，迁移为 {cnLeft}/{cnRight}/{enLeft}/{enRight} 占位符，渲染时按当前朝向解析）。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         boolean isWarning4 = blockStateForDefaults().getBlock() == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4.get();
@@ -89,13 +75,9 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
     public String getPlaceholderValue(String key) {
         return switch (key) {
             case "text1" -> text1;
-            // 对应原 renderDirectionLogo：左转/直行/右转箭头纹理文件名段
             case "logo1" -> direction1.getName();
-            // 对应原 renderBackgroundLogo：warning_5 系列背景纹理文件名段
             case "logo2" -> direction1.getName();
-            // 对应原 renderDirectionLogo 的 X 镜像：x = (direction == RIGHT) ? -andX : andX（andX = -13）
-            case "logo1x" -> "0"; // 兼容旧存档已保存的行；默认行不再附加偏移，X 由玩家在编辑界面调整
-            // 对应原 renderDirectionText：按方块朝向取左右方位中/英文
+            case "logo1x" -> "0";
             case "cnLeft" -> directionText("cnLeft");
             case "cnRight" -> directionText("cnRight");
             case "enLeft" -> directionText("enLeft");
@@ -107,7 +89,6 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
     @Override
     public List<FieldOptionGroup> getFieldOptions(String placeholderKey) {
         return switch (placeholderKey) {
-            // logo1（WARNING_4 箭头）与 logo2（WARNING_5 背景）均由 direction1 决定，两组映射同一字段
             case "logo1", "logo2" -> List.of(new FieldOptionGroup("转向", "direction1", List.of(
                     opt("左转", "left", direction1.getName()),
                     opt("直行", "straight", direction1.getName()),
@@ -123,7 +104,6 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
         }
     }
 
-    /** 与原渲染器 DIRECTION_MAP 一致：按方块朝向取面板左/右侧的中/英文方位名 */
     private String directionText(String key) {
         net.minecraft.core.Direction facing = blockStateForDefaults().getValue(SignGuideIntersectionWarning4.FACING);
         boolean left = key.equals("cnLeft") || key.equals("enLeft");

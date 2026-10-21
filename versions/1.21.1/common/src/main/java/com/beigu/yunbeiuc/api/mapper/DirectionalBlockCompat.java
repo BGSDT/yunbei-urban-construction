@@ -19,7 +19,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-/** Version-neutral base for shared directional blocks. */
 public abstract class DirectionalBlockCompat extends DirectionalBlock implements BlockCompatHooks {
     protected DirectionalBlockCompat(BlockBehaviour.Properties properties) {
         super(properties);

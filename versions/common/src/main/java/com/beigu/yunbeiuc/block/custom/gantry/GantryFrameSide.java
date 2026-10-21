@@ -77,27 +77,22 @@ public class GantryFrameSide extends Block {
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onPlace(state, world, pos, oldState, notify);
-        // 更新当前方块和上下相邻的相同方块
         updateConnectedFrames(world, pos);
     }
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         super.onRemove(state, world, pos, newState, moved);
-        // 当方块被破坏时，更新相邻的相同方块
         if (!state.is(newState.getBlock())) {
             updateConnectedFrames(world, pos);
         }
     }
 
     private BlockState updateFrameType(BlockState state, LevelAccessor world, BlockPos pos) {
-        // 找到最底部的方块
         BlockPos bottomPos = findBottomFrame(world, pos);
 
-        // 从底部开始向上计数，计算当前方块的位置
         int positionFromBottom = getPositionFromBottom(world, bottomPos, pos);
 
-        // 从下往上数：位置1、3、5...显示类型1，位置2、4、6...显示类型2
         GantryFrameType newType = (positionFromBottom % 2 == 1) ?
                 GantryFrameType.GANTRY_FRAME_SIDE_1 : GantryFrameType.GANTRY_FRAME_SIDE_2;
 
@@ -107,7 +102,6 @@ public class GantryFrameSide extends Block {
     private BlockPos findBottomFrame(LevelAccessor world, BlockPos startPos) {
         BlockPos currentPos = startPos;
 
-        // 向下查找，直到找不到相同的方块
         BlockPos belowPos = currentPos.below();
         while (world.getBlockState(belowPos).getBlock() instanceof GantryFrameSide) {
             currentPos = belowPos;
@@ -118,14 +112,13 @@ public class GantryFrameSide extends Block {
     }
 
     private int getPositionFromBottom(LevelAccessor world, BlockPos bottomPos, BlockPos targetPos) {
-        int position = 1; // 从1开始计数（底部第一个方块）
+        int position = 1;
         BlockPos currentPos = bottomPos;
 
-        // 从底部向上遍历，直到找到目标位置
         while (!currentPos.equals(targetPos)) {
             currentPos = currentPos.above();
             if (!(world.getBlockState(currentPos).getBlock() instanceof GantryFrameSide)) {
-                return 1; // 如果链条断裂，返回默认值
+                return 1;
             }
             position++;
         }
@@ -134,20 +127,17 @@ public class GantryFrameSide extends Block {
     }
 
     private void updateConnectedFrames(Level world, BlockPos pos) {
-        // 更新当前方块
         BlockState currentState = world.getBlockState(pos);
         if (currentState.getBlock() instanceof GantryFrameSide) {
             world.setBlock(pos, updateFrameType(currentState, world, pos), VersionServices.blocks().updateAll());
         }
 
-        // 更新上方的相同方块
         BlockPos abovePos = pos.above();
         BlockState aboveState = world.getBlockState(abovePos);
         if (aboveState.getBlock() instanceof GantryFrameSide) {
             world.setBlock(abovePos, updateFrameType(aboveState, world, abovePos), VersionServices.blocks().updateAll());
         }
 
-        // 更新下方的相同方块
         BlockPos belowPos = pos.below();
         BlockState belowState = world.getBlockState(belowPos);
         if (belowState.getBlock() instanceof GantryFrameSide) {

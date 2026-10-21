@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** 1.16.5 bridge for Architectury's pre-dev package name. */
 public final class DeferredRegister<T> implements Iterable<RegistrySupplier<T>> {
     private final me.shedaniel.architectury.registry.DeferredRegister<T> delegate;
     private final List<RegistrySupplier<T>> entries = new ArrayList<>();

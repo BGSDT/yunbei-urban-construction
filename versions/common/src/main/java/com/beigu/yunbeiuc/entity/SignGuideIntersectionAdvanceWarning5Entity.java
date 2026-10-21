@@ -22,7 +22,6 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
 
     public SignGuideIntersectionAdvanceWarning5Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_5_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -37,7 +36,6 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
         this.text2AndY = nbt.getFloat("text2AndY");
         this.text3AndY = nbt.getFloat("text3AndY");
         this.text4AndY = nbt.getFloat("text4AndY");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -56,13 +54,6 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideIntersectionAdvanceWarning5EntityRenderer 的固定布局生成默认文本行：
-     * renderCenteredText(text1, -10, 10 + text1AndY, 0.03) / (text2, 10, 10 + text2AndY, 0.03)
-     * / (text3, -10, -10 + text3AndY, 0.03) / (text4, 10, -10 + text4AndY, 0.03)。
-     * 原渲染器的 textNAndY 为字段驱动的动态 Y 微调；默认行生成时把该字段当前值并入行 yOffset
-     * （新放置时字段为 0，旧存档迁移时保留原 Y 微调），迁移后直接在 TextDisplayScreen 中调整行位置。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();

@@ -23,16 +23,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 自动标线道路台阶方块（Slab 版）的抽象基类。
- * <p>
- * Slab 结构仿照 {@link DirectionSlabBlock}（含 {@code FACING / TYPE / WATERLOGGED} 属性与半格形状），
- * 自动连接逻辑复用 {@link RoadWithAutoLine} 的 {@code makeState} 状态机；与普通版不同的是，
- * 转换结果方块会被替换为对应的道路台阶方块，并保留当前的 {@code TYPE}（上/下/双层）与 {@code WATERLOGGED}。
- * <p>
- * 连接类型（斜线 / 直角）由构造参数 {@link RoadWithAutoLine.RoadAutoLineType} 决定，
- * 具体方块由子类 {@link RoadSlabWithAutoBevelLine} 与 {@link RoadSlabWithAutoRightangleLine} 指定。
- */
 public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
 
     private final RoadWithAutoLine.RoadAutoLineType type;
@@ -41,10 +31,6 @@ public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
         super(properties);
         this.type = type;
     }
-
-    // ============================================================
-    // 触发转换
-    // ============================================================
 
     @SuppressWarnings("deprecation")
     @Override
@@ -57,7 +43,6 @@ public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
         if (item instanceof BlockItem blockItem
             && (blockItem.getBlock() instanceof RoadWithAutoLine || blockItem.getBlock() instanceof RoadSlabWithAutoLine)
             && !Direction.Plane.VERTICAL.test(hit.getDirection())) {
-            // 手持自动标线方块时放行，允许继续放置。
             return InteractionResult.PASS;
         }
         world.setBlock(pos, convertToSlab(state, RoadWithAutoLine.tryMakeState(type, getConnectionStateMap(world, pos), state, pos)), 2);
@@ -68,17 +53,12 @@ public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         super.neighborChanged(state, world, pos, sourceBlock, sourcePos, notify);
-        // 屏蔽上下方的更新与因方块消失（变空气）产生的更新。
         if (!sourcePos.equals(pos.above())
             && !sourcePos.equals(pos.below())
             && !(world.getBlockState(sourcePos).getBlock() instanceof AirBlock)) {
             world.setBlock(pos, convertToSlab(state, RoadWithAutoLine.tryMakeState(type, getConnectionStateMap(world, pos), state, pos)), 2);
         }
     }
-
-    // ============================================================
-    // 连接状态检测（把台阶邻居归一化为普通方块后查询共享映射）
-    // ============================================================
 
     private EnumMap<Direction, RoadWithAutoLine.RoadConnectionState> getConnectionStateMap(LevelAccessor world, BlockPos pos0) {
         final EnumMap<Direction, RoadWithAutoLine.RoadConnectionState> connectionStateMap = new EnumMap<>(Direction.class);
@@ -96,10 +76,6 @@ public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
         }
         return connectionStateMap;
     }
-
-    // ============================================================
-    // 将自动逻辑产出的普通方块状态替换为对应的台阶方块状态
-    // ============================================================
 
     private BlockState convertToSlab(BlockState currentState, BlockState resultState) {
         final Block slab = SlabMapHolder.SLAB.get(resultState.getBlock());
@@ -121,7 +97,6 @@ public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
         return newState;
     }
 
-    /** 把台阶方块映射回对应的普通方块；不是台阶方块时返回自身。 */
     private static Block getBaseVariant(Block block) {
         final Block base = SlabMapHolder.BASE.get(block);
         return base == null ? block : base;

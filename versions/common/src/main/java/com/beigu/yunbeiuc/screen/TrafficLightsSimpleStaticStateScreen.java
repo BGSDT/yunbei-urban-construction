@@ -16,12 +16,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 
+// 简易静态灯态设置界面。
+
 public class TrafficLightsSimpleStaticStateScreen extends Screen {
     private final BlockPos pos;
     private final boolean isPavement;
     private TrafficLightsBlock.LightState selectedColor = TrafficLightsBlock.LightState.RED;
 
-    // 人行道红绿灯专用字段
     private boolean showSeconds = false;
     private TextFieldWidget secondsField;
     private ButtonWidget mountTypeButton;
@@ -37,7 +38,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
         super(Text.translatable("text.yunbeiuc.traffic_lights_static_state.title"));
         this.pos = pos;
 
-        // 判断是否为人行道红绿灯，并读取当前颜色和数据
         var blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
         if (blockEntity instanceof TrafficLightsBlockEntity tl) {
             var currentBlock = tl.getBlockState().getBlock();
@@ -49,7 +49,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             if (isPavement) {
                 this.showSeconds = tl.isShowSeconds();
             }
-            // 读取当前颜色
             var state = tl.getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
                 this.selectedColor = state.getValue(TrafficLightsBlock.LIGHT_STATE);
@@ -68,7 +67,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
 
         int currentY = panelY + 60;
 
-        // 颜色按钮（人行道只有红/绿，读秒器有红/黄/绿）
         if (isPavement) {
             this.addDrawableChild(
                     ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
@@ -84,7 +82,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             );
             currentY += 55;
 
-            // 显示秒数开关
             ButtonWidget showSecondsButton = this.addDrawableChild(
                     ButtonWidget.builderCompat(
                             Text.literal(showSeconds ? "显示秒数: 开" : "显示秒数: 关"),
@@ -100,7 +97,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             );
             currentY += 40;
 
-            // 固定秒数输入框（不显示秒数时锁定）
             secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, currentY, 160, 20, Text.literal(""));
             secondsField.setMaxLength(3);
             var blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
@@ -113,7 +109,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             this.addDrawableChild(secondsField);
 
         } else {
-            // 读秒器：三个颜色按钮
             this.addDrawableChild(
                     ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
                                     button -> this.selectedColor = TrafficLightsBlock.LightState.RED)
@@ -134,7 +129,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             );
         }
 
-        // 保存取消按钮
         this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
                         .dimensions(panelX + 40, panelY + PANEL_HEIGHT - 50, 60, 20)
@@ -174,7 +168,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
 
-        // 居中标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 this.title,
@@ -183,11 +176,9 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
                 0xFFFFFF
         );
 
-        // 面板背景
         context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
         context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        // 面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights_static_state.settings_title"),
@@ -196,7 +187,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
                 0xFFCCCCCC
         );
 
-        // 颜色标签
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights_static_state.color_label"),
@@ -204,7 +194,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // 人行道红绿灯额外显示"显示秒数"标签和"固定秒数"标签
         if (isPavement && secondsField != null) {
             context.drawTextWithShadow(
                     this.textRenderer,
@@ -214,7 +203,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             );
         }
 
-        // 警告文本
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.literal("§e设置链接组时间序列后数据将被清除"),
@@ -249,7 +237,6 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
             packet.write(buf);
             NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
 
-            // 保存时才应用mountType的更改
             if (pendingMountType != null) {
                 TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) this.client.level.getBlockEntity(pos);
                 if (blockEntity != null && blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) {

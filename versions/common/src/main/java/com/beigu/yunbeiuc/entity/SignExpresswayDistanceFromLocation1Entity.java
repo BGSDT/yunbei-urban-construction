@@ -20,7 +20,6 @@ public class SignExpresswayDistanceFromLocation1Entity extends CustomSignBlockEn
 
     public SignExpresswayDistanceFromLocation1Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_1_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -33,7 +32,6 @@ public class SignExpresswayDistanceFromLocation1Entity extends CustomSignBlockEn
         this.length1 = nbt.getString("length1");
         this.length2 = nbt.getString("length2");
         this.length3 = nbt.getString("length3");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -50,24 +48,15 @@ public class SignExpresswayDistanceFromLocation1Entity extends CustomSignBlockEn
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayDistanceFromLocation1EntityRenderer 的固定布局生成默认文本行：
-     * renderLeftAlignedText(textN, -15, 9/0/-9, 0.04)；
-     * renderRightAlignedText(lengthN, 11, 9/0/-9, 0.04)；
-     * renderRightAlignedText("km", 15, 8.5/-0.5/-9.5, 0.025)。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        // 左侧文本
         lines.add(SignTextLinesHelper.left("采育", -15f, 9f, 0.04f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.left("廊坊", -15f, 0f, 0.04f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.left("天津", -15f, -9f, 0.04f, 0xFFFFFF, "a"));
-        // 右侧数字
         lines.add(SignTextLinesHelper.right("14", 11f, 9f, 0.04f, 0xFFFFFF, "b"));
         lines.add(SignTextLinesHelper.right("37", 11f, 0f, 0.04f, 0xFFFFFF, "b"));
         lines.add(SignTextLinesHelper.right("95", 11f, -9f, 0.04f, 0xFFFFFF, "b"));
-        // km 单位
         lines.add(SignTextLinesHelper.right("km", 15f, 8.5f, 0.025f, 0xFFFFFF, "b"));
         lines.add(SignTextLinesHelper.right("km", 15f, -0.5f, 0.025f, 0xFFFFFF, "b"));
         lines.add(SignTextLinesHelper.right("km", 15f, -9.5f, 0.025f, 0xFFFFFF, "b"));

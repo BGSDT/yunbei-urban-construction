@@ -16,7 +16,6 @@ public class SignExpresswayEntranceAdvance7Entity extends CustomSignBlockEntity 
 
     public SignExpresswayEntranceAdvance7Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_ENTRANCE_ADVANCE_7_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -26,7 +25,6 @@ public class SignExpresswayEntranceAdvance7Entity extends CustomSignBlockEntity 
         this.text1 = nbt.getString("text1");
         this.text2 = nbt.getString("text2");
         this.text3 = nbt.getString("text3");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -40,9 +38,6 @@ public class SignExpresswayEntranceAdvance7Entity extends CustomSignBlockEntity 
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayEntranceAdvance7EntityRenderer 的固定布局生成默认文本行
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();

@@ -73,9 +73,7 @@ public class TextCopyWand extends ItemCompat {
     @Override
     public boolean canAttackBlock(BlockState state, Level world, BlockPos pos, Player miner) {
         BlockEntity be = world.getBlockEntity(pos);
-        // 对自定义路牌不能破坏（留给 onUseOnBlock 处理）
         if (be instanceof CustomSignBlockEntity) return false;
-        // 其他方块正常左键破坏
         return true;
     }
 

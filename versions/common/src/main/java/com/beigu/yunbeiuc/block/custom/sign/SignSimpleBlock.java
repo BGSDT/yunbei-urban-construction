@@ -94,11 +94,9 @@ public class SignSimpleBlock extends Block {
         BlockPos pos = ctx.getClickedPos();
         Direction facing = ctx.getHorizontalDirection().getOpposite();
 
-        // 获取后面的方块位置
         BlockPos behindPos = pos.relative(facing.getOpposite());
         BlockState behindState = world.getBlockState(behindPos);
 
-        // 根据后面方块的类型决定当前方块的类型
         Type type = determineType(behindState);
 
         return this.defaultBlockState().setValue(FACING, facing).setValue(TYPE, type);
@@ -110,7 +108,6 @@ public class SignSimpleBlock extends Block {
                                                 BlockPos pos, BlockPos neighborPos) {
         Direction facing = state.getValue(FACING);
 
-        // 检查是否是后面的方块发生了变化
         if (direction == facing.getOpposite()) {
             Type newType = determineType(neighborState);
             if (newType != state.getValue(TYPE)) {
@@ -124,7 +121,6 @@ public class SignSimpleBlock extends Block {
     private Type determineType(BlockState behindState) {
         Block behindBlock = behindState.getBlock();
 
-        // 假设你的方块类名是这样的
         if (behindBlock instanceof RoadPoleHorizontal) {
             return Type.POLE_H;
         } else if (behindBlock instanceof RoadPoleLongitudinal) {

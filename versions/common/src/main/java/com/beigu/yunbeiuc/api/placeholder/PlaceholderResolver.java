@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.api.placeholder;
 
-/** Resolves a logical placeholder key without exposing Minecraft text APIs. */
 @FunctionalInterface
 public interface PlaceholderResolver {
     String resolve(String key);

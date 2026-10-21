@@ -9,7 +9,6 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-/** 1.16.5 GUI drawing bridge for the shared screen layout code. */
 public final class DrawContext {
     private final PoseStack matrices;
 

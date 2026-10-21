@@ -18,17 +18,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 内置/资源包提供的红绿灯相位分配预设加载器，扫描方式与 FlagLoader 一致：
- * 遍历所有命名空间查找 traffic_lights_yunbeiuc.json 并合并加载。
- * JSON 格式为 {分类名: {预设名: {预设数据}, ...}, ...}，一个资源包可以同时内置多个
- * 分类（二级菜单）。这里加载出的预设视为"内置预设"，不允许在编辑器界面删除；
- * 加载出的分类视为"内置分类"，不允许在分类界面删除。
- */
+// 内置/资源包预设加载器：遍历所有命名空间的 traffic_lights_yunbeiuc.json 并合并加载。
+// 加载出的预设与分类都视为「内置」，不允许在界面里删除。
+
 public class TrafficLightsPatternPresetLoader {
     private static final Map<String, TrafficLightsPatternPreset> BUILT_IN_PRESETS = new LinkedHashMap<>();
     private static final Map<String, List<String>> BUILT_IN_CATEGORY_PRESET_NAMES = new LinkedHashMap<>();
-    // 分类自身的显示颜色：JSON 中分类对象内的 "color" 键（与预设条目同级，键名 "color" 不作为预设名解析）
     private static final Map<String, Integer> BUILT_IN_CATEGORY_COLORS = new LinkedHashMap<>();
 
     public static void loadPresets(ResourceManager resourceManager) {
@@ -37,7 +32,6 @@ public class TrafficLightsPatternPresetLoader {
         BUILT_IN_CATEGORY_COLORS.clear();
 
         try {
-            // 遍历所有命名空间，直接查找 traffic_lights_yunbeiuc.json
             for (String namespace : resourceManager.getNamespaces()) {
                 ResourceLocation fileId = VersionServices.resources().create(namespace, "traffic_lights_yunbeiuc.json");
 
@@ -57,7 +51,6 @@ public class TrafficLightsPatternPresetLoader {
                             List<String> names = BUILT_IN_CATEGORY_PRESET_NAMES.computeIfAbsent(categoryName, k -> new ArrayList<>());
                             for (Map.Entry<String, JsonElement> presetEntry : categoryObj.entrySet()) {
                                 String name = presetEntry.getKey();
-                                // "color" 是分类自身的颜色字段，不是预设名
                                 if ("color".equals(name)) continue;
                                 JsonObject d = categoryObj.getAsJsonObject(name);
                                 TrafficLightsPatternPreset preset = parsePreset(name, categoryName, d);
@@ -87,7 +80,6 @@ public class TrafficLightsPatternPresetLoader {
         preset.setName(name);
         preset.setPhaseCount(d.has("phaseCount") ? d.get("phaseCount").getAsInt() : 4);
         preset.setColor(d.has("color") ? d.get("color").getAsInt() : -1);
-        // 资源包内置预设的分类由 JSON 中所在的外层键决定
         preset.setCategory(categoryName);
 
         List<TrafficLightsPatternPreset.Slot> slots = new ArrayList<>();
@@ -131,25 +123,14 @@ public class TrafficLightsPatternPresetLoader {
         return BUILT_IN_PRESETS.containsKey(name);
     }
 
-    /**
-     * 获取资源包中定义的所有内置分类名称（从 JSON 第一层键读取）。
-     */
     public static List<String> getBuiltInCategoryNames() {
         return new ArrayList<>(BUILT_IN_CATEGORY_PRESET_NAMES.keySet());
     }
 
-    /**
-     * 检查给定名称是否为资源包中定义的内置分类。
-     */
     public static boolean isBuiltInCategory(String categoryName) {
         return BUILT_IN_CATEGORY_PRESET_NAMES.containsKey(categoryName);
     }
 
-    /**
-     * 获取资源包内置分类在 JSON 中显式指定的颜色。
-     *
-     * @return 显式颜色（0xRRGGBB），未指定时返回 -1
-     */
     public static int getBuiltInCategoryColor(String categoryName) {
         Integer color = BUILT_IN_CATEGORY_COLORS.get(categoryName);
         return color != null ? color : -1;

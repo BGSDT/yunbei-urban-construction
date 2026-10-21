@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-/** 1.16.5 bridge for Architectury's pre-dev package name. */
 public final class RegistrySupplier<T> implements Supplier<T> {
     private final me.shedaniel.architectury.registry.RegistrySupplier<T> delegate;
 

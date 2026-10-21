@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.resources.ResourceLocation;
 
-/** 1.21.1 GUI drawing bridge for the shared screen layout code. */
 public final class DrawContext {
     private final GuiGraphics graphics;
 
@@ -23,7 +22,6 @@ public final class DrawContext {
         graphics.fill(x0, y0, x1, y1, color);
     }
 
-    /** 垂直渐变填充；1.20.1 的原版界面底色就是用它画的。 */
     public void fillGradient(int x0, int y0, int x1, int y1, int colorFrom, int colorTo) {
         graphics.fillGradient(x0, y0, x1, y1, colorFrom, colorTo);
     }

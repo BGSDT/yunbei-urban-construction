@@ -34,7 +34,7 @@ public class DirectionSlabBlock extends WaterloggedSlabCompat {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<SlabType> TYPE = BlockStateProperties.SLAB_TYPE;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    
+
     protected static final VoxelShape BOTTOM_SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     protected static final VoxelShape TOP_SHAPE = Block.box(0.0, 8.0, 0.0, 16.0, 16.0, 16.0);
 
@@ -73,14 +73,14 @@ public class DirectionSlabBlock extends WaterloggedSlabCompat {
         BlockState blockState = ctx.getLevel().getBlockState(blockPos);
 
         Direction facing = ctx.getHorizontalDirection().getOpposite();
-        
+
         if (blockState.is(this)) {
-            return blockState.setValue(TYPE, SlabType.DOUBLE).setValue(WATERLOGGED, false).setValue(FACING, blockState.getValue(FACING)); // 保持原有朝向
+            return blockState.setValue(TYPE, SlabType.DOUBLE).setValue(WATERLOGGED, false).setValue(FACING, blockState.getValue(FACING));
         } else {
             FluidState fluidState = ctx.getLevel().getFluidState(blockPos);
             BlockState blockState2 = this.defaultBlockState().setValue(FACING, facing)
                     .setValue(WATERLOGGED, VersionServices.blocks().isWater(fluidState));
-            
+
             Direction direction = ctx.getClickedFace();
             if (direction != Direction.DOWN && (direction == Direction.UP ||
                     !(ctx.getClickLocation().y - (double) blockPos.getY() > 0.5))) {
@@ -95,12 +95,12 @@ public class DirectionSlabBlock extends WaterloggedSlabCompat {
     public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
         ItemStack itemStack = context.getItemInHand();
         SlabType slabType = state.getValue(TYPE);
-        
+
         if (slabType != SlabType.DOUBLE && itemStack.getItem() == this.asItem()) {
             if (context.replacingClickedOnBlock()) {
                 boolean bl = context.getClickLocation().y - (double) context.getClickedPos().getY() > 0.5;
                 Direction direction = context.getClickedFace();
-                
+
                 if (slabType == SlabType.BOTTOM) {
                     return direction == Direction.UP || (bl && direction.getAxis().isHorizontal());
                 } else {
@@ -129,10 +129,8 @@ public class DirectionSlabBlock extends WaterloggedSlabCompat {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
-
-
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, 
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
                                                   LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             VersionServices.blocks().scheduleFluidTick(world, pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));

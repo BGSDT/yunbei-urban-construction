@@ -10,7 +10,6 @@ import com.beigu.yunbeiuc.api.registry.RegistryPlatform;
 import com.beigu.yunbeiuc.api.item.CreativeTabPlatform;
 import com.beigu.yunbeiuc.api.resource.ResourcePlatform;
 
-/** Complete per-Minecraft-version service boundary. */
 public interface VersionAdapter {
     String minecraftVersion();
     BlockPlatform blocks();

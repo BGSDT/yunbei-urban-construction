@@ -143,7 +143,6 @@ public class RoadPoleFlag extends EntityBlockCompat {
         return RenderShape.MODEL;
     }
 
-
     public enum PoleType implements StringRepresentable {
         ROAD_POLE("road_pole"),
         ROAD_POLE_LIGHT("road_pole_light");

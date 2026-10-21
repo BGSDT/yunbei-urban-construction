@@ -3,15 +3,12 @@ package com.beigu.yunbeiuc.entity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.BlockPos;
 
-/**
- * 人行道一体化红绿灯BlockEntity
- * 继承原本的TrafficLightsBlockEntity，复用所有功能
- */
+// 人行道一体化红绿灯方块实体：继承 TrafficLightsBlockEntity，复用全部功能。
+
 public class TrafficLightsPavementIntegrationBlockEntity extends TrafficLightsBlockEntity {
 
     public TrafficLightsPavementIntegrationBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state);
-        // 人行道一体化红绿灯默认为人行道模式（显示人行图标）
         this.setDirectionType(DirectionType.NON_MOTOR_VEHICLES);
     }
 

@@ -17,7 +17,6 @@ public class ZonesBoardTimeRange2Entity extends CustomSignBlockEntity {
 
     public ZonesBoardTimeRange2Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ZONES_BOARD_TIME_RANGE_2_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -28,7 +27,6 @@ public class ZonesBoardTimeRange2Entity extends CustomSignBlockEntity {
         this.time2 = nbt.getString("time2");
         this.time3 = nbt.getString("time3");
         this.time4 = nbt.getString("time4");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -43,9 +41,6 @@ public class ZonesBoardTimeRange2Entity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 ZonesBoardTimeRange2EntityRenderer 的固定布局生成默认文本行
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();

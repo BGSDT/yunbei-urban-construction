@@ -167,7 +167,6 @@ public class GroundMarkBlock extends Block {
         }
 
         public Direction toDirection() {
-            // 斜向映射到最近的正方向
             return switch (this) {
                 case NORTH -> Direction.NORTH;
                 case SOUTH -> Direction.SOUTH;

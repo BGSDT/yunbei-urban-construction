@@ -6,7 +6,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-/** Version-sensitive registry keys used by Architectury deferred registers. */
 public interface RegistryPlatform {
     DeferredRegister<Block> blocks(String modId);
 

@@ -7,12 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-/**
- * 图案与字体选择器鼠标事件处理器 — 海燕蓝主题
- *
- * @see PatternAndFontOverlay
- * @see GridRenderer
- */
 public final class MouseEventHandler {
     private MouseEventHandler() {
     }
@@ -28,21 +22,18 @@ public final class MouseEventHandler {
         int navW = SidebarState.getEffectiveWidth();
         int paneW = winW - navW;
 
-        // 内容区滚动条拖动
         if (mx > navW && PatternAndFontOverlay.maxScrollY > 20) {
             if (handlePaneScrollbarClick(mx, my, winW, clipTop, clipH)) {
                 return true;
             }
         }
 
-        // 导航栏滚动条拖动
         if (mx <= navW && PatternAndFontOverlay.maxSidebarScrollY > 20) {
             if (handleNavScrollbarClick(mx, my, winH)) {
                 return true;
             }
         }
 
-        // 导航栏折叠按钮（左上角 22x22）
         if (mx <= navW && my <= UIConstants.TOP_BAR_HEIGHT) {
             if (LayoutHelper.isMouseInRect(mx, my, 4, 5, 22, 22)) {
                 SidebarState.toggleCollapse();
@@ -50,17 +41,14 @@ public final class MouseEventHandler {
             }
         }
 
-        // 导航栏点击
         if (mx <= navW) {
             return handleNavClick(mx, my);
         }
 
-        // 内容区点击
         if (my >= clipTop && my <= clipBottom) {
             return handlePaneClick(mx, my, winW, winH, paneW, clipTop, clipBottom);
         }
 
-        // 关闭按钮
         int closeBtnX = navW + (paneW - UIConstants.CLOSE_BTN_WIDTH) / 2;
         int closeBtnY = winH - 38;
         if (LayoutHelper.isMouseInRect(mx, my, closeBtnX, closeBtnY, UIConstants.CLOSE_BTN_WIDTH, UIConstants.CLOSE_BTN_HEIGHT)) {
@@ -71,7 +59,6 @@ public final class MouseEventHandler {
         return false;
     }
 
-    // 内容区滚动条点击
     private static boolean handlePaneScrollbarClick(double mx, double my, int winW, int clipTop, int clipH) {
         int navW = SidebarState.getEffectiveWidth();
         int thumbW = UIConstants.THUMB_WIDTH;
@@ -99,7 +86,6 @@ public final class MouseEventHandler {
         return false;
     }
 
-    // 导航栏滚动条点击
     private static boolean handleNavScrollbarClick(double mx, double my, int winH) {
         int navW = SidebarState.getEffectiveWidth();
         int thumbW = UIConstants.THUMB_WIDTH;
@@ -129,7 +115,6 @@ public final class MouseEventHandler {
         return false;
     }
 
-    // 导航栏点击（卡片分组式）
     private static boolean handleNavClick(double mx, double my) {
         int navW = SidebarState.getEffectiveWidth();
         int curY = UIConstants.TOP_BAR_HEIGHT + UIConstants.NAV_PAD - (int) PatternAndFontOverlay.sidebarScrollY;
@@ -137,7 +122,6 @@ public final class MouseEventHandler {
         if (SidebarState.isCollapsed()) {
             int rowH = UIConstants.NAV_ICON_ROW_H;
 
-            // 主页
             if (LayoutHelper.isMouseInRect(mx, my, 0, curY, navW, rowH)) {
                 PatternAndFontOverlay.selectSidebarTop(PatternAndFontOverlay.NAV_TOP_HOME);
                 return true;
@@ -162,19 +146,16 @@ public final class MouseEventHandler {
             int cardX = UIConstants.NAV_PAD;
             int cardW = navW - UIConstants.NAV_PAD * 2;
 
-            // 主页卡片
             if (LayoutHelper.isMouseInRect(mx, my, cardX, curY, cardW, UIConstants.CARD_HEADER_H)) {
                 PatternAndFontOverlay.selectSidebarTop(PatternAndFontOverlay.NAV_TOP_HOME);
                 return true;
             }
             curY += UIConstants.CARD_HEADER_H + UIConstants.CARD_GAP;
 
-            // H2 分组卡片
             Font tr = Minecraft.getInstance().font;
             for (PatternAndFontOverlay.H2Category h2 : PatternAndFontOverlay.REGISTRY) {
                 int headerH = UIConstants.CARD_HEADER_H;
 
-                // 头部点击：折叠/展开
                 if (LayoutHelper.isMouseInRect(mx, my, cardX, curY, cardW, headerH)) {
                     PatternAndFontOverlay.clearSidebarTop();
                     h2.isExpanded = !h2.isExpanded;
@@ -184,7 +165,6 @@ public final class MouseEventHandler {
 
                 int bodyY = curY + headerH;
 
-                // 子项胶囊点击（支持 H3 多级缩进）
                 if (h2.isExpanded && !h2.subCategories.isEmpty()) {
                     bodyY += UIConstants.CARD_INNER_TOP;
                     int inset = UIConstants.CARD_ITEM_INSET;
@@ -200,7 +180,6 @@ public final class MouseEventHandler {
                             PatternAndFontOverlay.selectedH3 = row.h3;
                             PatternAndFontOverlay.isHomeSelected = false;
                             PatternAndFontOverlay.scrollY = 0;
-                            // 含子分类的分类：点击同时展开/收起
                             if (!row.h3.subCategories.isEmpty()) {
                                 row.h3.isExpanded = !row.h3.isExpanded;
                             }
@@ -216,7 +195,6 @@ public final class MouseEventHandler {
         return true;
     }
 
-    // 内容区点击
     private static boolean handlePaneClick(double mx, double my, int winW, int winH,
                                            int paneW, int clipTop, int clipBottom) {
         int navW = SidebarState.getEffectiveWidth();
@@ -235,7 +213,6 @@ public final class MouseEventHandler {
         return false;
     }
 
-    // 主页链接点击
     private static boolean handleHomeClick() {
         String url = PatternAndFontOverlay.getLastHoveredUrl();
         if (url != null) {
@@ -245,7 +222,6 @@ public final class MouseEventHandler {
         return false;
     }
 
-    // 分区内容点击
     private static boolean handleSectionClick(double mx, double my, int winW,
                                               int paneW, int contentY, int clipTop, int clipBottom) {
         Font tr = Minecraft.getInstance().font;
@@ -253,7 +229,6 @@ public final class MouseEventHandler {
 
         int curY = contentY;
 
-        // 分类说明横幅（主页 header 同款卡片）
         if (selH3.headerText != null) {
             curY += PatternAndFontOverlay.headerCardHeight(tr, selH3.headerText, paneW)
                     + PatternAndFontOverlay.HEADER_CARD_GAP;
@@ -269,14 +244,6 @@ public final class MouseEventHandler {
         return false;
     }
 
-    /**
-     * 处理单个分区（含子分区）的点击，返回推进后的 y。
-     *
-     * <p>命中时置 {@code consumed[0]} 为 true 并立即返回；推进规则与
-     * {@code PatternAndFontOverlay.paintSectionNode} 保持一致。
-     *
-     * @param indent 子分区缩进层级，顶层为 0
-     */
     private static int handleSectionNodeClick(double mx, double my, int winW, int paneW,
                                               int clipTop, int clipBottom,
                                               PatternAndFontOverlay.H4Section section,
@@ -287,26 +254,22 @@ public final class MouseEventHandler {
         int secX = navW + 16 + indentPx;
         int secMaxW = paneW - 32 - indentPx;
 
-        // 标题行点击：展开/收起该类型（与 paintSectionNode 的标题行区域一致）
         if (LayoutHelper.isMouseInRect(mx, my, secX, curY, secMaxW, 20)) {
             section.isExpanded = !section.isExpanded;
             consumed[0] = true;
             return curY + 20;
         }
-        curY += 20; // 标题行
+        curY += 20;
 
-        // 收起的分区：跳过描述/子分区/标签栏/内容
         if (!section.isExpanded) return curY;
 
         PatternAndFontOverlay.H4Section eff = LayoutHelper.effective(section);
 
-        // 描述文字
         if (eff.description != null && !eff.description.getString().isEmpty()) {
             int descMaxW = secMaxW - 10;
             curY += tr.split(eff.description, descMaxW).size() * 12 + 4;
         }
 
-        // 子分区：递归处理
         if (section.useChildSections && !section.childSections.isEmpty()) {
             for (int i = 0; i < section.childSections.size(); i++) {
                 curY = handleSectionNodeClick(mx, my, winW, paneW, clipTop, clipBottom,
@@ -317,7 +280,6 @@ public final class MouseEventHandler {
             return curY + 4;
         }
 
-        // 标签栏点击
         if (section.useSubfolders && !section.subFolders.isEmpty()) {
             int tabW = UIConstants.FILTER_PILL_WIDTH;
             int tabH = UIConstants.FILTER_PILL_HEIGHT;
@@ -354,7 +316,6 @@ public final class MouseEventHandler {
             curY += tabH + 8;
         }
 
-        // 内容点击
         if (eff.isFontMode) {
             int idx = GridRenderer.getFontItemIndex(mx, my, paneW, curY, clipTop, clipBottom, eff.fontItems.size());
             if (idx >= 0) {

@@ -16,7 +16,6 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
 
     public SignGuideRoadsideFacilityOverloadCheckpoint1Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_ROADSIDE_FACILITY_OVERLOAD_CHECKPOINT_1_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -25,7 +24,6 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
         super.loadCompat(nbt);
         this.unit1 = Unit.fromName(nbt.getString("unit1"));
         this.length1 = nbt.getString("length1");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -38,11 +36,6 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideRoadsideFacilityOverloadCheckpoint1EntityRenderer 的固定布局生成默认文本行：
-     * renderRightAlignedText(length1, -1.5, -13, 0.045)、
-     * renderRightAlignedText({unit1}, 2.5, -13.5, 0.03)。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -71,7 +64,6 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
     public String getPlaceholderValue(String key) {
         return switch (key) {
             case "length1" -> length1;
-            // 对应原渲染器：KILOMETRE 显示 "km"，METRE 显示 "m"
             case "unit1" -> unit1 == Unit.KILOMETRE ? "km" : "m";
             default -> null;
         };

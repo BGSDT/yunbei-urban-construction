@@ -255,8 +255,6 @@
   "item.yunbeiuc.link_wand": "链接魔杖",
   "item.yunbeiuc.link_wand.tooltip": "右键红绿灯组网 · Shift+右键完成",
   "item.yunbeiuc.link_wand.tooltip2": "右键两个轨道节点链接轨道（成组时一起生效）",
-  "item.yunbeiuc.wand.tooltip": "手持显示周围所有已组轨道的高亮线与相位标签",
-  "item.yunbeiuc.wand.tooltip2": "瞄准轨道右键编辑相位",
   "text.yunbeiuc.rail_phase.title": "轨道放行相位",
   "text.yunbeiuc.rail_phase.empty": "该相位组还没有设置相位时间表",
   "text.yunbeiuc.rail_phase.phase_value": "放行相位: %s / 共 %d",

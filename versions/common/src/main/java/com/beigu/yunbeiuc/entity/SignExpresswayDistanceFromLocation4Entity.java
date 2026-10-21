@@ -21,14 +21,12 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     private String length1 = "";
     private String length2 = "";
     private String length3 = "";
-    // 普通公路盾牌版本（独立枚举：3字/4字），不再按路名长度自动联动
     private String logoType1 = "ordinary_municipal_road_logo_1";
     private String logoType2 = "ordinary_municipal_road_logo_1";
     private String logoType3 = "ordinary_municipal_road_logo_1";
 
     public SignExpresswayDistanceFromLocation4Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -44,13 +42,9 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         this.length1 = nbt.getString("length1");
         this.length2 = nbt.getString("length2");
         this.length3 = nbt.getString("length3");
-        // 旧存档兼容：无 logoTypeN 键时按路名长度推导盾牌版本（3字/4字）
         this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
         this.logoType3 = nbt.contains("logoType3") ? nbt.getString("logoType3").replace("provicial", "provincial") : legacyLogoType3();
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行。
-        // logo 行的存在性与文本 z 偏移都依赖 roadType（构造时字段还是默认值 EXPRESSWAY），
-        // 故旧存档须先清空构造时生成的行，再按存档字段重建
         if (!nbt.contains("TextLines")) {
             getTextLines().clear();
             ensureDefaultTextLines();
@@ -74,14 +68,6 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayDistanceFromLocation4EntityRenderer 的固定布局生成默认文本行（三行结构相同，y = 12/0/-12）：
-     * renderLogo(roadTypeN, -8, y, size 1.55) → 仅 roadType 为 ORDINARY_MUNICIPAL 时有 -texture 行，
-     *   纹理由 {logoN} 占位符按路名长度选择（留空或 ≤3 字用 logo_1，否则宽版 logo_2），
-     *   宽版 logo_2 时原 adjustedX = andX + 3f 不再自动附加，X 偏移由玩家在编辑界面调整；
-     * renderLeftTextWithRoadType(textN, -17, y, 0.04) → 左对齐文本，z 按 roadTypeN 与方块 TYPE 取原绝对 z 再换算；
-     * renderRightAlignedText(lengthN, 13, y, 0.04) 与 km 单位 (17, y∓0.5, 0.025)。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -99,7 +85,6 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
 
     private List<TextLineData> buildRow(RoadType roadType, String textPlaceholder, String logoKey, float y, String abcFont) {
         List<TextLineData> lines = new ArrayList<>();
-        // 原 renderLogo：仅 ORDINARY_MUNICIPAL（普通公路/省道盾牌）渲染 logo
         if (roadType == RoadType.ORDINARY_MUNICIPAL) {
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{" + logoKey + "}.png", -8f, y, 1.55f, 0f));
         }
@@ -109,10 +94,6 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         return lines;
     }
 
-    /**
-     * 原 renderLeftTextWithRoadType 的绝对 z（EXPRESSWAY -0.75/-0.79/-0.43，ORDINARY_MUNICIPAL -0.74/-0.78/-0.42，
-     * 按 POLE_L/POLE_H/NORMAL）换算为相对渲染器 getZOffset（POLE_L -0.74 / POLE_H -0.81 / NORMAL -0.45）的 1/16 单位偏移
-     */
     private float roadTextZOffset(RoadType roadType) {
         float baseZ = switch (blockStateForDefaults().getValue(SignExpresswayDistanceFromLocation4.TYPE)) {
             case POLE_L -> -0.74f;
@@ -204,18 +185,14 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
             case "length1" -> length1;
             case "length2" -> length2;
             case "length3" -> length3;
-            // 对应原 renderLogo：仅普通公路路型渲染 logo（高速公路返回空段使 -texture 行静默跳过）；
-            // 盾牌版本为独立枚举字段（3字/4字），旧存档按路名长度推导
             case "logo1" -> roadType1 == RoadType.ORDINARY_MUNICIPAL ? logoType1 : "";
             case "logo2" -> roadType2 == RoadType.ORDINARY_MUNICIPAL ? logoType2 : "";
             case "logo3" -> roadType3 == RoadType.ORDINARY_MUNICIPAL ? logoType3 : "";
-            // 对应原 adjustedX = andX + 3f：仅宽版 logo_2 附加 +3px X 偏移
-            case "logo1x", "logo2x", "logo3x" -> "0"; // 兼容旧存档已保存的行；默认行不再附加偏移，X 由玩家在编辑界面调整
+            case "logo1x", "logo2x", "logo3x" -> "0";
             default -> null;
         };
     }
 
-    // 旧存档兼容推导（原 renderLogo 逻辑）：路名留空或 ≤3 字用 logo_1（3字），否则 logo_2（4字）
     private String legacyLogoType1() {
         return longRoadName(text1) ? "ordinary_municipal_road_logo_2" : "ordinary_municipal_road_logo_1";
     }
@@ -235,11 +212,9 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     @Override
     public List<FieldOptionGroup> getFieldOptions(String placeholderKey) {
         return switch (placeholderKey) {
-            // 同一行组的文本/长度行提供道路类型切换
             case "text1", "length1" -> List.of(roadTypeGroup("roadType1", roadType1));
             case "text2", "length2" -> List.of(roadTypeGroup("roadType2", roadType2));
             case "text3", "length3" -> List.of(roadTypeGroup("roadType3", roadType3));
-            // logo 行额外提供普通公路盾牌版本（3字/4字）
             case "logo1" -> List.of(roadTypeGroup("roadType1", roadType1), municipalLogoGroup("logoType1", logoType1));
             case "logo2" -> List.of(roadTypeGroup("roadType2", roadType2), municipalLogoGroup("logoType2", logoType2));
             case "logo3" -> List.of(roadTypeGroup("roadType3", roadType3), municipalLogoGroup("logoType3", logoType3));
@@ -262,8 +237,6 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     @Override
     public void applyFieldOption(String field, String value) {
         switch (field) {
-            // 路型决定 logo 行的存在性与文本行 z，切换后按当前字段重建默认行集
-            //（该牌的自定义行布局会重置，固定字段值保留、占位符仍解析出原内容）
             case "roadType1" -> { setRoadType1(RoadType.fromName(value)); rebuildTextLines(); }
             case "roadType2" -> { setRoadType2(RoadType.fromName(value)); rebuildTextLines(); }
             case "roadType3" -> { setRoadType3(RoadType.fromName(value)); rebuildTextLines(); }

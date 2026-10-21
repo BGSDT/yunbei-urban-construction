@@ -16,7 +16,6 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
 
     public ZonesBoardOverWeightEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ZONES_BOARD_OVER_WEIGHT_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -24,7 +23,6 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
         this.text1 = nbt.getString("text1");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -36,17 +34,6 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 ZonesBoardOverWeightEntityRenderer 的固定布局生成默认文本行，
-     * 原渲染器按方块身份分支（同一方块类注册了 OVER_WEIGHT/TIME_LIMIT/SUGGESTED_SPEED/LENGTH/
-     * DISTANCE_LENGTH/DISTANCE_LENGTH_LEFT/DISTANCE_LENGTH_RIGHT 共 7 个方块）：
-     * OVER_WEIGHT/TIME_LIMIT → renderLeftAlignedText(text1, -5, 5.5, 0.03, 0x000000)；
-     * SUGGESTED_SPEED → renderLeftAlignedText(text1, -6, 0, 0.04, 0x000000)；
-     * LENGTH → renderCenteredText(text1, 1, 0, 0.04, 0x000000)；
-     * DISTANCE_LENGTH → renderCenteredText(text1, 0, 0, 0.04, 0x000000)；
-     * DISTANCE_LENGTH_LEFT → renderCenteredText(text1, 0, 1, 0.03, 0x000000)；
-     * DISTANCE_LENGTH_RIGHT → renderCenteredText(text1, -2, 1, 0.03, 0x000000)。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         Block block = blockStateForDefaults().getBlock();

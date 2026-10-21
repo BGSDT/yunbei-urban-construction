@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+// 相位分配预设编辑器：编辑预设成员的方位/类型与相位勾选。
+// 保存前做与 TrafficLightsPatternPreset#tryApplyToGroup 一致的分桶校验，避免应用时才发现冲突。
+
 public class TrafficLightsPatternEditorScreen extends Screen {
     private static final Random RANDOM = new Random();
     private static final int PANEL_WIDTH = 330;
@@ -27,16 +30,12 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     private static final int MIN_PHASE_COUNT = 2;
     private static final int MAX_PHASE_COUNT = 16;
     private static final int MAX_ORDER = 16;
-    // 面板高度比原来多留 22px 用于新增的"颜色"行（名称行与方位/类型表头之间）。
     private static final int FIXED_PANEL_HEIGHT = 322;
     private static final int LIST_AREA_HEIGHT = 120;
     private static final int PREVIEW_PANEL_WIDTH = PANEL_WIDTH / 2;
     private static final int PREVIEW_PANEL_HEIGHT = PANEL_WIDTH / 2;
     private static final int PREVIEW_PIXEL_SIZE = 4;
-    // 同方位像素簇的最大展开跨度：顺序上限提高到16后，簇内像素按此跨度收紧间距，
-    // 数量较多时间距会小于像素尺寸从而重叠，而不是把预览面板撑爆。
     private static final double PREVIEW_CLUSTER_MAX_SPAN = 60;
-    // 预览像素（含簇展开后的最大偏移）与预览面板边框之间必须保留的最小间隙。
     private static final int PREVIEW_EDGE_MARGIN = 15;
     private static final int COLOR_SWATCH_SIZE = 16;
     private static final int COLOR_SWATCH_GAP = 3;
@@ -47,7 +46,6 @@ public class TrafficLightsPatternEditorScreen extends Screen {
 
     private final List<TrafficLightsPatternPreset.Slot> slots = new ArrayList<>();
     private int phaseCount = 4;
-    // 构造函数中会立即赋值为随机颜色（新建）或已有预设颜色（编辑），此处的-1只是占位。
     private int presetColor = -1;
 
     private TextFieldWidget nameField;
@@ -63,9 +61,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     private int colorSwatchY;
     private List<PreviewPixel> previewPixels = new ArrayList<>();
     private double savedScrollAmount = 0;
-    // 非空时，保存成功后返回到来源的相位预设选择界面；为空则保存后直接关闭（如从计时界面打开时）。
     private final BlockPos returnPos;
-    // 保存的预设所归属的分类；从计时界面直接打开（无上下文）时默认归入"默认分类"。
     private final String category;
     private final Screen previousScreen;
 
@@ -167,9 +163,6 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         if (this.slotListWidget != null) {
             this.savedScrollAmount = this.slotListWidget.getScrollAmount();
         }
-        // 延迟到本次输入事件分发结束之后再重建：按钮的点击回调里同步 clearChildren() 会
-        // 销毁正在处理该事件的控件，MC 仍会继续向已销毁的控件派发 mouseReleased，
-        // 并把列表留在 dragging 状态，导致下一次点击被吞掉（表现为"要切换两次才生效"）。
         Minecraft.getInstance().execute(this::rebuildNow);
     }
 
@@ -258,11 +251,6 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         rebuild();
     }
 
-    /**
-     * 按 方位+类型 分桶，找出桶内顺序（order）重复的槽位。
-     * 与 {@link TrafficLightsPatternPreset#tryApplyToGroup} 的分桶校验逻辑保持一致，
-     * 用于编辑器内实时预览/校验，避免保存后才在应用时才发现冲突。
-     */
     private Set<TrafficLightsPatternPreset.Slot> findCollidingSlots() {
         Set<TrafficLightsPatternPreset.Slot> colliding = new HashSet<>();
         Map<String, List<TrafficLightsPatternPreset.Slot>> buckets = new HashMap<>();
@@ -338,15 +326,11 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         int radius = 80;
         int maxSpacing = PREVIEW_PIXEL_SIZE + 4;
 
-        // 像素点（左上角坐标）允许出现的范围，保证像素本体与簇内展开都离面板边框至少留出
-        // PREVIEW_EDGE_MARGIN，不会紧贴甚至超出边框。
         int minPixelX = previewPanelX + PREVIEW_EDGE_MARGIN;
         int maxPixelX = previewPanelX + PREVIEW_PANEL_WIDTH - PREVIEW_EDGE_MARGIN - PREVIEW_PIXEL_SIZE;
         int minPixelY = previewPanelY + PREVIEW_EDGE_MARGIN;
         int maxPixelY = previewPanelY + PREVIEW_PANEL_HEIGHT - PREVIEW_EDGE_MARGIN - PREVIEW_PIXEL_SIZE;
 
-        // 同方位的槽位作为一组整体居中排列（沿"从左到右"方向对称展开），
-        // 而不是从 order=1 开始单向偏移，避免同方位多个槽位时显示歪斜。
         Map<TrafficLightsPatternPreset.Direction8, List<TrafficLightsPatternPreset.Slot>> byDirection = new LinkedHashMap<>();
         for (TrafficLightsPatternPreset.Slot slot : slots) {
             byDirection.computeIfAbsent(slot.getDirection(), d -> new ArrayList<>()).add(slot);
@@ -363,15 +347,10 @@ public class TrafficLightsPatternEditorScreen extends Screen {
             double rightX = -dir.getOutZ();
             double rightZ = dir.getOutX();
 
-            // Direction8 只有 N/E/S/W，outX/outZ 及由其推出的 rightX/rightZ 必然是
-            // 0 或 ±1 的轴对齐单位向量（簇要么整体沿 X 展开，要么整体沿 Z 展开，不会斜向），
-            // 因此下面按“单轴可用余量”裁剪即可，无需通用的二维线段裁剪。
             baseX = Math.max(minPixelX, Math.min(maxPixelX, baseX));
             baseY = Math.max(minPixelY, Math.min(maxPixelY, baseY));
 
             int count = dirSlots.size();
-            // 序号上限提到16后，同方位像素簇按固定最大跨度收紧间距；
-            // 数量较多时间距会小于像素尺寸，使像素点相互重叠而不是撑爆预览面板。
             double spacing = count > 1 ? Math.min(maxSpacing, PREVIEW_CLUSTER_MAX_SPAN / (count - 1)) : maxSpacing;
 
             double edgeOffset = count > 1 ? (count - 1) / 2.0 * spacing : 0;
@@ -707,4 +686,3 @@ public class TrafficLightsPatternEditorScreen extends Screen {
 
     private record TooltipLine(String text, int color) {}
 }
-

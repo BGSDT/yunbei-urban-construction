@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+// 上海样式静态灯态的设置界面。
+
 public class TrafficLightsShanghaiStaticStateScreen extends Screen {
     private final BlockPos pos;
     private TrafficLightsBlockEntity.DirectionType selectedDirection = TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE;
@@ -76,7 +78,6 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
         TrafficLightsBlockEntity blockEntity = Minecraft.getInstance().level != null
                 ? (TrafficLightsBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos) : null;
 
-        // 显示读秒开关
         this.addDrawableChild(
                 ButtonWidget.builderCompat(
                         Text.literal(shouldShowCountdown ? "显示读秒: 开" : "显示读秒: 关"),
@@ -91,14 +92,12 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                         .build()
         );
 
-        // 秒数输入框
         secondsField = new TextFieldWidget(this.textRenderer, panelX + 30, panelY + 90, 160, 20, Text.literal(""));
         secondsField.setMaxLength(3);
         secondsField.setText(blockEntity != null ? String.valueOf(blockEntity.getFixedSeconds()) : "10");
         secondsField.setEditable(shouldShowCountdown);
         this.addDrawableChild(secondsField);
 
-        // 颜色按钮 - 红黄绿三色
         int colorButtonY = panelY + 150;
         this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.color.red"),
@@ -119,7 +118,6 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                         .build()
         );
 
-        // 保存取消按钮
         this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights_static_state.save"), button -> saveAndClose())
                         .dimensions(panelX + 40, panelY + 280, 60, 20)
@@ -192,11 +190,9 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                 0xFFFFFF
         );
 
-        // 面板背景
         context.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
         context.drawBorder(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        // 面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights_static_state.settings_title"),
@@ -205,7 +201,6 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                 0xFFCCCCCC
         );
 
-        // 秒数标签
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.literal("固定秒数:"),
@@ -213,7 +208,6 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // 颜色标签
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights_static_state.color_label"),
@@ -221,7 +215,6 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // 警告文本
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.literal("§e设置链接组时间序列后数据将被清除"),
@@ -262,7 +255,6 @@ public class TrafficLightsShanghaiStaticStateScreen extends Screen {
             packet.write(buf);
             NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
 
-            // 保存时才应用mountType的更改
             if (pendingMountType != null) {
                 TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) this.client.level.getBlockEntity(pos);
                 if (blockEntity != null && blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) {

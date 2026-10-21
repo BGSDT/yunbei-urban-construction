@@ -25,11 +25,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+// 红绿灯主设置界面：相位时长、灯位方向分配、相位勾选，面板固定 200×340。
+
 public class TrafficLightsScreen extends Screen {
     private final BlockPos pos;
     private final TrafficLightsBlockEntity blockEntity;
-    private final boolean isPavement;  // 是否为人行道红绿灯
-    private final boolean isCountdownTimer;  // 是否为读秒器
+    private final boolean isPavement;
+    private final boolean isCountdownTimer;
 
     private final List<DirectionOption> options;
     private DirectionListWidget listWidget;
@@ -43,17 +45,14 @@ public class TrafficLightsScreen extends Screen {
     private int panelX;
     private int panelY;
 
-    // 读秒器相关控件
     private ButtonWidget displayModeButton;
     private TextFieldWidget thresholdField;
-    private int displayMode;  // 0=全显, 1=半显
+    private int displayMode;
     private int threshold;
 
-    // 人行道红绿灯相关控件
     private ButtonWidget showSecondsButton;
     private boolean showSeconds;
 
-    // 底部操作按钮（人行道相位行数变化时需要随面板重新布局）
     private ButtonWidget saveButton;
     private ButtonWidget cancelButton;
     private ButtonWidget patternPresetButton;
@@ -70,7 +69,6 @@ public class TrafficLightsScreen extends Screen {
     private static final int PREVIEW_SIZE = 50;
     private static final int BUTTONS_Y_OFFSET = PREVIEW_Y_OFFSET + PREVIEW_SIZE + 15;
 
-    // 人行道面板：按实际相位滑块行数收紧高度，"显示秒数"按钮紧贴滑块区域下方
     private static final int PAVEMENT_ROW_GAP = 8;
     private static final int PAVEMENT_BOTTOM_MARGIN = 30;
 
@@ -79,7 +77,6 @@ public class TrafficLightsScreen extends Screen {
         this.pos = pos;
         this.blockEntity = (TrafficLightsBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos);
 
-        // 判断是否为人行道红绿灯或读秒器
         Block currentBlock = blockEntity.getBlockState().getBlock();
         this.isPavement = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
@@ -96,14 +93,11 @@ public class TrafficLightsScreen extends Screen {
         }
         this.options = createDirectionOptions();
 
-        // 读秒器相关初始化
         this.displayMode = blockEntity.getCountdownDisplayMode();
         this.threshold = blockEntity.getCountdownThreshold();
 
-        // 人行道红绿灯相关初始化
         this.showSeconds = blockEntity.isShowSeconds();
 
-        // 雾灯方块：如果图案为默认的 STRAIGHT_CIRCLE，则设置为 COLOR_FLASH（色闪黄色）
         boolean isFoggy = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get();
         TrafficLightsBlockEntity.DirectionType currentDirection = blockEntity.getDirectionType();
         if (isFoggy && currentDirection == TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE) {
@@ -139,7 +133,6 @@ public class TrafficLightsScreen extends Screen {
         int panelX, panelY;
 
         if (!isPavement && !isCountdownTimer) {
-            // 非人行道且非读秒器：左侧列表 + 右侧面板
             int listWidth = this.width / 3;
             this.listWidget = new DirectionListWidget(
                     this.client,
@@ -158,7 +151,6 @@ public class TrafficLightsScreen extends Screen {
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
         } else {
-            // 人行道或读秒器：面板居中（人行道按紧凑高度居中，读秒器保持原高度）
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - (isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT)) / 2;
         }
@@ -166,14 +158,11 @@ public class TrafficLightsScreen extends Screen {
         this.panelX = panelX;
         this.panelY = panelY;
 
-        // 相位滑块
         if (phaseCount > 1) {
             rebuildPhaseSliders();
         }
 
-        // 读秒器专属控件
         if (isCountdownTimer) {
-            // 显示模式按钮
             displayModeButton = this.addDrawableChild(
                     ButtonWidget.builderCompat(
                             Text.literal(displayMode == 0 ? "全显" : "半显"),
@@ -188,7 +177,6 @@ public class TrafficLightsScreen extends Screen {
                             .build()
             );
 
-            // 阈值输入框（全显模式下锁定，不可编辑）
             thresholdField = new TextFieldWidget(this.textRenderer, panelX + 110, panelY + PREVIEW_Y_OFFSET, 70, 20, Text.literal(""));
             thresholdField.setMaxLength(3);
             thresholdField.setText(String.valueOf(threshold));
@@ -196,7 +184,6 @@ public class TrafficLightsScreen extends Screen {
             this.addDrawableChild(thresholdField);
         }
 
-        // 人行道红绿灯专属控件：显示秒数开关（紧贴相位滑块区域下方）
         if (isPavement) {
             showSecondsButton = this.addDrawableChild(
                     ButtonWidget.builderCompat(
@@ -210,31 +197,26 @@ public class TrafficLightsScreen extends Screen {
             );
         }
 
-        // 保存/取消/使用相位预设按钮的y偏移：人行道按紧凑布局计算，其余保持原偏移
         int buttonsYOffset = isPavement ? getPavementButtonsYOffset() : BUTTONS_Y_OFFSET;
 
-        // 保存按钮
         saveButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
                         .dimensions(panelX + 30, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
 
-        // 取消按钮
         cancelButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
                         .dimensions(panelX + 110, panelY + buttonsYOffset, 60, 20)
                         .build()
         );
 
-        // 使用相位预设按钮：把整组的相位分配一次性应用为某个已保存的预设
         patternPresetButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("相位预设"), button -> openPatternSelectScreen())
                         .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
                         .build()
         );
 
-        // 切换安装模式按钮（墙面/路杆）- 一体化红绿灯不显示
         Block currentBlock = blockEntity != null ? blockEntity.getBlockState().getBlock() : null;
         boolean isIntegration = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
@@ -253,7 +235,6 @@ public class TrafficLightsScreen extends Screen {
         }
     }
 
-    // 人行道相位滑块行数变化后，重新计算紧凑面板高度并重建"显示秒数"及底部按钮位置
     private void relayoutPavementControls() {
         panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
         panelY = (this.height - getPanelHeight()) / 2;
@@ -339,8 +320,6 @@ public class TrafficLightsScreen extends Screen {
         }
     }
 
-    // ==================== 人行道紧凑布局计算 ====================
-
     private int getPavementSliderRows() {
         return (isPavement && phaseCount > 1) ? phaseIndices.size() : 0;
     }
@@ -373,14 +352,12 @@ public class TrafficLightsScreen extends Screen {
         int panelX, panelY;
 
         if (!isPavement && !isCountdownTimer) {
-            // 非人行道且非读秒器布局
             int listAreaWidth = this.width / 3;
             int rightAreaX = this.width / 3;
             int rightAreaWidth = this.width * 2 / 3;
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
 
-            // 标题
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
                     Text.translatable("text.yunbeiuc.traffic_lights.title"),
@@ -389,7 +366,6 @@ public class TrafficLightsScreen extends Screen {
                     0xFFFFFF
             );
 
-            // 当前选择
             if (selectedOption != null) {
                 context.drawTextWithShadow(
                         this.textRenderer,
@@ -401,11 +377,9 @@ public class TrafficLightsScreen extends Screen {
                 );
             }
         } else {
-            // 人行道或读秒器布局：面板居中（人行道按紧凑高度居中，读秒器保持原高度）
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - (isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT)) / 2;
 
-            // 居中标题
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
                     Text.translatable("text.yunbeiuc.traffic_lights.title"),
@@ -415,12 +389,10 @@ public class TrafficLightsScreen extends Screen {
             );
         }
 
-        // 右侧面板背景（人行道使用紧凑高度，其余使用原高度）
         int panelHeight = isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT;
         context.fill(panelX, panelY, panelX + RIGHT_PANEL_WIDTH, panelY + panelHeight, 0xAA333333);
         context.drawBorder(panelX, panelY, RIGHT_PANEL_WIDTH, panelHeight, 0xFFCCCCCC);
 
-        // 右侧面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights.settings_title"),
@@ -429,7 +401,6 @@ public class TrafficLightsScreen extends Screen {
                 0xFFCCCCCC
         );
 
-        // 相位标签
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights.phase_label"),
@@ -437,7 +408,6 @@ public class TrafficLightsScreen extends Screen {
                 0xFFAAAAAA
         );
 
-        // 当前相位显示
         context.drawTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights.phase_value",
@@ -446,7 +416,6 @@ public class TrafficLightsScreen extends Screen {
                 0xFFFFFF00
         );
 
-        // 读秒器显示模式标签
         if (isCountdownTimer) {
             context.drawTextWithShadow(
                     this.textRenderer,
@@ -463,7 +432,6 @@ public class TrafficLightsScreen extends Screen {
         }
 
         if (!isPavement && !isCountdownTimer && selectedOption != null) {
-            // 预览区域（仅非人行道显示）
             int previewSize = PREVIEW_SIZE;
             int previewX = panelX + 10;
             int previewY = panelY + PREVIEW_Y_OFFSET;
@@ -537,7 +505,6 @@ public class TrafficLightsScreen extends Screen {
             packet.write(buf);
             NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS, buf);
 
-            // 保存时才应用mountType的更改
             if (pendingMountType != null && blockEntity != null && blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) {
                 TrafficLightsBlock.MountType currentType = blockEntity.getBlockState().getValue(TrafficLightsBlock.TYPE);
                 if (pendingMountType != currentType) {
@@ -566,8 +533,6 @@ public class TrafficLightsScreen extends Screen {
         }
         return sb.toString();
     }
-
-    // ==================== 相位滑块管理 ====================
 
     private void rebuildPhaseSliders() {
         for (PhaseSliderWidget slider : phaseSliders) {
@@ -684,8 +649,6 @@ public class TrafficLightsScreen extends Screen {
         options.add(new DirectionOption(TrafficLightsBlockEntity.DirectionType.LANE_CLOSE,
                 "text.yunbeiuc.traffic_lights.direction.lane_close"));        return options;
     }
-
-    // ==================== 内部类保持不变 ====================
 
     private class PhaseSliderWidget extends SliderWidget {
         private final int phaseCount;

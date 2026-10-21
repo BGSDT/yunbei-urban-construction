@@ -17,7 +17,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-/** Version-neutral base for shared items: routes the vanilla tooltip callback to the compat hook. */
 public abstract class ItemCompat extends Item implements BlockCompatHooks {
     protected ItemCompat(Item.Properties properties) {
         super(properties);
@@ -41,4 +40,3 @@ public abstract class ItemCompat extends Item implements BlockCompatHooks {
         action.accept(stack.getOrCreateTag());
     }
 }
-

@@ -27,10 +27,6 @@ public final class HomepageRenderer {
         int hdrH = (int) (paneW * getAspect());
         if (hdrH > 0) {
             if (y + hdrH >= clipTop && y <= clipBottom) {
-                // 真实像素尺寸既作 region 也作 texture 尺寸，UV 恰好覆盖整张图。
-                // 原先传的是 (paneW, hdrH) 自洽尺寸，一旦 PNG 实际比例与
-                // getAspect() 推算结果不符（或缓存陈旧），UV 就会越界，
-                // 表现为只显示出图片的一小块、比例不对。
                 TextureAspectCache.Size size = TextureAspectCache.get(HEADER_TEX);
                 if (size != null) {
                     ctx.drawTexture(HEADER_TEX, navW, y, paneW, hdrH, 0, 0,
@@ -125,7 +121,6 @@ public final class HomepageRenderer {
         return y + 4;
     }
 
-    /** 项目卡片内两个链接按钮之间的竖向间距。 */
     private static final int LINK_GAP = 4;
 
     private static int drawProjectCard(DrawContext ctx, Font tr, int mx, int my,
@@ -133,7 +128,6 @@ public final class HomepageRenderer {
         int cardH = projectCardHeight(tr, w);
         if (y + cardH < clipTop || y > clipBottom) return y + cardH;
 
-        // 卡片本身不是按钮：整卡不随鼠标悬停变化，仅卡片内的链接有交互反馈
         ctx.fill(x, y, x + w, y + cardH, UIConstants.CLR_HOME_CARD_BG);
         ctx.drawBorder(x, y, w, cardH, UIConstants.CLR_HOME_CARD_STROKE);
         ctx.fill(x, y, x + 4, y + cardH, UIConstants.CLR_ACCENT);
@@ -152,7 +146,6 @@ public final class HomepageRenderer {
         return y + cardH;
     }
 
-    /** 绘制一个居中文案的链接按钮，返回其占用高度；悬停时记录 URL 供点击打开。 */
     private static int drawLinkButton(DrawContext ctx, Font tr, int mx, int my,
                                       int x, int y, int w, String labelKey, String url) {
         Component label = Text.translatable(labelKey);
@@ -175,7 +168,6 @@ public final class HomepageRenderer {
         return h;
     }
 
-    /** 项目卡片总高度（标题区 + 两个链接按钮 + 间距）；渲染与滚动高度共用，保证一致。 */
     private static int projectCardHeight(Font tr, int w) {
         int linkW = w - 28;
         int repoH = linkHeight(tr, Text.translatable("yunbeiuc.gui.homepage.repo.label"), linkW);
@@ -195,7 +187,6 @@ public final class HomepageRenderer {
         return false;
     }
 
-    /** 头部横幅的宽高比（高 / 宽）；纹理缺失时返回 0 表示不绘制。 */
     private static float getAspect() {
         TextureAspectCache.Size size = TextureAspectCache.get(HEADER_TEX);
         if (size == null || size.width <= 0 || size.height <= 0) return 0f;

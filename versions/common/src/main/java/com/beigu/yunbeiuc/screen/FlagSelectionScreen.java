@@ -39,7 +39,6 @@ public class FlagSelectionScreen extends Screen {
     protected void init() {
         super.init();
 
-        // 列表宽度调整为屏幕的1/2
         int listWidth = this.width / 2;
         this.listWidget = new FlagListWidget(
                 this.client,
@@ -57,19 +56,14 @@ public class FlagSelectionScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        // 绘制背景
         super.renderBackground(context);
 
-        // 渲染所有子部件
         super.render(context, mouseX, mouseY, delta);
 
-        // 列表区域宽度（屏幕的1/2）
         int listAreaWidth = this.width / 2;
 
-        // 列表区域左侧起始位置
         int listAreaLeft = 0;
 
-        // 标题在列表区域内居中
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.flag_selection.title"),
@@ -78,7 +72,6 @@ public class FlagSelectionScreen extends Screen {
                 0xFFFFFF
         );
 
-        // 当前选择信息在列表区域内左对齐
         if (selectedFlag != null) {
             context.drawTextWithShadow(
                     this.textRenderer,
@@ -89,7 +82,6 @@ public class FlagSelectionScreen extends Screen {
             );
         }
 
-        // 在右侧1/2区域添加预览面板
         drawPreviewPanel(context);
     }
 
@@ -97,17 +89,13 @@ public class FlagSelectionScreen extends Screen {
         int panelWidth = 200;
         int panelHeight = 230;
 
-        // 面板位置：右侧1/2区域的中心
         int panelX = this.width / 2 + (this.width / 2 - panelWidth) / 2;
         int panelY = (this.height - panelHeight) / 2;
 
-        // 绘制面板底色（深灰色半透明）
         context.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xAA333333);
 
-        // 绘制面板边框（浅灰色）
         context.drawBorder(panelX, panelY, panelWidth, panelHeight, 0xFFCCCCCC);
 
-        // 面板标题
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.translatable("text.yunbeiuc.flag_selection.preview_panel"),
@@ -117,24 +105,19 @@ public class FlagSelectionScreen extends Screen {
         );
 
         if (selectedFlag != null) {
-            // 计算等比例缩放后的预览图尺寸
             int previewSize = 100;
             int[] scaledDimensions = getScaledDimensions(previewSize);
             int scaledWidth = scaledDimensions[0];
             int scaledHeight = scaledDimensions[1];
 
-            // 计算居中位置
             int previewX = panelX + (panelWidth - scaledWidth) / 2;
             int previewY = panelY + 35;
 
-            // 绘制预览图背景框 - 贴合缩放后的图片尺寸
             context.fill(previewX - 2, previewY - 2, previewX + scaledWidth + 2, previewY + scaledHeight + 2, 0xFF000000);
             context.drawBorder(previewX - 2, previewY - 2, scaledWidth + 4, scaledHeight + 4, 0xFFFFFFFF);
 
-            // 绘制旗帜预览图
             drawFlagPreview(context, previewX, previewY, previewSize);
 
-            // 旗帜名称
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
                     Text.literal(selectedFlag.getName()),
@@ -143,7 +126,6 @@ public class FlagSelectionScreen extends Screen {
                     0xFFFFFF
             );
 
-            // 旗帜ID（颜色较浅）
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
                     Text.literal("ID: " + selectedFlag.getId()),
@@ -152,17 +134,14 @@ public class FlagSelectionScreen extends Screen {
                     0xAAAAAA
             );
 
-            // 保存按钮
             int saveButtonWidth = 80;
             int saveButtonHeight = 20;
             int saveButtonX = panelX + (panelWidth - saveButtonWidth) / 2;
             int saveButtonY = panelY + panelHeight - 40;
 
-            // 绘制保存按钮背景
             context.fill(saveButtonX, saveButtonY, saveButtonX + saveButtonWidth, saveButtonY + saveButtonHeight, 0xFF555555);
             context.drawBorder(saveButtonX, saveButtonY, saveButtonWidth, saveButtonHeight, 0xFFFFFFFF);
 
-            // 绘制保存按钮文字
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
                     Text.translatable("text.yunbeiuc.flag_selection.save_button"),
@@ -174,14 +153,12 @@ public class FlagSelectionScreen extends Screen {
     }
 
     private int[] getScaledDimensions(int maxSize) {
-        // 原图尺寸
         int originalWidth = 3543;
         int originalHeight = 9449;
 
-        // 计算等比例缩放后的尺寸
         float widthRatio = (float) maxSize / originalWidth;
         float heightRatio = (float) maxSize / originalHeight;
-        float scale = Math.min(widthRatio, heightRatio); // 取较小的比例保证完全显示
+        float scale = Math.min(widthRatio, heightRatio);
 
         int scaledWidth = (int) (originalWidth * scale);
         int scaledHeight = (int) (originalHeight * scale);
@@ -193,35 +170,28 @@ public class FlagSelectionScreen extends Screen {
         if (selectedFlag == null) return;
 
         try {
-            // 直接绘制旗帜纹理
             ResourceLocation texture = selectedFlag.getTexture();
 
-            // 原图尺寸
             int originalWidth = 1062;
             int originalHeight = 2834;
 
-            // 计算等比例缩放后的尺
             float widthRatio = (float) maxSize / originalWidth;
             float heightRatio = (float) maxSize / originalHeight;
-            float scale = Math.min(widthRatio, heightRatio); // 取较小的比例保证完全显示
+            float scale = Math.min(widthRatio, heightRatio);
 
             int scaledWidth = (int) (originalWidth * scale);
             int scaledHeight = (int) (originalHeight * scale);
 
-            // 计算居中位置
             int centeredX = x;
             int centeredY = y;
 
-            // 绘制等比例缩放的图片
             context.drawTexture(texture, centeredX, centeredY, scaledWidth, scaledHeight, 0, 0, originalWidth, originalHeight, originalWidth, originalHeight);
 
         } catch (Exception e) {
-            // 如果图片加载失败，绘制备用矩形
             int[] scaledDimensions = getScaledDimensions(maxSize);
             context.fill(x, y, x + scaledDimensions[0], y + scaledDimensions[1], 0x44FF0000);
             context.drawBorder(x, y, scaledDimensions[0], scaledDimensions[1], 0xFFFF0000);
 
-            // 错误信息
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
                     Text.translatable("text.yunbeiuc.flag_selection.load_failed"),
@@ -242,13 +212,11 @@ public class FlagSelectionScreen extends Screen {
             int panelX = this.width / 2 + (this.width / 2 - panelWidth) / 2;
             int panelY = (this.height - panelHeight) / 2;
 
-            // 保存按钮位置
             int saveButtonWidth = 80;
             int saveButtonHeight = 20;
             int saveButtonX = panelX + (panelWidth - saveButtonWidth) / 2;
             int saveButtonY = panelY + panelHeight - 40;
 
-            // 如果点击了保存按钮区域
             if (mouseX >= saveButtonX && mouseX <= saveButtonX + saveButtonWidth &&
                     mouseY >= saveButtonY && mouseY <= saveButtonY + saveButtonHeight) {
                 saveSelection();
@@ -264,14 +232,12 @@ public class FlagSelectionScreen extends Screen {
         if (selectedFlag != null) {
             System.out.println("保存旗帜选择: " + selectedFlag.getId() + " - " + selectedFlag.getName());
 
-            // 发送网络数据包到服务器
             if (client != null && client.getConnection() != null) {
                 FriendlyByteBuf buf = NetworkCompat.newBuffer();
                 new FlagUpdatePacket(blockPos, selectedFlag.getId()).write(buf);
                 NetworkCompat.sendToServer(ModMessages.UPDATE_FLAG, buf);
             }
 
-            // 客户端预览（可选，保持即时反馈）
             if (client != null && client.level != null) {
                 var blockEntity = client.level.getBlockEntity(blockPos);
                 if (blockEntity instanceof com.beigu.yunbeiuc.entity.FlagBlockEntity) {

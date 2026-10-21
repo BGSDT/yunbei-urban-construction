@@ -17,61 +17,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * 轨道相位编辑界面：手持**普通魔杖**
- * （{@code com.beigu.yunbeiuc.item.custom.PhaseWand}）右键一条已链接的轨道打开。
- *
- * <p>只做一件事——选择「哪些相位放行本轨道」。一条轨道可以同时被多个相位放行
- * （例如直行与左转共用一段轨道），所以用一组相位滑块，而不是单选。
- *
- * <h3>版式与其它红绿灯页面完全一致</h3>
- * 控件与布局照搬 {@code TrafficLightsScreen}，且**面板尺寸固定**——
- * {@value #PANEL_WIDTH}×{@value #PANEL_HEIGHT} 居中，滑块区固定占
- * {@code MAX_PHASE_SLIDERS * 28} 像素，所以加减槽位时面板不会改变大小、也不会移动：
- * <ul>
- *   <li>顶部居中白色标题（{@code y = 10}，{@code 0xFFFFFF}）；</li>
- *   <li>居中 {@value #PANEL_WIDTH} 宽面板：{@code 0xAA333333} 半透明底 + {@code 0xFFCCCCCC} 边框；</li>
- *   <li>面板内 {@code panelY + 12} 处一行 {@code 0xFFCCCCCC} 面板标题，下面标签 {@code 0xFFAAAAAA}
- *       / 数值 {@code 0xFFFFFF00}；</li>
- *   <li>相位行是 {@code SliderWidget}（{@code 140×20}，起点 {@code panelY + 68}，行距 {@code 28}），
- *       右侧 {@code ×} 删除槽位、首行右侧 {@code +} 新增槽位；</li>
- *   <li>{@code panelY + 255} 处 {@code 保存} / {@code 取消}（{@code 60×20}），
- *       下一行 {@code 全选} / {@code 全不选}（{@code 65×20}）。</li>
- * </ul>
- *
- * <p>滑块槽位上限 {@value #MAX_PHASE_SLIDERS} 个，与红绿灯页面一致。
- *
- * <h3>颜色语义与红绿灯一致（见 {@link PhaseColors}）</h3>
- * <b>在滑块里 = 该相位放行这条轨道（绿）</b>，不在 = 不放行（红）。
- * 世界里这条轨道的高亮线与悬浮标签用的是同一套判断，两边能直接对上号；
- * 当前正在运行的相位那一行滑块边框会加亮成白色。
- *
- * <p>结果以位掩码保存，通过 {@link RailPhaseUpdatePacket} 发回服务端；
- * 服务端会裁剪掩码范围并重新发布信号，列车在未放行的相位里就会在轨道前方停车。
- */
+// 轨道相位编辑界面：勾选哪些相位放行这条轨道，保存后发 RailPhaseUpdatePacket。
+// 面板固定 200×340，布局常量照抄 TrafficLightsScreen，勿按内容算高度；滑块上限 4。
+
 public class RailPhaseScreen extends Screen {
 
-    /** 面板宽度，与 {@code TrafficLightsScreen.RIGHT_PANEL_WIDTH} 一致。 */
     private static final int PANEL_WIDTH = 200;
-    /** 面板高度，与 {@code TrafficLightsScreen.RIGHT_PANEL_HEIGHT} 一致。**固定值**，不随槽位增删变化。 */
     private static final int PANEL_HEIGHT = 340;
-    /** 相位滑块区起点（相对面板），与红绿灯页面一致。 */
     private static final int PHASE_SLIDER_START_Y = 68;
-    /** 相位滑块行距，与红绿灯页面一致。 */
     private static final int PHASE_SLIDER_ROW_HEIGHT = 28;
-    /** 滑块槽位上限，与红绿灯页面一致。 */
     private static final int MAX_PHASE_SLIDERS = 4;
-    /**
-     * 滑块区**固定**占用的高度：按槽位上限算，而不是按当前槽位数算。
-     *
-     * <p>这是「布局跟红绿灯页面一致」的关键。{@code TrafficLightsScreen} 用的就是
-     * {@code MAX_PHASE_SLIDERS * PHASE_SLIDER_ROW_HEIGHT} 这个定值，
-     * 所以加减槽位时面板尺寸、位置以及下方按钮都不会跟着上下跳。
-     */
     private static final int PHASE_SLIDER_AREA_HEIGHT = MAX_PHASE_SLIDERS * PHASE_SLIDER_ROW_HEIGHT;
-    /** 「当前相位」状态行的 y 偏移（相对面板）：紧贴滑块区下方，位置同红绿灯页面的内容区。 */
     private static final int STATE_Y_OFFSET = PHASE_SLIDER_START_Y + PHASE_SLIDER_AREA_HEIGHT + 10;
-    /** 保存 / 取消 那一行的 y 偏移（相对面板），与红绿灯页面一致。 */
     private static final int BUTTONS_Y_OFFSET = 255;
 
     private final BlockPos start;
@@ -80,7 +37,6 @@ public class RailPhaseScreen extends Screen {
     private final int phaseCount;
     private final int[] phaseTimes;
 
-    /** 已勾选放行的相位索引（0 起）。保存时转成位掩码。 */
     private final List<Integer> releasedPhases = new ArrayList<>();
     private final List<PhaseSliderWidget> sliders = new ArrayList<>();
     private final List<ButtonWidget> removeButtons = new ArrayList<>();
@@ -108,12 +64,9 @@ public class RailPhaseScreen extends Screen {
             }
         }
         if (this.releasedPhases.isEmpty() && this.phaseCount > 0) {
-            // 与红绿灯页面一样：至少留一个槽位，否则玩家没有可拖的东西
             this.releasedPhases.add(0);
         }
     }
-
-    // ------------------------------------------------------------------ 布局
 
     @Override
     protected void init() {
@@ -137,16 +90,11 @@ public class RailPhaseScreen extends Screen {
         rebuildSliders();
     }
 
-    /**
-     * 面板是**固定尺寸**并居中，跟 {@code TrafficLightsScreen} 一模一样：
-     * 加减滑块槽位时面板不会改变大小、也不会移动。
-     */
     private void layoutPanel() {
         this.panelX = (this.width - PANEL_WIDTH) / 2;
         this.panelY = (this.height - PANEL_HEIGHT) / 2;
     }
 
-    /** 与红绿灯页面同一套：先撤掉旧控件，再按当前槽位重建。 */
     private void rebuildSliders() {
         for (PhaseSliderWidget slider : this.sliders) {
             this.remove(slider);
@@ -232,37 +180,21 @@ public class RailPhaseScreen extends Screen {
         relayout();
     }
 
-    /**
-     * 槽位数量变了 → 只需要重建滑块。
-     *
-     * <p>面板是**固定尺寸**、按钮是**固定位置**（都跟红绿灯页面一致），
-     * 所以这里不重新定位任何控件，界面不会因为加减槽位而抖动。
-     *
-     * <p>也不把整个控件列表清空重建：这些回调是在按钮自己的 {@code mouseClicked} 里触发的，
-     * 而那一层正在遍历子控件列表，整体清空会有并发修改风险
-     * （{@code TrafficLightsScreen} 也是只重建滑块，同一套做法）。
-     */
     private void relayout() {
         rebuildSliders();
     }
 
-    // ------------------------------------------------------------------ 渲染
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        // 与其它红绿灯页面一致：先压暗世界
         this.renderBackground(context);
 
-        // 顶部居中标题（红绿灯页面也是画在这里，而不是画在面板里）
         context.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("text.yunbeiuc.rail_phase.title"), this.width / 2, 10, 0xFFFFFF);
 
-        // 面板（固定尺寸，与红绿灯页面同宽同高）
         context.fill(this.panelX, this.panelY,
                 this.panelX + PANEL_WIDTH, this.panelY + PANEL_HEIGHT, 0xAA333333);
         context.drawBorder(this.panelX, this.panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
 
-        // 面板标题 / 标签 / 数值：位置与配色都对齐 TrafficLightsScreen
         context.drawCenteredTextWithShadow(this.textRenderer,
                 Text.translatable("text.yunbeiuc.traffic_lights.settings_title"),
                 this.panelX + PANEL_WIDTH / 2, this.panelY + 12, 0xFFCCCCCC);
@@ -279,8 +211,6 @@ public class RailPhaseScreen extends Screen {
                     this.panelX + PANEL_WIDTH / 2, this.panelY + PHASE_SLIDER_START_Y, 0xFFFF5555);
         }
 
-        // 当前正在运行的相位：这一行用「这条轨道此刻放不放行」的颜色写出来，
-        // 与世界里轨道高亮线 / 悬浮标签是同一个判断（绿=放行 / 黄=即将变红 / 红=不放行）
         final int activePhase = resolveActivePhase();
         if (activePhase >= 0) {
             context.drawCenteredTextWithShadow(this.textRenderer,
@@ -293,7 +223,6 @@ public class RailPhaseScreen extends Screen {
                     this.panelX + PANEL_WIDTH / 2, this.panelY + STATE_Y_OFFSET, 0xFFAAAAAA);
         }
 
-        // 滑块等控件由 super 统一渲染（它们会自己画在当前相位那一行上）
         super.render(context, mouseX, mouseY, delta);
     }
 
@@ -315,9 +244,6 @@ public class RailPhaseScreen extends Screen {
         return false;
     }
 
-    // ------------------------------------------------------------------ 数据
-
-    /** 已选相位的中文列表，例如 {@code "1, 3"}；一个都没有时是 {@code "-"}。 */
     private String formatReleased() {
         if (this.releasedPhases.isEmpty()) return "-";
         final List<Integer> sorted = new ArrayList<>(this.releasedPhases);
@@ -330,11 +256,6 @@ public class RailPhaseScreen extends Screen {
         return sb.toString();
     }
 
-    /**
-     * 从客户端的方块实体读当前活动相位；读不到返回 -1。
-     *
-     * <p>相位是按周期起点 + 本地游戏刻现算的，所以客户端拿到的值与服务端一致。
-     */
     private int resolveActivePhase() {
         final Level level = Minecraft.getInstance().level;
         if (level == null || this.groupMember == null) return -1;
@@ -345,12 +266,6 @@ public class RailPhaseScreen extends Screen {
         return -1;
     }
 
-    /**
-     * 这条轨道此刻的红绿灯状态色（绿=放行 / 黄=黄灯段 / 红=不放行）。
-     *
-     * <p>直接问客户端的相位组方块实体，与世界里高亮线用的是同一个方法，
-     * 所以界面上的「当前相位」颜色与轨道上的颜色必然一致。
-     */
     private int resolveStateColor() {
         final Level level = Minecraft.getInstance().level;
         if (level == null || this.groupMember == null) return PhaseColors.UNKNOWN;
@@ -362,7 +277,7 @@ public class RailPhaseScreen extends Screen {
         if (binding == null) return PhaseColors.UNKNOWN;
         switch (group.getRailLightState(binding)) {
             case GREEN:
-            case GRAY:   // 绿闪：仍然算放行
+            case GRAY:
                 return PhaseColors.RELEASED;
             case YELLOW:
                 return PhaseColors.WARNING;
@@ -383,14 +298,6 @@ public class RailPhaseScreen extends Screen {
         this.close();
     }
 
-    // ------------------------------------------------------------------ 滑块
-
-    /**
-     * 相位滑块：拖动选择相位序号，同一组内不允许重复。
-     *
-     * <p>与 {@code TrafficLightsScreen} 里的同名内部类同一套逻辑，
-     * 只是写进的是本界面的 {@link #releasedPhases}。
-     */
     private class PhaseSliderWidget extends SliderWidget {
         private final int slotIndex;
         private int currentPhase;

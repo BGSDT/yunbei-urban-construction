@@ -9,7 +9,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-/** Drawing operations for the Minecraft 1.21.1 GUI API. */
 public final class RenderPlatformImpl implements RenderPlatform {
     private BufferBuilder lineBuffer;
     @Override
@@ -31,6 +30,21 @@ public final class RenderPlatformImpl implements RenderPlatform {
                        com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
                        float red, float green, float blue, float alpha) {
         consumer.addVertex(pose.pose(), x, y, z).setColor(red, green, blue, alpha);
+    }
+
+    @Override
+    public void line(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                     com.mojang.blaze3d.vertex.PoseStack.Pose pose,
+                     float x1, float y1, float z1, float x2, float y2, float z2,
+                     float red, float green, float blue, float alpha) {
+        final float dx = x2 - x1;
+        final float dy = y2 - y1;
+        final float dz = z2 - z1;
+        // 1.21.1 起 vertex/color/normal 改名为 addVertex/setColor/setNormal，且不再需要 endVertex()。
+        consumer.addVertex(pose.pose(), x1, y1, z1).setColor(red, green, blue, alpha)
+                .setNormal(pose, dx, dy, dz);
+        consumer.addVertex(pose.pose(), x2, y2, z2).setColor(red, green, blue, alpha)
+                .setNormal(pose, dx, dy, dz);
     }
 
     @Override

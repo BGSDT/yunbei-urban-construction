@@ -8,11 +8,8 @@ import net.minecraft.network.chat.Component;
 
 import java.util.Random;
 
-/**
- * 新建二级菜单（分类）弹窗：名称输入框 + 颜色色块（点击复用 {@link ColorPickerScreen}）。
- * 只用于"新建"，不支持编辑已有分类（固定分类不可改，用户分类目前也不支持改名/改色，
- * 与需求"二级菜单可以新建，可以自定义颜色"一致，未额外扩展）。
- */
+// 新建分类弹窗：名称输入 + 颜色色块，只用于新建，不支持编辑已有分类。
+
 public class TrafficLightsPatternCategoryEditorScreen extends Screen {
     private static final Random RANDOM = new Random();
     private static final int PANEL_WIDTH = 220;

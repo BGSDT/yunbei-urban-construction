@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SoundBarrier1 extends DirectionalBlockCompat {
     public static final EnumProperty<BedPart> PART = BlockStateProperties.BED_PART;
-    public static final IntegerProperty LAYER = IntegerProperty.create("layer", 0, 2); // 0=底, 1=中, 2=顶
+    public static final IntegerProperty LAYER = IntegerProperty.create("layer", 0, 2);
 
     private static final VoxelShape SHAPE_N = Block.box(0, 0, 7.6, 16, 16, 8.4);
     private static final VoxelShape SHAPE_S = Block.box(0, 0, 7.6, 16, 16, 8.4);
@@ -52,7 +52,6 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
         BlockPos pos = ctx.getClickedPos();
         BlockPos rightPos = pos.relative(direction.getClockWise());
 
-        // 检查右侧方块和中层、顶层方块是否可放置
         Level world = ctx.getLevel();
         if (world.getBlockState(rightPos).canBeReplaced(ctx) &&
                 world.getBlockState(pos.above()).canBeReplaced(ctx) &&
@@ -73,12 +72,10 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
             Direction direction = state.getValue(FACING);
             BlockPos rightPos = pos.relative(direction.getClockWise());
 
-            // 放置右侧同层方块 (HEAD)
             world.setBlock(rightPos,
                     state.setValue(PART, BedPart.HEAD).setValue(LAYER, 0),
                     VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
 
-            // 放置 FOOT 和 HEAD 的中层
             world.setBlock(pos.above(),
                     state.setValue(PART, BedPart.FOOT).setValue(LAYER, 1),
                     VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
@@ -86,7 +83,6 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
                     state.setValue(PART, BedPart.HEAD).setValue(LAYER, 1),
                     VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
 
-            // 放置 FOOT 和 HEAD 的顶层
             world.setBlock(pos.above(2),
                     state.setValue(PART, BedPart.FOOT).setValue(LAYER, 2),
                     VersionServices.blocks().updateAll() | VersionServices.blocks().updateImmediate());
@@ -103,7 +99,6 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
         int layer = state.getValue(LAYER);
 
         if (!world.isClientSide && player.isCreative()) {
-            // 破坏其他所有方块
             breakOtherParts(world, pos, part, direction, layer, player);
         }
     }
@@ -114,10 +109,8 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
                 pos.relative(direction.getClockWise()) :
                 pos.relative(direction.getCounterClockWise());
 
-        // 破坏同层对应方块
         breakBlockIfExists(world, otherPos, player);
 
-        // 破坏其他层对应方块
         for (int i = 0; i < 3; i++) {
             if (i != layer) {
                 breakBlockIfExists(world,
@@ -171,7 +164,6 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
             Direction direction = state.getValue(FACING);
             int layer = state.getValue(LAYER);
 
-            // 检查其他部分是否还存在
             BlockPos otherPos = (part == BedPart.FOOT) ?
                     pos.relative(direction.getClockWise()) :
                     pos.relative(direction.getCounterClockWise());

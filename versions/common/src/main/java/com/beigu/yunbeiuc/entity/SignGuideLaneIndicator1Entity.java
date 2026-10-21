@@ -18,7 +18,6 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
 
     public SignGuideLaneIndicator1Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_LANE_INDICATOR_1_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -29,7 +28,6 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
         this.direction2 = ArrowDirection.fromName(nbt.getString("direction2"));
         this.direction3 = ArrowDirection.fromName(nbt.getString("direction3"));
         this.direction4 = ArrowDirection.fromName(nbt.getString("direction4"));
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -44,12 +42,6 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideLaneIndicator1EntityRenderer 的固定布局生成默认文本行：
-     * renderArrow(direction1..4, -17.5/-6/6/17.5, 3, size 0.9) → 4 条 -texture 行，
-     * 纹理由 {arrowN} 占位符按 ArrowDirection 枚举选择（映射与原渲染器 switch 一致，
-     * 其中 LEFT_TURN_AROUND 对应 straight_left_turn_around 纹理）。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -85,7 +77,6 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
     @Override
     public String getPlaceholderValue(String key) {
         return switch (key) {
-            // 对应原 renderArrow 的 switch：箭头纹理文件名段（LEFT_TURN_AROUND 用 straight_left_turn_around）
             case "arrow1" -> arrowTexture(direction1);
             case "arrow2" -> arrowTexture(direction2);
             case "arrow3" -> arrowTexture(direction3);

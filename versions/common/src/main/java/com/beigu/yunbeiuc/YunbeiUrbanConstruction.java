@@ -7,6 +7,7 @@ import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.network.ModMessages;
+import com.beigu.yunbeiuc.signal.mtr.MtrVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,7 +17,6 @@ YunbeiUrbanConstruction {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static void init() {
-        // First register blocks, then items (which depend on blocks via BlockItem)
         MunicipalBlocks.init();
         RoadBlocks.init();
         SignBlocks.init();
@@ -25,5 +25,7 @@ YunbeiUrbanConstruction {
         ModBlockEntities.init();
         ModMessages.registerC2SPackets();
         ModMessages.registerS2CPackets();
+
+        LOGGER.info("[yunbeiuc] MTR 联动：{}", MtrVersion.detect().displayName());
     }
 }

@@ -42,6 +42,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+// 红绿灯方块：MOUNT（安装方式，驱动模型与图案/读秒的 z 偏移）、LIGHT_STATE、TYPE 等状态都在这里。
+// 对链接魔杖返回 PASS，让物品的 useOn 能接管（方块 use 先于物品 useOn）。
+// 敲掉组内任意一盏灯都会解散整组（时间表与轨道绑定一起清空），所以必须给玩家明确提示。
+
 public class TrafficLightsBlock extends TickingEntityBlock {
 
     private static final VoxelShape SHAPE_N = Block.box(0, 4, 0, 16, 12, 8);
@@ -49,31 +53,26 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     private static final VoxelShape SHAPE_S = Block.box(0, 4, 8, 16, 12, 16);
     private static final VoxelShape SHAPE_W = Block.box(0, 4, 0, 8, 12, 16);
 
-    // 普通竖装/黄色竖装：x[2.75,13.25] y[-4.75,20.75]（南向基准 z[8.5,16]）
     private static final VoxelShape VERTICAL_N = Block.box(2.75, -4.75, 0, 13.25, 20.75, 7.5);
     private static final VoxelShape VERTICAL_S = Block.box(2.75, -4.75, 8.5, 13.25, 20.75, 16);
     private static final VoxelShape VERTICAL_E = Block.box(8.5, -4.75, 2.75, 16, 20.75, 13.25);
     private static final VoxelShape VERTICAL_W = Block.box(0, -4.75, 2.75, 7.5, 20.75, 13.25);
 
-    // 横装/台北式：x[-4.75,20.75] y[2.75,13.25]（南向基准 z[8.5,16]）
     private static final VoxelShape HORIZONTAL_N = Block.box(-4.75, 2.75, 0, 20.75, 13.25, 7.5);
     private static final VoxelShape HORIZONTAL_S = Block.box(-4.75, 2.75, 8.5, 20.75, 13.25, 16);
     private static final VoxelShape HORIZONTAL_E = Block.box(8.5, 2.75, -4.75, 16, 13.25, 20.75);
     private static final VoxelShape HORIZONTAL_W = Block.box(0, 2.75, -4.75, 7.5, 13.25, 20.75);
 
-    // 人行道：x[2.75,13.25] y[-0.25,16.25]（南向基准 z[8.5,16]）
     private static final VoxelShape PAVEMENT_N = Block.box(2.75, -0.25, 0, 13.25, 16.25, 7.5);
     private static final VoxelShape PAVEMENT_S = Block.box(2.75, -0.25, 8.5, 13.25, 16.25, 16);
     private static final VoxelShape PAVEMENT_E = Block.box(8.5, -0.25, 2.75, 16, 16.25, 13.25);
     private static final VoxelShape PAVEMENT_W = Block.box(0, -0.25, 2.75, 7.5, 16.25, 13.25);
 
-    // 单灯（横式/竖式）：x[2.75,13.25] y[2.75,13.25]（南向基准 z[8.5,16]）
     private static final VoxelShape SINGLE_N = Block.box(2.75, 2.75, 0, 13.25, 13.25, 7.5);
     private static final VoxelShape SINGLE_S = Block.box(2.75, 2.75, 8.5, 13.25, 13.25, 16);
     private static final VoxelShape SINGLE_E = Block.box(8.5, 2.75, 2.75, 16, 13.25, 13.25);
     private static final VoxelShape SINGLE_W = Block.box(0, 2.75, 2.75, 7.5, 13.25, 13.25);
 
-    // 读秒器：x[0,16] y[2,16]（南向基准 z[7.75,16]）
     private static final VoxelShape COUNTDOWN_N = Block.box(0, 2, 0, 16, 16, 8.25);
     private static final VoxelShape COUNTDOWN_S = Block.box(0, 2, 7.75, 16, 16, 16);
     private static final VoxelShape COUNTDOWN_E = Block.box(7.75, 2, 0, 16, 16, 16);
@@ -82,12 +81,10 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.create("light_state", LightState.class);
     public static final EnumProperty<MountType> TYPE = EnumProperty.create("type", MountType.class);
-    /** 实际安装方式：驱动方块模型与图案/读秒的 z 偏移。自适应时随背后方块变化，墙面/路杆是玩家的固定选择 */
     public static final EnumProperty<Mount> MOUNT = EnumProperty.create("mount", Mount.class);
 
     public TrafficLightsBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        // 默认「自适应」：放置后自动按背后方块决定实际安装方式
         this.registerDefaultState(
                 stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIGHT_STATE, LightState.RED)
                         .setValue(TYPE, MountType.AUTO).setValue(MOUNT, Mount.WALL)
@@ -175,12 +172,10 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState state = defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
 
-        // 雾灯方块默认为黄色
         if (this == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
             state = state.setValue(LIGHT_STATE, LightState.YELLOW);
         }
 
-        // 新放置的灯默认为「自适应」，并按背后方块先解析一次实际安装方式
         Direction facing = state.getValue(FACING);
         BlockPos behindPos = ctx.getClickedPos().relative(facing.getOpposite());
         BlockState behindState = ctx.getLevel().getBlockState(behindPos);
@@ -190,12 +185,6 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         return state;
     }
 
-    /**
-     * 判断后方方块是否属于"路杆"家族（决定实际安装方式是路杆还是墙面）。
-     *
-     * <p>必须覆盖模组里全部路杆/路灯类方块：漏掉任何一个，装在它上面的灯都会被判成墙面模式，
-     * 自适应就会选到墙面模式的 z 偏移，模型/图案/读秒位置跟着错位。
-     */
     private static boolean isPoleBlock(Block block) {
         return block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS.get()
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB.get()
@@ -217,16 +206,10 @@ public class TrafficLightsBlock extends TickingEntityBlock {
                 || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHTING_LAMP.get();
     }
 
-    /** 按后方方块判定实际安装方式 */
     private static Mount mountOf(BlockState behindState) {
         return behindState != null && isPoleBlock(behindState.getBlock()) ? Mount.POLE : Mount.WALL;
     }
 
-    /**
-     * 该状态应有的实际安装方式。
-     *
-     * <p>墙面 / 路杆是玩家的明确选择，永远保持所选；只有「自适应」才按背后方块实时解析。
-     */
     public static Mount expectedMount(Level world, BlockPos pos, BlockState state) {
         MountType type = state.getValue(TYPE);
         if (type == MountType.SIMPLE) return Mount.WALL;
@@ -235,13 +218,11 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         return mountOf(world.getBlockState(pos.relative(state.getValue(FACING).getOpposite())));
     }
 
-    /** 切换安装方式：同时写入玩家选择（type）与解析后的实际安装方式（mount） */
     public static BlockState applyMountType(Level world, BlockPos pos, BlockState state, MountType type) {
         BlockState updated = state.setValue(TYPE, type);
         return updated.setValue(MOUNT, expectedMount(world, pos, updated));
     }
 
-    /** 实际安装方式（供渲染端取 z 偏移）：墙面 → SIMPLE，路杆 → POLE */
     public static MountType resolveMountType(Level world, BlockPos pos, BlockState state) {
         return state.getValue(MOUNT) == Mount.POLE ? MountType.POLE : MountType.SIMPLE;
     }
@@ -250,7 +231,6 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     public BlockState updateShape(BlockState state, Direction direction,
                                                 BlockState neighborState, LevelAccessor world,
                                                 BlockPos pos, BlockPos neighborPos) {
-        // 只有「自适应」跟随后方方块；墙面/路杆是玩家的明确选择，后方方块怎么变都不改
         if (direction == state.getValue(FACING).getOpposite() && state.getValue(TYPE) == MountType.AUTO) {
             Mount mount = mountOf(neighborState);
             if (mount != state.getValue(MOUNT)) {
@@ -269,22 +249,18 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
 
-        // 魔杖交互：右键打开面板（安装方式在面板内切换，不再用 Shift+右键）
         if (heldItem.getItem() == ModItems.WAND.get()) {
             if (world .isClientSide) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
                     if (!trafficLightsBE.isInGroup()) {
-                        // 未分组：打开静态状态设置界面
                         openStaticStateScreen(pos);
                         return InteractionResult.sidedSuccess(true);
                     }
                     if (!trafficLightsBE.hasTimings()) {
-                        // 已分组但未设置时间表：打开时间设置界面
                         openTimingScreen(pos);
                         return InteractionResult.sidedSuccess(true);
                     }
-                    // 打开GUI
                     openDisplayScreen(pos);
                 }
             }
@@ -313,16 +289,12 @@ public class TrafficLightsBlock extends TickingEntityBlock {
                     || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
 
             if (isCountdownTimer) {
-                // 读秒器：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
                 Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
             } else if (isShanghai) {
-                // 上海红绿灯：有方向列表 + 秒数输入 + 是否显示秒数开关
                 Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
             } else if (isPavement) {
-                // 人行道红绿灯：无方向列表，仅选颜色 + 秒数输入 + 是否显示秒数开关
                 Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsSimpleStaticStateScreen(pos));
             } else {
-                // 普通红绿灯（含单灯横式/竖式）：有方向列表，无秒数相关控件
                 Minecraft.getInstance().setScreen(new TrafficLightsStaticStateScreen(pos));
             }
         }
@@ -338,9 +310,6 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
     @Override
     protected void tickCompat(BlockState state, ServerLevel world, BlockPos pos) {
-        // 旧存档迁移：老版本的方块状态里没有 mount 属性，读取时会被填成默认值（墙面）。
-        // 这里按 type 与后方方块把 mount 校正回来——玩家之前选的墙面/路杆/自适应全部沿用，
-        // 只有确实与应有值不符时才写一次方块状态。
         Mount expected = expectedMount(world, pos, state);
         if (state.getValue(MOUNT) != expected) {
             state = state.setValue(MOUNT, expected);
@@ -364,32 +333,34 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
     @Override
     public void playerWillDestroyCompat(Level world, BlockPos pos, BlockState state, Player player) {
-        // 在方块实体被移除前记录它，供 onRemove 取回并拆除链接组
-        TrafficLightsGroupTracker.track(world, pos);
+        TrafficLightsGroupTracker.track(world, pos, player);
     }
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
-            // 注意：1.20.1 的 LevelChunk#setBlockState 会先移除方块实体并 setRemoved()，
-            // 再调用 Block#onRemove。因此此处 world.getBlockEntity(pos) 对本方块恒为 null。
-            // 必须改用 onRemove 之前缓存下来的方块实体（见 playerWillDestroy / 摧毁事件），
-            // 否则整个链接组的状态不会被清理。
             unloadGroupAt(world, pos);
             super.onRemove(state, world, pos, newState, moved);
         }
     }
 
-    /**
-     * 在方块实体被移除前拆除链接组。
-     * 服务端在玩家破坏方块时调用，确保组内所有存活成员的状态被清空并同步到客户端。
-     */
     public static void unloadGroupAt(Level world, BlockPos pos) {
         if (world == null || world.isClientSide) return;
-        TrafficLightsBlockEntity trafficLightsBE = TrafficLightsGroupTracker.take(pos);
-        if (trafficLightsBE == null) return;
-        if (trafficLightsBE.getGroupId() != null) {
-            trafficLightsBE.unloadGroup();
+        TrafficLightsGroupTracker.Pending pending = TrafficLightsGroupTracker.take(pos);
+        if (pending == null) return;
+        TrafficLightsBlockEntity trafficLightsBE = pending.entity;
+        if (trafficLightsBE.getGroupId() == null) return;
+
+        final int members = trafficLightsBE.getGroupPositions() == null
+                ? 0 : trafficLightsBE.getGroupPositions().size();
+        trafficLightsBE.unloadGroup();
+
+        if (pending.player != null) {
+            pending.player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal(
+                    "§7这盏红绿灯属于相位组，拆掉它会§c解散整组§7：其余 §6"
+                            + Math.max(0, members - 1)
+                            + " §7盏灯已退回未分组状态，时间表与轨道绑定一并清空。"
+                            + "要恢复请用链接魔杖重新链接相位组。"), false);
         }
     }
 
@@ -411,7 +382,6 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         }
     }
 
-    /** 实际安装方式：驱动方块模型与图案/读秒的 z 偏移（墙面 = 无挂臂，路杆 = 挂臂伸向后方路杆） */
     public enum Mount implements StringRepresentable {
         WALL("wall"),
         POLE("pole");

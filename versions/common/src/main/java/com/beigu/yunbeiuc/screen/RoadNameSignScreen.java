@@ -132,10 +132,10 @@ public class RoadNameSignScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) { // ESC键
+        if (keyCode == 256) {
             this.close();
             return true;
-        } else if (keyCode == 257 || keyCode == 335) { // 回车键或小键盘回车
+        } else if (keyCode == 257 || keyCode == 335) {
             this.saveAndClose();
             return true;
         }

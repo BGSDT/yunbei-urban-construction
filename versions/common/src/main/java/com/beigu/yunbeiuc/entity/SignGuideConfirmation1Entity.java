@@ -21,7 +21,6 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
 
     public SignGuideConfirmation1Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_GUIDE_CONFIRMATION_1_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -34,7 +33,6 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
         this.length1 = nbt.getString("length1");
         this.length2 = nbt.getString("length2");
         this.length3 = nbt.getString("length3");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -51,14 +49,6 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignGuideConfirmation1EntityRenderer 的固定布局生成默认文本行（按方块分支）：
-     * renderLeftAlignedText(text1..3, 文本X, 9/0/-9, 0.04)、
-     * renderRightAlignedText(length1..3, 长度X, 9/0/-9, 0.04)、
-     * renderRightAlignedText("km", 单位X, 8.5/-0.5/-9.5, 0.025)——单位固定 km，unit 选择已移除。
-     * 原渲染器分支：SIGN_GUIDE_CONFIRMATION_1 用 文本X=-17/长度X=13/单位X=17，
-     * 其余方块整体内收 2px（-15/11/15），此处同样按 blockStateForDefaults() 判断。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         boolean main = blockStateForDefaults().getBlock() == SignBlocks.SIGN_GUIDE_CONFIRMATION_1.get();

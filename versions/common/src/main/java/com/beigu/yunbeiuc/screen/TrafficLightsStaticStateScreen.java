@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+// 静态灯态设置界面（基类）：每盏灯固定显示某种颜色，不参与相位轮转。
+
 public class TrafficLightsStaticStateScreen extends Screen {
     private final BlockPos pos;
 
@@ -51,7 +53,6 @@ public class TrafficLightsStaticStateScreen extends Screen {
                     break;
                 }
             }
-            // 读取当前颜色
             var state = blockEntity.getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
                 this.selectedColor = state.getValue(TrafficLightsBlock.LIGHT_STATE);
@@ -230,7 +231,6 @@ public class TrafficLightsStaticStateScreen extends Screen {
             context.drawBorder(previewX, previewY, previewSize, previewSize, 0xFFFFFFFF);
         }
 
-        // 警告文本 - 移到底部
         context.drawCenteredTextWithShadow(
                 this.textRenderer,
                 Text.literal("§e设置链接组时间序列后数据将被清除"),
@@ -280,7 +280,6 @@ public class TrafficLightsStaticStateScreen extends Screen {
                 selectedDirection = TrafficLightsBlockEntity.DirectionType.STRAIGHT_CIRCLE;
             }
 
-            // 人行道红绿灯保留当前的显示读秒开关和固定秒数
             boolean showSeconds = blockEntity != null ? blockEntity.isShowSeconds() : false;
             int fixedSeconds = blockEntity != null ? blockEntity.getFixedSeconds() : 10;
 
@@ -290,7 +289,6 @@ public class TrafficLightsStaticStateScreen extends Screen {
             packet.write(buf);
             NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, buf);
 
-            // 保存时才应用mountType的更改
             if (pendingMountType != null && blockEntity != null && blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) {
                 TrafficLightsBlock.MountType currentType = blockEntity.getBlockState().getValue(TrafficLightsBlock.TYPE);
                 if (pendingMountType != currentType) {

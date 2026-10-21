@@ -8,7 +8,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.server.level.ServerLevel;
 
-/** Stable block operations whose Minecraft method names changed between versions. */
 public interface BlockPlatform {
     boolean isWater(FluidState state);
 
@@ -20,7 +19,6 @@ public interface BlockPlatform {
 
     BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color);
 
-    /** Copy the properties of an existing block: 1.21 renamed {@code Properties.copy} to {@code ofFullCopy}. */
     BlockBehaviour.Properties copyProperties(Block source);
 
     int updateAll();

@@ -5,7 +5,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Shared implementation hook for scheduled block ticks. */
 public abstract class TickingBlock extends TickingBlockMapper {
     protected TickingBlock(BlockBehaviour.Properties properties) {
         super(properties);

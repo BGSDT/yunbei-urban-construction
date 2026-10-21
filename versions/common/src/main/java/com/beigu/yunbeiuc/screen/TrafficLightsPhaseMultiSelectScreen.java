@@ -248,6 +248,3 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
         }
     }
 }
-
-
-

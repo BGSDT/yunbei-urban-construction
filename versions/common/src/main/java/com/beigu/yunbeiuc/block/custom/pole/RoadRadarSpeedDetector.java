@@ -90,7 +90,6 @@ public class RoadRadarSpeedDetector extends BlockCompat {
     @Override
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
-        // 直接使用 ModItems.WAND 判断是否为魔杖
         if (!world .isClientSide) {
             if (heldItem.getItem() == ModItems.WAND.get()) {
                 boolean newLitState = !state.getValue(LIT);
@@ -116,7 +115,6 @@ public class RoadRadarSpeedDetector extends BlockCompat {
             return this.name;
         }
 
-        // 状态循环： TRUE -> FALSE -> TRUE
         public LightTFState next() {
             return switch (this) {
                 case TRUE -> FALSE;

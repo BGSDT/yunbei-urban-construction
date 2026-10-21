@@ -27,7 +27,6 @@ public class CustomFontRenderer {
     private ResourceLocation fontAtlas;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
     private final Set<Character> pendingChars = new HashSet<>();
-    /** 取不到位图的字符：记下来避免每次渲染都重复触发整张图集重建。 */
     private final Set<Character> unresolvable = new HashSet<>();
     private boolean initialized = false;
     private boolean atlasDirty = false;
@@ -76,27 +75,10 @@ public class CustomFontRenderer {
         }
     }
 
-    /**
-     * 重建字形图集。
-     *
-     * <p>每次字符集变化都<b>整体重排</b>：先 {@code charMap.clear()}，再按排序后的
-     * 字符顺序把每个字形依次落到游标位置，因此每个字形的 UV 必然互不重叠。
-     *
-     * <p>曾经这里尝试过"已有字形保留原 UV、只为新字形追加空隙"的增量布局，那是错的：
-     * 增量布局要正确推进游标，必须按<b>分配顺序</b>回放已有字形；而 {@code charMap} 是
-     * {@link HashMap}，{@code keySet()} 的迭代顺序是哈希桶顺序。倒计时数字 '0'-'9'
-     * 的哈希桶恰好等于数字值，而引入顺序是"先渲染背景 88、再渲染数字"，于是 charMap 的
-     * 迭代顺序变成 [2,5,8] 这类与分配顺序不同的顺序，游标会往回跳，新字形被摆到已有
-     * 字形上面 —— 多个数字共用同一块 UV，读秒就会显示成别的数字（看起来像"乱跳"）。
-     *
-     * <p>重排是安全的：{@link #ensureCharacters} 只在字符集变化时触发重建，
-     * 且重建发生在写入顶点之前，同一帧内所有文字用的都是同一份新 UV。
-     */
     private void rebuildAtlas() {
         CustomFontManager fontManager = CustomFontManager.getInstance();
         fontManager.initialize();
 
-        // 本次需要存在于图集中的全部字形 = 已分配 + 本次新增
         Set<Character> allChars = new LinkedHashSet<>(charMap.keySet());
         allChars.addAll(pendingChars);
 
@@ -108,7 +90,6 @@ public class CustomFontRenderer {
         int maxRowHeight = 0;
         int padding = 2;
 
-        // 排序后布局：同一批字符在任意机器/任意次运行下都会得到完全相同的图集
         List<Character> ordered = new ArrayList<>(allChars);
         Collections.sort(ordered);
 
@@ -156,11 +137,9 @@ public class CustomFontRenderer {
             maxRowHeight = Math.max(maxRowHeight, glyphH);
         }
 
-        // 使用固定名称，不加时间戳
         ResourceLocation id = VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID,
                 "font_atlas_" + fontName);
 
-        // DynamicTexture 接管 atlasImage 的所有权，不要再单独 close 它。
         DynamicTexture texture = new DynamicTexture(atlasImage);
         texture.setFilter(false, false);
         Minecraft.getInstance().getTextureManager().register(id, texture);
@@ -170,7 +149,6 @@ public class CustomFontRenderer {
         atlasDirty = false;
     }
 
-    /** 把单个字形像素拷贝进图集。 */
     private static void blitGlyph(NativeImage atlas, NativeImage glyph,
                                   int dstX, int dstY, int w, int h) {
         for (int y = 0; y < h; y++) {
@@ -192,7 +170,6 @@ public class CustomFontRenderer {
         }
     }
 
-    // 保留旧的 centered 参数方法以兼容
     public static void renderText(
             PoseStack matrices,
             MultiBufferSource vertexConsumers,
@@ -208,7 +185,6 @@ public class CustomFontRenderer {
                 centered ? TextAlignment.CENTER : TextAlignment.LEFT, fontName, 0.0f, 1.0f);
     }
 
-    // 新增 alignment 参数的方法
     public static void renderText(
             PoseStack matrices,
             MultiBufferSource vertexConsumers,
@@ -301,8 +277,6 @@ public class CustomFontRenderer {
             float charWidth = info.width * scale;
             float charHeight = info.height * scale;
 
-            // UV 内缩半个纹素：图集里相邻字形仅隔 padding，线性过滤会在边缘
-            // 采到邻居的像素，导致数字边缘出现杂色/错位感
             float insetU = 0.5f / ATLAS_WIDTH;
             float insetV = 0.5f / ATLAS_HEIGHT;
             float u1 = info.u1 + insetU;
@@ -344,7 +318,6 @@ public class CustomFontRenderer {
         initialized = false;
     }
 
-    /** 资源包重载：清空字形缓存，下次渲染时按新字体重建图集。 */
     public static void cleanupAll() {
         for (CustomFontRenderer renderer : INSTANCES.values()) {
             renderer.cleanup();

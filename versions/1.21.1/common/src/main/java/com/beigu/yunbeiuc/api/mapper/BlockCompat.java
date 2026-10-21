@@ -17,7 +17,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-/** Version-neutral base for shared blocks: routes vanilla callbacks to the compat hooks. */
 public abstract class BlockCompat extends Block implements BlockCompatHooks {
     protected BlockCompat(BlockBehaviour.Properties properties) {
         super(properties);

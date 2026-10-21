@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-/** Shared implementation hook for scheduled entity-block ticks. */
 public abstract class TickingEntityBlock extends TickingEntityBlockMapper {
     protected TickingEntityBlock(BlockBehaviour.Properties properties) {
         super(properties);

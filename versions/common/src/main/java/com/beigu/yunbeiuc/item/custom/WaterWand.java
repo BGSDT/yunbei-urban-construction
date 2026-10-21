@@ -45,7 +45,6 @@ public class WaterWand extends ItemCompat {
         }
 
         int count = 0;
-        // 从topPos开始向下生成3层，横向保持3x3
         for (int y = 0; y < 3; y++) {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {

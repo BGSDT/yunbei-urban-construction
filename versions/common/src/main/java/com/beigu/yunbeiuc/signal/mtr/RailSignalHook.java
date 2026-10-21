@@ -1,32 +1,35 @@
 package com.beigu.yunbeiuc.signal.mtr;
 
+import com.beigu.yunbeiuc.signal.RailPhaseBinding;
 import com.beigu.yunbeiuc.signal.RailSignalRegistry;
+
+import net.minecraft.core.BlockPos;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * MTR 列车钩子的实现体（纯反射，编译期不依赖 MTR）。
- *
- * <p>MTR 的列车在推进时会对「前方轨道索引」调用 {@code TrainServer#isRailBlocked(int)}：
- * 返回 {@code true} 就表示前方受阻，列车会据此把停车点设到该段之前并制动。
- * 本模组通过一个可选 mixin 在该方法头部插入本类的判定，从而让红绿灯相位
- * 能真正拦停列车。
- *
- * <p>为了让 mixin 本体不需要引用 MTR 的类型，这里用反射读取
- * {@code mtr.data.Train#path}（public final）与 {@code mtr.path.PathData#getRailProduct()}
- * 拿到当前轨道的标识 UUID，再查 {@link RailSignalRegistry}。
- *
- * <p>MTR 不存在时 {@link #init()} 会失败并令所有判定返回 {@code false}，
- * 绝不拦截、也绝不抛异常。
- */
+// MTR 列车钩子的实现体（纯反射）：MTR 3 挂 TrainServer#isRailBlocked，MTR 4 挂 Vehicle#checkAndBlockSignal。
+// MTR 4 不能只挂 PathData#isSignalBlocked —— 那条路只在轨道配了 MTR 原生信号色时才会被调用。
+// 只拦「还没进入这条轨道」的车：车头 railProgress >= 入口距离就放行，否则绿灯时已进道口的车会被硬刹在中间。
+
 public final class RailSignalHook {
 
     private static boolean initialised;
+
     private static Field pathField;
     private static Method getRailProduct;
+
+    private static Field extraDataField;
+    private static Field immutablePathField;
+    private static Method getOrderedPosition1;
+    private static Method getOrderedPosition2;
+    private static Method posGetX, posGetY, posGetZ;
+    private static Field railProgressField;
+    private static Method getStartDistance;
+
+    private static final double ENTER_EPSILON = 0.001;
 
     private RailSignalHook() {
     }
@@ -34,6 +37,21 @@ public final class RailSignalHook {
     private static synchronized void init() {
         if (initialised) return;
         initialised = true;
+        switch (MtrVersion.detect()) {
+            case MTR4:
+                initMtr4();
+                break;
+            case MTR3:
+                initMtr3();
+                break;
+            default:
+                com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.info(
+                        "[yunbeiuc] 未检测到 MTR，红绿灯不会拦停列车（仅作交通装饰）");
+                break;
+        }
+    }
+
+    private static void initMtr3() {
         try {
             final Class<?> trainClass = Class.forName("mtr.data.Train");
             pathField = findField(trainClass, "path");
@@ -43,18 +61,55 @@ public final class RailSignalHook {
             pathField = null;
             getRailProduct = null;
         }
-        // 只在首次判定时输出一次：便于从启动日志直接确认 MTR 联动是否真的挂上了。
-        // 本方法是在列车运行时被调用（不在任何类的转换过程中），此处 Class.forName 是安全的。
         if (pathField != null && getRailProduct != null) {
             com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.info(
-                    "[yunbeiuc] MTR 轨道信号钩子已启用：红绿灯相位可拦停列车");
+                    "[yunbeiuc] MTR 3 轨道信号钩子已启用：红绿灯相位可拦停列车");
         } else {
             com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.warn(
-                    "[yunbeiuc] 未找到 MTR 的 Train/PathData，轨道信号联动不会生效");
+                    "[yunbeiuc] 未找到 MTR 3 的 Train/PathData，轨道信号联动不会生效");
         }
     }
 
-    /** 沿继承链查找字段（MTR 各版本对 {@code path} 的可见性可能不同）。 */
+    private static void initMtr4() {
+        try {
+            final Class<?> vehicleClass = Class.forName("org.mtr.core.data.Vehicle");
+            extraDataField = vehicleClass.getField("vehicleExtraData");
+            final Class<?> extraDataClass = Class.forName("org.mtr.core.data.VehicleExtraData");
+            immutablePathField = extraDataClass.getField("immutablePath");
+
+            final Class<?> pathDataClass = Class.forName("org.mtr.core.data.PathData");
+            getOrderedPosition1 = pathDataClass.getMethod("getOrderedPosition1");
+            getOrderedPosition2 = pathDataClass.getMethod("getOrderedPosition2");
+            getStartDistance = pathDataClass.getMethod("getStartDistance");
+
+            railProgressField = findField(vehicleClass, "railProgress");
+
+            final Class<?> positionClass = Class.forName("org.mtr.core.data.Position");
+            posGetX = positionClass.getMethod("getX");
+            posGetY = positionClass.getMethod("getY");
+            posGetZ = positionClass.getMethod("getZ");
+        } catch (Throwable t) {
+            extraDataField = null;
+            immutablePathField = null;
+            getOrderedPosition1 = null;
+            getOrderedPosition2 = null;
+            posGetX = null;
+            posGetY = null;
+            posGetZ = null;
+            railProgressField = null;
+            getStartDistance = null;
+        }
+        if (extraDataField != null && immutablePathField != null
+                && getOrderedPosition1 != null && posGetX != null) {
+            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.info(
+                    "[yunbeiuc] MTR 4 轨道信号钩子已启用：红绿灯相位可拦停列车"
+                            + "（已进入轨道的车不再拦：{}）", railProgressField != null ? "是" : "否");
+        } else {
+            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.warn(
+                    "[yunbeiuc] 未找到 MTR 4 的 Vehicle/VehicleExtraData/PathData，轨道信号联动不会生效");
+        }
+    }
+
     private static Field findField(Class<?> type, String name) {
         Class<?> current = type;
         while (current != null) {
@@ -63,7 +118,6 @@ public final class RailSignalHook {
                 try {
                     field.setAccessible(true);
                 } catch (Throwable ignored) {
-                    // 无法开放访问时仍尝试使用（public 字段本就可读）
                 }
                 return field;
             } catch (NoSuchFieldException ignored) {
@@ -73,20 +127,14 @@ public final class RailSignalHook {
         return null;
     }
 
-    /** MTR 是否可用（供调试/日志）。 */
     public static boolean isAvailable() {
         init();
-        return pathField != null && getRailProduct != null;
+        return (pathField != null && getRailProduct != null)
+                || (extraDataField != null && immutablePathField != null);
     }
 
-    /**
-     * 判断列车前方第 {@code checkIndex} 段轨道当前是否为红灯。
-     *
-     * @param trainServer MTR 的 {@code TrainServer} 实例（mixin 里的 {@code this}）
-     * @param checkIndex  前方轨道在路径中的索引
-     * @return {@code true} = 红灯，应拦停；任何异常或未知轨道一律 {@code false}
-     */
     public static boolean isBlocked(Object trainServer, int checkIndex) {
+        if (RailSignalRegistry.size() == 0) return false;
         init();
         if (pathField == null || getRailProduct == null || trainServer == null) {
             return false;
@@ -110,6 +158,86 @@ public final class RailSignalHook {
             return RailSignalRegistry.isBlocked(uuid);
         } catch (Throwable t) {
             return false;
+        }
+    }
+
+    public static boolean isBlockedVehicle(Object vehicle, int index) {
+        if (RailSignalRegistry.size() == 0) return false;
+        init();
+        if (extraDataField == null || immutablePathField == null || vehicle == null) {
+            return false;
+        }
+        try {
+            final Object extraData = extraDataField.get(vehicle);
+            if (extraData == null) return false;
+            final Object pathObject = immutablePathField.get(extraData);
+            if (!(pathObject instanceof List<?> path)) return false;
+            if (index < 0 || index >= path.size()) return false;
+
+            final Object pathData = path.get(index);
+            if (pathData == null) return false;
+
+            final UUID rail = railOf(pathData);
+            if (rail == null) return false;
+            if (!RailSignalRegistry.isBlocked(rail)) return false;
+            return !isAlreadyOnRail(path, index, rail, vehicle);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    private static boolean isAlreadyOnRail(List<?> path, int index, UUID rail, Object vehicle) {
+        if (railProgressField == null) return false;
+        final double progress;
+        try {
+            progress = railProgressField.getDouble(vehicle);
+        } catch (Throwable t) {
+            return false;
+        }
+        if (Double.isNaN(progress) || Double.isInfinite(progress)) return false;
+
+        int first = index;
+        while (first > 0) {
+            final Object previous = path.get(first - 1);
+            if (previous == null || !rail.equals(railOf(previous))) break;
+            first--;
+        }
+
+        final double entry = startDistanceOf(path.get(first));
+        if (Double.isNaN(entry)) return false;
+        return progress >= entry - ENTER_EPSILON;
+    }
+
+    private static UUID railOf(Object pathData) {
+        if (pathData == null || getOrderedPosition1 == null || getOrderedPosition2 == null) return null;
+        try {
+            final BlockPos start = toBlockPos(getOrderedPosition1.invoke(pathData));
+            final BlockPos end = toBlockPos(getOrderedPosition2.invoke(pathData));
+            if (start == null || end == null) return null;
+            return RailPhaseBinding.railProductOf(start, end);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    private static double startDistanceOf(Object pathData) {
+        if (pathData == null || getStartDistance == null) return Double.NaN;
+        try {
+            return (double) getStartDistance.invoke(pathData);
+        } catch (Throwable t) {
+            return Double.NaN;
+        }
+    }
+
+    private static BlockPos toBlockPos(Object position) {
+        if (position == null || posGetX == null) return null;
+        try {
+            final long x = (long) posGetX.invoke(position);
+            final long y = (long) posGetY.invoke(position);
+            final long z = (long) posGetZ.invoke(position);
+            return new BlockPos((int) x, (int) y, (int) z);
+        } catch (Throwable t) {
+            return null;
         }
     }
 }

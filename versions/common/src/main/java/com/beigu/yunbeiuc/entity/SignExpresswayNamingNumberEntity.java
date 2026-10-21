@@ -16,7 +16,6 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
 
     public SignExpresswayNamingNumberEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_NAMING_NUMBER_ENTITY.get(), pos, state);
-        // 新放置的方块实体不会走 readNbt，构造时即按原渲染代码布局生成默认文本行
         ensureDefaultTextLines();
     }
 
@@ -25,7 +24,6 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
         super.loadCompat(nbt);
         this.expresswayNumber = nbt.getString("expresswayNumber");
         this.expresswayName = nbt.getString("expresswayName");
-        // 旧存档兼容：无 TextLines 键时按固定字段的默认布局生成动态文本行
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -38,12 +36,6 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
         super.saveAdditionalCompat(nbt);
     }
 
-    /**
-     * 按原 SignExpresswayNamingNumberEntityRenderer 的固定布局生成默认文本行：
-     * renderCenteredText(expresswayNumber, 0, 1.5, 0.08)；
-     * renderCenteredText(insertSpaceBetweenChars(expresswayName), 0, -6.5, 0.02)，
-     * 逐字加空格的变换由 {expresswayNameSpaced} 占位符在渲染时完成。
-     */
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
@@ -68,13 +60,11 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
         return switch (key) {
             case "expresswayNumber" -> expresswayNumber;
             case "expresswayName" -> expresswayName;
-            // 对应原 insertSpaceBetweenChars(expresswayName)：逐字之间插入空格
             case "expresswayNameSpaced" -> insertSpaceBetweenChars(expresswayName);
             default -> null;
         };
     }
 
-    // 原 SignExpresswayNamingNumberEntityRenderer 的公共静态方法，迁入实体供占位符解析
     public static String insertSpaceBetweenChars(String str) {
         if (str == null || str.isEmpty() || str.equals(" ")) {
             return str;

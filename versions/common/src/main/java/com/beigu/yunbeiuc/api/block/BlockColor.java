@@ -1,15 +1,5 @@
 package com.beigu.yunbeiuc.api.block;
 
-/**
- * Version-neutral block map colour.
- *
- * <p>Minecraft 1.16.5-1.19.4 expose {@code net.minecraft.world.level.material.MaterialColor};
- * 1.20+ replaced it with {@code net.minecraft.world.level.material.MapColor}. The two classes are
- * mutually exclusive across versions, so the shared tree cannot reference either one directly and
- * uses this enum instead. Every version maps it onto its own type in {@code BlockPlatformImpl}.
- *
- * <p>The constant names are identical in both Minecraft types.
- */
 public enum BlockColor {
     NONE,
     GRASS,

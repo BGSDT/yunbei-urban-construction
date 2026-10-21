@@ -79,8 +79,6 @@ public class BarrierGate1PoleHorizontal extends BlockCompat {
         }
     }
 
-
-
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, TYPE, GATE_TYPE);

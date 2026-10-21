@@ -7,12 +7,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
-/**
- * C2S：轨道相位界面点「保存」时提交新的相位勾选掩码。
- *
- * <p>服务端不信任客户端的掩码：{@code TrafficLightsBlockEntity#setRailBindingMask}
- * 会先把掩码裁剪到本组相位数量范围内，再写回绑定。
- */
+// C2S：轨道相位界面保存时提交新的相位勾选掩码；服务端会先裁剪到本组相位数量范围内。
+
 public class RailPhaseUpdatePacket {
 
     private final BlockPos start;
