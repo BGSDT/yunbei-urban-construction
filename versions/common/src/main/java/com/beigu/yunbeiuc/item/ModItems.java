@@ -71,6 +71,8 @@ public class ModItems {
             () -> new WaterWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1).durability(9), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> ROTATED_WAND = registerToolItem("rotated_wand",
             () -> new RotatedWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
+    public static final RegistrySupplier<Item> MIRROR_WAND = registerToolItem("mirror_wand",
+            () -> new MirrorWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> LINK_WAND = registerToolItem("link_wand",
             () -> new LinkWand(VersionServices.creativeTabs().apply(new Item.Properties().stacksTo(1), ModItemGroups.YUNBEIUC_WAND_GROUP)));
     public static final RegistrySupplier<Item> TEXT_COPY_WAND = registerToolItem("text_copy_wand",

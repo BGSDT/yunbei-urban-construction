@@ -276,6 +276,8 @@
   "item.yunbeiuc.water_wand.success": "Successfully replaced with water!",
   "item.yunbeiuc.rotated_wand": "Rotation Wand",
   "item.yunbeiuc.rotated_wand.tooltip": "Right-click a block to rotate it 90 degrees clockwise",
+  "item.yunbeiuc.mirror_wand": "Mirror Wand",
+  "item.yunbeiuc.mirror_wand.tooltip": "Right-click a block to mirror it, works on road markings, stairs and other directional blocks; sneak while placing a marking for the mirrored variant",
   "item.yunbeiuc.text_copy_wand": "Text Copy Wand",
   "item.yunbeiuc.text_copy_wand.not_supported": "§cThis block does not support the Text Copy Wand",
   "item.yunbeiuc.text_copy_wand.copied": "§aCopied %s text lines",

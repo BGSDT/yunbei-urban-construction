@@ -1,48 +1,93 @@
 {
   "variants": {
-    "facing=north,type=bottom": {
+    "facing=north,mirrored=false,type=bottom": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line"
     },
-    "facing=north,type=top": {
+    "facing=north,mirrored=false,type=top": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top"
     },
-    "facing=north,type=double": {
+    "facing=north,mirrored=false,type=double": {
       "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line"
     },
-    "facing=east,type=bottom": {
+    "facing=north,mirrored=true,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_mirrored"
+    },
+    "facing=north,mirrored=true,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top_mirrored"
+    },
+    "facing=north,mirrored=true,type=double": {
+      "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line_mirrored"
+    },
+    "facing=east,mirrored=false,type=bottom": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line",
       "y": 90
     },
-    "facing=east,type=top": {
+    "facing=east,mirrored=false,type=top": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top",
       "y": 90
     },
-    "facing=east,type=double": {
+    "facing=east,mirrored=false,type=double": {
       "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line",
       "y": 90
     },
-    "facing=south,type=bottom": {
+    "facing=east,mirrored=true,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_mirrored",
+      "y": 90
+    },
+    "facing=east,mirrored=true,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top_mirrored",
+      "y": 90
+    },
+    "facing=east,mirrored=true,type=double": {
+      "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line_mirrored",
+      "y": 90
+    },
+    "facing=south,mirrored=false,type=bottom": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line",
       "y": 180
     },
-    "facing=south,type=top": {
+    "facing=south,mirrored=false,type=top": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top",
       "y": 180
     },
-    "facing=south,type=double": {
+    "facing=south,mirrored=false,type=double": {
       "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line",
       "y": 180
     },
-    "facing=west,type=bottom": {
+    "facing=south,mirrored=true,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_mirrored",
+      "y": 180
+    },
+    "facing=south,mirrored=true,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top_mirrored",
+      "y": 180
+    },
+    "facing=south,mirrored=true,type=double": {
+      "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line_mirrored",
+      "y": 180
+    },
+    "facing=west,mirrored=false,type=bottom": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line",
       "y": 270
     },
-    "facing=west,type=top": {
+    "facing=west,mirrored=false,type=top": {
       "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top",
       "y": 270
     },
-    "facing=west,type=double": {
+    "facing=west,mirrored=false,type=double": {
       "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line",
+      "y": 270
+    },
+    "facing=west,mirrored=true,type=bottom": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_mirrored",
+      "y": 270
+    },
+    "facing=west,mirrored=true,type=top": {
+      "model": "yunbeiuc:block/road/road_slab_with_whitenormal_bevel_line_top_mirrored",
+      "y": 270
+    },
+    "facing=west,mirrored=true,type=double": {
+      "model": "yunbeiuc:block/road/road_with_whitenormal_bevel_line_mirrored",
       "y": 270
     }
   }

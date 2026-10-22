@@ -4,19 +4,14 @@ import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.core.BlockPos;
@@ -36,41 +31,20 @@ import java.util.Optional;
 public abstract class RoadWithAutoLine extends BlockCompat {
     private static final Logger LOGGER = LogManager.getLogger(RoadWithAutoLine.class);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
+
+    private static final int PAIRED_COLOR_LEVEL = 3;
 
     protected final RoadAutoLineType type;
 
     protected RoadWithAutoLine(BlockBehaviour.Properties properties, RoadAutoLineType type) {
         super(properties);
         this.type = type;
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
-    }
-
-    @Override
-    public BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    public BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
     @SuppressWarnings("deprecation")
@@ -119,8 +93,9 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                     final EightHorizontalDirection direction2 = connectionStateMap.get(direction.getCounterClockWise()).direction();
                     if (direction1.right().map(cornerDirection -> cornerDirection.hasDirection(direction)).orElse(false)
                         && direction2.right().map(cornerDirection -> cornerDirection.hasDirection(direction)).orElse(false)) {
-                        return (yellow ? RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE : RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE).get()
-                            .defaultBlockState().setValue(FACING, direction);
+                        return RoadOrientation.align(
+                            (yellow ? RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE : RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE).get(),
+                            direction);
                     }
                 }
                 return (yellow ? RoadBlocks.ROAD_WITH_YELLOW_CROSS_LINE : RoadBlocks.ROAD_WITH_WHITE_CROSS_LINE).get().defaultBlockState();
@@ -172,7 +147,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                             continue;
                         }
 
-                        return (switch (color) {
+                        return RoadOrientation.align((switch (color) {
                             case YELLOW -> switch (lineType) {
                                 case DOUBLE -> RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE;
                                 case THICK -> RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE;
@@ -183,15 +158,15 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                                 case THICK -> RoadBlocks.ROAD_WITH_WHITE_THICK_LINE;
                                 default -> RoadBlocks.ROAD_WITH_WHITE_LINE;
                             };
-                        }).get().defaultBlockState().setValue(FACING, direction);
+                        }).get().defaultBlockState(), direction);
                     } else {
                         if (type == RoadAutoLineType.RIGHT_ANGLE) {
                             if (connectionState.lineColor() == adjacentState.lineColor() || adjacentState.lineColor() == LineColor.UNKNOWN) {
                                 if (connectionState.offsetLevel() == 2
                                     && (connectionState.offsetLevel() == adjacentState.offsetLevel() && (connectionState.offsetDirection() == adjacentDirection) == (adjacentState.offsetDirection() == direction) || !adjacentState.sureConnect())) {
-                                    return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), HorizontalCornerDirection.fromDirections(direction, adjacentDirection), connectionState.offsetDirection() == adjacentDirection, type);
+                                    return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), RoadCorner.of(direction, adjacentDirection), connectionState.offsetDirection() == adjacentDirection, type);
                                 } else if (connectionState.offsetLevel() == 2 && adjacentState.offsetLevel() != 2) {
-                                    return composeAngleLineWithOnePartOffset(connectionState.lineColor(), HorizontalCornerDirection.fromDirections(direction, adjacentDirection), adjacentDirection.getAxis(), connectionState.offsetDirection() == adjacentDirection);
+                                    return composeAngleLineWithOnePartOffset(connectionState.lineColor(), RoadCorner.of(direction, adjacentDirection), adjacentDirection.getAxis(), connectionState.offsetDirection() == adjacentDirection);
                                 } else if (connectionState.offsetLevel() != 2 && adjacentState.offsetLevel() == 2) {
                                     continue;
                                 }
@@ -210,14 +185,14 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                                 } else {
                                     block = RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE.get();
                                 }
-                                return block.defaultBlockState().setValue(FACING, adjacentDirection);
+                                return RoadOrientation.align(block, adjacentDirection);
                             } else if (connectionState.lineColor() == LineColor.WHITE && adjacentState.lineColor() == LineColor.WHITE) {
                                 if (connectionState.lineType() == LineType.THICK && adjacentState.lineType() == LineType.NORMAL) {
-                                    return RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get().defaultBlockState().setValue(FACING, adjacentDirection);
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), adjacentDirection);
                                 } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.THICK) {
-                                    return RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get().defaultBlockState().setValue(FACING, direction);
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), direction);
                                 } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.NORMAL) {
-                                    return RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get().defaultBlockState().setValue(FACING, cornerToFacing(HorizontalCornerDirection.fromDirections(direction, adjacentDirection)));
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get(), cornerToFacing(RoadCorner.of(direction, adjacentDirection)));
                                 }
                             }
                         }
@@ -230,11 +205,11 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                                 if ((adjacentState.offsetLevel() == 2 &&
                                     (adjacentState.offsetDirection() == direction) == isInwards
                                     || !adjacentState.sureConnect())) {
-                                    return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), HorizontalCornerDirection.fromDirections(direction, adjacentDirection), isInwards, type);
+                                    return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), RoadCorner.of(direction, adjacentDirection), isInwards, type);
                                 }
                             }
 
-                            return (switch (connectionState.lineColor()) {
+                            return RoadOrientation.align((switch (connectionState.lineColor()) {
                                 case YELLOW -> switch (type) {
                                     case BEVEL -> switch (lineType) {
                                         case DOUBLE -> RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE;
@@ -251,15 +226,15 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                                     };
                                     case RIGHT_ANGLE -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
                                 };
-                            }).get().defaultBlockState().setValue(FACING, cornerToFacing(HorizontalCornerDirection.fromDirections(direction, adjacentDirection)));
+                            }).get(), cornerToFacing(RoadCorner.of(direction, adjacentDirection)));
                         } else if (connectionState.lineColor() == LineColor.UNKNOWN) {
                             continue;
                         }
 
-                        return (switch (type) {
+                        return RoadOrientation.align((switch (type) {
                             case BEVEL -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE;
                             case RIGHT_ANGLE -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
-                        }).get().defaultBlockState().setValue(FACING, cornerToFacing(HorizontalCornerDirection.fromDirections(direction, adjacentDirection)));
+                        }).get(), cornerToFacing(RoadCorner.of(direction, adjacentDirection)));
                     }
                 }
                 return defaultState;
@@ -270,7 +245,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                         if (connectionState.offsetLevel() != 0) {
                             return composeOffsetStraightLine(connectionState.offsetDirection(), connectionState.offsetLevel(), connectionState.lineColor());
                         }
-                        return (switch (connectionState.lineColor()) {
+                        return RoadOrientation.align((switch (connectionState.lineColor()) {
                             case YELLOW -> switch (connectionState.lineType()) {
                                 case THICK -> RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE;
                                 case DOUBLE -> RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE;
@@ -281,7 +256,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                                 case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE;
                                 default -> RoadBlocks.ROAD_WITH_WHITE_LINE;
                             };
-                        }).get().defaultBlockState().setValue(FACING, entry.getKey());
+                        }).get(), entry.getKey());
                     }
                 }
                 return defaultState;
@@ -305,9 +280,9 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                             && stateLeft.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)
                             && stateRight.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)) {
                             if (facingState.lineColor() == LineColor.YELLOW && (stateLeft.lineColor() == LineColor.YELLOW || stateRight.lineColor() == LineColor.YELLOW)) {
-                                return RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get().defaultBlockState().setValue(FACING, facingDirection);
+                                return RoadOrientation.align(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get(), facingDirection);
                             } else {
-                                return RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get().defaultBlockState().setValue(FACING, facingDirection);
+                                return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get(), facingDirection);
                             }
                         }
 
@@ -350,7 +325,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                             return composeJointLine(block, facingDirection, facingOffset);
                         }
                     } else if (facingState.direction().right().isPresent()) {
-                        final HorizontalCornerDirection facingStateDirection = facingState.direction().right().get();
+                        final RoadCorner facingStateDirection = facingState.direction().right().get();
 
                         final Direction bevelConDirection = facingStateDirection.getDirectionInAxis(facingDirection.getClockWise().getAxis());
                         final RoadConnectionState bevelConState = connectionStateMap.get(bevelConDirection);
@@ -381,7 +356,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                                 block = RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE.get();
                             }
                         }
-                        return block.defaultBlockState().setValue(FACING, bevelConDirection);
+                        return RoadOrientation.align(block, bevelConDirection);
                     }
                 }
                 return defaultState;
@@ -402,9 +377,9 @@ public abstract class RoadWithAutoLine extends BlockCompat {
     private static BlockState composeJointLine(Block block, Direction facingDirection, LineOffset facingOffset) {
         if (facingOffset != null && facingOffset.level() == 2 && getOffsetTRoads().containsKey(block)) {
             final Block offsetSide = getOffsetTRoads().get(block);
-            return offsetSide.defaultBlockState().setValue(FACING, facingOffset.offsetDirection().getCounterClockWise());
+            return RoadOrientation.align(offsetSide, facingOffset.offsetDirection().getCounterClockWise());
         } else {
-            return block.defaultBlockState().setValue(FACING, facingDirection);
+            return RoadOrientation.align(block, facingDirection);
         }
     }
 
@@ -424,16 +399,16 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         );
     }
 
-    private static BlockState composeAngleLineWithOnePartOffset(LineColor lineColor, HorizontalCornerDirection facing, Direction.Axis axis, boolean isInwards) {
+    private static BlockState composeAngleLineWithOnePartOffset(LineColor lineColor, RoadCorner facing, Direction.Axis axis, boolean isInwards) {
         final Block block;
         block = switch (lineColor) {
             case YELLOW -> (isInwards ? RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_OUT.get());
             default -> (isInwards ? RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_OUT.get());
         };
-        return block.defaultBlockState().setValue(FACING, facing.getDirectionInAxis(axis));
+        return RoadOrientation.align(block, facing.getDirectionInAxis(axis));
     }
 
-    private static BlockState composeAngleLineWithTwoPartsOffset(LineColor lineColor, HorizontalCornerDirection facing, boolean isInwards, RoadAutoLineType type) {
+    private static BlockState composeAngleLineWithTwoPartsOffset(LineColor lineColor, RoadCorner facing, boolean isInwards, RoadAutoLineType type) {
         final Block block;
         if (type == RoadAutoLineType.RIGHT_ANGLE) {
             block = switch (lineColor) {
@@ -446,32 +421,32 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                 default -> (isInwards ? RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get());
             };
         }
-        return block.defaultBlockState().setValue(FACING, cornerToFacing(facing));
+        return RoadOrientation.align(block, cornerToFacing(facing));
     }
 
     private static BlockState composeOffsetStraightLine(Direction offsetDirection, int offsetLevel, LineColor color) {
         return switch (offsetLevel) {
-            case 114514 -> RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get().defaultBlockState().setValue(FACING, offsetDirection.getClockWise());
+            case PAIRED_COLOR_LEVEL -> RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get(), offsetDirection.getClockWise());
             case 2 -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_OFFSET_LINE.get();
                 };
-                yield block.defaultBlockState().setValue(FACING, offsetDirection.getClockWise());
+                yield RoadOrientation.align(block, offsetDirection.getClockWise());
             }
             case 1 -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE.get();
                 };
-                yield block.defaultBlockState().setValue(FACING, offsetDirection.getClockWise());
+                yield RoadOrientation.align(block, offsetDirection.getClockWise());
             }
             default -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_LINE.get();
                 };
-                yield block.defaultBlockState().setValue(FACING, dirForAxis(offsetDirection.getClockWise().getAxis()));
+                yield RoadOrientation.align(block, dirForAxis(offsetDirection.getClockWise().getAxis()));
             }
         };
     }
@@ -526,7 +501,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE.get(), offsetStraight(LineColor.YELLOW, LineType.NORMAL, 2));
         put(info, RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE.get(), offsetStraight(LineColor.WHITE, LineType.NORMAL, 1));
         put(info, RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE.get(), offsetStraight(LineColor.YELLOW, LineType.NORMAL, 1));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get(), offsetStraight(LineColor.WHITE, LineType.DOUBLE, 114514));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get(), offsetStraight(LineColor.WHITE, LineType.DOUBLE, PAIRED_COLOR_LEVEL));
         put(info, RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get(), corner(LineColor.WHITE, LineType.NORMAL, false));
         put(info, RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE.get(), corner(LineColor.YELLOW, LineType.NORMAL, false));
         put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE.get(), corner(LineColor.WHITE, LineType.NORMAL, true));
@@ -593,25 +568,25 @@ public abstract class RoadWithAutoLine extends BlockCompat {
     }
 
     private static RoadLineInfo straight(LineColor color, LineType type) {
-        return (state, direction) -> direction.getAxis() == state.getValue(FACING).getAxis()
+        return (state, direction) -> direction.getAxis() == RoadOrientation.axisOf(state)
             ? conn(color, EightHorizontalDirection.of(direction), type, null)
             : RoadConnectionState.empty();
     }
 
     private static RoadLineInfo offsetStraight(LineColor color, LineType type, int level) {
         return (state, direction) -> {
-            if (direction.getAxis() != state.getValue(FACING).getAxis()) {
+            if (direction.getAxis() != RoadOrientation.axisOf(state)) {
                 return RoadConnectionState.empty();
             }
             return conn(color, EightHorizontalDirection.of(direction), type,
-                new LineOffset(state.getValue(FACING).getCounterClockWise(), level));
+                new LineOffset(RoadOrientation.directionOf(state).getCounterClockWise(), level));
         };
     }
 
     private static RoadLineInfo corner(LineColor color, LineType type, boolean isBevel) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
-            final HorizontalCornerDirection corner = facingToCorner(facing);
+            final Direction facing = RoadOrientation.directionOf(state);
+            final RoadCorner corner = facingToCorner(facing);
             if (!corner.hasDirection(direction)) {
                 return RoadConnectionState.empty();
             }
@@ -623,7 +598,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static RoadLineInfo diffAngle(LineColor color1, LineType type1, LineColor color2, LineType type2) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
+            final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing) {
                 return conn(color2, EightHorizontalDirection.of(direction), type2, null);
             }
@@ -636,7 +611,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static RoadLineInfo angleLineOnePartOffset(LineColor color, int offsetOutwards) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
+            final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing) {
                 return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
             }
@@ -650,8 +625,8 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static RoadLineInfo angleLineTwoPartsOffset(LineColor color, int offsetOutwards) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
-            final HorizontalCornerDirection corner = facingToCorner(facing);
+            final Direction facing = RoadOrientation.directionOf(state);
+            final RoadCorner corner = facingToCorner(facing);
             if (!corner.hasDirection(direction)) {
                 return RoadConnectionState.empty();
             }
@@ -662,7 +637,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static RoadLineInfo joint(LineColor mainColor, LineType mainType, LineColor sideColor, LineType sideType) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
+            final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing.getOpposite()) {
                 return RoadConnectionState.empty();
             }
@@ -675,7 +650,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static RoadLineInfo jointOffsetSide(LineColor mainColor, LineType mainType, LineColor sideColor, LineType sideType, int level) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
+            final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing.getOpposite()) {
                 return RoadConnectionState.empty();
             }
@@ -693,18 +668,18 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static RoadLineInfo biBevel(LineColor color, boolean threeLayer) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
+            final Direction facing = RoadOrientation.directionOf(state);
             if (threeLayer) {
                 if (facing == direction || facing == direction.getOpposite()) {
                     return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
                 }
-                return conn(color, EightHorizontalDirection.of(HorizontalCornerDirection.fromDirections(facing, direction.getOpposite())), LineType.NORMAL, null);
+                return conn(color, EightHorizontalDirection.of(RoadCorner.of(facing, direction.getOpposite())), LineType.NORMAL, null);
             } else {
                 if (facing == direction) {
                     return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
                 }
                 if (facing != direction.getOpposite()) {
-                    return conn(color, EightHorizontalDirection.of(HorizontalCornerDirection.fromDirections(facing, direction.getOpposite())), LineType.NORMAL, null);
+                    return conn(color, EightHorizontalDirection.of(RoadCorner.of(facing, direction.getOpposite())), LineType.NORMAL, null);
                 }
                 return RoadConnectionState.empty();
             }
@@ -713,7 +688,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static RoadLineInfo straightAndAngle(LineColor straightColor, LineType straightType, LineColor bevelColor, LineType bevelType) {
         return (state, direction) -> {
-            final Direction facing = state.getValue(FACING);
+            final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing || direction == facing.getOpposite()) {
                 return conn(straightColor, EightHorizontalDirection.of(direction), straightType, null);
             }
@@ -728,15 +703,15 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         return new RoadConnectionState(WhetherConnected.CONNECTED, color, direction, type, offset);
     }
 
-    private static Direction cornerToFacing(HorizontalCornerDirection corner) {
+    private static Direction cornerToFacing(RoadCorner corner) {
         if (corner.dir1.getClockWise() == corner.dir2) {
             return corner.dir1;
         }
         return corner.dir2;
     }
 
-    private static HorizontalCornerDirection facingToCorner(Direction facing) {
-        return HorizontalCornerDirection.fromDirections(facing, facing.getClockWise());
+    private static RoadCorner facingToCorner(Direction facing) {
+        return RoadCorner.of(facing, facing.getClockWise());
     }
 
     private static Direction dirForAxis(Direction.Axis axis) {
@@ -787,65 +762,18 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         }
     }
 
-    enum HorizontalCornerDirection {
-        SOUTH_WEST(Direction.SOUTH, Direction.WEST),
-        NORTH_WEST(Direction.NORTH, Direction.WEST),
-        NORTH_EAST(Direction.NORTH, Direction.EAST),
-        SOUTH_EAST(Direction.SOUTH, Direction.EAST);
-
-        public final Direction dir1;
-        public final Direction dir2;
-
-        HorizontalCornerDirection(Direction dir1, Direction dir2) {
-            this.dir1 = dir1;
-            this.dir2 = dir2;
-        }
-
-        static HorizontalCornerDirection fromDirections(Direction dir1, Direction dir2) {
-            for (HorizontalCornerDirection direction : values()) {
-                if ((direction.dir1 == dir1 && direction.dir2 == dir2) || (direction.dir1 == dir2 && direction.dir2 == dir1)) {
-                    return direction;
-                }
-            }
-            throw new IllegalArgumentException("There is no horizontal corner direction composed of " + dir1.getSerializedName() + " " + dir2.getSerializedName() + ".");
-        }
-
-        Direction getDirectionInAxis(Direction.Axis axis) {
-            if (dir1.getAxis() == axis) {
-                return dir1;
-            }
-            if (dir2.getAxis() == axis) {
-                return dir2;
-            }
-            throw new IllegalStateException("Direction " + this.name() + " has no direction in axis " + axis.getSerializedName() + "!");
-        }
-
-        boolean hasDirection(Direction direction) {
-            return direction == dir1 || direction == dir2;
-        }
-
-        HorizontalCornerDirection mirror(Direction direction) {
-            final Mirror mirror = switch (direction.getAxis()) {
-                case X -> Mirror.LEFT_RIGHT;
-                case Z -> Mirror.FRONT_BACK;
-                default -> Mirror.NONE;
-            };
-            return fromDirections(mirror.mirror(dir1), mirror.mirror(dir2));
-        }
-    }
-
     enum EightHorizontalDirection {
         SOUTH(Direction.SOUTH),
-        SOUTH_WEST(HorizontalCornerDirection.SOUTH_WEST),
+        SOUTH_WEST(RoadCorner.SOUTH_WEST),
         WEST(Direction.WEST),
-        NORTH_WEST(HorizontalCornerDirection.NORTH_WEST),
+        NORTH_WEST(RoadCorner.NORTH_WEST),
         NORTH(Direction.NORTH),
-        NORTH_EAST(HorizontalCornerDirection.NORTH_EAST),
+        NORTH_EAST(RoadCorner.NORTH_EAST),
         EAST(Direction.EAST),
-        SOUTH_EAST(HorizontalCornerDirection.SOUTH_EAST);
+        SOUTH_EAST(RoadCorner.SOUTH_EAST);
 
         private final Direction direction;
-        private final HorizontalCornerDirection cornerDirection;
+        private final RoadCorner cornerDirection;
         private final boolean isCorner;
 
         EightHorizontalDirection(Direction direction) {
@@ -854,7 +782,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
             this.isCorner = false;
         }
 
-        EightHorizontalDirection(HorizontalCornerDirection cornerDirection) {
+        EightHorizontalDirection(RoadCorner cornerDirection) {
             this.direction = null;
             this.cornerDirection = cornerDirection;
             this.isCorner = true;
@@ -869,7 +797,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
             };
         }
 
-        static EightHorizontalDirection of(HorizontalCornerDirection cornerDirection) {
+        static EightHorizontalDirection of(RoadCorner cornerDirection) {
             return switch (cornerDirection) {
                 case SOUTH_WEST -> SOUTH_WEST;
                 case NORTH_WEST -> NORTH_WEST;
@@ -882,7 +810,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
             return isCorner ? Optional.empty() : Optional.of(direction);
         }
 
-        Optional<HorizontalCornerDirection> right() {
+        Optional<RoadCorner> right() {
             return isCorner ? Optional.of(cornerDirection) : Optional.empty();
         }
     }

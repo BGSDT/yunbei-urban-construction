@@ -1,13 +1,11 @@
 package com.beigu.yunbeiuc.block.custom.road;
 
 import com.beigu.yunbeiuc.block.RoadBlocks;
-import com.beigu.yunbeiuc.block.custom.DirectionSlabBlock;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -23,13 +21,18 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
+public abstract class RoadSlabWithAutoLine extends AbstractRoadSlabBlock {
 
     private final RoadWithAutoLine.RoadAutoLineType type;
 
     public RoadSlabWithAutoLine(BlockBehaviour.Properties properties, RoadWithAutoLine.RoadAutoLineType type) {
         super(properties);
         this.type = type;
+    }
+
+    @Override
+    protected Kind kind() {
+        return Kind.NONE;
     }
 
     @SuppressWarnings("deprecation")
@@ -82,17 +85,10 @@ public abstract class RoadSlabWithAutoLine extends DirectionSlabBlock {
         if (slab == null) {
             return resultState;
         }
-        BlockState newState = slab.defaultBlockState();
-        if (newState.hasProperty(FACING)) {
-            final Direction facing = resultState.hasProperty(FACING) ? resultState.getValue(FACING)
-                : currentState.hasProperty(FACING) ? currentState.getValue(FACING) : Direction.NORTH;
-            newState = newState.setValue(FACING, facing);
-        }
-        if (newState.hasProperty(TYPE)) {
-            newState = newState.setValue(TYPE, currentState.hasProperty(TYPE) ? currentState.getValue(TYPE) : SlabType.BOTTOM);
-        }
-        if (newState.hasProperty(WATERLOGGED) && currentState.hasProperty(WATERLOGGED)) {
-            newState = newState.setValue(WATERLOGGED, currentState.getValue(WATERLOGGED));
+        BlockState newState = RoadOrientation.carryOver(resultState, slab.defaultBlockState());
+        newState = newState.setValue(TYPE, currentState.getValue(TYPE));
+        if (currentState.getValue(WATERLOGGED)) {
+            newState = newState.setValue(WATERLOGGED, true);
         }
         return newState;
     }

@@ -1,17 +1,17 @@
 {
   "variants": {
-    "facing=north": {
+    "axis=x,mirrored=false": {
       "model": "yunbeiuc:block/road/road_with_white_offset_in_bevel_rightangle_line"
     },
-    "facing=east": {
+    "axis=z,mirrored=false": {
       "model": "yunbeiuc:block/road/road_with_white_offset_in_bevel_rightangle_line",
       "y": 90
     },
-    "facing=south": {
+    "axis=x,mirrored=true": {
       "model": "yunbeiuc:block/road/road_with_white_offset_in_bevel_rightangle_line",
       "y": 180
     },
-    "facing=west": {
+    "axis=z,mirrored=true": {
       "model": "yunbeiuc:block/road/road_with_white_offset_in_bevel_rightangle_line",
       "y": 270
     }

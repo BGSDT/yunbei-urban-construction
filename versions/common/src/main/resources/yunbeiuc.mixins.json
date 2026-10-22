@@ -6,7 +6,8 @@
   "package": "com.beigu.yunbeiuc.mixin",
   "mixins": [
     "TrainServerRailSignalMixin",
-    "VehicleRailSignalMixin"
+    "VehicleRailSignalMixin",
+    "LegacyRoadStateMixin"
   ],
   "client": [
     "RenderTrainsRailHighlightMixin",

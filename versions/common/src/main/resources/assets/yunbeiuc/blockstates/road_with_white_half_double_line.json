@@ -1,17 +1,17 @@
 {
   "variants": {
-    "facing=north": {
+    "axis=z,mirrored=false": {
       "model": "yunbeiuc:block/road/road_with_white_half_double_line"
     },
-    "facing=east": {
-      "model": "yunbeiuc:block/road/road_with_white_half_double_line",
-      "y": 90
-    },
-    "facing=south": {
+    "axis=z,mirrored=true": {
       "model": "yunbeiuc:block/road/road_with_white_half_double_line",
       "y": 180
     },
-    "facing=west": {
+    "axis=x,mirrored=false": {
+      "model": "yunbeiuc:block/road/road_with_white_half_double_line",
+      "y": 90
+    },
+    "axis=x,mirrored=true": {
       "model": "yunbeiuc:block/road/road_with_white_half_double_line",
       "y": 270
     }
