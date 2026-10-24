@@ -13,9 +13,6 @@ import java.util.Map;
 
 final class Mtr4RailBackend implements MtrRailBackend {
 
-    private static final org.apache.logging.log4j.Logger LOGGER =
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER;
-
     private static boolean initTried;
     private static boolean ready;
 
@@ -65,12 +62,8 @@ final class Mtr4RailBackend implements MtrRailBackend {
             vecZ = vectorClass.getMethod("z");
 
             ready = true;
-            LOGGER.info("[yunbeiuc] 已连接 MTR 4 轨道 API（{}，Rail#railMath.getLength / getPosition）",
-                    clientDataClass.getName());
         } catch (Throwable t) {
             ready = false;
-            LOGGER.info("[yunbeiuc] MTR 4 客户端轨道 API 不可用（{}）：轨道瞄准/高亮功能关闭",
-                    t.toString());
         }
         return ready;
     }

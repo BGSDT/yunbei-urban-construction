@@ -7,7 +7,6 @@ import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.item.ModItemGroups;
 import com.beigu.yunbeiuc.item.ModItems;
 import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.signal.mtr.MtrVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,8 +23,7 @@ YunbeiUrbanConstruction {
         ModItems.init();
         ModBlockEntities.init();
         ModMessages.registerC2SPackets();
-        ModMessages.registerS2CPackets();
-
-        LOGGER.info("[yunbeiuc] MTR 联动：{}", MtrVersion.detect().displayName());
+        // 本模组没有 S2C 通道（与 yunzhu 分支一致）：客户端所需状态由方块实体更新包下发，
+        // 轨道相位界面由客户端本地打开。服务端绝不注册任何 S2C 接收器。
     }
 }

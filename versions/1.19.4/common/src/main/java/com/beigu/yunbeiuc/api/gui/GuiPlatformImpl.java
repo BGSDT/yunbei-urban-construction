@@ -1,10 +1,14 @@
 package com.beigu.yunbeiuc.api.gui;
 
+import com.beigu.yunbeiuc.screen.RailPhaseScreen;
 import com.beigu.yunbeiuc.screen.ButtonWidget;
 import com.beigu.yunbeiuc.screen.TextFieldWidget;
+import net.minecraft.core.BlockPos;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public final class GuiPlatformImpl implements GuiPlatform {
@@ -58,4 +62,12 @@ public final class GuiPlatformImpl implements GuiPlatform {
     public void setButtonMessage(ButtonWidget button, Component message) {
         button.setMessage(message);
     }
+
+    @Override
+    public void openRailPhaseScreen(BlockPos start, BlockPos end, BlockPos groupMember,
+                                    int phaseCount, int[] phaseTimes, long mask) {
+        Minecraft.getInstance().setScreen(
+                new RailPhaseScreen(start, end, groupMember, phaseCount, phaseTimes, mask));
+    }
+
 }

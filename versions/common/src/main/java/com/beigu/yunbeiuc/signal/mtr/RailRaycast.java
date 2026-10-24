@@ -29,14 +29,8 @@ public final class RailRaycast {
     private static final double SAMPLE_STEP = 0.5;
     private static final double CENTERLINE_STEP = 0.25;
 
-    private static final org.apache.logging.log4j.Logger LOGGER =
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER;
-
     private static MtrRailBackend backend;
     private static boolean backendTried;
-
-    private static Object lastLoggedRail;
-    private static boolean lastLoggedNull = true;
 
     private RailRaycast() {
     }
@@ -45,9 +39,6 @@ public final class RailRaycast {
         if (!backendTried) {
             backendTried = true;
             backend = MtrRailBackend.create();
-            if (backend == null) {
-                LOGGER.info("[yunbeiuc] 未检测到 MTR（3 或 4），轨道瞄准 / 高亮功能不可用");
-            }
         }
         return backend;
     }
@@ -125,10 +116,8 @@ public final class RailRaycast {
                     : backend.forEachServerRail(level, visitor);
             if (!iterated) return null;
         } catch (Throwable t) {
-            LOGGER.warn("[yunbeiuc] 轨道射线检测异常", t);
             return null;
         }
-        logAimChange(best[0]);
         return best[0];
     }
 
@@ -139,24 +128,6 @@ public final class RailRaycast {
             visitor.accept(start, end, rail);
         });
         return any[0];
-    }
-
-    private static void logAimChange(Hit hit) {
-        final Object rail = hit == null ? null : hit.rail;
-        if (rail == null) {
-            if (!lastLoggedNull) {
-                lastLoggedNull = true;
-                lastLoggedRail = null;
-                LOGGER.info("[yunbeiuc] 准心已离开轨道");
-            }
-            return;
-        }
-        if (rail == lastLoggedRail) return;
-        lastLoggedRail = rail;
-        lastLoggedNull = false;
-        LOGGER.info("[yunbeiuc] 准心瞄准轨道：{} → {}（视线距离 {}）",
-                hit.start.toShortString(), hit.end.toShortString(),
-                Math.round(hit.distance * 100) / 100.0);
     }
 
     private static double distanceToSegment(Vec3 point, BlockPos a, BlockPos b) {

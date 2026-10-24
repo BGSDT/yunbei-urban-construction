@@ -139,8 +139,8 @@ public abstract class AbstractRoadSlabBlock extends WaterloggedSlabCompat {
         final BlockState placed = this.alignForPlacement(this.defaultBlockState(), context)
             .setValue(WATERLOGGED, VersionServices.blocks().isWater(context.getLevel().getFluidState(pos)));
         final Direction face = context.getClickedFace();
-        final boolean upperHalf = face == Direction.UP
-            || (face != Direction.DOWN && context.getClickLocation().y - (double) pos.getY() > 0.5);
+        final boolean upperHalf = face == Direction.DOWN
+            || (face != Direction.UP && context.getClickLocation().y - (double) pos.getY() > 0.5);
         return placed.setValue(TYPE, upperHalf ? SlabType.TOP : SlabType.BOTTOM);
     }
 

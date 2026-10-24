@@ -2,18 +2,13 @@ package com.beigu.yunbeiuc.item.custom;
 
 import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
-import com.beigu.yunbeiuc.api.network.NetworkCompat;
 import com.beigu.yunbeiuc.api.text.Text;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
-import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.RailPhaseAimPacket;
-import com.beigu.yunbeiuc.network.RailPhaseOpenPacket;
+import com.beigu.yunbeiuc.signal.ClientRailGroupIndex;
 import com.beigu.yunbeiuc.signal.RailPhaseBinding;
-import com.beigu.yunbeiuc.signal.RailSignalRegistry;
 import com.beigu.yunbeiuc.signal.mtr.RailRaycast;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -31,14 +26,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class PhaseWand extends ItemCompat {
 
-    private static final org.apache.logging.log4j.Logger LOGGER =
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER;
-
     private static final double AIM_MAX_DISTANCE = 7.0;
 
     private static final double AIM_THRESHOLD = 1.25;
-
-    private static boolean highlightLogged;
 
     private static volatile boolean holdingWand;
 
@@ -48,13 +38,6 @@ public class PhaseWand extends ItemCompat {
 
     public static boolean isHoldingWandCached() {
         return holdingWand;
-    }
-
-    public static void noteWandHighlight() {
-        if (highlightLogged) return;
-        highlightLogged = true;
-        LOGGER.info("[yunbeiuc] 手持魔杖：MTR 轨道着色已启用（{}，renderColors = true）",
-                com.beigu.yunbeiuc.signal.mtr.MtrVersion.detect().displayName());
     }
 
     public static boolean isHoldingRailWand(Player player) {
@@ -122,44 +105,18 @@ public class PhaseWand extends ItemCompat {
                 player.getLookAngle(), AIM_MAX_DISTANCE, AIM_THRESHOLD);
         if (hit == null) return false;
 
-        final FriendlyByteBuf buf = NetworkCompat.newBuffer();
-        new RailPhaseAimPacket(hit.start, hit.end).write(buf);
-        NetworkCompat.sendToServer(ModMessages.AIM_RAIL_PHASE, buf);
+        final Level level = player.getCommandSenderWorld();
+        for (BlockPos anchor : ClientRailGroupIndex.validAnchors(level)) {
+            if (!(level.getBlockEntity(anchor) instanceof TrafficLightsBlockEntity lights)) continue;
+            final RailPhaseBinding binding = lights.findRailBinding(hit.start, hit.end);
+            if (binding == null) continue;
+            VersionServices.gui().openRailPhaseScreen(hit.start, hit.end, anchor,
+                    lights.getPhaseCount(), lights.getPhaseTimes(), binding.getPhaseMask());
+            return true;
+        }
+
+        message(player, "§c这条轨道还没有链接到任何相位组：请先用链接魔杖组网并把轨道链接进来！");
         return true;
-    }
-
-    public static void openRailPhaseScreen(ServerPlayer player, BlockPos start, BlockPos end) {
-        if (player == null || start == null || end == null) return;
-
-        final RailSignalRegistry.Entry entry =
-                RailSignalRegistry.get(RailPhaseBinding.railProductOf(start, end));
-        final BlockPos groupMember = entry == null ? null : entry.groupAnchor;
-        if (groupMember == null) {
-            message(player, "§c这条轨道还没有链接到任何相位组：请先用链接魔杖组网并把轨道链接进来！");
-            return;
-        }
-
-        final TrafficLightsBlockEntity group = resolveGroup(player.getCommandSenderWorld(), groupMember);
-        if (group == null) {
-            message(player, "§c相位组已失效！");
-            return;
-        }
-
-        final RailPhaseBinding binding = group.findRailBinding(start, end);
-        if (binding == null) {
-            LOGGER.info("[yunbeiuc] 打开相位界面失败：轨道 {} → {} 不在本组（本组共 {} 条）",
-                    start.toShortString(), end.toShortString(), group.getRailBindings().size());
-            message(player, "§c这条轨道还没有链接到本组，请先用链接魔杖把它链接进来！");
-            return;
-        }
-
-        final FriendlyByteBuf buf = NetworkCompat.newBuffer();
-        new RailPhaseOpenPacket(start, end, groupMember,
-                group.getPhaseCount(), group.getPhaseTimes(), binding.getPhaseMask()).write(buf);
-        NetworkCompat.sendToPlayer(player, ModMessages.OPEN_RAIL_PHASE, buf);
-        LOGGER.info("[yunbeiuc] 已发送轨道相位界面数据：{} → {}，相位 {} 个，掩码 {}",
-                start.toShortString(), end.toShortString(),
-                group.getPhaseCount(), Long.toBinaryString(binding.getPhaseMask()));
     }
 
     private static boolean isMtrRailNode(Level level, BlockPos pos) {

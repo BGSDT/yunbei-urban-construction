@@ -62,10 +62,13 @@ dependencies {
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 }
 
-// MTR is an OPTIONAL dependency: the target class of the MTR mixin may be absent at
-// compile time (at runtime YunbeiucMixinPlugin applies that mixin only when MTR is
-// installed). Downgrade the Mixin AP's "target class not found" diagnostic from
-// error to warning, otherwise the shared source tree fails to compile without MTR.
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs += ["-AMSG_MIXIN_SOFT_TARGET_NOT_FOUND=warning"]
-}
+// MTR is an OPTIONAL dependency, so the classes our MTR mixins target do not exist at
+// compile time. That is handled inside the sources, not here:
+//   * every mixin whose target may be absent carries @Pseudo -> the Mixin annotation
+//     processor takes the "simulated handle" path instead of reporting
+//     "Mixin target ... could not be found";
+//   * @Inject entries whose descriptor differs between MC versions carry
+//     @SuppressWarnings("target") (the Mixin AP maps that to SuppressedBy.TARGET),
+//     which silences "Cannot find target method".
+// Do NOT reintroduce -AMSG_MIXIN_SOFT_TARGET_NOT_FOUND here: it is not a key in
+// org.spongepowered.tools.obfuscation.SupportedOptions, so javac has always ignored it.

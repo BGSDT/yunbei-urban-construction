@@ -6,6 +6,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -15,32 +17,52 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
 
 public class GroundMarkBlock extends Block {
-    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 0.1, 16);
+    private static final VoxelShape FLAT_SHAPE = Block.box(0, 0, 0, 16, 0.1, 16);
+    private static final VoxelShape HANGING_SHAPE = Block.box(0, -8, 0, 16, -7.9, 16);
+
+    public static final BooleanProperty SLAB = BooleanProperty.create("slab");
 
     public static final EnumProperty<EightDirection> FACING =
             EnumProperty.create("facing", EightDirection.class);
 
     public GroundMarkBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, EightDirection.NORTH));
+        this.registerDefaultState(this.stateDefinition.any()
+            .setValue(FACING, EightDirection.NORTH)
+            .setValue(SLAB, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, SLAB);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return state.getValue(SLAB) ? HANGING_SHAPE : FLAT_SHAPE;
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        float yaw = ctx.getRotation();
-        return this.defaultBlockState().setValue(FACING, EightDirection.fromYaw(yaw));
+        final BlockState below = ctx.getLevel().getBlockState(ctx.getClickedPos().below());
+        return this.defaultBlockState()
+            .setValue(FACING, EightDirection.fromYaw(ctx.getRotation()))
+            .setValue(SLAB, below.hasProperty(BlockStateProperties.SLAB_TYPE));
+    }
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                  LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        if (direction == Direction.DOWN) {
+            final boolean onSlab = neighborState.hasProperty(BlockStateProperties.SLAB_TYPE);
+            if (onSlab != state.getValue(SLAB)) {
+                return state.setValue(SLAB, onSlab);
+            }
+        }
+        return state;
     }
 
     @Override

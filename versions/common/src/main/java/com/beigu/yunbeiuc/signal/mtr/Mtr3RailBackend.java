@@ -13,9 +13,6 @@ import java.util.Map;
 
 final class Mtr3RailBackend implements MtrRailBackend {
 
-    private static final org.apache.logging.log4j.Logger LOGGER =
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER;
-
     private static boolean railApiTried;
     private static boolean railApiReady;
     private static Method getInstance;
@@ -42,14 +39,12 @@ final class Mtr3RailBackend implements MtrRailBackend {
             railGetLength = railClass.getMethod("getLength");
             railGetPosition = railClass.getMethod("getPosition", double.class);
             railApiReady = true;
-            LOGGER.info("[yunbeiuc] 已连接 MTR 3 轨道 API（Rail#getLength / Rail#getPosition）");
         } catch (Throwable t) {
             getInstance = null;
             getRailsMap = null;
             railGetLength = null;
             railGetPosition = null;
             railApiReady = false;
-            LOGGER.info("[yunbeiuc] 未找到 MTR 3 轨道 API，瞄准轨道功能不可用：{}", t.toString());
         }
         return railApiReady;
     }
@@ -84,17 +79,13 @@ final class Mtr3RailBackend implements MtrRailBackend {
         if (!initRailApi() || level == null) return null;
         try {
             final Object data = getInstance.invoke(null, level);
-            if (data == null) {
-                LOGGER.warn("[yunbeiuc] 拿不到 MTR 3 的 RailwayData（level={}）",
-                        level.getClass().getSimpleName());
-                return null;
-            }
+            if (data == null) return null;
             final Object mapObject = getRailsMap.invoke(data);
             if (mapObject instanceof Map<?, ?> map) {
                 return (Map<BlockPos, Map<BlockPos, Object>>) map;
             }
         } catch (Throwable t) {
-            LOGGER.warn("[yunbeiuc] 读取 MTR 3 轨道表失败", t);
+            // 读不到就当作没有轨道
         }
         return null;
     }

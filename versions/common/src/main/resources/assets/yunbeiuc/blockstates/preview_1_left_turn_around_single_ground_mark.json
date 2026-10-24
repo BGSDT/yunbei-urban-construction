@@ -1,35 +1,63 @@
 {
   "variants": {
-    "facing=north": {
-      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark",
-      "y": 0
+    "facing=north,slab=false": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark"
     },
-    "facing=north_east": {
-      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated",
-      "y": 0
+    "facing=north,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_slab"
     },
-    "facing=east": {
+    "facing=north_east,slab=false": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated"
+    },
+    "facing=north_east,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated_slab"
+    },
+    "facing=east,slab=false": {
       "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark",
       "y": 90
     },
-    "facing=south_east": {
+    "facing=east,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_slab",
+      "y": 90
+    },
+    "facing=south_east,slab=false": {
       "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated",
       "y": 90
     },
-    "facing=south": {
+    "facing=south_east,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated_slab",
+      "y": 90
+    },
+    "facing=south,slab=false": {
       "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark",
       "y": 180
     },
-    "facing=south_west": {
+    "facing=south,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_slab",
+      "y": 180
+    },
+    "facing=south_west,slab=false": {
       "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated",
       "y": 180
     },
-    "facing=west": {
+    "facing=south_west,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated_slab",
+      "y": 180
+    },
+    "facing=west,slab=false": {
       "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark",
       "y": 270
     },
-    "facing=north_west": {
+    "facing=west,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_slab",
+      "y": 270
+    },
+    "facing=north_west,slab=false": {
       "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated",
+      "y": 270
+    },
+    "facing=north_west,slab=true": {
+      "model": "yunbeiuc:block/ground_mark/preview_1_left_turn_around_single_ground_mark_rotated_slab",
       "y": 270
     }
   }

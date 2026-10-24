@@ -1,9 +1,6 @@
 package com.beigu.yunbeiuc.entity;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
-import com.beigu.yunbeiuc.api.network.NetworkCompat;
-import com.beigu.yunbeiuc.network.ModMessages;
-import com.beigu.yunbeiuc.network.TrafficLightsGroupSyncPacket;
 import com.beigu.yunbeiuc.signal.ClientRailGroupIndex;
 import com.beigu.yunbeiuc.signal.RailPhaseBinding;
 import com.beigu.yunbeiuc.signal.RailSignalRegistry;
@@ -51,7 +48,6 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private int currentActivePhase = 0;
     private boolean cycleActive = false;
     private long cycleStartGameTime = Long.MIN_VALUE;
-    private boolean groupStateDirty = false;
 
     private static final int YELLOW_DURATION = 3 * 20;
     private static final int FLASH_DURATION = 3 * 20;
@@ -711,28 +707,6 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         return groupId != null;
     }
 
-    public void applyClientGroupSync(String groupId, List<BlockPos> groupPositions, int[] phaseTimes,
-                                     List<Integer> phaseIndices, String directionType,
-                                     boolean cycleActive, int currentActivePhase, long cycleStartGameTime,
-                                     boolean showSeconds, int fixedSeconds,
-                                     int countdownDisplayMode, int countdownThreshold) {
-        this.groupId = groupId;
-        this.groupPositions = groupPositions == null ? new ArrayList<>() : new ArrayList<>(groupPositions);
-        this.phaseTimes = phaseTimes;
-        this.phaseCount = phaseTimes != null ? phaseTimes.length : 0;
-        this.phaseIndices = phaseIndices == null ? new ArrayList<>() : new ArrayList<>(phaseIndices);
-        this.directionType = DirectionType.fromName(directionType);
-        this.cycleActive = cycleActive;
-        this.cycleStartGameTime = cycleStartGameTime;
-        this.currentActivePhase = currentActivePhase;
-        this.currentTick = 0;
-        refreshPhaseProgress();
-        this.showSeconds = showSeconds;
-        this.fixedSeconds = fixedSeconds;
-        this.countdownDisplayMode = countdownDisplayMode;
-        this.countdownThreshold = countdownThreshold;
-    }
-
     public int getPhaseCount() {
         return phaseCount;
     }
@@ -978,37 +952,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         setChanged();
         if (level != null && !level .isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
-            syncGroupStateToClients();
         }
     }
 
     public void markGroupStateDirty() {
-        this.groupStateDirty = true;
         markDirtyAndUpdate();
-    }
-
-    private void syncGroupStateToClients() {
-        if (!groupStateDirty) return;
-        if (!TrafficLightsGroupSync.isRequired()) return;
-        if (!(level instanceof ServerLevel serverLevel)) return;
-        if (!serverLevel.isLoaded(worldPosition)) return;
-
-        groupStateDirty = false;
-
-        TrafficLightsGroupSyncPacket packet = new TrafficLightsGroupSyncPacket(
-                worldPosition, groupId, groupPositions, phaseTimes, phaseIndices,
-                directionType.getName(), cycleActive, currentActivePhase, cycleStartGameTime,
-                showSeconds, fixedSeconds, countdownDisplayMode, countdownThreshold);
-
-        for (ServerPlayer player : serverLevel.players()) {
-            if (player.distanceToSqr(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
-                    worldPosition.getZ() + 0.5) > 96 * 96) {
-                continue;
-            }
-            FriendlyByteBuf buf = NetworkCompat.newBuffer();
-            packet.write(buf);
-            NetworkCompat.sendToPlayer(player, ModMessages.SYNC_TRAFFIC_LIGHTS_GROUP, buf);
-        }
     }
 
     public enum DirectionType {

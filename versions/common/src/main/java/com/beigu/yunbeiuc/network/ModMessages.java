@@ -6,6 +6,8 @@ import dev.architectury.networking.NetworkManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceLocation;
 
+// 本模组只有 C2S 通道，没有 S2C：客户端所需状态全部由方块实体更新包下发。
+// 服务端绝不能注册 S2C 接收器——专用服务器上没有 net.minecraft.client.*，一碰就崩。
 public class  ModMessages {
 
     public static final ResourceLocation UPDATE_FLAG = id("update_flag");
@@ -17,25 +19,9 @@ public class  ModMessages {
     public static final ResourceLocation APPLY_TRAFFIC_LIGHTS_PATTERN = id("apply_traffic_lights_pattern");
     public static final ResourceLocation UPDATE_CUSTOM_SIGN = id("update_custom_sign");
     public static final ResourceLocation UPDATE_CUSTOM_SIGN_FIELD = id("update_custom_sign_field");
-    public static final ResourceLocation SYNC_TRAFFIC_LIGHTS_GROUP = id("sync_traffic_lights_group");
-    public static final ResourceLocation OPEN_RAIL_PHASE = id("open_rail_phase");
     public static final ResourceLocation UPDATE_RAIL_PHASE = id("update_rail_phase");
-    public static final ResourceLocation AIM_RAIL_PHASE = id("aim_rail_phase");
     private static ResourceLocation id(String path) {
         return VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, path);
-    }
-
-    @SuppressWarnings("removal")
-    public static void registerS2CPackets() {
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C, SYNC_TRAFFIC_LIGHTS_GROUP, (buf, context) -> {
-            TrafficLightsGroupSyncPacket packet = new TrafficLightsGroupSyncPacket(buf);
-            context.queue(packet::applyClient);
-        });
-
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C, OPEN_RAIL_PHASE, (buf, context) -> {
-            RailPhaseOpenPacket packet = new RailPhaseOpenPacket(buf);
-            context.queue(packet::applyClient);
-        });
     }
 
     @SuppressWarnings("removal")
@@ -87,11 +73,6 @@ public class  ModMessages {
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, UPDATE_RAIL_PHASE, (buf, context) -> {
             RailPhaseUpdatePacket packet = new RailPhaseUpdatePacket(buf);
-            context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
-        });
-
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, AIM_RAIL_PHASE, (buf, context) -> {
-            RailPhaseAimPacket packet = new RailPhaseAimPacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
     }

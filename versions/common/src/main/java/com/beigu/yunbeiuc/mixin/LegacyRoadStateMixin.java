@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Set;
 
+@SuppressWarnings("target")
 @Mixin(ChunkSerializer.class)
 public class LegacyRoadStateMixin {
     private static final String READ_OLD = "read(Lnet/minecraft/server/level/ServerLevel;"

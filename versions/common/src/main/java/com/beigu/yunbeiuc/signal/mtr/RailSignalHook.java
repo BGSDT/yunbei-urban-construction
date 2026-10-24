@@ -45,8 +45,6 @@ public final class RailSignalHook {
                 initMtr3();
                 break;
             default:
-                com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.info(
-                        "[yunbeiuc] 未检测到 MTR，红绿灯不会拦停列车（仅作交通装饰）");
                 break;
         }
     }
@@ -60,13 +58,6 @@ public final class RailSignalHook {
         } catch (Throwable t) {
             pathField = null;
             getRailProduct = null;
-        }
-        if (pathField != null && getRailProduct != null) {
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.info(
-                    "[yunbeiuc] MTR 3 轨道信号钩子已启用：红绿灯相位可拦停列车");
-        } else {
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.warn(
-                    "[yunbeiuc] 未找到 MTR 3 的 Train/PathData，轨道信号联动不会生效");
         }
     }
 
@@ -98,15 +89,6 @@ public final class RailSignalHook {
             posGetZ = null;
             railProgressField = null;
             getStartDistance = null;
-        }
-        if (extraDataField != null && immutablePathField != null
-                && getOrderedPosition1 != null && posGetX != null) {
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.info(
-                    "[yunbeiuc] MTR 4 轨道信号钩子已启用：红绿灯相位可拦停列车"
-                            + "（已进入轨道的车不再拦：{}）", railProgressField != null ? "是" : "否");
-        } else {
-            com.beigu.yunbeiuc.YunbeiUrbanConstruction.LOGGER.warn(
-                    "[yunbeiuc] 未找到 MTR 4 的 Vehicle/VehicleExtraData/PathData，轨道信号联动不会生效");
         }
     }
 

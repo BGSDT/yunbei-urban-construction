@@ -35,7 +35,7 @@ public enum MtrVersion {
         synchronized (MtrVersion.class) {
             if (detected == null) {
                 final MtrVersion probed = probe();
-                if (probed != NONE) {
+                if (probed != NONE || !MtrSupport.ENABLED) {
                     detected = probed;
                 }
                 return probed;
@@ -45,6 +45,7 @@ public enum MtrVersion {
     }
 
     private static MtrVersion probe() {
+        if (!MtrSupport.ENABLED) return NONE;
         if (hasResource(MTR4_MARKER)) return MTR4;
         if (hasResource(MTR3_MARKER)) return MTR3;
         return NONE;
