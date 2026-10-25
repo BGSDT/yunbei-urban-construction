@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:white_concrete"
+    },
+    "result": "yunbeiuc:sign_expressway_entrance_advance_4",
+    "count": 9
+}

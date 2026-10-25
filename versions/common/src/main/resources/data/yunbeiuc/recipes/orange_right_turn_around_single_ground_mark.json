@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:orange_concrete"
+    },
+    "result": "yunbeiuc:orange_right_turn_around_single_ground_mark",
+    "count": 1
+}

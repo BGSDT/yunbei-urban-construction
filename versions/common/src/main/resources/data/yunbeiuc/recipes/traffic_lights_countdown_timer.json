@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:black_concrete"
+    },
+    "result": "yunbeiuc:traffic_lights_countdown_timer",
+    "count": 2
+}

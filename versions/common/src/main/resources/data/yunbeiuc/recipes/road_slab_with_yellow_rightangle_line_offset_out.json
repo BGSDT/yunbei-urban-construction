@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "yunbeiuc:road_with_yellow_rightangle_line_offset_out"
+    },
+    "result": "yunbeiuc:road_slab_with_yellow_rightangle_line_offset_out",
+    "count": 2
+}

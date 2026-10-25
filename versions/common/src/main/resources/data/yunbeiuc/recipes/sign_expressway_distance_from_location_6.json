@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:white_concrete"
+    },
+    "result": "yunbeiuc:sign_expressway_distance_from_location_6",
+    "count": 9
+}

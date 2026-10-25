@@ -1,0 +1,105 @@
+plugins {
+    // loom 版本与 fabric-api 的 Fabric-Loom-Version 清单标记联动：fabric-api 0.97.3+1.20.4
+    // 带标记 1.6.5（Fabric 后来用新版 loom 重建了该制品），loom 低于它会在配置 :fabric 时报
+    // "Mod was built with a newer version of Loom (1.6.5), you are using Loom (1.5.391)"。
+    // 而 loom 1.6.5 并未发布到插件门户（无法解析）。解决办法：fabric-api 用 0.96.0+1.20.4
+    // （标记 1.5.4，与 1.20.1 的 0.92.x 同级），loom 保持 1.5.391 与全仓一致。
+    id 'dev.architectury.loom' version '1.5.391' apply false
+    id 'architectury-plugin' version '3.4-SNAPSHOT'
+    id 'com.gradleup.shadow' version '8.3.6' apply false
+    id 'com.modrinth.minotaur' version '2.8.7' apply false
+}
+
+architectury {
+    minecraft = project.minecraft_version
+}
+
+apply from: file('../modrinth.gradle')
+
+allprojects {
+    group = rootProject.maven_group
+    version = rootProject.mod_version
+}
+
+subprojects {
+    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'maven-publish'
+
+    base {
+        // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
+        archivesName = "$rootProject.archives_name-$project.name"
+    }
+
+    repositories {
+        if (System.getenv('CI') != 'true') {
+            maven {
+                name = 'MavenCentralLWJGL'
+                url = 'https://maven.aliyun.com/repository/central/'
+                content { includeGroup 'org.lwjgl' }
+            }
+        }
+        maven {
+            name = 'MavenCentralLWJGLFallback'
+            url = 'https://repo.maven.apache.org/maven2/'
+            content { includeGroup 'org.lwjgl' }
+        }
+        if (System.getenv('CI') != 'true') {
+            maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
+            maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
+        }
+        maven { name = 'LoomMinecraftCache'; url = uri("$rootProject.projectDir/.gradle/loom-cache/minecraftMaven") }
+        mavenCentral()
+        maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
+        maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        if (System.getenv('CI') != 'true') {
+            maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
+        }
+        // Add repositories to retrieve artifacts from in here.
+        // You should only use this when depending on other mods because
+        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+        // for more information about repositories.
+    }
+
+    dependencies {
+        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
+        mappings loom.officialMojangMappings()
+    }
+
+    java {
+        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+        // if it is present.
+        // If you remove this line, sources will not be generated.
+        withSourcesJar()
+
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 17
+        // Emit all compiler diagnostics so the full migration error set is visible.
+        it.options.compilerArgs.add('-Xmaxerrs')
+        it.options.compilerArgs.add('800')
+    }
+
+    // Configure Maven publishing.
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId = base.archivesName.get()
+                from components.java
+            }
+        }
+
+        // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+        repositories {
+            // Add repositories to publish to here.
+            // Notice: This block does NOT have the same function as the block in the top level.
+            // The repositories here will be used for publishing your artifact, not for
+            // retrieving dependencies.
+        }
+    }
+}

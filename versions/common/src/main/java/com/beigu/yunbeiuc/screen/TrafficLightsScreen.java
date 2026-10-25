@@ -56,6 +56,7 @@ public class TrafficLightsScreen extends Screen {
     private ButtonWidget saveButton;
     private ButtonWidget cancelButton;
     private ButtonWidget patternPresetButton;
+    private ButtonWidget timingButton;
     private ButtonWidget mountTypeButton;
     private TrafficLightsBlock.MountType pendingMountType;
 
@@ -213,7 +214,18 @@ public class TrafficLightsScreen extends Screen {
 
         patternPresetButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("相位预设"), button -> openPatternSelectScreen())
-                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
+                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 90, 20)
+                        .build()
+        );
+
+        // 设过时间表之后右键只会进这个主界面，必须在这里留一个回到时间表的入口，
+        // 否则玩家再也改不了相位时长。
+        if (timingButton != null) {
+            this.remove(timingButton);
+        }
+        timingButton = this.addDrawableChild(
+                ButtonWidget.builderCompat(Text.literal("时间表"), button -> openTimingScreen())
+                        .dimensions(panelX + 125, panelY + buttonsYOffset + 25, 60, 20)
                         .build()
         );
 
@@ -280,7 +292,18 @@ public class TrafficLightsScreen extends Screen {
         }
         patternPresetButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("相位预设"), button -> openPatternSelectScreen())
-                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 140, 20)
+                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 90, 20)
+                        .build()
+        );
+
+        // 设过时间表之后右键只会进这个主界面，必须在这里留一个回到时间表的入口，
+        // 否则玩家再也改不了相位时长。
+        if (timingButton != null) {
+            this.remove(timingButton);
+        }
+        timingButton = this.addDrawableChild(
+                ButtonWidget.builderCompat(Text.literal("时间表"), button -> openTimingScreen())
+                        .dimensions(panelX + 125, panelY + buttonsYOffset + 25, 60, 20)
                         .build()
         );
 
@@ -339,6 +362,12 @@ public class TrafficLightsScreen extends Screen {
             return patternButtonY + 20 + PAVEMENT_BOTTOM_MARGIN;
         }
         return RIGHT_PANEL_HEIGHT;
+    }
+
+    private void openTimingScreen() {
+        if (blockEntity == null || blockEntity.getGroupId() == null) return;
+        Minecraft.getInstance().setScreen(new TrafficLightsTimingScreen(
+                blockEntity.getGroupId(), blockEntity.getGroupPositions()));
     }
 
     private void openPatternSelectScreen() {

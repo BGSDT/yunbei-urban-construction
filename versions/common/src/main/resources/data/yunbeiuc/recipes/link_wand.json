@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+        "#": {
+            "item": "yunbeiuc:wand"
+        },
+        "X": {
+            "item": "minecraft:redstone"
+        }
+    },
+    "pattern": [
+        "X",
+        "X",
+        "#"
+    ],
+    "result": {
+        "item": "yunbeiuc:link_wand",
+        "count": 1
+    }
+}

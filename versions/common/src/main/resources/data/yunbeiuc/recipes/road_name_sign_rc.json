@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:white_concrete"
+    },
+    "result": "yunbeiuc:road_name_sign_rc",
+    "count": 9
+}

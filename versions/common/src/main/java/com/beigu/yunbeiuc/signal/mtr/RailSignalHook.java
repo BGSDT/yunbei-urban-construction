@@ -12,7 +12,7 @@ import java.util.UUID;
 
 // MTR 列车钩子的实现体（纯反射）：MTR 3 挂 TrainServer#isRailBlocked，MTR 4 挂 Vehicle#checkAndBlockSignal。
 // MTR 4 不能只挂 PathData#isSignalBlocked —— 那条路只在轨道配了 MTR 原生信号色时才会被调用。
-// 只拦「还没进入这条轨道」的车：车头 railProgress >= 入口距离就放行，否则绿灯时已进道口的车会被硬刹在中间。
+// 红灯即拦：不管列车是否已进入这条轨道（2026-10-24 用户要求撤回「已进轨放行」，与 MTR 原生信号一致）。
 
 public final class RailSignalHook {
 
@@ -26,10 +26,6 @@ public final class RailSignalHook {
     private static Method getOrderedPosition1;
     private static Method getOrderedPosition2;
     private static Method posGetX, posGetY, posGetZ;
-    private static Field railProgressField;
-    private static Method getStartDistance;
-
-    private static final double ENTER_EPSILON = 0.001;
 
     private RailSignalHook() {
     }
@@ -71,9 +67,6 @@ public final class RailSignalHook {
             final Class<?> pathDataClass = Class.forName("org.mtr.core.data.PathData");
             getOrderedPosition1 = pathDataClass.getMethod("getOrderedPosition1");
             getOrderedPosition2 = pathDataClass.getMethod("getOrderedPosition2");
-            getStartDistance = pathDataClass.getMethod("getStartDistance");
-
-            railProgressField = findField(vehicleClass, "railProgress");
 
             final Class<?> positionClass = Class.forName("org.mtr.core.data.Position");
             posGetX = positionClass.getMethod("getX");
@@ -87,8 +80,6 @@ public final class RailSignalHook {
             posGetX = null;
             posGetY = null;
             posGetZ = null;
-            railProgressField = null;
-            getStartDistance = null;
         }
     }
 
@@ -161,33 +152,10 @@ public final class RailSignalHook {
 
             final UUID rail = railOf(pathData);
             if (rail == null) return false;
-            if (!RailSignalRegistry.isBlocked(rail)) return false;
-            return !isAlreadyOnRail(path, index, rail, vehicle);
+            return RailSignalRegistry.isBlocked(rail);
         } catch (Throwable t) {
             return false;
         }
-    }
-
-    private static boolean isAlreadyOnRail(List<?> path, int index, UUID rail, Object vehicle) {
-        if (railProgressField == null) return false;
-        final double progress;
-        try {
-            progress = railProgressField.getDouble(vehicle);
-        } catch (Throwable t) {
-            return false;
-        }
-        if (Double.isNaN(progress) || Double.isInfinite(progress)) return false;
-
-        int first = index;
-        while (first > 0) {
-            final Object previous = path.get(first - 1);
-            if (previous == null || !rail.equals(railOf(previous))) break;
-            first--;
-        }
-
-        final double entry = startDistanceOf(path.get(first));
-        if (Double.isNaN(entry)) return false;
-        return progress >= entry - ENTER_EPSILON;
     }
 
     private static UUID railOf(Object pathData) {
@@ -199,15 +167,6 @@ public final class RailSignalHook {
             return RailPhaseBinding.railProductOf(start, end);
         } catch (Throwable t) {
             return null;
-        }
-    }
-
-    private static double startDistanceOf(Object pathData) {
-        if (pathData == null || getStartDistance == null) return Double.NaN;
-        try {
-            return (double) getStartDistance.invoke(pathData);
-        } catch (Throwable t) {
-            return Double.NaN;
         }
     }
 

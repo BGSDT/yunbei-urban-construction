@@ -6,7 +6,7 @@
 # 用法:
 #   ./publish-all.sh                    发布全部版本
 #   ./publish-all.sh 1.20.1 1.21.1      只发布指定版本
-#   ./publish-all.sh -x 1.20.1          排除指定版本（可重复，也支持 -x 1.20.1,1.21.1）
+#   ./publish-all.sh -x 1.20.4          排除指定版本（可重复，也支持 -x 1.20.1,1.21.1）
 #   ./publish-all.sh -s                 跳过已成功发布的版本（见 .publish-state）
 #   ./publish-all.sh -r                 清空发布记录（.publish-state）后退出
 #   ./publish-all.sh -k                 某个版本失败后继续发布其余版本

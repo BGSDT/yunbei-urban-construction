@@ -43,8 +43,6 @@ public class RailPhaseScreen extends Screen {
     private ButtonWidget addButton;
     private ButtonWidget saveButton;
     private ButtonWidget cancelButton;
-    private ButtonWidget allButton;
-    private ButtonWidget noneButton;
 
     private int panelX;
     private int panelY;
@@ -80,12 +78,6 @@ public class RailPhaseScreen extends Screen {
         this.cancelButton = this.addDrawableChild(ButtonWidget.builderCompat(
                         Text.translatable("text.yunbeiuc.rail_phase.cancel"), button -> this.close())
                 .dimensions(this.panelX + 110, this.panelY + BUTTONS_Y_OFFSET, 60, 20).build());
-        this.allButton = this.addDrawableChild(ButtonWidget.builderCompat(
-                        Text.translatable("text.yunbeiuc.rail_phase.all"), button -> setAll(true))
-                .dimensions(this.panelX + 30, this.panelY + BUTTONS_Y_OFFSET + 25, 65, 20).build());
-        this.noneButton = this.addDrawableChild(ButtonWidget.builderCompat(
-                        Text.translatable("text.yunbeiuc.rail_phase.none"), button -> setAll(false))
-                .dimensions(this.panelX + 105, this.panelY + BUTTONS_Y_OFFSET + 25, 65, 20).build());
 
         rebuildSliders();
     }
@@ -164,19 +156,6 @@ public class RailPhaseScreen extends Screen {
     private void removePhase(int slotIndex) {
         if (slotIndex <= 0 || slotIndex >= this.releasedPhases.size()) return;
         this.releasedPhases.remove(slotIndex);
-        relayout();
-    }
-
-    private void setAll(boolean enabled) {
-        this.releasedPhases.clear();
-        if (enabled) {
-            for (int i = 0; i < maxSliders(); i++) {
-                this.releasedPhases.add(i);
-            }
-        }
-        if (this.releasedPhases.isEmpty() && this.phaseCount > 0) {
-            this.releasedPhases.add(0);
-        }
         relayout();
     }
 

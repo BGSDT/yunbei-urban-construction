@@ -1,5 +1,8 @@
 package com.beigu.yunbeiuc.api.block;
 
+import net.minecraft.network.protocol.game.ClientboundLevelChunkPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -27,4 +30,10 @@ public final class BlockPlatformImpl implements BlockPlatform {
     @Override public int updateImmediate() { return 8; }
     @Override public int updateNeighbors() { return 1; }
     @Override public int updateClients() { return 2; }
+    @Override
+    public void sendBlockEntityUpdate(ServerPlayer player, ServerLevel level, BlockPos pos,
+                                     ClientboundBlockEntityDataPacket packet) {
+        // 1.16.5 的更新包只对原版白名单类型 load，模组方块实体的数据会被丢弃 → 重发区块。
+        player.connection.send(new ClientboundLevelChunkPacket(level.getChunkAt(pos), 65535));
+    }
 }

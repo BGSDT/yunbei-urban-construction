@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:white_concrete"
+    },
+    "result": "yunbeiuc:sound_barrier_1_white_normal",
+    "count": 9
+}

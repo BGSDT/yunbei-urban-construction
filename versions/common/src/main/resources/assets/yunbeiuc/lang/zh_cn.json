@@ -261,8 +261,6 @@
   "text.yunbeiuc.rail_phase.rail_label": "相位 %s",
   "text.yunbeiuc.rail_phase.current_phase": "当前相位：%s",
   "text.yunbeiuc.rail_phase.no_cycle": "相位循环未启动",
-  "text.yunbeiuc.rail_phase.all": "全选",
-  "text.yunbeiuc.rail_phase.none": "全不选",
   "text.yunbeiuc.rail_phase.save": "保存",
   "text.yunbeiuc.rail_phase.cancel": "取消",
   "item.yunbeiuc.tree_wand.tooltip": "右键点击草方块或泥土方块以种植一棵橡树",

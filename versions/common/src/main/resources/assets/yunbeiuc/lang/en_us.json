@@ -261,8 +261,6 @@
   "text.yunbeiuc.rail_phase.rail_label": "Phase %s",
   "text.yunbeiuc.rail_phase.current_phase": "Active phase: %s",
   "text.yunbeiuc.rail_phase.no_cycle": "Phase cycle is not running",
-  "text.yunbeiuc.rail_phase.all": "All",
-  "text.yunbeiuc.rail_phase.none": "None",
   "text.yunbeiuc.rail_phase.save": "Save",
   "text.yunbeiuc.rail_phase.cancel": "Cancel",
   "item.yunbeiuc.tree_wand.tooltip": "Right-click grass or dirt blocks to plant an oak tree",

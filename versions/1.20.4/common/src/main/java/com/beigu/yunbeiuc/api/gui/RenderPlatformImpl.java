@@ -1,0 +1,110 @@
+package com.beigu.yunbeiuc.api.gui;
+
+import com.beigu.yunbeiuc.screen.DrawContext;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+public final class RenderPlatformImpl implements RenderPlatform {
+    @Override
+    public void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
+                            com.mojang.blaze3d.vertex.PoseStack matrices,
+                            net.minecraft.client.renderer.MultiBufferSource buffers, int backgroundColor, int light) {
+        font.drawInBatch(text, x, y, color, shadow, matrices.last().pose(), buffers,
+                Font.DisplayMode.NORMAL, backgroundColor, light);
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack matrices, float x, float y, float z) {
+        consumer.vertex(matrices.last().pose(), x, y, z);
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       float red, float green, float blue, float alpha) {
+        consumer.vertex(pose.pose(), x, y, z).color(red, green, blue, alpha).endVertex();
+    }
+
+    @Override
+    public void line(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                     com.mojang.blaze3d.vertex.PoseStack.Pose pose,
+                     float x1, float y1, float z1, float x2, float y2, float z2,
+                     float red, float green, float blue, float alpha) {
+        final float dx = x2 - x1;
+        final float dy = y2 - y1;
+        final float dz = z2 - z1;
+        consumer.vertex(pose.pose(), x1, y1, z1).color(red, green, blue, alpha)
+                .normal(pose.normal(), dx, dy, dz).endVertex();
+        consumer.vertex(pose.pose(), x2, y2, z2).color(red, green, blue, alpha)
+                .normal(pose.normal(), dx, dy, dz).endVertex();
+    }
+
+    @Override
+    public void vertex(com.mojang.blaze3d.vertex.VertexConsumer consumer,
+                       com.mojang.blaze3d.vertex.PoseStack.Pose pose, float x, float y, float z,
+                       int red, int green, int blue, int alpha, float u, float v, int overlay, int light,
+                       float normalX, float normalY, float normalZ) {
+        consumer.vertex(pose.pose(), x, y, z).color(red, green, blue, alpha).uv(u, v)
+                .overlayCoords(overlay).uv2(light).normal(pose.normal(), normalX, normalY, normalZ).endVertex();
+    }
+
+    @Override
+    public void rotateY(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
+        matrices.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
+    }
+
+    @Override
+    public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+        buffer.begin(primitive == LinePrimitive.LINE_STRIP ? VertexFormat.Mode.LINE_STRIP : VertexFormat.Mode.LINES,
+                DefaultVertexFormat.POSITION_COLOR);
+        return buffer;
+    }
+
+    @Override
+    public void endLines() {
+        Tesselator.getInstance().end();
+    }
+
+    @Override
+    public void fill(DrawContext context, int left, int top, int right, int bottom, int color) {
+        context.fill(left, top, right, bottom, color);
+    }
+
+    @Override
+    public void drawBorder(DrawContext context, int x, int y, int width, int height, int color) {
+        context.drawBorder(x, y, width, height, color);
+    }
+
+    @Override
+    public void drawText(DrawContext context, Font font, Component text, int x, int y, int color, boolean shadow) {
+        context.drawText(font, text, x, y, color, shadow);
+    }
+
+    @Override
+    public void drawCenteredText(DrawContext context, Font font, Component text, int x, int y, int color) {
+        context.drawCenteredTextWithShadow(font, text, x, y, color);
+    }
+
+    @Override
+    public void drawTexture(DrawContext context, ResourceLocation texture, int x, int y, int width, int height,
+                            int u, int v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
+        context.drawTexture(texture, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+    }
+
+    @Override
+    public void enableScissor(DrawContext context, int left, int top, int right, int bottom) {
+        context.enableScissor(left, top, right, bottom);
+    }
+
+    @Override
+    public void disableScissor(DrawContext context) {
+        context.disableScissor();
+    }
+}

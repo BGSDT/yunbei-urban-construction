@@ -3,13 +3,14 @@
 	"credit": "Made with Blockbench",
 	"parent": "block/cube",
 	"textures": {
-		"all": "yunbeiuc:block/road/road_white_yellow",
-		"particle": "yunbeiuc:block/road/road_white_yellow"
+		"particle": "yunbeiuc:block/road/road_white_yellow",
+		"all": "yunbeiuc:block/road/road_white_yellow"
 	},
 	"elements": [
 		{
-			"from": [0, 8, 0],
-			"to": [16, 16, 16],
+			"from": [0, 0, 0],
+			"to": [16, 8, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, -8, 0]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 8], "texture": "#all", "cullface": "north"},
 				"east": {"uv": [0, 0, 16, 8], "texture": "#all", "cullface": "east"},

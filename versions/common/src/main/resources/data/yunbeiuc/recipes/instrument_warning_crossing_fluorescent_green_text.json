@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:iron_block"
+    },
+    "result": "yunbeiuc:instrument_warning_crossing_fluorescent_green_text",
+    "count": 9
+}

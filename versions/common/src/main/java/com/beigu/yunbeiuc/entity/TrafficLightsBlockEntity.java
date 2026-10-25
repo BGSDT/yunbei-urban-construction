@@ -596,11 +596,16 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         for (BlockPos pos : groupPositions) {
             if (pos.equals(worldPosition)) continue;
             if (!level.isLoaded(pos)) return;
-            if (level.getBlockState(pos).getBlock() instanceof com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock) {
+            final BlockState state = level.getBlockState(pos);
+            if (state.getBlock() instanceof com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock) {
                 continue;
             }
-            missing = true;
-            break;
+            // 只有位置真的变成空气才认定这盏灯被拆了。被换成别的方块时不主动解散整组，
+            // 否则人行道一体化灯的附属格、或恰好被别的方块覆盖时会误伤整组。
+            if (state.isAir()) {
+                missing = true;
+                break;
+            }
         }
         if (missing) {
             unloadGroup();
@@ -952,6 +957,23 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         setChanged();
         if (level != null && !level .isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
+            pushUpdateToNearbyPlayers();
+        }
+    }
+
+    // sendBlockUpdated 的广播依赖 ChunkHolder 的脏块队列，1.16.5 / 1.17.1 上模组方块实体的数据
+    // 经常到不了客户端（表现为客户端 groupId 为空、右键弹出静态状态页、魔杖没有轨道高亮）。
+    // 这里用**原版** ClientboundBlockEntityDataPacket 直接补发一次；不是自定义 S2C 通道。
+    private void pushUpdateToNearbyPlayers() {
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        if (!serverLevel.isLoaded(worldPosition)) return;
+        for (ServerPlayer player : serverLevel.players()) {
+            if (player.distanceToSqr(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
+                    worldPosition.getZ() + 0.5) > 96 * 96) {
+                continue;
+            }
+            VersionServices.blocks().sendBlockEntityUpdate(player, serverLevel, worldPosition,
+                    createUpdatePacket());
         }
     }
 

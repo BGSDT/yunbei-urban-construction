@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.api.block;
 
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -27,4 +29,9 @@ public final class BlockPlatformImpl implements BlockPlatform {
     @Override public int updateImmediate() { return Block.UPDATE_IMMEDIATE; }
     @Override public int updateNeighbors() { return Block.UPDATE_NEIGHBORS; }
     @Override public int updateClients() { return Block.UPDATE_CLIENTS; }
+    @Override
+    public void sendBlockEntityUpdate(ServerPlayer player, ServerLevel level, BlockPos pos,
+                                     ClientboundBlockEntityDataPacket packet) {
+        player.connection.send(packet);
+    }
 }

@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:red_concrete"
+    },
+    "result": "yunbeiuc:counterfeit_roadblock_easy_red",
+    "count": 1
+}

@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+        "#": {
+            "item": "yunbeiuc:wand"
+        },
+        "X": {
+            "item": "minecraft:glass_pane"
+        }
+    },
+    "pattern": [
+        "X",
+        "X",
+        "#"
+    ],
+    "result": {
+        "item": "yunbeiuc:mirror_wand",
+        "count": 1
+    }
+}

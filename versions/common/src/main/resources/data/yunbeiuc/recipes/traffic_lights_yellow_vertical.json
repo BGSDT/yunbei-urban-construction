@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:stonecutting",
+    "ingredient": {
+        "item": "minecraft:yellow_concrete"
+    },
+    "result": "yunbeiuc:traffic_lights_yellow_vertical",
+    "count": 2
+}
