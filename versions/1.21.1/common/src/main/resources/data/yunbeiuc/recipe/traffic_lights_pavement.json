@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "result": {
+    "id": "yunbeiuc:traffic_lights_pavement",
+    "count": 2
+  },
+  "ingredient": {
+    "item": "minecraft:black_concrete"
+  }
+}

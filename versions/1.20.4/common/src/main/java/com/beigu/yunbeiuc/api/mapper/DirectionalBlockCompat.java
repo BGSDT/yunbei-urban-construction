@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.api.mapper;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -33,8 +34,30 @@ public abstract class DirectionalBlockCompat extends DirectionalBlock implements
         return useCompat(state, level, pos, player, hand, hit);
     }
 
+    // 1.20.2 起 playerWillDestroy 返回值由 void 改为 BlockState。
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         playerWillDestroyCompat(level, pos, state, player);
+        return state;
+    }
+
+    // 1.20.2 起 Block 新增 codec()（Block 有默认实现，但 DirectionalBlock 仍是抽象，必须实现）。
+    private static final MapCodec<DirectionalBlockCompat.Fallback> FALLBACK_CODEC =
+            simpleCodec(DirectionalBlockCompat.Fallback::new);
+
+    @Override
+    protected MapCodec<? extends DirectionalBlock> codec() {
+        return FALLBACK_CODEC;
+    }
+
+    private static final class Fallback extends DirectionalBlock {
+        private Fallback(BlockBehaviour.Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected MapCodec<? extends DirectionalBlock> codec() {
+            return FALLBACK_CODEC;
+        }
     }
 }

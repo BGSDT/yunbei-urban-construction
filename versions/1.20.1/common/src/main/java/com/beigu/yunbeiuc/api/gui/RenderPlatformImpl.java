@@ -59,6 +59,10 @@ public final class RenderPlatformImpl implements RenderPlatform {
         matrices.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
     }
 
+    public void rotateX(com.mojang.blaze3d.vertex.PoseStack matrices, float degrees) {
+        matrices.mulPose(com.mojang.math.Axis.XP.rotationDegrees(degrees));
+    }
+
     @Override
     public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();

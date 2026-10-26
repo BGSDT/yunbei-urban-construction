@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": {
+      "item": "minecraft:yellow_concrete"
+    },
+    "B": {
+      "item": "minecraft:black_concrete"
+    }
+  },
+  "pattern": [
+    "AB"
+  ],
+  "result": {
+    "count": 8,
+    "id": "yunbeiuc:speed_bump"
+  }
+}

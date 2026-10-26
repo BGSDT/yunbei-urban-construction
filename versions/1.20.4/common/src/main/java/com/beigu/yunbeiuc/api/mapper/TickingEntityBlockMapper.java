@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.api.mapper;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -43,8 +44,35 @@ public abstract class TickingEntityBlockMapper extends BaseEntityBlock implement
         return useCompat(state, level, pos, player, hand, hit);
     }
 
+    // 1.20.2 起 playerWillDestroy 返回值由 void 改为 BlockState。
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         playerWillDestroyCompat(level, pos, state, player);
+        return state;
+    }
+
+    // 1.20.2 起 BaseEntityBlock 仍是抽象 codec()，必须实现（与 1.21.1 同款 fallback）。
+    private static final MapCodec<TickingEntityBlockMapper.Fallback> FALLBACK_CODEC = simpleCodec(TickingEntityBlockMapper.Fallback::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return FALLBACK_CODEC;
+    }
+
+    private static final class Fallback extends BaseEntityBlock {
+        private Fallback(BlockBehaviour.Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected MapCodec<? extends BaseEntityBlock> codec() {
+            return FALLBACK_CODEC;
+        }
+
+        @Nullable
+        @Override
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+            return null;
+        }
     }
 }

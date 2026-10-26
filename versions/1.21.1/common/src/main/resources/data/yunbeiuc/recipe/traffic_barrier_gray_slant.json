@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "result": {
+    "id": "yunbeiuc:traffic_barrier_gray_slant",
+    "count": 1
+  },
+  "ingredient": {
+    "item": "minecraft:gray_concrete"
+  }
+}

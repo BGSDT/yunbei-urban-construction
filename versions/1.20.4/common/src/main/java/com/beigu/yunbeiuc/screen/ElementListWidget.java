@@ -34,6 +34,18 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
     protected int getScrollbarPositionXCompat() { return super.getRowRight() + 4; }
     public void setRenderHorizontalShadows(boolean visible) { }
 
+    // 1.20.2 起 AbstractSelectionList 删除了 vanilla setRenderSelection(boolean)，
+    // 改由子类覆写 renderSelection 自行过滤（共享树 AbstractOptionListWidget 调用 setRenderSelection）。
+    private boolean renderSelection = true;
+
+    public void setRenderSelection(boolean visible) { this.renderSelection = visible; }
+
+    @Override
+    protected void renderSelection(GuiGraphics graphics, int top, int height, int left, int width, int color) {
+        if (!this.renderSelection) return;
+        super.renderSelection(graphics, top, height, left, width, color);
+    }
+
     @Override
     protected int getScrollbarPosition() { return getScrollbarPositionXCompat(); }
 

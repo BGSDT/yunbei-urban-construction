@@ -121,6 +121,8 @@
   "block.yunbeiuc.gantry_frame_led.tooltip": "手持魔杖右键点击以设置LED诱导屏显示内容",
   "block.yunbeiuc.gantry_frame_detection_camera": "龙门架检测/测速监控摄像头",
   "block.yunbeiuc.gantry_frame_lighting_lamp": "龙门架道路补光灯",
+  "block.yunbeiuc.lighting_lamp.tooltip": "手持魔杖右键点击以切换灯光状态",
+  "block.yunbeiuc.wall_text_display": "墙贴隐形告示牌",
   "block.yunbeiuc.gantry_frame_radar_speed_detector": "龙门架雷达测速器",
   "block.yunbeiuc.warning_network": "警示网",
   "block.yunbeiuc.warning_network_pole": "警示网（立柱）",
@@ -305,7 +307,9 @@
   "block.yunbeiuc.road_with_whitethick_normal_rightangle_line": "白色直角粗标线道路",
   "block.yunbeiuc.road_with_whitethick_yellow_rightangle_line": "白色直角粗标线黄色标线道路",
   "block.yunbeiuc.road_with_whitethick_yellowdouble_rightangle_line": "白色直角粗标线黄色双标线道路",
+  "block.yunbeiuc.road_with_whitethick_yellowdouble_half_rightangle_line": "白色直角粗标线黄色双标线道路（半）",
   "block.yunbeiuc.road_with_white_yellowdouble_rightangle_line": "白色直角普通标线黄色双标线道路",
+  "block.yunbeiuc.road_with_white_yellowdouble_half_rightangle_line": "白色直角普通标线黄色双标线道路（半）",
   "block.yunbeiuc.road_with_white_bevel_line": "白色斜角标线道路",
   "block.yunbeiuc.road_with_white_bevel_double_line": "白色斜角双标线道路",
   "block.yunbeiuc.road_with_white_bevel_thick_line": "白色粗斜角标线道路",
@@ -1262,5 +1266,6 @@
   "yunbeiuc.gui.homepage.quickstart.title": "快速开始",
   "yunbeiuc.gui.homepage.quickstart.step1": "在左侧选择分类",
   "yunbeiuc.gui.homepage.quickstart.step2": "点击图案或字体",
-  "yunbeiuc.gui.homepage.quickstart.step3": "内容自动写入文本行"
+  "yunbeiuc.gui.homepage.quickstart.step3": "内容自动写入文本行",
+  "gui.yunbeiuc.custom_sign": "文本编辑"
 }

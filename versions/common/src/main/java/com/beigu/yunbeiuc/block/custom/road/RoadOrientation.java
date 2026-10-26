@@ -62,6 +62,18 @@ public final class RoadOrientation {
         return state;
     }
 
+    public static BlockState align(BlockState state, Direction direction, boolean mirrored) {
+        if (state.hasProperty(FACING) && state.hasProperty(MIRRORED)
+            && !(state.hasProperty(AXIS) && state.getBlock() instanceof AxisMirrorOriented)) {
+            return state.setValue(FACING, direction).setValue(MIRRORED, mirrored);
+        }
+        return align(state, direction);
+    }
+
+    public static BlockState align(Block block, Direction direction, boolean mirrored) {
+        return align(block.defaultBlockState(), direction, mirrored);
+    }
+
     public static BlockState align(Block block, Direction direction) {
         return align(block.defaultBlockState(), direction);
     }

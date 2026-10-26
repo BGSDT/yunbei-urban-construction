@@ -10,20 +10,43 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.grower.OakTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 
 public final class BlockPlatformImpl implements BlockPlatform {
-    @Override public boolean isWater(FluidState state) { return state.getType() == Fluids.WATER; }
-    @Override public void scheduleBlockTick(LevelAccessor level, BlockPos pos, Block block, int delay) { level.scheduleTick(pos, block, delay); }
-    @Override public void scheduleFluidTick(LevelAccessor level, BlockPos pos, Fluid fluid, int delay) { level.scheduleTick(pos, fluid, delay); }
-    @Override public boolean growOakTree(ServerLevel level, BlockPos pos) {
-        return new OakTreeGrower().growTree(level, level.getChunkSource().getGenerator(), pos,
+
+    @Override
+    public boolean isWater(FluidState state) {
+        return state.getType() == Fluids.WATER;
+    }
+
+    @Override
+    public void scheduleBlockTick(LevelAccessor level, BlockPos pos, Block block, int delay) {
+        level.scheduleTick(pos, block, delay);
+    }
+
+    @Override
+    public void scheduleFluidTick(LevelAccessor level, BlockPos pos, Fluid fluid, int delay) {
+        level.scheduleTick(pos, fluid, delay);
+    }
+
+    @Override
+    public boolean growOakTree(ServerLevel level, BlockPos pos) {
+        // 1.20.2 起 OakTreeGrower 类合并为 TreeGrower（静态实例 OAK 等）。
+        return TreeGrower.OAK.growTree(level, level.getChunkSource().getGenerator(), pos,
                 Blocks.OAK_SAPLING.defaultBlockState(), level.getRandom());
     }
-    @Override public BlockBehaviour.Properties copyProperties(Block source) { return BlockBehaviour.Properties.copy(source); }
-    @Override public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color) {
+
+    @Override
+    public BlockBehaviour.Properties copyProperties(Block source) {
+        // 1.20.2 起 Properties.copy 改名 ofFullCopy（共享树用它克隆原版方块属性，
+        // 如 copyProperties(Blocks.CYAN_TERRACOTTA)，必须保持复制语义）。
+        return BlockBehaviour.Properties.ofFullCopy(source);
+    }
+
+    @Override
+    public BlockBehaviour.Properties color(BlockBehaviour.Properties properties, BlockColor color) {
         return properties.mapColor(mapColor(color));
     }
 
@@ -90,13 +113,30 @@ public final class BlockPlatformImpl implements BlockPlatform {
             case WARPED_WART_BLOCK -> MapColor.WARPED_WART_BLOCK;
         };
     }
-    @Override public int updateAll() { return Block.UPDATE_ALL; }
-    @Override public int updateImmediate() { return Block.UPDATE_IMMEDIATE; }
-    @Override public int updateNeighbors() { return Block.UPDATE_NEIGHBORS; }
-    @Override public int updateClients() { return Block.UPDATE_CLIENTS; }
+
+    @Override
+    public int updateAll() {
+        return Block.UPDATE_ALL;
+    }
+
+    @Override
+    public int updateImmediate() {
+        return Block.UPDATE_IMMEDIATE;
+    }
+
+    @Override
+    public int updateNeighbors() {
+        return Block.UPDATE_NEIGHBORS;
+    }
+
+    @Override
+    public int updateClients() {
+        return Block.UPDATE_CLIENTS;
+    }
+
     @Override
     public void sendBlockEntityUpdate(ServerPlayer player, ServerLevel level, BlockPos pos,
-                                     ClientboundBlockEntityDataPacket packet) {
+                                      ClientboundBlockEntityDataPacket packet) {
         player.connection.send(packet);
     }
 }

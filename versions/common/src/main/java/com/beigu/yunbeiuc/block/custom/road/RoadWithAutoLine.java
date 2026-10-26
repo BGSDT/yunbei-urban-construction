@@ -185,12 +185,12 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                                 } else {
                                     block = RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE.get();
                                 }
-                                return RoadOrientation.align(block, adjacentDirection);
+                                return RoadOrientation.align(block, adjacentDirection, direction.getClockWise() == adjacentDirection);
                             } else if (connectionState.lineColor() == LineColor.WHITE && adjacentState.lineColor() == LineColor.WHITE) {
                                 if (connectionState.lineType() == LineType.THICK && adjacentState.lineType() == LineType.NORMAL) {
-                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), adjacentDirection);
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), adjacentDirection, direction.getClockWise() == adjacentDirection);
                                 } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.THICK) {
-                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), direction);
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), direction, adjacentDirection.getClockWise() == direction);
                                 } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.NORMAL) {
                                     return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get(), cornerToFacing(RoadCorner.of(direction, adjacentDirection)));
                                 }

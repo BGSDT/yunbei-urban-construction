@@ -27,6 +27,7 @@ public class SignBlocks {
     public static Iterable<RegistrySupplier<Block>> entries() {
         return Collections.unmodifiableList(BLOCK_ENTRIES);
     }
+    public static final RegistrySupplier<Block> WALL_TEXT_DISPLAY = register("wall_text_display", () -> new WallTextDisplayBlock(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> SIGN_STOP = register("sign_stop", () -> new SignSimpleBlock(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> SIGN_YIELD = register("sign_yield", () -> new SignSimpleBlock(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));
     public static final RegistrySupplier<Block> SIGN_YIELD_TO_ONCOMING_TRAFFIC = register("sign_yield_to_oncoming_traffic", () -> new SignSimpleBlock(VersionServices.blocks().copyProperties(Blocks.CYAN_TERRACOTTA).noOcclusion().requiresCorrectToolForDrops()));

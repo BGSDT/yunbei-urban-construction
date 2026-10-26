@@ -35,6 +35,8 @@ public interface RenderPlatform {
 
     void rotateY(PoseStack matrices, float degrees);
 
+    void rotateX(PoseStack matrices, float degrees);
+
     void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
                      PoseStack matrices, MultiBufferSource buffers, int backgroundColor, int light);
 

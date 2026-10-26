@@ -1926,13 +1926,17 @@ public class TextDisplayScreen extends Screen {
         }
 
         for (int index : selectedLineIndices) {
+            // 正在编辑的那一行已由世界渲染器画青色描边（AbstractTextDisplayEntityRenderer.renderEditingOutline，
+            // 0x00FFFF，贴合牌子平面），这里若再画一层屏幕空间边框就会出现「两个描边」→ 跳过它。
+            // 多选的其他行仍用屏幕空间框标出（它们没有世界描边）。
+            if (index == selectedIndex) continue;
             float[] rect = TextGizmo.lineRect(index);
             if (rect == null) continue;
             int x = Math.round(rect[0]);
             int y = Math.round(rect[1]);
             int w = Math.max(1, Math.round(rect[2] - rect[0]));
             int h = Math.max(1, Math.round(rect[3] - rect[1]));
-            context.drawBorder(x, y, w, h, index == selectedIndex ? 0xFF66FFCC : 0xFF55AAFF);
+            context.drawBorder(x, y, w, h, 0xFF55AAFF);
         }
 
         if (boxSelecting) {

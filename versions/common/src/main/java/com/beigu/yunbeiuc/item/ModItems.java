@@ -269,7 +269,9 @@ public class ModItems {
     public static final RegistrySupplier<Item> ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE = road(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE);
     public static final RegistrySupplier<Item> ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE = road(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE);
     public static final RegistrySupplier<Item> ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE = road(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE);
+    public static final RegistrySupplier<Item> ROAD_WITH_WHITETHICK_YELLOWDOUBLE_HALF_RIGHTANGLE_LINE = road(RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_HALF_RIGHTANGLE_LINE);
     public static final RegistrySupplier<Item> ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE = road(RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE);
+    public static final RegistrySupplier<Item> ROAD_WITH_WHITE_YELLOWDOUBLE_HALF_RIGHTANGLE_LINE = road(RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_HALF_RIGHTANGLE_LINE);
     public static final RegistrySupplier<Item> ROAD_WITH_WHITE_BEVEL_LINE = road(RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE);
     public static final RegistrySupplier<Item> ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE = road(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE);
     public static final RegistrySupplier<Item> ROAD_WITH_WHITE_BEVEL_THICK_LINE = road(RoadBlocks.ROAD_WITH_WHITE_BEVEL_THICK_LINE);
@@ -587,6 +589,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> ARROW_2_LEFT_TURN_AROUND_SINGLE_GROUND_MARK = road(RoadBlocks.ARROW_2_LEFT_TURN_AROUND_SINGLE_GROUND_MARK);
     public static final RegistrySupplier<Item> ARROW_2_RIGHT_TURN_AROUND_SINGLE_GROUND_MARK = road(RoadBlocks.ARROW_2_RIGHT_TURN_AROUND_SINGLE_GROUND_MARK);
 
+    public static final RegistrySupplier<Item> WALL_TEXT_DISPLAY = sign(SignBlocks.WALL_TEXT_DISPLAY);
     public static final RegistrySupplier<Item> SIGN_STOP = sign(SignBlocks.SIGN_STOP);
     public static final RegistrySupplier<Item> SIGN_YIELD = sign(SignBlocks.SIGN_YIELD);
     public static final RegistrySupplier<Item> SIGN_YIELD_TO_ONCOMING_TRAFFIC = sign(SignBlocks.SIGN_YIELD_TO_ONCOMING_TRAFFIC);

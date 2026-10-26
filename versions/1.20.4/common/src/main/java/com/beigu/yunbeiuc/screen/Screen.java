@@ -37,7 +37,14 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
             // 1.20.2 起 renderBackground 多带 mouseX/mouseY/partialTick 三个参数（1.20.4 里未被使用）。
             super.renderBackground(context.getGraphics(), mouseX, mouseY, delta);
         }
-        super.render(context.getGraphics(), mouseX, mouseY, delta);
+        // 1.20.2 起原生 Screen.render 开头会调用 renderBackground 画灰色渐变/泥土背景（1.20.1 不会），
+        // 与 1.20.1 行为不符 → 不调 super.render，自行遍历 children 渲染 Renderable（与 1.21.1 shim 一致）。
+        GuiGraphics graphics = context.getGraphics();
+        for (GuiEventListener element : this.children()) {
+            if (element instanceof Renderable renderable) {
+                renderable.render(graphics, mouseX, mouseY, delta);
+            }
+        }
     }
 
     public void renderBackground(DrawContext context) {

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "result": {
+    "id": "yunbeiuc:vibration_marking_line",
+    "count": 9
+  },
+  "ingredient": {
+    "item": "minecraft:yellow_concrete"
+  }
+}

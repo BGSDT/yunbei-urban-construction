@@ -54,7 +54,6 @@ public class CustomTextDisplayBlock extends EntityBlockCompat {
     @Override
     public void appendHoverTextCompat(ItemStack stack, List<Component> tooltip, TooltipFlag options) {
         tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.sign_text.tooltip"));
-        tooltip.add(com.beigu.yunbeiuc.api.text.Text.translatable("block.yunbeiuc.sign_text_light.tooltip"));
     }
 
     @Override

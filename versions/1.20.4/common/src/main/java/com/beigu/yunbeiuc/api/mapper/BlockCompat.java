@@ -32,8 +32,10 @@ public abstract class BlockCompat extends Block implements BlockCompatHooks {
         return useCompat(state, level, pos, player, hand, hit);
     }
 
+    // 1.20.2 起 playerWillDestroy 返回值由 void 改为 BlockState（调用钩子后原样返回）。
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         playerWillDestroyCompat(level, pos, state, player);
+        return state;
     }
 }

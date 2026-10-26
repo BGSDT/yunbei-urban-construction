@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:green_concrete"
+  },
+  "result": {
+    "id": "yunbeiuc:rising_bollard",
+    "count": 3
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "result": {
+    "id": "yunbeiuc:road_with_yellow_left_diamond_shape_line",
+    "count": 1
+  },
+  "ingredient": {
+    "item": "yunbeiuc:road_full_of_yellow"
+  }
+}

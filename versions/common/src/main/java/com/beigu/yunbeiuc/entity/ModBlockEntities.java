@@ -404,7 +404,8 @@ public class ModBlockEntities {
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_2.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_3.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_4.get(),
-                            SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_FLUORESCENCE.get()));
+                            SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_FLUORESCENCE.get(),
+                            SignBlocks.WALL_TEXT_DISPLAY.get()));
 
     public static void init() {
         BES.register();

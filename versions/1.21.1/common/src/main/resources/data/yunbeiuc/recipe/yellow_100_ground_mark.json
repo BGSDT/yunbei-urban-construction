@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:yellow_concrete"
+  },
+  "result": {
+    "id": "yunbeiuc:yellow_100_ground_mark",
+    "count": 1
+  }
+}

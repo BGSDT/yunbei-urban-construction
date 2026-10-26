@@ -121,6 +121,8 @@
   "block.yunbeiuc.gantry_frame_led.tooltip": "Right-click with a wand to set the LED guide sign display content",
   "block.yunbeiuc.gantry_frame_detection_camera": "Gantry Frame Detection/Speed Monitoring Camera",
   "block.yunbeiuc.gantry_frame_lighting_lamp": "Gantry Frame Road Fill Light",
+  "block.yunbeiuc.lighting_lamp.tooltip": "Right-click with a wand to toggle the light state",
+  "block.yunbeiuc.wall_text_display": "Invisible Wall Sticker Sign",
   "block.yunbeiuc.gantry_frame_radar_speed_detector": "Gantry Frame Radar Speed Detector",
   "block.yunbeiuc.warning_network": "Warning Net",
   "block.yunbeiuc.warning_network_pole": "Warning Net (Post)",
@@ -305,7 +307,9 @@
   "block.yunbeiuc.road_with_whitethick_normal_rightangle_line": "Road with White Thick Right-Angle Line",
   "block.yunbeiuc.road_with_whitethick_yellow_rightangle_line": "Road with White Thick Right-Angle Yellow Line",
   "block.yunbeiuc.road_with_whitethick_yellowdouble_rightangle_line": "Road with White Thick Right-Angle Yellow Double Line",
+  "block.yunbeiuc.road_with_whitethick_yellowdouble_half_rightangle_line": "Road with White Thick Half Right-Angle Yellow Double Line",
   "block.yunbeiuc.road_with_white_yellowdouble_rightangle_line": "Road with White Normal Right-Angle Yellow Double Line",
+  "block.yunbeiuc.road_with_white_yellowdouble_half_rightangle_line": "Road with White Normal Half Right-Angle Yellow Double Line",
   "block.yunbeiuc.road_with_white_bevel_line": "Road with White Bevel Line",
   "block.yunbeiuc.road_with_white_bevel_double_line": "Road with White Bevel Double Line",
   "block.yunbeiuc.road_with_white_bevel_thick_line": "Road with White Thick Bevel Line",
@@ -1262,5 +1266,6 @@
   "yunbeiuc.gui.homepage.quickstart.title": "Quick Start",
   "yunbeiuc.gui.homepage.quickstart.step1": "Select a category on the left",
   "yunbeiuc.gui.homepage.quickstart.step2": "Click a pattern or font",
-  "yunbeiuc.gui.homepage.quickstart.step3": "Content is automatically written to the text line"
+  "yunbeiuc.gui.homepage.quickstart.step3": "Content is automatically written to the text line",
+  "gui.yunbeiuc.custom_sign": "Text Editor"
 }
