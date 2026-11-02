@@ -3,7 +3,8 @@ package com.beigu.yunbeiuc.item;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.api.item.CreativeTabHandle;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.world.item.ItemStack;
 
 public final class ModItemGroups {
@@ -17,7 +18,7 @@ public final class ModItemGroups {
 
     public static final CreativeTabHandle YUNBEIUC_SIGN_GROUP = VersionServices.creativeTabs().create(
             VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, "sign"),
-            () -> new ItemStack(ModItems.SIGN_SPEED_LIMIT_005.get()));
+            () -> new ItemStack(ModItems.SIGN_SPEED_LILGPL V3_005.get()));
 
     public static final CreativeTabHandle YUNBEIUC_WAND_GROUP = VersionServices.creativeTabs().create(
             VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, "wand"),

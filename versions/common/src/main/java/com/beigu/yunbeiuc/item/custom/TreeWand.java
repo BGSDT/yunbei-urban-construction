@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.item.custom;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,7 +57,7 @@ public class TreeWand extends ItemCompat {
                     if (success) {
                         serverWorld.playSound(null, abovePos, SoundEvents.GRASS_PLACE,
                                 SoundSource.BLOCKS, 1.0F, 1.0F);
-                        player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.success"), true);
+                        ApiCompat.message(player, Text.translatable("item.yunbeiuc.tree_wand.success"), true);
 
                         if (!player.isCreative()) {
                             ItemCompat.hurtAndBreakCompat(context.getItemInHand(), 1, player, context.getHand());
@@ -69,14 +71,14 @@ public class TreeWand extends ItemCompat {
                             serverWorld.setBlock(abovePos, originalAboveState, 3);
                         }
 
-                        player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.failed"), true);
+                        ApiCompat.message(player, Text.translatable("item.yunbeiuc.tree_wand.failed"), true);
                         return InteractionResult.FAIL;
                     }
                 } else {
-                    player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.no_space"), true);
+                    ApiCompat.message(player, Text.translatable("item.yunbeiuc.tree_wand.no_space"), true);
                 }
             } else {
-                player.displayClientMessage(Text.translatable("item.yunbeiuc.tree_wand.invalid_block"), true);
+                ApiCompat.message(player, Text.translatable("item.yunbeiuc.tree_wand.invalid_block"), true);
             }
         }
 

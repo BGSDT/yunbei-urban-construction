@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -28,14 +30,14 @@ public class SignGuideIntersectionAdvanceWarning5Entity extends CustomSignBlockE
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
-        this.text2 = nbt.getString("text2");
-        this.text3 = nbt.getString("text3");
-        this.text4 = nbt.getString("text4");
-        this.text1AndY = nbt.getFloat("text1AndY");
-        this.text2AndY = nbt.getFloat("text2AndY");
-        this.text3AndY = nbt.getFloat("text3AndY");
-        this.text4AndY = nbt.getFloat("text4AndY");
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.text2 = NbtCompat.getString(nbt, "text2");
+        this.text3 = NbtCompat.getString(nbt, "text3");
+        this.text4 = NbtCompat.getString(nbt, "text4");
+        this.text1AndY = NbtCompat.getFloat(nbt, "text1AndY");
+        this.text2AndY = NbtCompat.getFloat(nbt, "text2AndY");
+        this.text3AndY = NbtCompat.getFloat(nbt, "text3AndY");
+        this.text4AndY = NbtCompat.getFloat(nbt, "text4AndY");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

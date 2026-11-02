@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.screen;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
@@ -196,7 +198,7 @@ public class TrafficLightsTimingScreen extends Screen {
     }
 
     private void openPatternEditor() {
-        Minecraft.getInstance().setScreen(new TrafficLightsPatternEditorScreen());
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternEditorScreen());
     }
 
     @Override

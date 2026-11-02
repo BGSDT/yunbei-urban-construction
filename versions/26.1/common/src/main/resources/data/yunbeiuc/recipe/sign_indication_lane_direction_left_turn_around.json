@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:white_concrete"
+  },
+  "result": {
+    "id": "yunbeiuc:sign_indication_lane_direction_left_turn_around",
+    "count": 9
+  }
+}

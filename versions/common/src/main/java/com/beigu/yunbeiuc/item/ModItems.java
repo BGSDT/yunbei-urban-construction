@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.item;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.api.item.CreativeTabHandle;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
+import com.beigu.yunbeiuc.api.registry.RegistrationContext;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.RoadBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
@@ -30,8 +31,24 @@ public class ModItems {
     private static final Supplier<CreativeTabHandle> ROAD_TAB = () -> ModItemGroups.YUNBEIUC_ROAD_GROUP;
     private static final Supplier<CreativeTabHandle> SIGN_TAB = () -> ModItemGroups.YUNBEIUC_SIGN_GROUP;
 
+    /**
+     * Publishes the registry name for the duration of {@code supplier.get()}. Minecraft 26.x needs
+     * the id on {@code Item.Properties} before the item is constructed; the version specific
+     * compatibility layer reads the name from {@link RegistrationContext} and stamps it.
+     */
+    private static <T extends Item> Supplier<T> stamped(String name, Supplier<T> supplier) {
+        return () -> {
+            RegistrationContext.beginItem(name);
+            try {
+                return supplier.get();
+            } finally {
+                RegistrationContext.endItem();
+            }
+        };
+    }
+
     private static <T extends Item> RegistrySupplier<T> registerToolItem(String name, Supplier<T> supplier) {
-        RegistrySupplier<T> item = ITEMS.register(name, supplier);
+        RegistrySupplier<T> item = ITEMS.register(name, stamped(name, supplier));
         ALL_WAND_ITEMS.add(item);
         return item;
     }
@@ -39,14 +56,15 @@ public class ModItems {
     private static RegistrySupplier<Item> registerBlockItem(RegistrySupplier<? extends Block> blockSupplier,
                                                             List<Supplier<? extends Item>> categoryList,
                                                             Supplier<CreativeTabHandle> tabSupplier) {
-        RegistrySupplier<Item> item = ITEMS.register(blockSupplier.getId().getPath(),
-                () -> {
-                    Block block = blockSupplier.get();
-                    Item.Properties properties = VersionServices.creativeTabs().apply(new Item.Properties(), tabSupplier.get());
-                    BlockItem blockItem = new BlockItem(block, properties);
-                    Item.BY_BLOCK.put(block, blockItem);
-                    return blockItem;
-                });
+        String name = blockSupplier.getId().getPath();
+        Supplier<Item> supplier = () -> {
+            Block block = blockSupplier.get();
+            Item.Properties properties = VersionServices.creativeTabs().apply(new Item.Properties(), tabSupplier.get());
+            BlockItem blockItem = new BlockItem(block, properties);
+            Item.BY_BLOCK.put(block, blockItem);
+            return blockItem;
+        };
+        RegistrySupplier<Item> item = ITEMS.register(name, stamped(name, supplier));
         categoryList.add(item);
         return item;
     }
@@ -623,51 +641,51 @@ public class ModItems {
     public static final RegistrySupplier<Item> SIGN_NO_PARKING = sign(SignBlocks.SIGN_NO_PARKING);
     public static final RegistrySupplier<Item> SIGN_NO_PARKING_LONG_TIME = sign(SignBlocks.SIGN_NO_PARKING_LONG_TIME);
     public static final RegistrySupplier<Item> SIGN_NO_HONK_HORN = sign(SignBlocks.SIGN_NO_HONK_HORN);
-    public static final RegistrySupplier<Item> SIGN_WIDTH_LIMIT_20 = sign(SignBlocks.SIGN_WIDTH_LIMIT_20);
-    public static final RegistrySupplier<Item> SIGN_WIDTH_LIMIT_25 = sign(SignBlocks.SIGN_WIDTH_LIMIT_25);
-    public static final RegistrySupplier<Item> SIGN_WIDTH_LIMIT_30 = sign(SignBlocks.SIGN_WIDTH_LIMIT_30);
-    public static final RegistrySupplier<Item> SIGN_WIDTH_LIMIT_35 = sign(SignBlocks.SIGN_WIDTH_LIMIT_35);
-    public static final RegistrySupplier<Item> SIGN_WIDTH_LIMIT_40 = sign(SignBlocks.SIGN_WIDTH_LIMIT_40);
-    public static final RegistrySupplier<Item> SIGN_WIDTH_LIMIT_45 = sign(SignBlocks.SIGN_WIDTH_LIMIT_45);
-    public static final RegistrySupplier<Item> SIGN_HEIGHT_LIMIT_20 = sign(SignBlocks.SIGN_HEIGHT_LIMIT_20);
-    public static final RegistrySupplier<Item> SIGN_HEIGHT_LIMIT_25 = sign(SignBlocks.SIGN_HEIGHT_LIMIT_25);
-    public static final RegistrySupplier<Item> SIGN_HEIGHT_LIMIT_30 = sign(SignBlocks.SIGN_HEIGHT_LIMIT_30);
-    public static final RegistrySupplier<Item> SIGN_HEIGHT_LIMIT_35 = sign(SignBlocks.SIGN_HEIGHT_LIMIT_35);
-    public static final RegistrySupplier<Item> SIGN_HEIGHT_LIMIT_40 = sign(SignBlocks.SIGN_HEIGHT_LIMIT_40);
-    public static final RegistrySupplier<Item> SIGN_HEIGHT_LIMIT_45 = sign(SignBlocks.SIGN_HEIGHT_LIMIT_45);
-    public static final RegistrySupplier<Item> SIGN_WEIGHT_LIMIT_10 = sign(SignBlocks.SIGN_WEIGHT_LIMIT_10);
-    public static final RegistrySupplier<Item> SIGN_WEIGHT_LIMIT_20 = sign(SignBlocks.SIGN_WEIGHT_LIMIT_20);
-    public static final RegistrySupplier<Item> SIGN_WEIGHT_LIMIT_30 = sign(SignBlocks.SIGN_WEIGHT_LIMIT_30);
-    public static final RegistrySupplier<Item> SIGN_WEIGHT_LIMIT_40 = sign(SignBlocks.SIGN_WEIGHT_LIMIT_40);
-    public static final RegistrySupplier<Item> SIGN_ALEX_WEIGHT_LIMIT_10 = sign(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_10);
-    public static final RegistrySupplier<Item> SIGN_ALEX_WEIGHT_LIMIT_20 = sign(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_20);
-    public static final RegistrySupplier<Item> SIGN_ALEX_WEIGHT_LIMIT_30 = sign(SignBlocks.SIGN_ALEX_WEIGHT_LIMIT_30);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_005 = sign(SignBlocks.SIGN_SPEED_LIMIT_005);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_010 = sign(SignBlocks.SIGN_SPEED_LIMIT_010);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_020 = sign(SignBlocks.SIGN_SPEED_LIMIT_020);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_030 = sign(SignBlocks.SIGN_SPEED_LIMIT_030);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_040 = sign(SignBlocks.SIGN_SPEED_LIMIT_040);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_050 = sign(SignBlocks.SIGN_SPEED_LIMIT_050);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_060 = sign(SignBlocks.SIGN_SPEED_LIMIT_060);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_070 = sign(SignBlocks.SIGN_SPEED_LIMIT_070);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_080 = sign(SignBlocks.SIGN_SPEED_LIMIT_080);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_090 = sign(SignBlocks.SIGN_SPEED_LIMIT_090);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_100 = sign(SignBlocks.SIGN_SPEED_LIMIT_100);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_110 = sign(SignBlocks.SIGN_SPEED_LIMIT_110);
-    public static final RegistrySupplier<Item> SIGN_SPEED_LIMIT_120 = sign(SignBlocks.SIGN_SPEED_LIMIT_120);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_005 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_005);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_010 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_010);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_020 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_020);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_030 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_030);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_040 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_040);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_050 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_050);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_060 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_060);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_070 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_070);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_080 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_080);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_090 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_090);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_100 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_100);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_110 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_110);
-    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LIMIT_120 = sign(SignBlocks.SIGN_CANCEL_SPEED_LIMIT_120);
+    public static final RegistrySupplier<Item> SIGN_WIDTH_LILGPL V3_20 = sign(SignBlocks.SIGN_WIDTH_LILGPL V3_20);
+    public static final RegistrySupplier<Item> SIGN_WIDTH_LILGPL V3_25 = sign(SignBlocks.SIGN_WIDTH_LILGPL V3_25);
+    public static final RegistrySupplier<Item> SIGN_WIDTH_LILGPL V3_30 = sign(SignBlocks.SIGN_WIDTH_LILGPL V3_30);
+    public static final RegistrySupplier<Item> SIGN_WIDTH_LILGPL V3_35 = sign(SignBlocks.SIGN_WIDTH_LILGPL V3_35);
+    public static final RegistrySupplier<Item> SIGN_WIDTH_LILGPL V3_40 = sign(SignBlocks.SIGN_WIDTH_LILGPL V3_40);
+    public static final RegistrySupplier<Item> SIGN_WIDTH_LILGPL V3_45 = sign(SignBlocks.SIGN_WIDTH_LILGPL V3_45);
+    public static final RegistrySupplier<Item> SIGN_HEIGHT_LILGPL V3_20 = sign(SignBlocks.SIGN_HEIGHT_LILGPL V3_20);
+    public static final RegistrySupplier<Item> SIGN_HEIGHT_LILGPL V3_25 = sign(SignBlocks.SIGN_HEIGHT_LILGPL V3_25);
+    public static final RegistrySupplier<Item> SIGN_HEIGHT_LILGPL V3_30 = sign(SignBlocks.SIGN_HEIGHT_LILGPL V3_30);
+    public static final RegistrySupplier<Item> SIGN_HEIGHT_LILGPL V3_35 = sign(SignBlocks.SIGN_HEIGHT_LILGPL V3_35);
+    public static final RegistrySupplier<Item> SIGN_HEIGHT_LILGPL V3_40 = sign(SignBlocks.SIGN_HEIGHT_LILGPL V3_40);
+    public static final RegistrySupplier<Item> SIGN_HEIGHT_LILGPL V3_45 = sign(SignBlocks.SIGN_HEIGHT_LILGPL V3_45);
+    public static final RegistrySupplier<Item> SIGN_WEIGHT_LILGPL V3_10 = sign(SignBlocks.SIGN_WEIGHT_LILGPL V3_10);
+    public static final RegistrySupplier<Item> SIGN_WEIGHT_LILGPL V3_20 = sign(SignBlocks.SIGN_WEIGHT_LILGPL V3_20);
+    public static final RegistrySupplier<Item> SIGN_WEIGHT_LILGPL V3_30 = sign(SignBlocks.SIGN_WEIGHT_LILGPL V3_30);
+    public static final RegistrySupplier<Item> SIGN_WEIGHT_LILGPL V3_40 = sign(SignBlocks.SIGN_WEIGHT_LILGPL V3_40);
+    public static final RegistrySupplier<Item> SIGN_ALEX_WEIGHT_LILGPL V3_10 = sign(SignBlocks.SIGN_ALEX_WEIGHT_LILGPL V3_10);
+    public static final RegistrySupplier<Item> SIGN_ALEX_WEIGHT_LILGPL V3_20 = sign(SignBlocks.SIGN_ALEX_WEIGHT_LILGPL V3_20);
+    public static final RegistrySupplier<Item> SIGN_ALEX_WEIGHT_LILGPL V3_30 = sign(SignBlocks.SIGN_ALEX_WEIGHT_LILGPL V3_30);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_005 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_005);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_010 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_010);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_020 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_020);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_030 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_030);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_040 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_040);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_050 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_050);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_060 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_060);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_070 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_070);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_080 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_080);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_090 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_090);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_100 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_100);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_110 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_110);
+    public static final RegistrySupplier<Item> SIGN_SPEED_LILGPL V3_120 = sign(SignBlocks.SIGN_SPEED_LILGPL V3_120);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_005 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_005);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_010 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_010);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_020 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_020);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_030 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_030);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_040 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_040);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_050 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_050);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_060 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_060);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_070 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_070);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_080 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_080);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_090 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_090);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_100 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_100);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_110 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_110);
+    public static final RegistrySupplier<Item> SIGN_CANCEL_SPEED_LILGPL V3_120 = sign(SignBlocks.SIGN_CANCEL_SPEED_LILGPL V3_120);
     public static final RegistrySupplier<Item> SIGN_CHECK = sign(SignBlocks.SIGN_CHECK);
     public static final RegistrySupplier<Item> SIGN_PORT_CHECK = sign(SignBlocks.SIGN_PORT_CHECK);
     public static final RegistrySupplier<Item> SIGN_NO_HAZARDOUS_MATERIALS_TRANSPORT_VEHICLE = sign(SignBlocks.SIGN_NO_HAZARDOUS_MATERIALS_TRANSPORT_VEHICLE);
@@ -684,17 +702,17 @@ public class ModItems {
     public static final RegistrySupplier<Item> SIGN_INDICATION_ONE_WAY_STREET_STRAIGHT = sign(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_STRAIGHT);
     public static final RegistrySupplier<Item> SIGN_INDICATION_HONK_HORN = sign(SignBlocks.SIGN_INDICATION_HONK_HORN);
     public static final RegistrySupplier<Item> SIGN_INDICATION_HEADLIGHTS = sign(SignBlocks.SIGN_INDICATION_HEADLIGHTS);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_005 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_005);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_010 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_010);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_020 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_020);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_030 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_030);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_040 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_040);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_050 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_050);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_060 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_060);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_070 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_070);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_080 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_080);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_090 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_090);
-    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LIMIT_100 = sign(SignBlocks.SIGN_MIN_SPEED_LIMIT_100);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_005 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_005);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_010 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_010);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_020 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_020);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_030 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_030);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_040 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_040);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_050 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_050);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_060 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_060);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_070 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_070);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_080 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_080);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_090 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_090);
+    public static final RegistrySupplier<Item> SIGN_MIN_SPEED_LILGPL V3_100 = sign(SignBlocks.SIGN_MIN_SPEED_LILGPL V3_100);
     public static final RegistrySupplier<Item> SIGN_INDICATION_YIELD_TO_ONCOMING_TRAFFIC = sign(SignBlocks.SIGN_INDICATION_YIELD_TO_ONCOMING_TRAFFIC);
     public static final RegistrySupplier<Item> SIGN_INDICATION_ZEBRA_CROSSING = sign(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING);
     public static final RegistrySupplier<Item> SIGN_INDICATION_ZEBRA_CROSSING_FLUORESCENCE = sign(SignBlocks.SIGN_INDICATION_ZEBRA_CROSSING_FLUORESCENCE);
@@ -875,7 +893,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> ZONES_BOARD_DISTANCE_LENGTH = sign(SignBlocks.ZONES_BOARD_DISTANCE_LENGTH);
     public static final RegistrySupplier<Item> ZONES_BOARD_DISTANCE_LENGTH_LEFT = sign(SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_LEFT);
     public static final RegistrySupplier<Item> ZONES_BOARD_DISTANCE_LENGTH_RIGHT = sign(SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_RIGHT);
-    public static final RegistrySupplier<Item> ZONES_BOARD_TIME_LIMIT = sign(SignBlocks.ZONES_BOARD_TIME_LIMIT);
+    public static final RegistrySupplier<Item> ZONES_BOARD_TIME_LILGPL V3 = sign(SignBlocks.ZONES_BOARD_TIME_LILGPL V3);
     public static final RegistrySupplier<Item> ZONES_BOARD_OVER_WEIGHT = sign(SignBlocks.ZONES_BOARD_OVER_WEIGHT);
     public static final RegistrySupplier<Item> ZONES_BOARD_SUGGESTED_SPEED = sign(SignBlocks.ZONES_BOARD_SUGGESTED_SPEED);
     public static final RegistrySupplier<Item> ZONES_BOARD_LENGTH = sign(SignBlocks.ZONES_BOARD_LENGTH);
@@ -1078,14 +1096,14 @@ public class ModItems {
     public static final RegistrySupplier<Item> SIGN_CUSTOM_NO_SIMPLE_2 = sign(SignBlocks.SIGN_CUSTOM_NO_SIMPLE_2);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_NO_SIMPLE_3 = sign(SignBlocks.SIGN_CUSTOM_NO_SIMPLE_3);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_CANCEL_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_CANCEL_SIMPLE);
-    public static final RegistrySupplier<Item> SIGN_CUSTOM_WIDTH_LIMIT_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_WIDTH_LIMIT_SIMPLE);
-    public static final RegistrySupplier<Item> SIGN_CUSTOM_HEIGHT_LIMIT_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_HEIGHT_LIMIT_SIMPLE);
-    public static final RegistrySupplier<Item> SIGN_CUSTOM_ALEX_WEIGHT_LIMIT_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_ALEX_WEIGHT_LIMIT_SIMPLE);
+    public static final RegistrySupplier<Item> SIGN_CUSTOM_WIDTH_LILGPL V3_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_WIDTH_LILGPL V3_SIMPLE);
+    public static final RegistrySupplier<Item> SIGN_CUSTOM_HEIGHT_LILGPL V3_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_HEIGHT_LILGPL V3_SIMPLE);
+    public static final RegistrySupplier<Item> SIGN_CUSTOM_ALEX_WEIGHT_LILGPL V3_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_ALEX_WEIGHT_LILGPL V3_SIMPLE);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_INDICATION_SIMPLE_1 = sign(SignBlocks.SIGN_CUSTOM_INDICATION_SIMPLE_1);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_INDICATION_SIMPLE_2 = sign(SignBlocks.SIGN_CUSTOM_INDICATION_SIMPLE_2);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_INDICATION_SIMPLE_3 = sign(SignBlocks.SIGN_CUSTOM_INDICATION_SIMPLE_3);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_INDICATION_SIMPLE_FLUORESCENCE = sign(SignBlocks.SIGN_CUSTOM_INDICATION_SIMPLE_FLUORESCENCE);
-    public static final RegistrySupplier<Item> SIGN_CUSTOM_MIN_SPEED_LIMIT_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_MIN_SPEED_LIMIT_SIMPLE);
+    public static final RegistrySupplier<Item> SIGN_CUSTOM_MIN_SPEED_LILGPL V3_SIMPLE = sign(SignBlocks.SIGN_CUSTOM_MIN_SPEED_LILGPL V3_SIMPLE);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_WARNING_SIMPLE_1 = sign(SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_1);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_WARNING_SIMPLE_2 = sign(SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_2);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_WARNING_SIMPLE_3 = sign(SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_3);

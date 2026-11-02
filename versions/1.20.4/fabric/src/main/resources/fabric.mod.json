@@ -18,7 +18,7 @@
     "sources": "https://github.com/BGSDT/yunbei-urban-construction",
     "issues": "https://github.com/BGSDT/yunbei-urban-construction/issues"
   },
-  "license": "MIT",
+  "license": "LGPL V3",
   "icon": "assets/yunbeiuc/icon.png",
   "environment": "*",
   "entrypoints": {

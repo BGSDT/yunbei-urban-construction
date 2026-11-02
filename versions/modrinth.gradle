@@ -6,6 +6,13 @@ if (modrinthConfigFile.isFile()) {
 
 def changelogFile = rootProject.file('../../CHANGELOG.md')
 
+// Minecraft 26.x ships an unobfuscated jar, so those version projects run Loom in
+// "no-remap" mode: there is no remapJar, and the platforms do not need shadowing
+// because the shared tree is compiled straight into each platform jar.
+def jarTaskNameOf = { platformProject ->
+    ['remapJar', 'shadowJar', 'jar'].find { platformProject.tasks.names.contains(it) }
+}
+
 subprojects { platformProject ->
     if (!(platformProject.name in ['fabric', 'forge', 'neoforge'])) {
         return
@@ -22,38 +29,44 @@ subprojects { platformProject ->
         def cfgVersionType = modrinthConfig.getProperty('version_type', 'release')
         def cfgToken = modrinthConfig.getProperty('token', '')
 
-        platformProject.modrinth {
-            token = cfgToken
-            projectId = cfgProjectId
-            versionNumber = "${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
-            versionName = "${cfgProjectName} ${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
-            versionType = cfgVersionType
-            uploadFile = platformProject.tasks.named('remapJar')
-            gameVersions = [rootProject.minecraft_version]
-            loaders = [loader]
-            if (changelogFile.isFile()) {
-                changelog = changelogFile.getText('UTF-8')
-            }
-        }
+        // Evaluated late: the platform build script (shadow plugin) has run by then,
+        // so the remap/no-remap output task can be detected reliably.
+        platformProject.afterEvaluate {
+            def jarTaskName = jarTaskNameOf(platformProject)
 
-        platformProject.tasks.named('modrinth').configure {
-            doFirst {
-                if (!cfgProjectId) {
-                    throw new GradleException(
-                        "Missing project_id (or project_id_${loader}) in repository-root modrinth.properties.")
-                }
-                if (!cfgToken) {
-                    throw new GradleException(
-                        'Missing token in repository-root modrinth.properties.')
+            platformProject.modrinth {
+                token = cfgToken
+                projectId = cfgProjectId
+                versionNumber = "${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
+                versionName = "${cfgProjectName} ${rootProject.mod_version}+${rootProject.minecraft_version}+${loader}"
+                versionType = cfgVersionType
+                uploadFile = platformProject.tasks.named(jarTaskName)
+                gameVersions = [rootProject.minecraft_version]
+                loaders = [loader]
+                if (changelogFile.isFile()) {
+                    changelog = changelogFile.getText('UTF-8')
                 }
             }
-        }
 
-        platformProject.tasks.register('publishModrinth') {
-            group = 'publishing'
-            description = "Uploads the remapped ${loaderTitle} jar to Modrinth."
-            dependsOn platformProject.tasks.named('remapJar')
-            dependsOn platformProject.tasks.named('modrinth')
+            platformProject.tasks.named('modrinth').configure {
+                doFirst {
+                    if (!cfgProjectId) {
+                        throw new GradleException(
+                            "Missing project_id (or project_id_${loader}) in repository-root modrinth.properties.")
+                    }
+                    if (!cfgToken) {
+                        throw new GradleException(
+                            'Missing token in repository-root modrinth.properties.')
+                    }
+                }
+            }
+
+            platformProject.tasks.register('publishModrinth') {
+                group = 'publishing'
+                description = "Uploads the ${jarTaskName == 'remapJar' ? 'remapped' : 'built'} ${loaderTitle} jar to Modrinth."
+                dependsOn platformProject.tasks.named(jarTaskName)
+                dependsOn platformProject.tasks.named('modrinth')
+            }
         }
     }
 }

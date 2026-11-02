@@ -18,7 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class InstrumentFeeDisplay extends BlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<DirectionType> DIRECTION_TYPE = EnumProperty.create("direction_type", DirectionType.class);
 
     private static final VoxelShape SHAPE_N = Block.box(0, 0, 6, 16, 15, 10);
@@ -86,7 +86,7 @@ public class InstrumentFeeDisplay extends BlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 DirectionType current = state.getValue(DIRECTION_TYPE);
                 DirectionType next = current.next();
                 world.setBlock(pos, state.setValue(DIRECTION_TYPE, next), VersionServices.blocks().updateAll());

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.traffic;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.mapper.TickingEntityBlock;
 import net.minecraft.world.level.block.Mirror;
@@ -25,7 +27,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -78,7 +80,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     private static final VoxelShape COUNTDOWN_E = Block.box(7.75, 2, 0, 16, 16, 16);
     private static final VoxelShape COUNTDOWN_W = Block.box(0, 2, 0, 8.25, 16, 16);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<LightState> LIGHT_STATE = EnumProperty.create("light_state", LightState.class);
     public static final EnumProperty<MountType> TYPE = EnumProperty.create("type", MountType.class);
     public static final EnumProperty<Mount> MOUNT = EnumProperty.create("mount", Mount.class);
@@ -97,43 +99,49 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip.auto_detect"));
     }
 
+    /** Compares by registration name: the registry suppliers are not resolvable while a block is
+     *  still being registered, and 26.x builds the collision-shape cache at that very moment. */
+    private static boolean isNamed(Block block, String name) {
+        return name.equals(com.beigu.yunbeiuc.block.BlockRegistration.nameOf(block));
+    }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         VoxelShape north = SHAPE_N, south = SHAPE_S, east = SHAPE_E, west = SHAPE_W;
         Block block = state.getBlock();
 
-        if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_VERTICAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_VERTICAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_YELLOW_VERTICAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
+        if (isNamed(block, "traffic_lights_gray_vertical")
+                || isNamed(block, "traffic_lights_black_vertical")
+                || isNamed(block, "traffic_lights_yellow_vertical")
+                || isNamed(block, "traffic_lights_gray_shanghai")
+                || isNamed(block, "traffic_lights_black_shanghai")) {
             north = VERTICAL_N;
             south = VERTICAL_S;
             east = VERTICAL_E;
             west = VERTICAL_W;
-        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_HORIZONTAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_HORIZONTAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
+        } else if (isNamed(block, "traffic_lights_gray_horizontal")
+                || isNamed(block, "traffic_lights_black_horizontal")
+                || isNamed(block, "traffic_lights_green_taipei")) {
             north = HORIZONTAL_N;
             south = HORIZONTAL_S;
             east = HORIZONTAL_E;
             west = HORIZONTAL_W;
-        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()) {
+        } else if (isNamed(block, "traffic_lights_pavement_gray")
+                || isNamed(block, "traffic_lights_pavement_black")
+                || isNamed(block, "traffic_lights_pavement_green_taipei")) {
             north = PAVEMENT_N;
             south = PAVEMENT_S;
             east = PAVEMENT_E;
             west = PAVEMENT_W;
-        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_HORIZONTAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_HORIZONTAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SINGLE_VERTICAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SINGLE_VERTICAL.get()) {
+        } else if (isNamed(block, "traffic_lights_gray_single_horizontal")
+                || isNamed(block, "traffic_lights_black_single_horizontal")
+                || isNamed(block, "traffic_lights_gray_single_vertical")
+                || isNamed(block, "traffic_lights_black_single_vertical")) {
             north = SINGLE_N;
             south = SINGLE_S;
             east = SINGLE_E;
             west = SINGLE_W;
-        } else if (block == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) {
+        } else if (isNamed(block, "traffic_lights_countdown_timer")) {
             north = COUNTDOWN_N;
             south = COUNTDOWN_S;
             east = COUNTDOWN_E;
@@ -172,7 +180,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState state = defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
 
-        if (this == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) {
+        if (isNamed(this, "traffic_lights_foggy")) {
             state = state.setValue(LIGHT_STATE, LightState.YELLOW);
         }
 
@@ -186,24 +194,24 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     }
 
     private static boolean isPoleBlock(Block block) {
-        return block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FOUNDATIONS_SLAB.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LONGITUDINAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_HORIZONTAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_TSHAPE.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_TEXT_DISPLAY.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LED.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_FLAG.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_FOUNDATIONS_SLAB.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_LONGITUDINAL.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_1.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_2.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_POLE_LIGHT_BRANCH_3.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHT_HIGH_MAST.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHT_1.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHT_2.get()
-                || block == com.beigu.yunbeiuc.block.MunicipalBlocks.ROAD_LIGHTING_LAMP.get();
+        return isNamed(block, "road_pole_foundations")
+                || isNamed(block, "road_pole_foundations_slab")
+                || isNamed(block, "road_pole_longitudinal")
+                || isNamed(block, "road_pole_horizontal")
+                || isNamed(block, "road_pole_tshape")
+                || isNamed(block, "road_pole_text_display")
+                || isNamed(block, "road_pole_led")
+                || isNamed(block, "road_pole_flag")
+                || isNamed(block, "road_pole_light_foundations")
+                || isNamed(block, "road_pole_light_foundations_slab")
+                || isNamed(block, "road_pole_light_longitudinal")
+                || isNamed(block, "road_pole_light_branch_1")
+                || isNamed(block, "road_pole_light_branch_2")
+                || isNamed(block, "road_pole_light_branch_3")
+                || isNamed(block, "road_light_high_mast")
+                || isNamed(block, "road_light_1")
+                || isNamed(block, "road_light_2")
+                || isNamed(block, "road_lighting_lamp");
     }
 
     private static Mount mountOf(BlockState behindState) {
@@ -227,8 +235,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         return state.getValue(MOUNT) == Mount.POLE ? MountType.POLE : MountType.SIMPLE;
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction,
+        protected BlockState updateShapeCompat(BlockState state, Direction direction,
                                                 BlockState neighborState, LevelAccessor world,
                                                 BlockPos pos, BlockPos neighborPos) {
         if (direction == state.getValue(FACING).getOpposite() && state.getValue(TYPE) == MountType.AUTO) {
@@ -237,7 +244,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
                 return state.setValue(MOUNT, mount);
             }
         }
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -250,21 +257,21 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         ItemStack heldItem = player.getItemInHand(hand);
 
         if (heldItem.getItem() == ModItems.WAND.get()) {
-            if (world .isClientSide) {
+            if (world .isClientSide()) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
                     if (!trafficLightsBE.isInGroup()) {
                         openStaticStateScreen(pos);
-                        return InteractionResult.sidedSuccess(true);
+                        return ApiCompat.sidedSuccess(true);
                     }
                     if (!trafficLightsBE.hasTimings()) {
                         openTimingScreen(pos);
-                        return InteractionResult.sidedSuccess(true);
+                        return ApiCompat.sidedSuccess(true);
                     }
                     openDisplayScreen(pos);
                 }
             }
-            return InteractionResult.sidedSuccess(world.isClientSide);
+            return ApiCompat.sidedSuccess(world.isClientSide());
         }
 
         return super.useCompat(state, world, pos, player, hand, hit);
@@ -272,7 +279,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
     @Environment(EnvType.CLIENT)
     private void openDisplayScreen(BlockPos pos) {
-        Minecraft.getInstance().setScreen(new TrafficLightsScreen(pos));
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsScreen(pos));
     }
 
     @Environment(EnvType.CLIENT)
@@ -280,22 +287,22 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
         if (blockEntity instanceof TrafficLightsBlockEntity tl) {
             Block currentBlock = tl.getBlockState().getBlock();
-            boolean isCountdownTimer = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
-            boolean isShanghai = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
-                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
-                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
-            boolean isPavement = currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
-                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
-                    || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
+            boolean isCountdownTimer = isNamed(currentBlock, "traffic_lights_countdown_timer");
+            boolean isShanghai = isNamed(currentBlock, "traffic_lights_gray_shanghai")
+                    || isNamed(currentBlock, "traffic_lights_black_shanghai")
+                    || isNamed(currentBlock, "traffic_lights_green_taipei");
+            boolean isPavement = isNamed(currentBlock, "traffic_lights_pavement_gray")
+                    || isNamed(currentBlock, "traffic_lights_pavement_black")
+                    || isNamed(currentBlock, "traffic_lights_pavement_green_taipei");
 
             if (isCountdownTimer) {
-                Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
             } else if (isShanghai) {
-                Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
             } else if (isPavement) {
-                Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsSimpleStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new com.beigu.yunbeiuc.screen.TrafficLightsSimpleStaticStateScreen(pos));
             } else {
-                Minecraft.getInstance().setScreen(new TrafficLightsStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsStaticStateScreen(pos));
             }
         }
     }
@@ -304,7 +311,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     private void openTimingScreen(BlockPos pos) {
         BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
         if (blockEntity instanceof TrafficLightsBlockEntity tl) {
-            Minecraft.getInstance().setScreen(new TrafficLightsTimingScreen(tl.getGroupId(), tl.getGroupPositions()));
+            ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsTimingScreen(tl.getGroupId(), tl.getGroupPositions()));
         }
     }
 
@@ -325,7 +332,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (!world .isClientSide) {
+        if (!world .isClientSide()) {
             VersionServices.blocks().scheduleBlockTick(world, pos, this, 1);
         }
         super.onPlace(state, world, pos, oldState, notify);
@@ -336,16 +343,15 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         TrafficLightsGroupTracker.track(world, pos, player);
     }
 
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+        protected void onRemoveCompat(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             unloadGroupAt(world, pos);
-            super.onRemove(state, world, pos, newState, moved);
+            super.onRemoveCompat(state, world, pos, newState, moved);
         }
     }
 
     public static void unloadGroupAt(Level world, BlockPos pos) {
-        if (world == null || world.isClientSide) return;
+        if (world == null || world.isClientSide()) return;
         TrafficLightsGroupTracker.Pending pending = TrafficLightsGroupTracker.take(pos);
         if (pending == null) return;
         TrafficLightsBlockEntity trafficLightsBE = pending.entity;
@@ -356,7 +362,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         trafficLightsBE.unloadGroup();
 
         if (pending.player != null) {
-            pending.player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal(
+            ApiCompat.message(pending.player, com.beigu.yunbeiuc.api.text.Text.literal(
                     "§7这盏红绿灯属于相位组，拆掉它会§c解散整组§7：其余 §6"
                             + Math.max(0, members - 1)
                             + " §7盏灯已退回未分组状态，时间表与轨道绑定一并清空。"

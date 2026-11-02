@@ -9,7 +9,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -23,7 +23,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 
 public class InstrumentStrobeLight extends TickingBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<State> STATE = EnumProperty.create("state", State.class);
 
     private static final VoxelShape SHAPE = Block.box(0, -0.5, 0, 16, 8.75, 16);
@@ -100,14 +100,14 @@ public class InstrumentStrobeLight extends TickingBlock {
 
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             VersionServices.blocks().scheduleBlockTick(world, pos, this, STATE_DURATIONS[state.getValue(INDEX)]);
         }
     }
 
     @Override
     protected void tickCompat(BlockState state, ServerLevel world, BlockPos pos) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             int currentIndex = state.getValue(INDEX);
             int nextIndex = (currentIndex + 1) % STATE_SEQUENCE.length;
 

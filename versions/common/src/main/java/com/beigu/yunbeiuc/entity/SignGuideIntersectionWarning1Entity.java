@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.SignBlocks;
@@ -22,7 +24,7 @@ public class SignGuideIntersectionWarning1Entity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
+        this.text1 = NbtCompat.getString(nbt, "text1");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

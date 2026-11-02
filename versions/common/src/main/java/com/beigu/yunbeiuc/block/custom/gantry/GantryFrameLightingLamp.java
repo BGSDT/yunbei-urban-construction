@@ -18,7 +18,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -47,7 +47,7 @@ public class GantryFrameLightingLamp extends BlockCompat {
     private static final VoxelShape SHAPE_E = Block.box(-1.5, 8.75, 5.25, 4, 16.75, 10.75);
     private static final VoxelShape SHAPE_W = Block.box(11.5, 8.75, 5.25, 17, 16.75, 10.75);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<LightTFState> LIGHT_TF_STATE = EnumProperty.create("light_tf_state", LightTFState.class);
 
     public GantryFrameLightingLamp(BlockBehaviour.Properties properties) {
@@ -90,7 +90,7 @@ public class GantryFrameLightingLamp extends BlockCompat {
     @Override
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
-        if (!world .isClientSide) {
+        if (!world .isClientSide()) {
             if (heldItem.getItem() == ModItems.WAND.get()) {
                 boolean newLitState = !state.getValue(LIT);
                 LightTFState newLightState = state.getValue(LIGHT_TF_STATE).next();

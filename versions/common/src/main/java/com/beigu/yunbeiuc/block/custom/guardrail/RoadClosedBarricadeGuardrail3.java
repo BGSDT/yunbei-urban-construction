@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.guardrail;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.mapper.DirectionalBlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
@@ -67,7 +69,7 @@ public class RoadClosedBarricadeGuardrail3 extends DirectionalBlockCompat {
                          @Nullable LivingEntity placer, ItemStack itemStack) {
         super.setPlacedBy(world, pos, state, placer, itemStack);
 
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             Direction direction = state.getValue(FACING);
             BlockPos rightPos = pos.relative(direction.getClockWise());
 
@@ -132,13 +134,12 @@ public class RoadClosedBarricadeGuardrail3 extends DirectionalBlockCompat {
     }
 
     public PushReaction getPushReaction(BlockState state) {
-        return PushReaction.BLOCK;
+        return ApiCompat.PUSH_BLOCK;
     }
 
-    @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos,
+        protected void neighborChangedCompat(BlockState state, Level world, BlockPos pos,
                                Block block, BlockPos fromPos, boolean notify) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             BedPart part = state.getValue(PART);
             Direction direction = state.getValue(FACING);
 

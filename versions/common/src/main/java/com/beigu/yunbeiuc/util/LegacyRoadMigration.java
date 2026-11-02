@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.util;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
@@ -105,22 +107,22 @@ public final class LegacyRoadMigration {
             // 1.18+ 用小写 sections / block_states / palette；
             // 1.16.5 ~ 1.17.1 用大写 Sections / BlockStates / Palette，两套都要读。
             for (String sectionKey : new String[] {"sections", "Sections"}) {
-                if (!tag.contains(sectionKey, 9)) {
+                if (!NbtCompat.contains(tag, sectionKey, 9)) {
                     continue;
                 }
-                final ListTag sections = tag.getList(sectionKey, 10);
+                final ListTag sections = NbtCompat.getList(tag, sectionKey, 10);
                 for (int i = 0; i < sections.size(); i++) {
-                    final CompoundTag section = sections.getCompound(i);
+                    final CompoundTag section = NbtCompat.compoundAt(sections, i);
                     for (String stateKey : new String[] {"block_states", "BlockStates"}) {
-                        if (!section.contains(stateKey, 10)) {
+                        if (!NbtCompat.contains(section, stateKey, 10)) {
                             continue;
                         }
-                        final CompoundTag states = section.getCompound(stateKey);
+                        final CompoundTag states = NbtCompat.getCompound(section, stateKey);
                         for (String paletteKey : new String[] {"palette", "Palette"}) {
-                            if (!states.contains(paletteKey, 9)) {
+                            if (!NbtCompat.contains(states, paletteKey, 9)) {
                                 continue;
                             }
-                            migratePalette(states.getList(paletteKey, 10));
+                            migratePalette(NbtCompat.getList(states, paletteKey, 10));
                         }
                     }
                 }
@@ -131,16 +133,16 @@ public final class LegacyRoadMigration {
 
     private static void migratePalette(ListTag palette) {
         for (int j = 0; j < palette.size(); j++) {
-            final CompoundTag entry = palette.getCompound(j);
-            final String name = entry.getString("Name");
-            if (!entry.contains("Properties", 10)) {
+            final CompoundTag entry = NbtCompat.compoundAt(palette, j);
+            final String name = NbtCompat.getString(entry, "Name");
+            if (!NbtCompat.contains(entry, "Properties", 10)) {
                 continue;
             }
-            final CompoundTag properties = entry.getCompound("Properties");
+            final CompoundTag properties = NbtCompat.getCompound(entry, "Properties");
             if (!properties.contains("facing")) {
                 continue;
             }
-            final String facing = properties.getString("facing");
+            final String facing = NbtCompat.getString(properties, "facing");
             if (AXIS_ROADS.contains(name) && !properties.contains("axis")) {
                 properties.remove("facing");
                 properties.putString("axis", "north".equals(facing) || "south".equals(facing) ? "z" : "x");

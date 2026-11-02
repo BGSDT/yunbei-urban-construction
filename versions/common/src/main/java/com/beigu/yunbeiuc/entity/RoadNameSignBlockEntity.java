@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
@@ -24,8 +26,8 @@ public class RoadNameSignBlockEntity extends BlockEntityMapper {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.chineseText = nbt.getString("chineseText");
-        this.englishText = nbt.getString("englishText");
+        this.chineseText = NbtCompat.getString(nbt, "chineseText");
+        this.englishText = NbtCompat.getString(nbt, "englishText");
     }
 
     @Override

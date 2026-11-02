@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:white_concrete"
+  },
+  "result": {
+    "id": "yunbeiuc:sign_guide_roadside_facility_harbor_style_emergency_parking_lane",
+    "count": 9
+  }
+}

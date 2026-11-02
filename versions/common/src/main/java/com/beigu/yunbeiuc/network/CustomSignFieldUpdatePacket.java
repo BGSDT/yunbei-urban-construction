@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
@@ -30,10 +32,10 @@ public class CustomSignFieldUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (!player.getCommandSenderWorld().hasChunkAt(pos)) {
+        if (!ApiCompat.level(player).hasChunkAt(pos)) {
             return;
         }
-        BlockEntity be = player.getCommandSenderWorld().getBlockEntity(pos);
+        BlockEntity be = ApiCompat.level(player).getBlockEntity(pos);
         if (be instanceof CustomSignBlockEntity sign) {
             sign.applyFieldOption(field, value);
         }

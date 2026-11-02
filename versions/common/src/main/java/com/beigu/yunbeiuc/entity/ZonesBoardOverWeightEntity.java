@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.SignBlocks;
@@ -22,7 +24,7 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
+        this.text1 = NbtCompat.getString(nbt, "text1");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }
@@ -38,7 +40,7 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
         if (!getTextLines().isEmpty()) return;
         Block block = blockStateForDefaults().getBlock();
         List<TextLineData> lines = new ArrayList<>();
-        if (block == SignBlocks.ZONES_BOARD_OVER_WEIGHT.get() || block == SignBlocks.ZONES_BOARD_TIME_LIMIT.get()) {
+        if (block == SignBlocks.ZONES_BOARD_OVER_WEIGHT.get() || block == SignBlocks.ZONES_BOARD_TIME_LILGPL V3.get()) {
             lines.add(SignTextLinesHelper.left("{text1}", -5f, 5.5f, 0.03f, 0x000000, "b"));
         } else if (block == SignBlocks.ZONES_BOARD_SUGGESTED_SPEED.get()) {
             lines.add(SignTextLinesHelper.left("{text1}", -6f, 0f, 0.04f, 0x000000, "b"));

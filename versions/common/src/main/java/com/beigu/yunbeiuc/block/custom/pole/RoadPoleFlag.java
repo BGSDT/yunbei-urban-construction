@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
 
 import net.minecraft.world.level.block.Mirror;
@@ -24,7 +26,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -43,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class RoadPoleFlag extends EntityBlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<PoleType> POLE_TYPE = EnumProperty.create("pole_type", PoleType.class);
 
     private static final VoxelShape SHAPE_N = Shapes.join(Block.box(5, 0, 5, 11, 16, 11), Block.box(-9.75, -5.25, 7.75, 25.75, 21.25, 8.25), BooleanOp.OR);
@@ -75,8 +77,7 @@ public class RoadPoleFlag extends EntityBlockCompat {
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite()).setValue(POLE_TYPE, poleType);
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
                                                 LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN) {
             PoleType correctType = getPoleTypeForPosition((Level) world, pos);
@@ -84,7 +85,7 @@ public class RoadPoleFlag extends EntityBlockCompat {
                 return state.setValue(POLE_TYPE, correctType);
             }
         }
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     private PoleType getPoleTypeForPosition(Level world, BlockPos pos) {
@@ -101,7 +102,7 @@ public class RoadPoleFlag extends EntityBlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
-            if (world .isClientSide) {
+            if (world .isClientSide()) {
                 openFlagScreen(pos);
             }
         }
@@ -110,7 +111,7 @@ public class RoadPoleFlag extends EntityBlockCompat {
 
     @Environment(EnvType.CLIENT)
     private void openFlagScreen(BlockPos pos) {
-        Minecraft.getInstance().setScreen(new FlagSelectionScreen(com.beigu.yunbeiuc.api.text.Text.literal("选择旗帜"), pos));
+        ApiCompat.setScreen(Minecraft.getInstance(), new FlagSelectionScreen(com.beigu.yunbeiuc.api.text.Text.literal("选择旗帜"), pos));
     }
 
     @Override

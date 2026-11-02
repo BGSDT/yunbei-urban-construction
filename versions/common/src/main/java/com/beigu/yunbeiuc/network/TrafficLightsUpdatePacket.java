@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
@@ -46,8 +48,8 @@ public class TrafficLightsUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
+        if (ApiCompat.level(player).hasChunkAt(pos)) {
+            BlockEntity blockEntity = ApiCompat.level(player).getBlockEntity(pos);
             if (blockEntity instanceof TrafficLightsBlockEntity entity) {
                 List<Integer> indices = Arrays.stream(phaseIndices).boxed().collect(Collectors.toList());
                 entity.setPhaseIndices(indices, player);

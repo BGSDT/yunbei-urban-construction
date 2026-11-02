@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,7 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -39,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class CustomTextDisplayBlock extends EntityBlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_NORTH = Block.box(0, 0, 15, 16, 16, 16);
     private static final VoxelShape SHAPE_SOUTH = Block.box(0, 0, 0, 16, 16, 1);
@@ -103,7 +105,7 @@ public class CustomTextDisplayBlock extends EntityBlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == ModItems.WAND.get()) {
-            if (world.isClientSide) {
+            if (world.isClientSide()) {
                 openScreen(world, pos);
             }
             return InteractionResult.SUCCESS;
@@ -115,7 +117,7 @@ public class CustomTextDisplayBlock extends EntityBlockCompat {
     private void openScreen(Level world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof CustomSignBlockEntity signEntity) {
-            Minecraft.getInstance().setScreen(new TextDisplayScreen(signEntity));
+            ApiCompat.setScreen(Minecraft.getInstance(), new TextDisplayScreen(signEntity));
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.beigu.yunbeiuc.api.gui;
 
+import com.beigu.yunbeiuc.api.render.GeometrySink;
+
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import com.beigu.yunbeiuc.screen.DrawContext;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -7,13 +11,12 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 public final class RenderPlatformImpl implements RenderPlatform {
     @Override
     public void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
                             com.mojang.blaze3d.vertex.PoseStack matrices,
-                            net.minecraft.client.renderer.MultiBufferSource buffers, int backgroundColor, int light) {
+                            com.beigu.yunbeiuc.api.render.GeometrySink buffers, int backgroundColor, int light) {
         font.drawInBatch(text, x, y, color, shadow, matrices.last().pose(), buffers,
                 Font.DisplayMode.NORMAL, backgroundColor, light);
     }
@@ -93,9 +96,9 @@ public final class RenderPlatformImpl implements RenderPlatform {
     }
 
     @Override
-    public void drawTexture(DrawContext context, ResourceLocation texture, int x, int y, int width, int height,
+    public void drawTexture(DrawContext context, Id texture, int x, int y, int width, int height,
                             int u, int v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-        context.drawTexture(texture, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+        context.drawTexture(IdAdapter.mc(texture), x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
     @Override

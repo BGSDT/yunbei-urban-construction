@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.pole;
 
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -11,7 +12,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -21,7 +22,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.BlockGetter;
 
 public class RoadPoleTextDisplay extends CustomTextDisplayBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_N = Shapes.join(Block.box(5, -4, -8, 11, 6, 24), Block.box(6, 6, 0, 10, 10, 16), BooleanOp.OR);
     private static final VoxelShape SHAPE_E = Shapes.join(Block.box(-8, -4, 5, 24, 6, 11), Block.box(0, 6, 6, 16, 10, 10), BooleanOp.OR);

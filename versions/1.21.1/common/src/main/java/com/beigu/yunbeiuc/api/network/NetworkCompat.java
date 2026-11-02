@@ -1,12 +1,13 @@
 package com.beigu.yunbeiuc.api.network;
 
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class NetworkCompat {
@@ -18,20 +19,20 @@ public final class NetworkCompat {
     }
 
     @SuppressWarnings("removal")
-    public static void sendToServer(ResourceLocation id, FriendlyByteBuf buf) {
+    public static void sendToServer(Id id, FriendlyByteBuf buf) {
         if (buf instanceof RegistryFriendlyByteBuf registryBuffer) {
-            NetworkManager.sendToServer(id, registryBuffer);
+            NetworkManager.sendToServer(IdAdapter.mc(id), registryBuffer);
         } else {
-            NetworkManager.sendToServer(id, new RegistryFriendlyByteBuf(buf.copy(), registryAccess()));
+            NetworkManager.sendToServer(IdAdapter.mc(id), new RegistryFriendlyByteBuf(buf.copy(), registryAccess()));
         }
     }
 
     @SuppressWarnings("removal")
-    public static void sendToPlayer(ServerPlayer player, ResourceLocation id, FriendlyByteBuf buf) {
+    public static void sendToPlayer(ServerPlayer player, Id id, FriendlyByteBuf buf) {
         RegistryFriendlyByteBuf registryBuffer = buf instanceof RegistryFriendlyByteBuf existing
                 ? existing
                 : new RegistryFriendlyByteBuf(buf.copy(), player.serverLevel().registryAccess());
-        NetworkManager.sendToPlayer(player, id, registryBuffer);
+        NetworkManager.sendToPlayer(player, IdAdapter.mc(id), registryBuffer);
     }
 
     private static RegistryAccess registryAccess() {

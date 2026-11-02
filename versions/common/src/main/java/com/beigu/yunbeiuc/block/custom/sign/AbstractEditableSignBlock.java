@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleHorizontal;
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
@@ -27,7 +29,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -35,7 +37,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractEditableSignBlock extends EntityBlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     private static final VoxelShape SHAPE_POLE_L_N = Block.box(0, 0, 19.1, 16, 16, 20);
@@ -69,7 +71,7 @@ public abstract class AbstractEditableSignBlock extends EntityBlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
-            if (world.isClientSide) {
+            if (world.isClientSide()) {
                 openTextDisplayScreen(pos);
             }
         }
@@ -80,7 +82,7 @@ public abstract class AbstractEditableSignBlock extends EntityBlockCompat {
     private void openTextDisplayScreen(BlockPos pos) {
         BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
         if (blockEntity instanceof CustomSignBlockEntity signEntity) {
-            Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TextDisplayScreen(signEntity));
+            ApiCompat.setScreen(Minecraft.getInstance(), new com.beigu.yunbeiuc.screen.TextDisplayScreen(signEntity));
         }
     }
 
@@ -137,8 +139,7 @@ public abstract class AbstractEditableSignBlock extends EntityBlockCompat {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction,
+        protected BlockState updateShapeCompat(BlockState state, Direction direction,
                                   BlockState neighborState, LevelAccessor world,
                                   BlockPos pos, BlockPos neighborPos) {
         Direction facing = state.getValue(FACING);
@@ -150,7 +151,7 @@ public abstract class AbstractEditableSignBlock extends EntityBlockCompat {
             }
         }
 
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     protected Type determineType(BlockState behindState) {

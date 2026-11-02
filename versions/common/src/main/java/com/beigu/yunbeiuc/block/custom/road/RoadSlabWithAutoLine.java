@@ -53,9 +53,8 @@ public abstract class RoadSlabWithAutoLine extends AbstractRoadSlabBlock {
     }
 
     @SuppressWarnings("deprecation")
-    @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        super.neighborChanged(state, world, pos, sourceBlock, sourcePos, notify);
+        protected void neighborChangedCompat(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        super.neighborChangedCompat(state, world, pos, sourceBlock, sourcePos, notify);
         if (!sourcePos.equals(pos.above())
             && !sourcePos.equals(pos.below())
             && !(world.getBlockState(sourcePos).getBlock() instanceof AirBlock)) {

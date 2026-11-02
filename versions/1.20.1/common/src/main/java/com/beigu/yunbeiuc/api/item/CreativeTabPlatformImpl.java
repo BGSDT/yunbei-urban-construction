@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.api.item;
 
+import com.beigu.yunbeiuc.api.resource.Id;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
@@ -7,7 +8,6 @@ import dev.architectury.registry.registries.DeferredSupplier;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,10 +22,10 @@ public final class CreativeTabPlatformImpl implements CreativeTabPlatform {
     private static boolean registered;
 
     @Override
-    public CreativeTabHandle create(ResourceLocation id, Supplier<ItemStack> icon) {
-        Component title = Component.translatable("itemGroup." + id.getNamespace() + "." + id.getPath());
+    public CreativeTabHandle create(Id id, Supplier<ItemStack> icon) {
+        Component title = Component.translatable("itemGroup." + id.namespace() + "." + id.path());
         RegistrySupplier<CreativeModeTab> supplier =
-                TABS.register(id.getPath(), () -> CreativeTabRegistry.create(title, icon));
+                TABS.register(id.path(), () -> CreativeTabRegistry.create(title, icon));
         return new CreativeTabHandle(supplier);
     }
 

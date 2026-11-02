@@ -6,7 +6,8 @@ import com.beigu.yunbeiuc.api.text.Text;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.util.Mth;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.function.Predicate;
 public abstract class AbstractOptionListWidget<O> extends ElementListWidget<AbstractOptionListWidget<O>.Entry> {
     private static final RenderPlatform RENDER = VersionServices.render();
 
-    public record Icon(ResourceLocation texture, int width, int height) {
+    public record Icon(Id texture, int width, int height) {
     }
 
     private final int listWidth;

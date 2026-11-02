@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,8 +21,8 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.logo1 = nbt.getString("logo1");
-        this.logo = nbt.getString("image");
+        this.logo1 = NbtCompat.getString(nbt, "logo1");
+        this.logo = NbtCompat.getString(nbt, "image");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

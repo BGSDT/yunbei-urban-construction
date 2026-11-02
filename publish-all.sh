@@ -34,8 +34,8 @@
 #
 # JDK:
 #   脚本会读每个版本 build.gradle 里的 options.release 自动选 JDK
-#   （1.16.5~1.20.1 → 17，1.21.1 → 21），并在常见安装目录里自动查找。
-#   可用环境变量强制指定：JAVA_HOME_17 / JAVA_HOME_21 / ...
+#   （1.16.5~1.20.1 → 17，1.21.1 → 21，26.x → 25），并在常见安装目录里自动查找。
+#   可用环境变量强制指定：JAVA_HOME_17 / JAVA_HOME_21 / JAVA_HOME_25 / ...
 #
 # 依赖: 仓库根目录 modrinth.properties 里的 token / project_id 配置正确
 # ---------------------------------------------------------------------------
@@ -177,6 +177,8 @@ jdk_roots() {
     done
     [ -d "$HOME/.jdks" ] && printf '%s\n' "$HOME/.jdks"
     [ -d "$HOME/.gradle/jdks" ] && printf '%s\n' "$HOME/.gradle/jdks"
+    # 本地托管 JDK（17 / 21 / 25 都装在这里，26.x 需要 25）
+    [ -d "$HOME/.workbuddy-ai/binaries/jdk" ] && printf '%s\n' "$HOME/.workbuddy-ai/binaries/jdk"
     if [ -n "${LOCALAPPDATA:-}" ]; then
         la="$(to_posix "$LOCALAPPDATA")/Programs/Eclipse Adoptium"
         [ -d "$la" ] && printf '%s\n' "$la"

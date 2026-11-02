@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -317,10 +319,10 @@ public final class TextGizmo {
     }
 
     private static void draw(int mode, TextLineData d) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
-        RenderSystem.disableCull();
+        ApiCompat.enableBlend();
+        ApiCompat.defaultBlendFunc();
+        ApiCompat.disableDepthTest();
+        ApiCompat.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Tesselator tesselator = Tesselator.getInstance();
@@ -351,9 +353,9 @@ public final class TextGizmo {
 
         BufferUploader.drawWithShader(buf.build());
 
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
+        ApiCompat.enableDepthTest();
+        ApiCompat.enableCull();
+        ApiCompat.disableBlend();
     }
 
     private static Vector4f[] viewRayPoints(double mx, double my) {

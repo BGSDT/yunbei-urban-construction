@@ -1,3 +1,5 @@
+
+
 # Yunbei Urban Construction<img src="assets/logo.png" align="right" width="180px"/>
 
 **English** ([Standard](README.md)) | 中文 ([Simplified](README_zh.md))
@@ -7,6 +9,23 @@
 [![QQ群](https://img.shields.io/badge/QQ-云北城建-bright?label=&logo=qq&logoColor=ffffff&color=1EBAFC&labelColor=1DB0EF&logoSize=auto)](https://qm.qq.com/q/uDgtwOJ2Ks)[![Modrinth](https://img.shields.io/modrinth/dt/yunbeiuc?logo=modrinth&label=Modrhtih&color=242629&labelColor=5CA424&logoColor=FFFFFF)](https://modrinth.com/mod/yunbeiuc)[![Curseforge](https://img.shields.io/curseforge/dt/1644040?logo=curseforge&label=Curseforge&color=242629&labelColor=F16436&logoColor=FFFFFF)](https://www.curseforge.com/minecraft/mc-mods/yunbeiuc)
 
 English
+
+> Hello everyone, I’m Beigu, the lead maintainer and author of Yunbei Urban Construction. I am issuing this statement and apology regarding the recent incident involving copyright and open‑source license violations.
+>
+> The road sign system within Yunbei Urban Construction incorporates patterns, font libraries, JSON resource pack importing logic, source code, and some artistic assets taken from the Ocelot Sign Mod. Below is my account of what happened:
+>
+> 1. **Open‑Source License Issue** Prior to November 2, 2026, this mod was distributed under the MIT License. However, the Ocelot Sign Mod, from which these assets were sourced, is released under LGPLv3. At the time of reuse, I lacked sufficient understanding of open‑source license requirements. I failed to comply with LGPLv3 terms, did not retain the original copyright notices or license text, and improperly re‑licensed the relevant work under MIT. Credit was only listed in contributor fields on McMod, mod metadata JSON files and TOML configs; clear attribution was absent from the GitHub repository and the mod itself. Even while aware that I was reusing external code and assets, I continued distributing the mod. I sincerely apologize to Creeper-Cola123, the author of Ocelot Sign Mod. My actions infringed on the original author’s rights, disrupted the ecosystem of the Minecraft city‑building community, and indirectly encouraged users to adopt Yunbei Urban Construction instead.
+> 2. **Extensive Reuse of Assets and Code** A large amount of artistic content was taken from Ocelot Sign Mod, including but not limited to junction advance warning signs, tourist area signs, and notice signs, which were imported directly into Yunbei’s pattern library. At that time, our original asset library lacked these three categories of signs, so these assets were copied over to expand our content library. On the code side, I copied `GridRenderer`, `HomepageRenderer`, `PatternAndFontBlankScreen`, `PatternAndFontOverlay`, `PatternRegistry`, `UIConstants`, and `YunbeiUCIntegration` to power our pattern and font library system. Attribution was only mentioned within our mod Discord/chat group. I did not add prominent notices crediting the source of this code and artwork despite knowing it was reused. I apologize again for this mistake. Mass reuse of another mod’s artistic work has harmed mutual trust and friendly communication within the mod developer community.
+>
+> This infringement took place at a time when the Minecraft city‑building community is thriving, and I am truly sorry for my misconduct. I have taken the following remedial actions:
+>
+> - Removed all infringing mod JAR builds (versions 26w38d and newer) from Modrinth, posted this detailed explanation and apology on the listing page.
+> - Added this notice and apology at the top of the GitHub README. All infringing code and assets have been removed. The license of the mod has been changed to LGPLv3.
+> - Shared a link to this statement and posted an apology in the comment section on McMod.
+> - Issued an explanation and apology inside the Yunbei Urban Construction community group.
+> - I am attempting to reach out privately to the author of Ocelot Sign Mod for a personal apology. I will cooperate fully should the author raise further reasonable requests.
+>
+> Once again, I offer my sincere apology to everyone affected by my improper conduct.
 
 ## Introduction
 

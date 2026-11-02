@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPavementIntegrationBlock;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
@@ -7,9 +9,8 @@ import com.beigu.yunbeiuc.entity.TrafficLightsPavementIntegrationBlockEntity;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.util.CustomFontRenderer;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.beigu.yunbeiuc.api.render.GeometrySink;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Style;
@@ -42,7 +43,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
 
     @Override
     public void render(TrafficLightsPavementIntegrationBlockEntity entity, float tickDelta, PoseStack matrices,
-                       MultiBufferSource vertexConsumers, int light, int overlay) {
+                       GeometrySink vertexConsumers, int light, int overlay) {
         if (entity.getBlockState().getValue(TrafficLightsPavementIntegrationBlock.PART) != TrafficLightsPavementIntegrationBlock.TriplePart.BOTTOM) {
             return;
         }
@@ -67,7 +68,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
         }
     }
 
-    private void renderLogo(PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay,
+    private void renderLogo(PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay,
                            Direction facing, TrafficLightsBlock.LightState lightState, float zOffset, boolean isBack,
                            TrafficLightsBlockEntity.DirectionType directionType) {
         if (directionType == TrafficLightsBlockEntity.DirectionType.COLOR_FLASH) {
@@ -111,7 +112,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
         float logoSize = 0.4f;
         float halfSize = logoSize / 2f;
 
-        VertexConsumer consumer = vertexConsumers.getBuffer(RenderType.entityCutout(texture));
+        VertexConsumer consumer = vertexConsumers.getBuffer(ApiCompat.entityCutout(texture));
         Matrix4f positionMatrix = matrices.last().pose();
 
         consumer.vertex(positionMatrix, -halfSize, -halfSize, 0).color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
@@ -122,7 +123,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
         matrices.popPose();
     }
 
-    private void renderPedestrianText(PoseStack matrices, MultiBufferSource vertexConsumers, int light,
+    private void renderPedestrianText(PoseStack matrices, GeometrySink vertexConsumers, int light,
                                      Direction facing, TrafficLightsBlock.LightState lightState, float zOffset, boolean isBack) {
         String text;
         int color;
@@ -176,7 +177,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
     }
 
     private void renderPavementSeconds(TrafficLightsPavementIntegrationBlockEntity entity, PoseStack matrices,
-                                      MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, float zOffset, boolean isBack) {
+                                      GeometrySink vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, float zOffset, boolean isBack) {
         int remaining;
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();

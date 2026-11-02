@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
@@ -65,7 +67,7 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
             errorMessage = Text.literal("§c" + error);
             return;
         }
-        Minecraft.getInstance().setScreen(previousScreen);
+        ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
         if (button == 0) {
             int swatchX = colorSwatchX + 34;
             if (mouseX >= swatchX && mouseX < swatchX + COLOR_SWATCH_SIZE && mouseY >= colorSwatchY && mouseY < colorSwatchY + COLOR_SWATCH_SIZE) {
-                Minecraft.getInstance().setScreen(new ColorPickerScreen(this, categoryColor, c -> categoryColor = c));
+                ApiCompat.setScreen(Minecraft.getInstance(), new ColorPickerScreen(this, categoryColor, c -> categoryColor = c));
                 return true;
             }
         }
@@ -102,7 +104,7 @@ public class TrafficLightsPatternCategoryEditorScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(previousScreen);
+        ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
     }
 
     @Override

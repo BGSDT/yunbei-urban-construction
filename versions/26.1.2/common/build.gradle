@@ -1,0 +1,3 @@
+// The shared tree (versions/common) and this version's api/render/screen shims are
+// compiled here. There is no remap/transform step in 26.x, so the platform projects
+// simply pack this project's output into their own jar (see ../build.gradle).

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,8 +23,8 @@ public class ZonesBoardTimeRange1Entity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.time1 = nbt.getString("time1");
-        this.time2 = nbt.getString("time2");
+        this.time1 = NbtCompat.getString(nbt, "time1");
+        this.time2 = NbtCompat.getString(nbt, "time2");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

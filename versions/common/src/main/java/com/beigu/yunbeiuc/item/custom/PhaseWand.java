@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.item.custom;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.text.Text;
@@ -9,11 +11,11 @@ import com.beigu.yunbeiuc.signal.RailPhaseBinding;
 import com.beigu.yunbeiuc.signal.mtr.RailRaycast;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -63,41 +65,41 @@ public class PhaseWand extends ItemCompat {
 
         if (player.isShiftKeyDown()) return InteractionResult.PASS;
 
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             final BlockEntity blockEntity = world.getBlockEntity(pos);
             if (!(blockEntity instanceof TrafficLightsBlockEntity) && !isMtrRailNode(world, pos)) {
                 sendAim(player);
             }
-            return InteractionResult.sidedSuccess(true);
+            return ApiCompat.sidedSuccess(true);
         }
 
         if (!(player instanceof ServerPlayer)) return InteractionResult.PASS;
 
         if (world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity) {
-            return InteractionResult.sidedSuccess(false);
+            return ApiCompat.sidedSuccess(false);
         }
 
         if (isMtrRailNode(world, pos)) {
             message(player, "§7链接轨道请用 §e链接魔杖 §7：右键两个轨道节点即可把这条轨道加入本次正在链接的相位组");
-            return InteractionResult.sidedSuccess(false);
+            return ApiCompat.sidedSuccess(false);
         }
 
-        return InteractionResult.sidedSuccess(false);
+        return ApiCompat.sidedSuccess(false);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    protected ApiCompat.UseResult useCompat(Level level, Player player, InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
 
-        if (player.isShiftKeyDown()) return InteractionResultHolder.pass(stack);
+        if (player.isShiftKeyDown()) return ApiCompat.UseResult.PASS;
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return sendAim(player)
-                    ? InteractionResultHolder.sidedSuccess(stack, true)
-                    : InteractionResultHolder.pass(stack);
+                    ? ApiCompat.UseResult.SUCCESS
+                    : ApiCompat.UseResult.PASS;
         }
 
-        return InteractionResultHolder.pass(stack);
+        return ApiCompat.UseResult.PASS;
     }
 
     private static boolean sendAim(Player player) {
@@ -105,7 +107,7 @@ public class PhaseWand extends ItemCompat {
                 player.getLookAngle(), AIM_MAX_DISTANCE, AIM_THRESHOLD);
         if (hit == null) return false;
 
-        final Level level = player.getCommandSenderWorld();
+        final Level level = ApiCompat.level(player);
         for (BlockPos anchor : ClientRailGroupIndex.validAnchors(level)) {
             if (!(level.getBlockEntity(anchor) instanceof TrafficLightsBlockEntity lights)) continue;
             final RailPhaseBinding binding = lights.findRailBinding(hit.start, hit.end);
@@ -121,8 +123,8 @@ public class PhaseWand extends ItemCompat {
 
     private static boolean isMtrRailNode(Level level, BlockPos pos) {
         try {
-            final ResourceLocation id = VersionServices.registries().blockId(level.getBlockState(pos).getBlock());
-            return id != null && "mtr".equals(id.getNamespace()) && "rail".equals(id.getPath());
+            final Id id = VersionServices.registries().blockId(level.getBlockState(pos).getBlock());
+            return id != null && "mtr".equals(id.namespace()) && "rail".equals(id.path());
         } catch (Throwable t) {
             return false;
         }
@@ -138,6 +140,6 @@ public class PhaseWand extends ItemCompat {
     }
 
     private static void message(Player player, String text) {
-        player.displayClientMessage(Text.literal(text), true);
+        ApiCompat.message(player, Text.literal(text), true);
     }
 }

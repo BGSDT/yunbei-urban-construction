@@ -295,13 +295,11 @@ public class RailPhaseScreen extends Screen {
             this.setMessage(Text.literal("相位: " + (currentPhase + 1) + " / " + phaseCount));
         }
 
-        @Override
-        public void onClick(double mouseX, double mouseY) {
+                public void onClickCompat(double mouseX, double mouseY) {
             snapToMouse(mouseX);
         }
 
-        @Override
-        protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
+                protected void onDragCompat(double mouseX, double mouseY, double deltaX, double deltaY) {
             snapToMouse(mouseX);
         }
 

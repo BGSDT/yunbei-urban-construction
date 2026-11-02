@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class BarrierGate1PoleHorizontal extends BlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
     public static final EnumProperty<GateType> GATE_TYPE = EnumProperty.create("gate_type", GateType.class);
 
@@ -99,15 +99,14 @@ public class BarrierGate1PoleHorizontal extends BlockCompat {
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         BlockState newState = getRelatedBlockState(state, world, pos, state.getValue(FACING));
         return checkSlabState(newState, world, pos);
     }
 
     @Override
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!world.isClientSide && player.getItemInHand(hand).getItem() == ModItems.WAND.get()) {
+        if (!world.isClientSide() && player.getItemInHand(hand).getItem() == ModItems.WAND.get()) {
             world.setBlock(pos, state.cycle(GATE_TYPE), VersionServices.blocks().updateAll());
         }
         return InteractionResult.SUCCESS;

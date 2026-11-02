@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,7 +42,7 @@ public class TrafficLightsStaticStateUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        Level world = player.getCommandSenderWorld();
+        Level world = ApiCompat.level(player);
         if (world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity entity) {
             entity.setStaticState(directionType, lightState, showSeconds, fixedSeconds, player);
         }

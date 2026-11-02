@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.rubbish;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import net.minecraft.world.level.block.Mirror;
@@ -15,7 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -61,7 +63,7 @@ public class RubbishBinGrayGreen extends BlockCompat {
             Block.box(4.25, 14.5, 7, 11.75, 16, 9),
             BooleanOp.OR
     );
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public RubbishBinGrayGreen(BlockBehaviour.Properties properties) {
         super(properties);
@@ -105,7 +107,7 @@ public class RubbishBinGrayGreen extends BlockCompat {
         ItemStack heldItem = player.getItemInHand(hand);
         if (!heldItem.isEmpty()) {
             player.setItemInHand(hand, ItemStack.EMPTY);
-            return InteractionResult.sidedSuccess(world .isClientSide);
+            return ApiCompat.sidedSuccess(world .isClientSide());
         }
         return super.useCompat(state, world, pos, player, hand, hit);
     }

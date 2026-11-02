@@ -5,7 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.InputStream;
@@ -24,7 +25,7 @@ public class FlagLoader {
             Map<String, Integer> namespaceCounts = new LinkedHashMap<>();
 
             for (String namespace : resourceManager.getNamespaces()) {
-                ResourceLocation fileId = VersionServices.resources().create(namespace, "flags_yunbeiuc.json");
+                Id fileId = VersionServices.resources().create(namespace, "flags_yunbeiuc.json");
 
                 try (InputStream stream = VersionServices.resources().openIfPresent(resourceManager, fileId)) {
                     if (stream != null) {
@@ -50,7 +51,7 @@ public class FlagLoader {
                             int color = (int) Long.parseLong(colorHex, 16);
 
                             String[] imageParts = imagePath.split(":");
-                            ResourceLocation texture;
+                            Id texture;
                             if (imageParts.length == 2) {
                                 texture = VersionServices.resources().create(imageParts[0], imageParts[1]);
                             } else {

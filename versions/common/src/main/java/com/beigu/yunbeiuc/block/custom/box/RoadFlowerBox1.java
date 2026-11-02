@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -20,7 +20,7 @@ public class RoadFlowerBox1 extends Block {
     private static final VoxelShape SHAPE_S = Block.box(-16, 0, 0, 32, 27, 16);
     private static final VoxelShape SHAPE_E = Block.box(0, 0, -16, 16, 27, 32);
     private static final VoxelShape SHAPE_W = Block.box(0, 0, -16, 16, 27, 32);
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public RoadFlowerBox1(BlockBehaviour.Properties properties) {
         super(properties);

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.road;
 
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -20,7 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 
-public class GroundMarkBlock extends Block {
+public class GroundMarkBlock extends BlockCompat {
     private static final VoxelShape FLAT_SHAPE = Block.box(0, 0, 0, 16, 0.1, 16);
     private static final VoxelShape HANGING_SHAPE = Block.box(0, -8, 0, 16, -7.9, 16);
 
@@ -61,8 +63,7 @@ public class GroundMarkBlock extends Block {
             && below.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.BOTTOM;
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
                                   LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN) {
             final boolean onSlab = isBottomSlab(neighborState);

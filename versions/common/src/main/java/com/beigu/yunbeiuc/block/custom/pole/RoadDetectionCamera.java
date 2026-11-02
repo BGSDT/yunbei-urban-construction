@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -25,7 +25,7 @@ public class RoadDetectionCamera extends Block {
     private static final VoxelShape SHAPE_E = Shapes.join(Block.box(0, 5.5, 5.5, 16, 10.5, 10.5), Block.box(5, 10, 1.75, 11, 18, 14.25), BooleanOp.OR);
     private static final VoxelShape SHAPE_W = Shapes.join(Block.box(0, 5.5, 5.5, 16, 10.5, 10.5), Block.box(5, 10, 1.75, 11, 18, 14.25), BooleanOp.OR);
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public RoadDetectionCamera(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(

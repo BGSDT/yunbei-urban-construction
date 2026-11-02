@@ -29,7 +29,7 @@ public final class TrafficLightsGroupTracker {
     private TrafficLightsGroupTracker() {}
 
     public static void track(Level world, BlockPos pos, Player player) {
-        if (world == null || world.isClientSide) return;
+        if (world == null || world.isClientSide()) return;
         if (!(world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity tl)) return;
         if (tl.getGroupId() == null) return;
         PENDING.put(pos.immutable(), new Pending(tl, player));

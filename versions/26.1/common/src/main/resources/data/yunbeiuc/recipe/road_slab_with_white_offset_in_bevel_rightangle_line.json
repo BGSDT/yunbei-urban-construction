@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "yunbeiuc:road_with_white_offset_in_bevel_rightangle_line"
+  },
+  "result": {
+    "id": "yunbeiuc:road_slab_with_white_offset_in_bevel_rightangle_line",
+    "count": 2
+  }
+}

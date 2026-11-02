@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -39,7 +39,7 @@ import java.util.List;
 
 public class RoadLight extends BlockCompat {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<TFType> TF_TYPE = EnumProperty.create("tf_type", TFType.class);
 
     private static final VoxelShape SHAPE_N = Block.box(4.5, 2.5, 1.5, 11.5, 8.5, 13.5);
@@ -90,7 +90,7 @@ public class RoadLight extends BlockCompat {
     @Override
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
-        if (!world .isClientSide) {
+        if (!world .isClientSide()) {
             if (heldItem.getItem() == ModItems.WAND.get()) {
                 boolean newLitState = !state.getValue(LIT);
                 TFType newLightState = state.getValue(TF_TYPE).next();

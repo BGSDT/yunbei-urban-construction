@@ -1,9 +1,12 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.api.render.GeometrySink;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -41,7 +44,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
     }
 
     @Override
-    public final void render(T entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+    public final void render(T entity, float tickDelta, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay) {
         matrices.pushPose();
         applyTransforms(matrices, entity);
         Matrix4f baseFrame = new Matrix4f(matrices.last().pose());
@@ -67,7 +70,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
     protected abstract float getZOffset(T entity);
 
-    protected void renderFixedContent(T entity, PoseStack matrices, MultiBufferSource vertexConsumers,
+    protected void renderFixedContent(T entity, PoseStack matrices, GeometrySink vertexConsumers,
                                       float tickDelta, int light, int overlay, float zOffset) {
     }
 
@@ -79,7 +82,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         }
     }
 
-    private void renderTextLine(T entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderTextLine(T entity, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         if (lineData.getText().isEmpty()) return;
         String text = lineData.getText().trim();
 
@@ -144,7 +147,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (lineData.getRotZ() != 0) matrices.mulPose(Vector3f.ZP.rotationDegrees(lineData.getRotZ()));
     }
 
-    private void renderJsonText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Component jsonText, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderJsonText(PoseStack matrices, GeometrySink vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Component jsonText, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -181,7 +184,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-        if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
+        if (editing && vertexConsumers instanceof GeometrySink immediate) {
             immediate.endBatch();
         }
 
@@ -192,7 +195,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.popPose();
     }
 
-    private void renderText(T entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderText(T entity, PoseStack matrices, GeometrySink vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -228,7 +231,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-        if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
+        if (editing && vertexConsumers instanceof GeometrySink immediate) {
             immediate.endBatch();
         }
 
@@ -239,7 +242,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.popPose();
     }
 
-    private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, MultiBufferSource vertexConsumers, int light) {
+    private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, GeometrySink vertexConsumers, int light) {
         int textLight = lineData.isGlowing() ? 0xF000F0 : light;
         boolean outline = lineData.isOutline();
         boolean shadow = lineData.isShadow();
@@ -267,8 +270,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         }
     }
 
-    private static void flushBatch(MultiBufferSource vertexConsumers) {
-        if (vertexConsumers instanceof MultiBufferSource.BufferSource queued) {
+    private static void flushBatch(GeometrySink vertexConsumers) {
+        if (vertexConsumers instanceof GeometrySink queued) {
             queued.endBatch();
         }
     }
@@ -284,7 +287,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         return luma >= 128 ? 0x000000 : 0xFFFFFF;
     }
 
-    private void renderRect(PoseStack matrices, MultiBufferSource vertexConsumers, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderRect(PoseStack matrices, GeometrySink vertexConsumers, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
@@ -315,9 +318,9 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         Matrix4f matrix = matrices.last().pose();
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
+        ApiCompat.enableBlend();
+        ApiCompat.defaultBlendFunc();
+        ApiCompat.enableDepthTest();
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.getBuilder();
@@ -332,8 +335,8 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         tesselator.end();
 
         RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
-        RenderSystem.disableDepthTest();
+        ApiCompat.disableBlend();
+        ApiCompat.disableDepthTest();
 
         if (lineData.isOutline()) {
             flushBatch(vertexConsumers);
@@ -350,7 +353,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.popPose();
     }
 
-    private void renderTexture(PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, ResourceLocation textureId, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderTexture(PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, ResourceLocation textureId, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
 
         float xPos = lineData.getXOffset() / 16f;
@@ -377,7 +380,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         matrices.translate(offsetX, offsetY, 0);
         applyRotation(matrices, lineData);
 
-        VertexConsumer consumer = vertexConsumers.getBuffer(RenderType.entityCutout(textureId));
+        VertexConsumer consumer = vertexConsumers.getBuffer(ApiCompat.entityCutout(textureId));
         Matrix4f positionMatrix = matrices.last().pose();
 
         consumer.vertex(positionMatrix, -halfWidth, -halfHeight, 0).color(255, 255, 255, 255).uv(0.0f, 1.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
@@ -385,7 +388,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.vertex(positionMatrix, halfWidth, halfHeight, 0).color(255, 255, 255, 255).uv(1.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
         consumer.vertex(positionMatrix, -halfWidth, halfHeight, 0).color(255, 255, 255, 255).uv(0.0f, 0.0f).overlayCoords(overlay).uv2(light).normal(matrices.last().normal(), 0, 0, 1).endVertex();
 
-        if (editing && vertexConsumers instanceof MultiBufferSource.BufferSource immediate) {
+        if (editing && vertexConsumers instanceof GeometrySink immediate) {
             immediate.endBatch();
         }
 
@@ -416,10 +419,10 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         int a = 255;
         Matrix4f matrix = matrices.last().pose();
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableCull();
+        ApiCompat.enableBlend();
+        ApiCompat.defaultBlendFunc();
+        ApiCompat.enableDepthTest();
+        ApiCompat.disableCull();
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.getBuilder();
@@ -432,9 +435,9 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         tesselator.end();
 
         RenderSystem.enableTexture();
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.disableDepthTest();
+        ApiCompat.enableCull();
+        ApiCompat.disableBlend();
+        ApiCompat.disableDepthTest();
     }
 
     private void addOutlineBar(BufferBuilder buffer, Matrix4f matrix, float x0, float y0, float x1, float y1, int r, int g, int b, int a) {

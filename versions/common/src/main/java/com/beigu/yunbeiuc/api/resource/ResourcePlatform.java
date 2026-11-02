@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.api.resource;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.IOException;
@@ -9,11 +8,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public interface ResourcePlatform {
-    ResourceLocation create(String namespace, String path);
+    Id create(String namespace, String path);
 
-    ResourceLocation parse(String location);
+    Id parse(String location);
 
-    InputStream openIfPresent(ResourceManager manager, ResourceLocation id) throws IOException;
+    InputStream openIfPresent(ResourceManager manager, Id id) throws IOException;
 
-    List<ResourceLocation> listResources(ResourceManager manager, String path, Predicate<ResourceLocation> filter);
+    List<Id> listResources(ResourceManager manager, String path, Predicate<Id> filter);
 }

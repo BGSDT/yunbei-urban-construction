@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.screen;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
@@ -184,10 +186,10 @@ public class TrafficLightsPatternSelectScreen extends Screen {
                 errorMessage = Text.literal("§c预设不存在！");
                 return;
             }
-            Minecraft.getInstance().setScreen(new TrafficLightsPatternEditorScreen(preset, this.pos, this.category, this));
+            ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternEditorScreen(preset, this.pos, this.category, this));
             return;
         }
-        Minecraft.getInstance().setScreen(new TrafficLightsPatternEditorScreen(this.pos, this.category, this));
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternEditorScreen(this.pos, this.category, this));
     }
 
     @Override
@@ -248,7 +250,7 @@ public class TrafficLightsPatternSelectScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(previousScreen);
+        ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
     }
 
     private void setButtonsActive(boolean active) {

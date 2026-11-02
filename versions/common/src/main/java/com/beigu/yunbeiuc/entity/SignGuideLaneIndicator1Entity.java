@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -24,10 +26,10 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.direction1 = ArrowDirection.fromName(nbt.getString("direction1"));
-        this.direction2 = ArrowDirection.fromName(nbt.getString("direction2"));
-        this.direction3 = ArrowDirection.fromName(nbt.getString("direction3"));
-        this.direction4 = ArrowDirection.fromName(nbt.getString("direction4"));
+        this.direction1 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction1"));
+        this.direction2 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction2"));
+        this.direction3 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction3"));
+        this.direction4 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction4"));
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

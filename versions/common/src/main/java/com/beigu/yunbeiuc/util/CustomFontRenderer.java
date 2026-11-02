@@ -1,14 +1,15 @@
 package com.beigu.yunbeiuc.util;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.beigu.yunbeiuc.api.render.GeometrySink;
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class CustomFontRenderer {
     private static final Map<String, CustomFontRenderer> INSTANCES = new HashMap<>();
 
     private final String fontName;
-    private ResourceLocation fontAtlas;
+    private Id fontAtlas;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
     private final Set<Character> pendingChars = new HashSet<>();
     private final Set<Character> unresolvable = new HashSet<>();
@@ -137,12 +138,11 @@ public class CustomFontRenderer {
             maxRowHeight = Math.max(maxRowHeight, glyphH);
         }
 
-        ResourceLocation id = VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID,
+        Id id = VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID,
                 "font_atlas_" + fontName);
 
-        DynamicTexture texture = new DynamicTexture(atlasImage);
-        texture.setFilter(false, false);
-        Minecraft.getInstance().getTextureManager().register(id, texture);
+        var texture = ApiCompat.dynamicTexture(atlasImage);
+        Minecraft.getInstance().getTextureManager().register(IdAdapter.mc(id), texture);
         fontAtlas = id;
 
         pendingChars.clear();
@@ -157,7 +157,7 @@ public class CustomFontRenderer {
             for (int x = 0; x < w; x++) {
                 int tx = dstX + x;
                 if (tx < 0 || tx >= atlas.getWidth()) continue;
-                atlas.setPixelRGBA(tx, ty, glyph.getPixelRGBA(x, y));
+                ApiCompat.setPixel(atlas, tx, ty, ApiCompat.getPixel(glyph, x, y));
             }
         }
     }
@@ -165,14 +165,14 @@ public class CustomFontRenderer {
     private static void fillImage(NativeImage image, int color) {
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
-                image.setPixelRGBA(x, y, color);
+                ApiCompat.setPixel(image, x, y, color);
             }
         }
     }
 
     public static void renderText(
             PoseStack matrices,
-            MultiBufferSource vertexConsumers,
+            GeometrySink vertexConsumers,
             String text,
             int color,
             float x, float y, float z,
@@ -187,7 +187,7 @@ public class CustomFontRenderer {
 
     public static void renderText(
             PoseStack matrices,
-            MultiBufferSource vertexConsumers,
+            GeometrySink vertexConsumers,
             String text,
             int color,
             float x, float y, float z,
@@ -201,7 +201,7 @@ public class CustomFontRenderer {
 
     public static void renderText(
             PoseStack matrices,
-            MultiBufferSource vertexConsumers,
+            GeometrySink vertexConsumers,
             String text,
             int color,
             float x, float y, float z,
@@ -261,7 +261,7 @@ public class CustomFontRenderer {
                 break;
         }
 
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.text(renderer.fontAtlas));
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(ApiCompat.text(IdAdapter.mc(renderer.fontAtlas)));
 
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
@@ -308,7 +308,7 @@ public class CustomFontRenderer {
 
     public void cleanup() {
         if (fontAtlas != null) {
-            Minecraft.getInstance().getTextureManager().release(fontAtlas);
+            Minecraft.getInstance().getTextureManager().release(IdAdapter.mc(fontAtlas));
             fontAtlas = null;
         }
         charMap.clear();

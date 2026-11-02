@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.traffic;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -65,7 +67,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
         if (ctx.getLevel().getBlockState(middlePos).canBeReplaced(ctx) &&
             ctx.getLevel().getBlockState(topPos).canBeReplaced(ctx) &&
-            pos.getY() < ctx.getLevel().getMaxBuildHeight() - 2) {
+            pos.getY() < ApiCompat.maxBuildHeight(ctx.getLevel()) - 2) {
             return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite()).setValue(PART, TriplePart.BOTTOM);
         }
         return null;
@@ -86,7 +88,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                          @Nullable LivingEntity placer, ItemStack itemStack) {
         super.setPlacedBy(world, pos, state, placer, itemStack);
 
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             TriplePart part = state.getValue(PART);
 
             if (part == TriplePart.BOTTOM) {
@@ -108,7 +110,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
     @Override
     public void playerWillDestroyCompat(Level world, BlockPos pos, BlockState state, Player player) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             TriplePart part = state.getValue(PART);
 
             BlockPos bottomPos = switch (part) {
@@ -157,21 +159,21 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
         }
 
         if (heldItem.getItem() == ModItems.WAND.get()) {
-            if (world .isClientSide) {
+            if (world .isClientSide()) {
                 BlockEntity blockEntity = world.getBlockEntity(bottomPos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
                     if (!trafficLightsBE.isInGroup()) {
                         openStaticStateScreen(bottomPos);
-                        return InteractionResult.sidedSuccess(true);
+                        return ApiCompat.sidedSuccess(true);
                     }
                     if (!trafficLightsBE.hasTimings()) {
                         openTimingScreen(bottomPos);
-                        return InteractionResult.sidedSuccess(true);
+                        return ApiCompat.sidedSuccess(true);
                     }
                     openDisplayScreen(bottomPos);
                 }
             }
-            return InteractionResult.sidedSuccess(world.isClientSide);
+            return ApiCompat.sidedSuccess(world.isClientSide());
         }
 
         return InteractionResult.SUCCESS;
@@ -179,7 +181,7 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
 
     @Environment(EnvType.CLIENT)
     private void openDisplayScreen(BlockPos pos) {
-        Minecraft.getInstance().setScreen(new TrafficLightsScreen(pos));
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsScreen(pos));
     }
 
     @Environment(EnvType.CLIENT)
@@ -196,13 +198,13 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
                     || currentBlock == com.beigu.yunbeiuc.block.MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get();
 
             if (isCountdownTimer) {
-                Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new com.beigu.yunbeiuc.screen.TrafficLightsCountdownTimerStaticStateScreen(pos));
             } else if (isShanghai) {
-                Minecraft.getInstance().setScreen(new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new com.beigu.yunbeiuc.screen.TrafficLightsShanghaiStaticStateScreen(pos));
             } else if (isPavement) {
-                Minecraft.getInstance().setScreen(new TrafficLightsSimpleStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsSimpleStaticStateScreen(pos));
             } else {
-                Minecraft.getInstance().setScreen(new TrafficLightsStaticStateScreen(pos));
+                ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsStaticStateScreen(pos));
             }
         }
     }
@@ -211,13 +213,13 @@ public class TrafficLightsPavementIntegrationBlock extends TrafficLightsBlock {
     private void openTimingScreen(BlockPos pos) {
         BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
         if (blockEntity instanceof TrafficLightsBlockEntity tl) {
-            Minecraft.getInstance().setScreen(new TrafficLightsTimingScreen(
+            ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsTimingScreen(
                     tl.getGroupId(), tl.getGroupPositions()));
         }
     }
 
     public PushReaction getPushReaction(BlockState state) {
-        return PushReaction.BLOCK;
+        return ApiCompat.PUSH_BLOCK;
     }
 
     public enum TriplePart implements StringRepresentable {

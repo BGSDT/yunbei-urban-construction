@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPatternPreset;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
@@ -79,17 +81,17 @@ public class TrafficLightsPatternApplyPacket {
     }
 
     public void apply(ServerPlayer player) {
-        Level world = player.getCommandSenderWorld();
+        Level world = ApiCompat.level(player);
         if (!(world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity clicked)) {
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该方块不是红绿灯！"), false);
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c该方块不是红绿灯！"), false);
             return;
         }
         if (!clicked.isInGroup()) {
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯不在任何链接组中！"), false);
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯不在任何链接组中！"), false);
             return;
         }
         if (!clicked.hasTimings()) {
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯所在的链接组还没有设置时间表，请先设置时间表！"), false);
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯所在的链接组还没有设置时间表，请先设置时间表！"), false);
             return;
         }
 
@@ -101,13 +103,13 @@ public class TrafficLightsPatternApplyPacket {
                     && groupId.equals(tl.getGroupId())) {
                 members.add(tl);
             } else {
-                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c一些已链接的红绿灯已被破坏，链接组已失效！"), false);
+                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c一些已链接的红绿灯已被破坏，链接组已失效！"), false);
                 return;
             }
         }
 
         if (members.isEmpty()) {
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c链接组为空！"), false);
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c链接组为空！"), false);
             return;
         }
 

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.text.Text;
 
 import net.minecraft.client.Minecraft;
@@ -163,7 +165,7 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(previousScreen);
+        ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
     }
 
     @Override
@@ -191,13 +193,11 @@ public class TrafficLightsPhaseMultiSelectScreen extends Screen {
             this.setMessage(Text.literal("相位: " + (currentPhase + 1) + " / " + phaseCount));
         }
 
-        @Override
-        public void onClick(double mouseX, double mouseY) {
+                public void onClickCompat(double mouseX, double mouseY) {
             snapToMouse(mouseX);
         }
 
-        @Override
-        protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
+                protected void onDragCompat(double mouseX, double mouseY, double deltaX, double deltaY) {
             snapToMouse(mouseX);
         }
 

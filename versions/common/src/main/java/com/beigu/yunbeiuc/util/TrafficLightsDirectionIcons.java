@@ -4,7 +4,8 @@ import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.screen.AbstractOptionListWidget;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -32,7 +33,7 @@ public final class TrafficLightsDirectionIcons {
     }
 
     private static void register(TrafficLightsBlockEntity.DirectionType type, String fileName, int width, int height) {
-        ResourceLocation texture = VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/" + fileName + ".png");
+        Id texture = VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/" + fileName + ".png");
         ICONS.put(type, new AbstractOptionListWidget.Icon(texture, width, height));
     }
 

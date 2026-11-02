@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.SignBlocks;
@@ -24,8 +26,8 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.direction1 = SignTurnDirection.fromName(nbt.getString("direction1"), SignTurnDirection.STRAIGHT);
-        this.text1 = nbt.getString("text1");
+        this.direction1 = SignTurnDirection.fromName(NbtCompat.getString(nbt, "direction1"), SignTurnDirection.STRAIGHT);
+        this.text1 = NbtCompat.getString(nbt, "text1");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

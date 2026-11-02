@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
@@ -26,9 +28,9 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
         super.loadCompat(nbt);
 
         if (getTextLines().isEmpty() && nbt.contains("text")) {
-            legacyText = nbt.getString("text");
-            legacyColor = nbt.getInt("color");
-            legacyFontSize = nbt.getInt("fontSize");
+            legacyText = NbtCompat.getString(nbt, "text");
+            legacyColor = NbtCompat.getInt(nbt, "color");
+            legacyFontSize = NbtCompat.getInt(nbt, "fontSize");
 
             TextLineData line = new TextLineData(legacyText);
             line.setColor(legacyColor);

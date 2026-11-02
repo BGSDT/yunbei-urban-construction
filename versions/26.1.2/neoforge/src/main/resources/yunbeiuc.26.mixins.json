@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "package": "com.beigu.yunbeiuc.mixin",
+  "mixins": [
+    "ItemIdStampMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

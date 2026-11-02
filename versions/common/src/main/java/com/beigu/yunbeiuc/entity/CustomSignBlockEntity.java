@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -72,9 +74,9 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
         textLines.clear();
-        ListTag list = nbt.getList("TextLines", 10);
-        for (int i = 0; i < list.size(); i++) textLines.add(TextLineData.fromNbt(list.getCompound(i)));
-        glowingText = nbt.getBoolean("GlowingText");
+        ListTag list = NbtCompat.getList(nbt, "TextLines", 10);
+        for (int i = 0; i < list.size(); i++) textLines.add(TextLineData.fromNbt(NbtCompat.compoundAt(list, i)));
+        glowingText = NbtCompat.getBoolean(nbt, "GlowingText");
     }
 
     @Nullable @Override public ClientboundBlockEntityDataPacket getUpdatePacket() { return createUpdatePacket(); }
@@ -198,22 +200,22 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         }
 
         public static TextLineData fromNbt(CompoundTag nbt) {
-            TextLineData data = new TextLineData(nbt.getString("text"));
-            data.xOffset = nbt.getFloat("xOffset"); data.yOffset = nbt.getFloat("yOffset");
-            data.zOffset = nbt.getFloat("zOffset"); data.color = nbt.getInt("color");
-            data.rotX = nbt.getFloat("rotX"); data.rotY = nbt.getFloat("rotY"); data.rotZ = nbt.getFloat("rotZ");
-            try { data.alignment = TextAlignment.valueOf(nbt.getString("alignment")); }
+            TextLineData data = new TextLineData(NbtCompat.getString(nbt, "text"));
+            data.xOffset = NbtCompat.getFloat(nbt, "xOffset"); data.yOffset = NbtCompat.getFloat(nbt, "yOffset");
+            data.zOffset = NbtCompat.getFloat(nbt, "zOffset"); data.color = NbtCompat.getInt(nbt, "color");
+            data.rotX = NbtCompat.getFloat(nbt, "rotX"); data.rotY = NbtCompat.getFloat(nbt, "rotY"); data.rotZ = NbtCompat.getFloat(nbt, "rotZ");
+            try { data.alignment = TextAlignment.valueOf(NbtCompat.getString(nbt, "alignment")); }
             catch (IllegalArgumentException e) { data.alignment = TextAlignment.CENTER_CENTER; }
-            data.bold = nbt.getBoolean("bold"); data.italic = nbt.getBoolean("italic");
-            data.underline = nbt.getBoolean("underline"); data.shadow = nbt.getBoolean("shadow");
-            data.outline = nbt.getBoolean("outline");data.outlineColor = nbt.contains("outlineColor") ? nbt.getInt("outlineColor") : 0x000000;
-            data.glowing = nbt.getBoolean("glowing");
-            data.fontSize = nbt.contains("fontSize") ? nbt.getFloat("fontSize") : 1.0f;
-            data.abcFont = nbt.contains("abcFont") ? nbt.getString("abcFont") : "";
-            data.scaleX = nbt.contains("scaleX") ? nbt.getFloat("scaleX") : 1.0f;
-            data.scaleY = nbt.contains("scaleY") ? nbt.getFloat("scaleY") : 1.0f;
-            data.scaleZ = nbt.contains("scaleZ") ? nbt.getFloat("scaleZ") : 1.0f;
-            data.builtin = nbt.getBoolean("builtin");
+            data.bold = NbtCompat.getBoolean(nbt, "bold"); data.italic = NbtCompat.getBoolean(nbt, "italic");
+            data.underline = NbtCompat.getBoolean(nbt, "underline"); data.shadow = NbtCompat.getBoolean(nbt, "shadow");
+            data.outline = NbtCompat.getBoolean(nbt, "outline");data.outlineColor = nbt.contains("outlineColor") ? NbtCompat.getInt(nbt, "outlineColor") : 0x000000;
+            data.glowing = NbtCompat.getBoolean(nbt, "glowing");
+            data.fontSize = nbt.contains("fontSize") ? NbtCompat.getFloat(nbt, "fontSize") : 1.0f;
+            data.abcFont = nbt.contains("abcFont") ? NbtCompat.getString(nbt, "abcFont") : "";
+            data.scaleX = nbt.contains("scaleX") ? NbtCompat.getFloat(nbt, "scaleX") : 1.0f;
+            data.scaleY = nbt.contains("scaleY") ? NbtCompat.getFloat(nbt, "scaleY") : 1.0f;
+            data.scaleZ = nbt.contains("scaleZ") ? NbtCompat.getFloat(nbt, "scaleZ") : 1.0f;
+            data.builtin = NbtCompat.getBoolean(nbt, "builtin");
             return data;
         }
 

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.anti;
 
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
@@ -9,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Mirror;
@@ -26,8 +28,8 @@ import net.minecraft.world.level.LevelAccessor;
 
 import java.util.stream.Stream;
 
-public class AntiGlareNetPole extends Block {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+public class AntiGlareNetPole extends BlockCompat {
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<AntiGlareNetPoleType> POLE_TYPE =
             EnumProperty.create("pole_type", AntiGlareNetPoleType.class);
 
@@ -90,12 +92,11 @@ public class AntiGlareNetPole extends Block {
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (direction == getRelativeLeft(state.getValue(FACING)) || direction == getRelativeRight(state.getValue(FACING))) {
             return this.updatePoleType(state, world, pos);
         }
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

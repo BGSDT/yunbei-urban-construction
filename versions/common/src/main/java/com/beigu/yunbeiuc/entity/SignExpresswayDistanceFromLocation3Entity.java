@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
@@ -19,8 +21,8 @@ public class SignExpresswayDistanceFromLocation3Entity extends CustomSignBlockEn
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
-        this.text2 = nbt.getString("text2");
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.text2 = NbtCompat.getString(nbt, "text2");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

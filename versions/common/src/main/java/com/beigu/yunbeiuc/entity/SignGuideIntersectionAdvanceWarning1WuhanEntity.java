@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -28,14 +30,14 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
-        this.text2 = nbt.getString("text2");
-        this.cnText3 = nbt.getString("cnText3");
-        this.enText3 = nbt.getString("enText3");
-        this.cnText4 = nbt.getString("cnText4");
-        this.enText4 = nbt.getString("enText4");
-        this.cnText5 = nbt.getString("cnText5");
-        this.enText5 = nbt.getString("enText5");
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.text2 = NbtCompat.getString(nbt, "text2");
+        this.cnText3 = NbtCompat.getString(nbt, "cnText3");
+        this.enText3 = NbtCompat.getString(nbt, "enText3");
+        this.cnText4 = NbtCompat.getString(nbt, "cnText4");
+        this.enText4 = NbtCompat.getString(nbt, "enText4");
+        this.cnText5 = NbtCompat.getString(nbt, "cnText5");
+        this.enText5 = NbtCompat.getString(nbt, "enText5");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

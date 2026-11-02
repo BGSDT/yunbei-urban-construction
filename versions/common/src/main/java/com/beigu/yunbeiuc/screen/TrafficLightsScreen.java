@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.screen;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
@@ -16,7 +18,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 
@@ -366,12 +369,12 @@ public class TrafficLightsScreen extends Screen {
 
     private void openTimingScreen() {
         if (blockEntity == null || blockEntity.getGroupId() == null) return;
-        Minecraft.getInstance().setScreen(new TrafficLightsTimingScreen(
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsTimingScreen(
                 blockEntity.getGroupId(), blockEntity.getGroupPositions()));
     }
 
     private void openPatternSelectScreen() {
-        Minecraft.getInstance().setScreen(new TrafficLightsPatternCategorySelectScreen(pos));
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternCategorySelectScreen(pos));
     }
 
     @Override
@@ -699,13 +702,11 @@ public class TrafficLightsScreen extends Screen {
             this.setMessage(Text.literal("相位: " + (currentPhase + 1) + " / " + phaseCount));
         }
 
-        @Override
-        public void onClick(double mouseX, double mouseY) {
+                public void onClickCompat(double mouseX, double mouseY) {
             snapToMouse(mouseX);
         }
 
-        @Override
-        protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
+                protected void onDragCompat(double mouseX, double mouseY, double deltaX, double deltaY) {
             snapToMouse(mouseX);
         }
 

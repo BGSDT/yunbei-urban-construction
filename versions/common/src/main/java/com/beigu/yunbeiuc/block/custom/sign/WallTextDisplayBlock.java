@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.item.ModItems;
@@ -27,7 +29,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -36,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class WallTextDisplayBlock extends EntityBlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.FACING;
 
     private static final VoxelShape SHAPE_NORTH = Block.box(0, 0, 15, 16, 16, 16);
     private static final VoxelShape SHAPE_SOUTH = Block.box(0, 0, 0, 16, 16, 1);
@@ -103,7 +105,7 @@ public class WallTextDisplayBlock extends EntityBlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == ModItems.WAND.get()) {
-            if (world.isClientSide) {
+            if (world.isClientSide()) {
                 openScreen(world, pos);
             }
             return InteractionResult.SUCCESS;
@@ -115,7 +117,7 @@ public class WallTextDisplayBlock extends EntityBlockCompat {
     private void openScreen(Level world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof CustomSignBlockEntity signEntity) {
-            Minecraft.getInstance().setScreen(new TextDisplayScreen(signEntity));
+            ApiCompat.setScreen(Minecraft.getInstance(), new TextDisplayScreen(signEntity));
         }
     }
 }

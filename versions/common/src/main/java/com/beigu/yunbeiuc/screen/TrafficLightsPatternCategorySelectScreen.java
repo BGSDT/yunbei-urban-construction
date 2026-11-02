@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
@@ -67,7 +69,7 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
 
         this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("新建分类"), button ->
-                        Minecraft.getInstance().setScreen(new TrafficLightsPatternCategoryEditorScreen(this)))
+                        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternCategoryEditorScreen(this)))
                         .dimensions(panelX + 20, panelY + 78, buttonWidth, 20)
                         .build()
         );
@@ -106,7 +108,7 @@ public class TrafficLightsPatternCategorySelectScreen extends Screen {
             errorMessage = Text.literal("§c请先在左侧选择一个分类！");
             return;
         }
-        Minecraft.getInstance().setScreen(new TrafficLightsPatternSelectScreen(pos, selectedCategory, this));
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternSelectScreen(pos, selectedCategory, this));
     }
 
     private void setButtonsActive(boolean active) {

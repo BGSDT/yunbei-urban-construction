@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.gui.RenderPlatform;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.text.Text;
@@ -15,8 +17,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import com.beigu.yunbeiuc.api.render.GeometrySink;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -92,20 +93,20 @@ public final class RailPhaseWandRenderer {
         final List<CachedRail> rails = geometryFor(client.level, anchors);
         if (rails.isEmpty()) return;
 
-        final Vec3 cameraPos = camera.getPosition();
+        final Vec3 cameraPos = ApiCompat.cameraPos(camera);
 
         matrices.pushPose();
         matrices.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-        RenderSystem.disableDepthTest();
-        RenderSystem.disableCull();
+        ApiCompat.disableDepthTest();
+        ApiCompat.disableCull();
 
-        final MultiBufferSource.BufferSource buffers = client.renderBuffers().bufferSource();
+        final GeometrySink buffers = new com.beigu.yunbeiuc.render.DeferredGeometry();
         final RenderPlatform render = VersionServices.render();
 
         final List<CachedRail> visible = new ArrayList<>(rails.size());
         if (!rails.isEmpty()) {
-            final VertexConsumer lineBuffer = buffers.getBuffer(RenderType.lines());
+            final VertexConsumer lineBuffer = buffers.getBuffer(ApiCompat.lines());
             final PoseStack.Pose pose = matrices.last();
 
             for (CachedRail rail : rails) {
@@ -129,12 +130,12 @@ public final class RailPhaseWandRenderer {
                     previous = current;
                 }
             }
-            buffers.endBatch(RenderType.lines());
+            ApiCompat.endBatch(buffers);
         }
 
         if (!visible.isEmpty()) {
             final Font font = client.font;
-            final float billboardYaw = 180.0f - camera.getYRot();
+            final float billboardYaw = 180.0f - ApiCompat.cameraYRot(camera);
 
             int railBudget = MAX_LABELS;
             for (CachedRail rail : visible) {
@@ -146,17 +147,16 @@ public final class RailPhaseWandRenderer {
                         Text.translatable("text.yunbeiuc.rail_phase.rail_label", rail.phaseLabel), argb);
             }
 
-            buffers.endBatch();
         }
 
-        RenderSystem.enableCull();
-        RenderSystem.enableDepthTest();
+        ApiCompat.enableCull();
+        ApiCompat.enableDepthTest();
 
         matrices.popPose();
     }
 
     private static void drawLabel(PoseStack matrices, RenderPlatform render, Font font,
-                                  MultiBufferSource buffers, float billboardYaw,
+                                  GeometrySink buffers, float billboardYaw,
                                   double x, double y, double z, Component label, int argb) {
         matrices.pushPose();
         matrices.translate(x, y, z);

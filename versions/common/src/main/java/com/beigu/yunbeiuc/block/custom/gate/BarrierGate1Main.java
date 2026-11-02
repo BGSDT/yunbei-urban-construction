@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class BarrierGate1Main extends BlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<PoleType> POLE_TYPE = EnumProperty.create("pole_type", PoleType.class);
 
     public BarrierGate1Main(BlockBehaviour.Properties properties) {
@@ -76,25 +76,24 @@ public class BarrierGate1Main extends BlockCompat {
 
     @Override
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!world.isClientSide && player.getItemInHand(hand).getItem() == ModItems.WAND.get()) {
+        if (!world.isClientSide() && player.getItemInHand(hand).getItem() == ModItems.WAND.get()) {
             PoleType next = state.getValue(POLE_TYPE) == PoleType.LONGITUDINAL ? PoleType.HORIZONTAL : PoleType.LONGITUDINAL;
             world.setBlock(pos, state.setValue(POLE_TYPE, next), VersionServices.blocks().updateAll());
         }
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN) {
             return getAutoState(state, world, pos);
         }
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onPlace(state, world, pos, oldState, notify);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             world.setBlock(pos, getAutoState(state, world, pos), VersionServices.blocks().updateAll());
         }
     }

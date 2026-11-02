@@ -1,18 +1,21 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.custom.RoadNameSignBlock;
 import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1Wuhan;
 import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.beigu.yunbeiuc.api.render.GeometrySink;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import com.beigu.yunbeiuc.api.text.Text;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.core.Direction;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
@@ -24,7 +27,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
 
     public RoadNameSignBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
-        this.textRenderer = ctx.getFont();
+        this.textRenderer = ApiCompat.font(ctx);
     }
 
     private static final int ENGLISH_FREE_CHARS = 12;
@@ -65,7 +68,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
     );
 
     @Override
-    public void render(RoadNameSignBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+    public void render(RoadNameSignBlockEntity entity, float tickDelta, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay) {
         String chineseText = entity.getChineseText();
         String englishText = entity.getEnglishText();
         if (chineseText == null || chineseText.isEmpty()) return;
@@ -105,7 +108,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         return Math.max(xScale, MIN_X_SCALE_FACTOR);
     }
 
-    private void renderText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, String text, boolean isBlack, float andY, boolean backTF, boolean isSmallScale) {
+    private void renderText(PoseStack matrices, GeometrySink vertexConsumers, int light, Direction facing, String text, boolean isBlack, float andY, boolean backTF, boolean isSmallScale) {
         matrices.pushPose();
 
         matrices.translate(0.5, 0.5, 0.5);
@@ -117,7 +120,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         float scaleValue = isSmallScale ? ENGLISH_BASE_SCALE : CHINESE_BASE_SCALE;
         float xScaleFactor = getXScaleFactor(text, isSmallScale);
 
-        Component styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(VersionServices.resources().create("minecraft", "uniform")));
+        Component styledText = Text.literal(text).setStyle(Style.EMPTY.withBold(true).withFont(ApiCompat.font(VersionServices.resources().create("minecraft", "uniform"))));
         int textWidth = this.textRenderer.width(styledText);
         int textHeight = this.textRenderer.lineHeight;
         float zOffset = 1.5f;
@@ -149,7 +152,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         matrices.popPose();
     }
 
-    private void renderDirectionText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, String directionKey, boolean backTF, boolean leftTF, boolean cnTF) {
+    private void renderDirectionText(PoseStack matrices, GeometrySink vertexConsumers, int light, Direction facing, String directionKey, boolean backTF, boolean leftTF, boolean cnTF) {
         matrices.pushPose();
 
         matrices.translate(0.5, 0.5, 0.5);
@@ -159,7 +162,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         }
 
         String directionText = DIRECTION_MAP.get(facing).get(directionKey);
-        Component styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true).withFont(VersionServices.resources().create("minecraft", "uniform")));
+        Component styledText = Text.literal(directionText).setStyle(Style.EMPTY.withBold(true).withFont(ApiCompat.font(VersionServices.resources().create("minecraft", "uniform"))));
         int textWidth = this.textRenderer.width(styledText);
         int textHeight = this.textRenderer.lineHeight;
         float zOffset = 1.5f;

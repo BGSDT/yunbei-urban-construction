@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.InteractionResult;
@@ -30,7 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
 public class GantryFrameConnection extends BlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<GantryFrameConnectionType> CONNECTION_TYPE =
             EnumProperty.create("connection_type", GantryFrameConnectionType.class);
 
@@ -67,8 +67,7 @@ public class GantryFrameConnection extends BlockCompat {
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection());
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (isManualUpdate) return state;
 
         Direction facing = state.getValue(FACING);
@@ -78,7 +77,7 @@ public class GantryFrameConnection extends BlockCompat {
         if (direction == left || direction == right || direction == Direction.DOWN) {
             return updateConnectionType(state, world, pos);
         }
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -94,7 +93,7 @@ public class GantryFrameConnection extends BlockCompat {
         Item item = player.getItemInHand(hand).getItem();
 
         if (item == ModItems.WAND.get()) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 isManualUpdate = true;
 
                 GantryFrameConnectionType currentType = state.getValue(CONNECTION_TYPE);

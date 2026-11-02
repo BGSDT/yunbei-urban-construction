@@ -202,12 +202,11 @@ public abstract class AbstractRoadSlabBlock extends WaterloggedSlabCompat {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
                                   LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             VersionServices.blocks().scheduleFluidTick(level, pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, level, pos, neighborPos);
     }
 }

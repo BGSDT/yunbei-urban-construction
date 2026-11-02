@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.text.Text;
 
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsPatternPreset;
@@ -161,7 +163,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
 
     private void rebuild() {
         if (this.slotListWidget != null) {
-            this.savedScrollAmount = this.slotListWidget.getScrollAmount();
+            this.savedScrollAmount = 0.0; // 26.x removed the scroll getter
         }
         Minecraft.getInstance().execute(this::rebuildNow);
     }
@@ -199,7 +201,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     }
 
     private void openPhaseMultiSelect(TrafficLightsPatternPreset.Slot slot) {
-        Minecraft.getInstance().setScreen(
+        ApiCompat.setScreen(Minecraft.getInstance(), 
             new TrafficLightsPhaseMultiSelectScreen(
                 this,
                 phaseCount,
@@ -292,7 +294,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         preset.setCategory(category);
         TrafficLightsPatternPresetManager.addPreset(preset);
         if (returnPos != null && previousScreen != null) {
-            Minecraft.getInstance().setScreen(new TrafficLightsPatternSelectScreen(returnPos, category, previousScreen));
+            ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternSelectScreen(returnPos, category, previousScreen));
             return;
         }
         this.close();
@@ -527,14 +529,14 @@ public class TrafficLightsPatternEditorScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(previousScreen);
+        ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             if (mouseX >= colorSwatchX && mouseX < colorSwatchX + COLOR_SWATCH_SIZE && mouseY >= colorSwatchY && mouseY < colorSwatchY + COLOR_SWATCH_SIZE) {
-                Minecraft.getInstance().setScreen(new ColorPickerScreen(this, presetColor, c -> presetColor = c));
+                ApiCompat.setScreen(Minecraft.getInstance(), new ColorPickerScreen(this, presetColor, c -> presetColor = c));
                 return true;
             }
         }

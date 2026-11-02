@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation4;
@@ -33,18 +35,18 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
-        this.text2 = nbt.getString("text2");
-        this.text3 = nbt.getString("text3");
-        this.roadType1 = RoadType.fromName(nbt.getString("roadType1"));
-        this.roadType2 = RoadType.fromName(nbt.getString("roadType2"));
-        this.roadType3 = RoadType.fromName(nbt.getString("roadType3"));
-        this.length1 = nbt.getString("length1");
-        this.length2 = nbt.getString("length2");
-        this.length3 = nbt.getString("length3");
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
-        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
-        this.logoType3 = nbt.contains("logoType3") ? nbt.getString("logoType3").replace("provicial", "provincial") : legacyLogoType3();
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.text2 = NbtCompat.getString(nbt, "text2");
+        this.text3 = NbtCompat.getString(nbt, "text3");
+        this.roadType1 = RoadType.fromName(NbtCompat.getString(nbt, "roadType1"));
+        this.roadType2 = RoadType.fromName(NbtCompat.getString(nbt, "roadType2"));
+        this.roadType3 = RoadType.fromName(NbtCompat.getString(nbt, "roadType3"));
+        this.length1 = NbtCompat.getString(nbt, "length1");
+        this.length2 = NbtCompat.getString(nbt, "length2");
+        this.length3 = NbtCompat.getString(nbt, "length3");
+        this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
+        this.logoType2 = nbt.contains("logoType2") ? NbtCompat.getString(nbt, "logoType2").replace("provicial", "provincial") : legacyLogoType2();
+        this.logoType3 = nbt.contains("logoType3") ? NbtCompat.getString(nbt, "logoType3").replace("provicial", "provincial") : legacyLogoType3();
         if (!nbt.contains("TextLines")) {
             getTextLines().clear();
             ensureDefaultTextLines();

@@ -5,6 +5,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -26,8 +27,13 @@ public class RoadCornerProperty extends Property<RoadCorner> {
     }
 
     @Override
-    public Collection<RoadCorner> getPossibleValues() {
+    public List<RoadCorner> getPossibleValues() {
         return values;
+    }
+
+    // 26.x made getInternalIndex abstract; older versions do not declare it, so no @Override.
+    public int getInternalIndex(RoadCorner corner) {
+        return values.indexOf(corner);
     }
 
     @Override

@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.item.custom;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
@@ -34,7 +36,7 @@ public class WaterWand extends ItemCompat {
         BlockPos topPos = context.getClickedPos();
         Player player = context.getPlayer();
 
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (player == null){
                 return InteractionResult.SUCCESS;
             }
@@ -57,7 +59,7 @@ public class WaterWand extends ItemCompat {
         }
 
         if (count > 0) {
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.water_wand.success", count), true);
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.translatable("item.yunbeiuc.water_wand.success", count), true);
         }
 
         return InteractionResult.PASS;

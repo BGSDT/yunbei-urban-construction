@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.sign;
 
+import com.beigu.yunbeiuc.api.mapper.BlockCompat;
+
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleHorizontal;
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleLongitudinal;
 import net.minecraft.world.level.block.Block;
@@ -8,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Mirror;
@@ -22,8 +24,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import org.jetbrains.annotations.Nullable;
 
-public class SignSimpleBlock extends Block {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+public class SignSimpleBlock extends BlockCompat {
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     private static final VoxelShape SHAPE_POLE_L_N = Block.box(0, 0, 19.1, 16, 16, 20);
@@ -102,8 +104,7 @@ public class SignSimpleBlock extends Block {
         return this.defaultBlockState().setValue(FACING, facing).setValue(TYPE, type);
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction,
+        protected BlockState updateShapeCompat(BlockState state, Direction direction,
                                                 BlockState neighborState, LevelAccessor world,
                                                 BlockPos pos, BlockPos neighborPos) {
         Direction facing = state.getValue(FACING);
@@ -115,7 +116,7 @@ public class SignSimpleBlock extends Block {
             }
         }
 
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     private Type determineType(BlockState behindState) {

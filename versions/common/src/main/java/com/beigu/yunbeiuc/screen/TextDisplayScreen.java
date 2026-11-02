@@ -1,4 +1,8 @@
 package com.beigu.yunbeiuc.screen;
+
+import com.beigu.yunbeiuc.api.input.Keys;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 import com.beigu.yunbeiuc.api.text.Text;
@@ -21,8 +25,8 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.glfw.GLFW;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 
 import java.util.*;
 
@@ -132,8 +136,8 @@ public class TextDisplayScreen extends Screen {
     }
 
     private static boolean computeSupportsGlobalFontSetting(CustomSignBlockEntity blockEntity) {
-        ResourceLocation id = VersionServices.registries().blockId(blockEntity.getBlockState().getBlock());
-        String path = id.getPath();
+        Id id = VersionServices.registries().blockId(blockEntity.getBlockState().getBlock());
+        String path = id.path();
         return path.contains("sign") || path.contains("zones");
     }
 
@@ -484,7 +488,7 @@ public class TextDisplayScreen extends Screen {
         TextLineData d = w.data;
         int currentColor = (type == 3) ? d.getColor() : d.getOutlineColor();
         if (currentColor == -1) currentColor = 0xFFFFFF;
-        Minecraft.getInstance().setScreen(new ColorPickerScreen(this, currentColor, c -> {
+        ApiCompat.setScreen(Minecraft.getInstance(), new ColorPickerScreen(this, currentColor, c -> {
             for (int index : selectedTargets()) applyColor(type, c, textLineWidgets.get(index).data);
             syncAndUpdateClient();
             sendUpdateToServer();
@@ -1135,9 +1139,9 @@ public class TextDisplayScreen extends Screen {
         return out;
     }
 
-    private static boolean lineUsesTexture(String lineText, ResourceLocation textureId) {
+    private static boolean lineUsesTexture(String lineText, Id textureId) {
         if (lineText == null || lineText.isEmpty() || textureId == null) return false;
-        String want = fileName(textureId.getPath());
+        String want = fileName(textureId.path());
         for (String token : lineText.split("\\s+")) {
             if (fileName(token).equals(want)) return true;
         }
@@ -1222,7 +1226,7 @@ public class TextDisplayScreen extends Screen {
                     int w = Math.max(20, textRenderer.width(item.displayName) + 8);
                     if (x + w > width - 5) return;
                     final String insert = item.insertContent;
-                    final ResourceLocation texture = item.textureId;
+                    final Id texture = item.textureId;
                     ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(item.displayName.getString()), b -> {
                         if (insert != null && !insert.isEmpty()) insertPatternContent(insert);
                         else if (texture != null) insertPatternContent("-texture " + texture);
@@ -1461,7 +1465,7 @@ public class TextDisplayScreen extends Screen {
             return true;
         }
         if (PatternAndFontOverlay.isVisible) {
-            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (keyCode == Keys.ESCAPE) {
                 PatternAndFontOverlay.isVisible = false;
             }
             return true;
@@ -1470,19 +1474,19 @@ public class TextDisplayScreen extends Screen {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
-        if (preciseInputMode && (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_ENTER)) {
+        if (preciseInputMode && (keyCode == Keys.ESCAPE || keyCode == Keys.ENTER)) {
             exitPreciseMode();
             return true;
         }
         if (presetSaveMode || presetLoadMode) return super.keyPressed(keyCode, scanCode, modifiers);
         if (handleEditorShortcut(keyCode)) return true;
-        if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
+        if (keyCode == Keys.LEFT_CONTROL || keyCode == Keys.RIGHT_CONTROL) {
             presetSelectMode = true;
             formatPainterMode = false; formatPainterSourceIndex = -1;
             refreshTopPanel();
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_P) {
+        if (keyCode == Keys.P) {
             presetLoadMode = true;
             presetScrollOffset = 0;
             refreshBottomPanel();
@@ -1493,41 +1497,41 @@ public class TextDisplayScreen extends Screen {
 
     private boolean handleEditorShortcut(int keyCode) {
         boolean ctrl = hasControlDown();
-        if (ctrl && keyCode == GLFW.GLFW_KEY_S) {
+        if (ctrl && keyCode == Keys.S) {
             syncAndUpdateClient();
             sendUpdateToServer();
             return true;
         }
-        if (ctrl && keyCode == GLFW.GLFW_KEY_C) {
+        if (ctrl && keyCode == Keys.C) {
             copySelectedLine();
             return true;
         }
-        if (ctrl && keyCode == GLFW.GLFW_KEY_V) {
+        if (ctrl && keyCode == Keys.V) {
             pasteSelectedLine();
             return true;
         }
-        if (ctrl && keyCode == GLFW.GLFW_KEY_D) {
+        if (ctrl && keyCode == Keys.D) {
             duplicateSelectedLine();
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_DELETE && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+        if (keyCode == Keys.DELETE && selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             requestDeleteLine(selectedIndex);
             return true;
         }
         if (!ctrl) {
-            if (keyCode == GLFW.GLFW_KEY_W) { selectCategory(Category.POSITION); return true; }
-            if (keyCode == GLFW.GLFW_KEY_E) { selectCategory(Category.ROTATION); return true; }
-            if (keyCode == GLFW.GLFW_KEY_R) { selectCategory(Category.SCALE); return true; }
-            if (keyCode == GLFW.GLFW_KEY_F) { selectCategory(Category.FONT); return true; }
-            if (keyCode == GLFW.GLFW_KEY_A) { selectCategory(Category.ALIGN); return true; }
+            if (keyCode == Keys.W) { selectCategory(Category.POSITION); return true; }
+            if (keyCode == Keys.E) { selectCategory(Category.ROTATION); return true; }
+            if (keyCode == Keys.R) { selectCategory(Category.SCALE); return true; }
+            if (keyCode == Keys.F) { selectCategory(Category.FONT); return true; }
+            if (keyCode == Keys.A) { selectCategory(Category.ALIGN); return true; }
         }
         float step = stepFor(POSITION_STEP, POSITION_ALT_STEP);
-        if (keyCode == GLFW.GLFW_KEY_LEFT) return nudgeSelectedLine(-step, 0f, 0f);
-        if (keyCode == GLFW.GLFW_KEY_RIGHT) return nudgeSelectedLine(step, 0f, 0f);
-        if (keyCode == GLFW.GLFW_KEY_UP) return nudgeSelectedLine(0f, step, 0f);
-        if (keyCode == GLFW.GLFW_KEY_DOWN) return nudgeSelectedLine(0f, -step, 0f);
-        if (keyCode == GLFW.GLFW_KEY_PAGE_UP) return nudgeSelectedLine(0f, 0f, step);
-        if (keyCode == GLFW.GLFW_KEY_PAGE_DOWN) return nudgeSelectedLine(0f, 0f, -step);
+        if (keyCode == Keys.LEFT) return nudgeSelectedLine(-step, 0f, 0f);
+        if (keyCode == Keys.RIGHT) return nudgeSelectedLine(step, 0f, 0f);
+        if (keyCode == Keys.UP) return nudgeSelectedLine(0f, step, 0f);
+        if (keyCode == Keys.DOWN) return nudgeSelectedLine(0f, -step, 0f);
+        if (keyCode == Keys.PAGE_UP) return nudgeSelectedLine(0f, 0f, step);
+        if (keyCode == Keys.PAGE_DOWN) return nudgeSelectedLine(0f, 0f, -step);
         return false;
     }
 
@@ -1543,7 +1547,7 @@ public class TextDisplayScreen extends Screen {
             return super.keyReleased(keyCode, scanCode, modifiers);
         }
 
-        if ((keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) && !presetSaveMode) {
+        if ((keyCode == Keys.LEFT_CONTROL || keyCode == Keys.RIGHT_CONTROL) && !presetSaveMode) {
             presetSelectMode = false; selectedPresetIndices.clear(); refreshTopPanel();
         }
         return super.keyReleased(keyCode, scanCode, modifiers);
@@ -1645,7 +1649,7 @@ public class TextDisplayScreen extends Screen {
                         adjustDirectionalButton(widget);
                         return true;
                     }
-                    widget.mouseClicked(mouseX, mouseY, 0);
+                    ApiCompat.mouseClicked(widget, mouseX, mouseY, 0);
                     return true;
                 }
             }
@@ -1748,10 +1752,10 @@ public class TextDisplayScreen extends Screen {
             deleteTextLine(idx);
             return;
         }
-        Minecraft.getInstance().setScreen(new ConfirmScreen(
+        ApiCompat.setScreen(Minecraft.getInstance(), new ConfirmScreen(
                 confirmed -> {
                     if (confirmed) deleteTextLine(idx);
-                    Minecraft.getInstance().setScreen(this);
+                    ApiCompat.setScreen(Minecraft.getInstance(), this);
                 },
                 Text.literal("删除文本行"),
                 Text.literal("该行为系统生成或包含占位符/图片指令，删除后不会自动恢复，且将失去枚举按钮、字段联动、图片自动更新等功能。"),

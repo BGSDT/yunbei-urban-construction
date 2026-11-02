@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -20,7 +20,7 @@ public class WaterSafetyBarrier extends Block {
     private static final VoxelShape SHAPE_E = Block.box(5, 0, -8, 11, 16, 24);
     private static final VoxelShape SHAPE_S = Block.box(-8, 0, 5, 24, 16, 11);
     private static final VoxelShape SHAPE_W = Block.box(5, 0, -8, 11, 16, 24);
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public WaterSafetyBarrier(BlockBehaviour.Properties properties) {
         super(properties);

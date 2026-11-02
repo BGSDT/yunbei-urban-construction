@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.util;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.mojang.blaze3d.platform.NativeImage;
 
@@ -174,7 +176,7 @@ public class CustomFontManager {
                 int g = (color >> 8) & 0xFF;
                 int b = color & 0xFF;
 
-                nativeImage.setPixelRGBA(x, y, (a << 24) | (b << 16) | (g << 8) | r);
+                ApiCompat.setPixel(nativeImage, x, y, (a << 24) | (b << 16) | (g << 8) | r);
             }
         }
 

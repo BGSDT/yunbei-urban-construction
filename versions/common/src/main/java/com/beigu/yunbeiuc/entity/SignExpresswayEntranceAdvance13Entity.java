@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -30,16 +32,16 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
-        this.expressway2 = Expressway.fromName(nbt.getString("expressway2"));
-        this.expresswayNumber1 = nbt.getString("expresswayNumber1");
-        this.expresswayNumber2 = nbt.getString("expresswayNumber2");
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
-        this.logoType2 = nbt.contains("logoType2") ? nbt.getString("logoType2").replace("provicial", "provincial") : legacyLogoType2();
-        this.text1 = nbt.getString("text1");
-        this.text2 = nbt.getString("text2");
-        this.text3 = nbt.getString("text3");
-        this.text4 = nbt.getString("text4");
+        this.expressway1 = Expressway.fromName(NbtCompat.getString(nbt, "expressway1"));
+        this.expressway2 = Expressway.fromName(NbtCompat.getString(nbt, "expressway2"));
+        this.expresswayNumber1 = NbtCompat.getString(nbt, "expresswayNumber1");
+        this.expresswayNumber2 = NbtCompat.getString(nbt, "expresswayNumber2");
+        this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
+        this.logoType2 = nbt.contains("logoType2") ? NbtCompat.getString(nbt, "logoType2").replace("provicial", "provincial") : legacyLogoType2();
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.text2 = NbtCompat.getString(nbt, "text2");
+        this.text3 = NbtCompat.getString(nbt, "text3");
+        this.text4 = NbtCompat.getString(nbt, "text4");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

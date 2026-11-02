@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.item.custom;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.ItemCompat;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.text.Text;
@@ -8,10 +10,10 @@ import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -93,16 +95,16 @@ public class LinkWand extends ItemCompat {
         }
 
         if (isMtrRailNode(world, pos)) {
-            if (world.isClientSide) return InteractionResult.sidedSuccess(true);
+            if (world.isClientSide()) return ApiCompat.sidedSuccess(true);
             handleRailNode(player, pos);
-            return InteractionResult.sidedSuccess(false);
+            return ApiCompat.sidedSuccess(false);
         }
 
-        if (world.isClientSide) return InteractionResult.SUCCESS;
+        if (world.isClientSide()) return InteractionResult.SUCCESS;
 
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof TrafficLightsBlockEntity)) {
-            player.displayClientMessage(Text.literal("§c这不是一个红绿灯，也不是 MTR 轨道节点！"), true);
+            ApiCompat.message(player, Text.literal("§c这不是一个红绿灯，也不是 MTR 轨道节点！"), true);
             return InteractionResult.FAIL;
         }
 
@@ -111,27 +113,27 @@ public class LinkWand extends ItemCompat {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    protected ApiCompat.UseResult useCompat(Level level, Player player, InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return player.isShiftKeyDown()
-                    ? InteractionResultHolder.sidedSuccess(stack, true)
-                    : InteractionResultHolder.pass(stack);
+                    ? ApiCompat.UseResult.SUCCESS
+                    : ApiCompat.UseResult.PASS;
         }
 
         if (player.isShiftKeyDown()) {
             final Session session = SESSIONS.get(player.getUUID());
             if (session != null) session.clearPending();
-            player.displayClientMessage(Text.literal(
+            ApiCompat.message(player, Text.literal(
                     "§7已清空本次链接进度（待成组红绿灯 / 待链接轨道 / 未完成的起点）"), true);
-            return InteractionResultHolder.sidedSuccess(stack, false);
+            return ApiCompat.UseResult.SUCCESS;
         }
-        return InteractionResultHolder.pass(stack);
+        return ApiCompat.UseResult.PASS;
     }
 
     private static void handleLight(Player player, BlockPos pos) {
-        final Level world = player.getCommandSenderWorld();
+        final Level world = ApiCompat.level(player);
         final Session session = sessionOf(player);
         if (!(world.getBlockEntity(pos) instanceof TrafficLightsBlockEntity light)) return;
 
@@ -141,7 +143,7 @@ public class LinkWand extends ItemCompat {
         }
 
         if (light.isInGroup()) {
-            player.displayClientMessage(Text.literal(
+            ApiCompat.message(player, Text.literal(
                     "§c该红绿灯已有相位序列！要往那一组加轨道，请重新组一次网。"), true);
             return;
         }
@@ -149,32 +151,32 @@ public class LinkWand extends ItemCompat {
         if (session.lights.contains(pos)) {
             session.lights.remove(pos);
             if (session.lights.isEmpty()) {
-                player.displayClientMessage(Text.literal("§c已清空链接组"), true);
+                ApiCompat.message(player, Text.literal("§c已清空链接组"), true);
             } else {
-                player.displayClientMessage(Text.literal("§a已成功链接 §6§l" + session.lights.size()
+                ApiCompat.message(player, Text.literal("§a已成功链接 §6§l" + session.lights.size()
                         + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
             }
         } else {
             session.lights.add(pos);
-            player.displayClientMessage(Text.literal("§a已成功链接 §6§l" + session.lights.size()
+            ApiCompat.message(player, Text.literal("§a已成功链接 §6§l" + session.lights.size()
                     + " §a个红绿灯 §7| §eshift+右键完成链接"), true);
         }
     }
 
     private static void finalizeGroup(Player player, Level world, Session session) {
         if (session.lights.size() < 2) {
-            player.displayClientMessage(Text.literal("§c你需要链接至少2个红绿灯！"), true);
+            ApiCompat.message(player, Text.literal("§c你需要链接至少2个红绿灯！"), true);
             return;
         }
 
         for (BlockPos linkedPos : session.lights) {
             if (!(world.getBlockEntity(linkedPos) instanceof TrafficLightsBlockEntity tl)) {
-                player.displayClientMessage(Text.literal("§c一些已链接的红绿灯不再有效！"), true);
+                ApiCompat.message(player, Text.literal("§c一些已链接的红绿灯不再有效！"), true);
                 session.clearPending();
                 return;
             }
             if (tl.isInGroup()) {
-                player.displayClientMessage(Text.literal(
+                ApiCompat.message(player, Text.literal(
                         "§c红绿灯 §6" + linkedPos.toShortString() + " §c已有相位序列！"), true);
                 session.clearPending();
                 return;
@@ -197,9 +199,9 @@ public class LinkWand extends ItemCompat {
             }
         }
 
-        player.displayClientMessage(Text.literal("§a已成功链接 §6§l" + finalPositions.size()
+        ApiCompat.message(player, Text.literal("§a已成功链接 §6§l" + finalPositions.size()
                 + " §a个红绿灯" + (linked > 0 ? "§a，并链接了 §6§l" + linked + " §a条轨道" : "")), true);
-        player.displayClientMessage(Text.literal("§7请用 §e普通魔杖 §7右键任意已链接的红绿灯设置时间表，"
+        ApiCompat.message(player, Text.literal("§7请用 §e普通魔杖 §7右键任意已链接的红绿灯设置时间表，"
                 + "设好之前这些轨道会保持红灯"), true);
 
         session.clearPending();
@@ -210,13 +212,13 @@ public class LinkWand extends ItemCompat {
 
         if (session.pendingStart == null) {
             session.pendingStart = pos.immutable();
-            player.displayClientMessage(Text.literal("§a已选择轨道起点 §6" + pos.toShortString()
+            ApiCompat.message(player, Text.literal("§a已选择轨道起点 §6" + pos.toShortString()
                     + "§a，请右键另一个节点作为终点"), true);
             return;
         }
         if (session.pendingStart.equals(pos)) {
             session.pendingStart = null;
-            player.displayClientMessage(Text.literal("§7已取消起点选择"), true);
+            ApiCompat.message(player, Text.literal("§7已取消起点选择"), true);
             return;
         }
 
@@ -224,7 +226,7 @@ public class LinkWand extends ItemCompat {
         session.pendingStart = null;
 
         session.rails.add(new BlockPos[]{start, pos.immutable()});
-        player.displayClientMessage(Text.literal("§a已记录轨道 §6" + start.toShortString()
+        ApiCompat.message(player, Text.literal("§a已记录轨道 §6" + start.toShortString()
                 + " §a→ §6" + pos.toShortString() + "§a（共 §6" + session.rails.size() + " §6条）"
                 + (session.lights.isEmpty()
                         ? "§7，别忘了右键红绿灯组网"
@@ -233,8 +235,8 @@ public class LinkWand extends ItemCompat {
 
     private static boolean isMtrRailNode(Level level, BlockPos pos) {
         try {
-            final ResourceLocation id = VersionServices.registries().blockId(level.getBlockState(pos).getBlock());
-            return id != null && "mtr".equals(id.getNamespace()) && "rail".equals(id.getPath());
+            final Id id = VersionServices.registries().blockId(level.getBlockState(pos).getBlock());
+            return id != null && "mtr".equals(id.namespace()) && "rail".equals(id.path());
         } catch (Throwable t) {
             return false;
         }

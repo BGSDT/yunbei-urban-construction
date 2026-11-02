@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
@@ -23,7 +25,7 @@ public class FlagBlockEntity extends BlockEntityMapper {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.flagId = nbt.getString("flagId");
+        this.flagId = NbtCompat.getString(nbt, "flagId");
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.EntityBlockCompat;
 
 import net.minecraft.world.level.block.Mirror;
@@ -23,7 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -39,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class RoadNameSignBlock extends EntityBlockCompat {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<BGType> BG_TYPE = EnumProperty.create("bg_type", BGType.class);
 
     private static final VoxelShape SHAPE_N = Block.box(-10, 0, 6.25, 26, 16, 9.75);
@@ -66,7 +68,7 @@ public class RoadNameSignBlock extends EntityBlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Item item = player.getItemInHand(hand).getItem();
         if (item == ModItems.WAND.get()) {
-            if (world .isClientSide) {
+            if (world .isClientSide()) {
                 openTextDisplayScreen(pos);
             }
         }
@@ -75,7 +77,7 @@ public class RoadNameSignBlock extends EntityBlockCompat {
 
     @Environment(EnvType.CLIENT)
     private void openTextDisplayScreen(BlockPos pos) {
-        Minecraft.getInstance().setScreen(new RoadNameSignScreen(pos));
+        ApiCompat.setScreen(Minecraft.getInstance(), new RoadNameSignScreen(pos));
     }
 
     @Override

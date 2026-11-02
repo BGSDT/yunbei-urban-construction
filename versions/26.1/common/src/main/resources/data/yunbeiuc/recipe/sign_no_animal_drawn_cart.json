@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:white_concrete"
+  },
+  "result": {
+    "id": "yunbeiuc:sign_no_animal_drawn_cart",
+    "count": 9
+  }
+}

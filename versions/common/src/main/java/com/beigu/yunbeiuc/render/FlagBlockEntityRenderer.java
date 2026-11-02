@@ -1,16 +1,18 @@
 package com.beigu.yunbeiuc.render;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.custom.pole.RoadPoleFlag;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
 import com.beigu.yunbeiuc.util.CustomFlag;
 import com.beigu.yunbeiuc.util.FlagLoader;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.beigu.yunbeiuc.api.render.GeometrySink;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.core.Direction;
-import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlockEntity> {
@@ -20,14 +22,14 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
     }
 
     @Override
-    public void render(FlagBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+    public void render(FlagBlockEntity entity, float tickDelta, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay) {
         String flagId = entity.getFlagId();
         if (flagId == null || flagId.isEmpty()) return;
 
         CustomFlag flag = FlagLoader.getFlag(flagId);
         if (flag == null) return;
 
-        ResourceLocation texture = flag.getTexture();
+        Id texture = flag.getTexture();
 
         try {
             matrices.pushPose();
@@ -59,9 +61,9 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
         }
     }
 
-    private void renderTwoFaces(PoseStack matrices, MultiBufferSource vertexConsumers, ResourceLocation texture,
+    private void renderTwoFaces(PoseStack matrices, GeometrySink vertexConsumers, Id texture,
                                 float width, float height, Direction facing, int light, int overlay) {
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(texture));
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(ApiCompat.entityCutout(IdAdapter.mc(texture)));
         PoseStack.Pose entry = matrices.last();
 
         float halfWidth = width / 2;

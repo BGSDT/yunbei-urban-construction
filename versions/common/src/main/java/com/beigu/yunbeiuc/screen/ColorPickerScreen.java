@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.text.Text;
 
 import net.minecraft.client.Minecraft;
@@ -89,12 +91,12 @@ public class ColorPickerScreen extends Screen {
 
         ButtonWidget confirmButton = ButtonWidget.builderCompat(Text.literal("确定"), button -> {
             callback.accept(getCurrentColor());
-            Minecraft.getInstance().setScreen(previousScreen);
+            ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
         }).dimensions(panelX + PANEL_PADDING, btnY, btnWidth, BUTTON_HEIGHT).build();
         this.addDrawableChild(confirmButton);
 
         ButtonWidget cancelButton = ButtonWidget.builderCompat(Text.literal("取消"), button -> {
-            Minecraft.getInstance().setScreen(previousScreen);
+            ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
         }).dimensions(panelX + PANEL_PADDING * 2 + btnWidth, btnY, btnWidth, BUTTON_HEIGHT).build();
         this.addDrawableChild(cancelButton);
     }
@@ -222,7 +224,7 @@ public class ColorPickerScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 256) {
-            Minecraft.getInstance().setScreen(previousScreen);
+            ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

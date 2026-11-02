@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.api.block;
 
+import com.beigu.yunbeiuc.api.vanilla.VanillaBlocks;
+
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.core.BlockPos;
@@ -41,7 +43,7 @@ public final class BlockPlatformImpl implements BlockPlatform {
     @Override
     public BlockBehaviour.Properties copyProperties(Block source) {
         // 1.20.2 起 Properties.copy 改名 ofFullCopy（共享树用它克隆原版方块属性，
-        // 如 copyProperties(Blocks.CYAN_TERRACOTTA)，必须保持复制语义）。
+        // 如 copyProperties(VanillaBlocks.CYAN_TERRACOTTA)，必须保持复制语义）。
         return BlockBehaviour.Properties.ofFullCopy(source);
     }
 

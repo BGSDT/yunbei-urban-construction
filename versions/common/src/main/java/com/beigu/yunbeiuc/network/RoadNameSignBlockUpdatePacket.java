@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
@@ -30,8 +32,8 @@ public class RoadNameSignBlockUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.getCommandSenderWorld().hasChunkAt(pos)) {
-            BlockEntity blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
+        if (ApiCompat.level(player).hasChunkAt(pos)) {
+            BlockEntity blockEntity = ApiCompat.level(player).getBlockEntity(pos);
             if (blockEntity instanceof RoadNameSignBlockEntity signEntity) {
                 signEntity.setChineseText(chineseText);
                 signEntity.setEnglishText(englishText);

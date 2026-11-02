@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -22,8 +24,8 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.expresswayNumber = nbt.getString("expresswayNumber");
-        this.expresswayName = nbt.getString("expresswayName");
+        this.expresswayNumber = NbtCompat.getString(nbt, "expresswayNumber");
+        this.expresswayName = NbtCompat.getString(nbt, "expresswayName");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

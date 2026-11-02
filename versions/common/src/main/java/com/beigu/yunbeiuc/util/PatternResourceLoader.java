@@ -10,7 +10,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.InputStream;
@@ -98,22 +99,22 @@ public final class PatternResourceLoader {
     public static void buildTextureCache(PatternAndFontOverlay.H4Section section, ResourceManager resourceManager) {
         section.cachedTextures.clear();
 
-        String targetNamespace = section.basePath.getNamespace();
-        String targetPath = section.basePath.getPath();
+        String targetNamespace = section.basePath.namespace();
+        String targetPath = section.basePath.path();
 
         if (targetPath.endsWith("/")) {
             targetPath = targetPath.substring(0, targetPath.length() - 1);
         }
 
-        List<ResourceLocation> allResources = VersionServices.resources().listResources(resourceManager, targetPath,
-                id -> id.getPath().endsWith(".png"));
+        List<Id> allResources = VersionServices.resources().listResources(resourceManager, targetPath,
+                id -> id.path().endsWith(".png"));
 
         initCacheBuckets(section);
 
-        for (ResourceLocation id : allResources) {
-            if (!id.getNamespace().equals(targetNamespace)) continue;
+        for (Id id : allResources) {
+            if (!id.namespace().equals(targetNamespace)) continue;
 
-            String fullPath = id.getPath();
+            String fullPath = id.path();
             if (!fullPath.startsWith(targetPath)) continue;
 
             String fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
@@ -125,8 +126,8 @@ public final class PatternResourceLoader {
             distributeToBucket(section, id, relativePath);
         }
 
-        for (List<ResourceLocation> list : section.cachedTextures.values()) {
-            list.sort((id1, id2) -> id1.getPath().compareTo(id2.getPath()));
+        for (List<Id> list : section.cachedTextures.values()) {
+            list.sort((id1, id2) -> id1.path().compareTo(id2.path()));
         }
     }
 
@@ -162,7 +163,7 @@ public final class PatternResourceLoader {
         }
     }
 
-    private static void distributeToBucket(PatternAndFontOverlay.H4Section section, ResourceLocation id, String relativePath) {
+    private static void distributeToBucket(PatternAndFontOverlay.H4Section section, Id id, String relativePath) {
         String[] pathSegments = relativePath.split("/");
         if (section.useSubfolders) {
             if (pathSegments.length == 2 && section.cachedTextures.containsKey(pathSegments[0])) {
@@ -176,10 +177,10 @@ public final class PatternResourceLoader {
     }
 
     private static void loadAdvancedCustomUIFromJson(ResourceManager manager) {
-        List<ResourceLocation> resources = VersionServices.resources().listResources(manager, CUSTOM_UI_DIR,
-                id -> isCustomUiFile(id.getPath()));
+        List<Id> resources = VersionServices.resources().listResources(manager, CUSTOM_UI_DIR,
+                id -> isCustomUiFile(id.path()));
 
-        for (ResourceLocation resourceId : resources) {
+        for (Id resourceId : resources) {
             try {
                 InputStream stream = VersionServices.resources().openIfPresent(manager, resourceId);
                 if (stream == null) continue;
@@ -245,7 +246,7 @@ public final class PatternResourceLoader {
     private static PatternAndFontOverlay.H4Section parseSectionFromJson(JsonObject secObj) {
         Component secTitle = Text.literal(secObj.has("title") ? secObj.get("title").getAsString() : "未命名 Section");
         Component secDesc = Text.literal(secObj.has("description") ? secObj.get("description").getAsString() : "");
-        ResourceLocation basePath = VersionServices.resources().parse(
+        Id basePath = VersionServices.resources().parse(
                 secObj.has("basePath") ? secObj.get("basePath").getAsString() : "minecraft:empty/");
 
         PatternAndFontOverlay.H4Section newSection = new PatternAndFontOverlay.H4Section(secTitle, secDesc, basePath);
@@ -293,10 +294,10 @@ public final class PatternResourceLoader {
     }
 
     private static void loadCustomPatternSetsFromJson(ResourceManager manager) {
-        List<ResourceLocation> resources = VersionServices.resources().listResources(manager, CUSTOM_UI_DIR,
-                id -> isPatternSetFile(id.getPath()));
+        List<Id> resources = VersionServices.resources().listResources(manager, CUSTOM_UI_DIR,
+                id -> isPatternSetFile(id.path()));
 
-        for (ResourceLocation resourceId : resources) {
+        for (Id resourceId : resources) {
             try {
                 InputStream stream = VersionServices.resources().openIfPresent(manager, resourceId);
                 if (stream == null) continue;

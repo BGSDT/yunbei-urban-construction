@@ -1,0 +1,131 @@
+plugins {
+    id 'dev.architectury.loom-no-remap' version '1.17.493' apply false
+    id 'com.modrinth.minotaur' version '2.8.7' apply false
+}
+
+apply from: file('../modrinth.gradle')
+
+allprojects {
+    group = rootProject.maven_group
+    version = rootProject.mod_version
+}
+
+subprojects {
+    // Minecraft 26.x ships an unobfuscated jar and Mojang no longer publishes ProGuard
+    // mappings, so Loom runs in "no-remap" mode: sources are compiled straight against
+    // the vanilla class names and no remapJar is produced.
+    apply plugin: 'dev.architectury.loom-no-remap'
+    apply plugin: 'maven-publish'
+
+    base {
+        archivesName = "$rootProject.archives_name-$project.name"
+    }
+
+    repositories {
+        if (System.getenv('CI') != 'true') {
+            maven {
+                name = 'MavenCentralLWJGL'
+                url = 'https://maven.aliyun.com/repository/central/'
+                content { includeGroup 'org.lwjgl' }
+            }
+        }
+        maven {
+            name = 'MavenCentralLWJGLFallback'
+            url = 'https://repo.maven.apache.org/maven2/'
+            content { includeGroup 'org.lwjgl' }
+        }
+        if (System.getenv('CI') != 'true') {
+            maven { name = 'AliyunPublic'; url = 'https://maven.aliyun.com/repository/public/' }
+            maven { name = 'AliyunGoogle'; url = 'https://maven.aliyun.com/repository/google/' }
+        }
+        maven { name = 'LoomMinecraftCache'; url = uri("$rootProject.projectDir/.gradle/loom-cache/minecraftMaven") }
+        mavenCentral()
+        maven { name = 'NeoForged'; url = 'https://neoforged.forgecdn.net/releases/' }
+        maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        if (System.getenv('CI') != 'true') {
+            maven { name = 'MinecraftLibraries'; url = 'https://bmclapi2.bangbang93.com/maven/' }
+        }
+    }
+
+    dependencies {
+        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
+    }
+
+    // The :common project compiles two source trees:
+    //   * versions/common        - the shared tree, identical for all Minecraft versions
+    //   * versions/<ver>/common  - the version specific api/render/screen shims
+    // The platform projects only compile their own entry points and pack :common's
+    // output into their jar (there is no remap step to do it for us in 26.x).
+    if (project.name == 'common') {
+        dependencies {
+            // Fabric Loader is only used for the @Environment annotation (it is remapped away
+            // on NeoForge); no other loader classes are referenced from the shared tree.
+            implementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+            // Architectury API (DeferredRegister / NetworkManager / Platform).
+            implementation "dev.architectury:architectury:$rootProject.architectury_api_version"
+        }
+
+        sourceSets {
+            main {
+                java.srcDir "$rootProject.projectDir/../common/src/main/java"
+                resources.srcDir "$rootProject.projectDir/../common/src/main/resources"
+                java.srcDir "$rootProject.projectDir/common/src/main/java"
+                // Version specific resources (26.x only assets such as item model definitions).
+                resources.srcDir "$rootProject.projectDir/common/src/main/resources"
+            }
+        }
+    } else {
+        dependencies {
+            implementation project(':common')
+        }
+
+        // In a dev run the mod resource pack is built from the platform project's own resources
+        // directory, so the shared tree's assets/data must be copied into it as well. The jar task
+        // below already packs :common's output with DuplicatesStrategy.EXCLUDE, so nothing is
+        // duplicated in the shipped jar.
+        sourceSets {
+            main {
+                resources.srcDir "$rootProject.projectDir/../common/src/main/resources"
+                resources.srcDir "$rootProject.projectDir/common/src/main/resources"
+            }
+        }
+
+        tasks.named('jar') {
+            dependsOn project(':common').tasks.named('classes')
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+            from project(':common').sourceSets.main.output
+        }
+    }
+
+    java {
+        withSourcesJar()
+
+        // Minecraft 26.x ships Java 25 class files.
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 25
+        // Emit all compiler diagnostics so the full migration error set is visible.
+        it.options.compilerArgs.add('-Xmaxerrs')
+        it.options.compilerArgs.add('4000')
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId = base.archivesName.get()
+                from components.java
+            }
+        }
+
+        repositories {
+        }
+    }
+}

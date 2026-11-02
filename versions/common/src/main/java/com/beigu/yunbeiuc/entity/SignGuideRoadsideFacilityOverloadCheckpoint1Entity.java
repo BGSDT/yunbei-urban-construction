@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -22,8 +24,8 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.unit1 = Unit.fromName(nbt.getString("unit1"));
-        this.length1 = nbt.getString("length1");
+        this.unit1 = Unit.fromName(NbtCompat.getString(nbt, "unit1"));
+        this.length1 = NbtCompat.getString(nbt, "length1");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

@@ -104,8 +104,7 @@ public class CustomSignTypeBlock extends CustomTextDisplayBlock {
         return this.defaultBlockState().setValue(FACING, facing).setValue(TYPE, type);
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction,
+        protected BlockState updateShapeCompat(BlockState state, Direction direction,
                                                 BlockState neighborState, LevelAccessor world,
                                                 BlockPos pos, BlockPos neighborPos) {
         Direction facing = state.getValue(FACING);
@@ -115,7 +114,7 @@ public class CustomSignTypeBlock extends CustomTextDisplayBlock {
                 return state.setValue(TYPE, newType);
             }
         }
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
+        return super.updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
     }
 
     private Type determineType(BlockState behindState) {

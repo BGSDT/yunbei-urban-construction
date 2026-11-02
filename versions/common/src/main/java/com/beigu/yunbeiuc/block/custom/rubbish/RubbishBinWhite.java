@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.rubbish;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.mapper.BlockCompat;
 
 import net.minecraft.world.level.block.Mirror;
@@ -15,7 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.network.chat.Component;
@@ -40,7 +42,7 @@ public class RubbishBinWhite extends BlockCompat {
     private static final VoxelShape SHAPE_E = Block.box(4.25, 0, 0, 11.75, 16, 16);
     private static final VoxelShape SHAPE_S = Block.box(0, 0, 4.25, 16, 16, 11.75);
     private static final VoxelShape SHAPE_W = Block.box(4.25, 0, 0, 11.75, 16, 16);
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public RubbishBinWhite(BlockBehaviour.Properties properties) {
         super(properties);
@@ -84,7 +86,7 @@ public class RubbishBinWhite extends BlockCompat {
         ItemStack heldItem = player.getItemInHand(hand);
         if (!heldItem.isEmpty()) {
             player.setItemInHand(hand, ItemStack.EMPTY);
-            return InteractionResult.sidedSuccess(world .isClientSide);
+            return ApiCompat.sidedSuccess(world .isClientSide());
         }
         return super.useCompat(state, world, pos, player, hand, hit);
     }

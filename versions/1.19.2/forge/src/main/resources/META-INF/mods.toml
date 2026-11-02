@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[43,)"
 issueTrackerURL = "https://github.com/BGSDT/yunbei-urban-construction/issues"
-license = "MIT"
+license = "LGPL V3"
 
 [[mods]]
 modId = "yunbeiuc"

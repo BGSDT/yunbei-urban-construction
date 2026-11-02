@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -26,12 +28,12 @@ public class SignGuideIntersectionAdvanceWarning7Entity extends CustomSignBlockE
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.direction1 = SignTurnDirection.fromName(nbt.getString("direction1"), SignTurnDirection.STRAIGHT);
-        this.direction2 = SignTurnDirection.fromName(nbt.getString("direction2"), SignTurnDirection.STRAIGHT);
-        this.direction3 = SignTurnDirection.fromName(nbt.getString("direction3"), SignTurnDirection.STRAIGHT);
-        this.text1 = nbt.getString("text1");
-        this.text2 = nbt.getString("text2");
-        this.text3 = nbt.getString("text3");
+        this.direction1 = SignTurnDirection.fromName(NbtCompat.getString(nbt, "direction1"), SignTurnDirection.STRAIGHT);
+        this.direction2 = SignTurnDirection.fromName(NbtCompat.getString(nbt, "direction2"), SignTurnDirection.STRAIGHT);
+        this.direction3 = SignTurnDirection.fromName(NbtCompat.getString(nbt, "direction3"), SignTurnDirection.STRAIGHT);
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.text2 = NbtCompat.getString(nbt, "text2");
+        this.text3 = NbtCompat.getString(nbt, "text3");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

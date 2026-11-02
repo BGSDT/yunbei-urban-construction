@@ -1,5 +1,9 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.signal.ClientRailGroupIndex;
 import com.beigu.yunbeiuc.signal.RailPhaseBinding;
@@ -75,7 +79,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     public void tick() {
-        if (level == null || level .isClientSide) {
+        if (level == null || level .isClientSide()) {
             return;
         }
 
@@ -172,7 +176,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     private void updateLightState() {
-        if (level == null || level .isClientSide || phaseTimes == null || phaseCount <= 0) return;
+        if (level == null || level .isClientSide() || phaseTimes == null || phaseCount <= 0) return;
 
         normalizePhaseData();
         refreshPhaseProgress();
@@ -223,7 +227,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     private void syncGroupClock() {
-        if (groupId == null || groupPositions.isEmpty() || level == null || level .isClientSide) return;
+        if (groupId == null || groupPositions.isEmpty() || level == null || level .isClientSide()) return;
 
         for (BlockPos pos : groupPositions) {
             if (pos.equals(this.worldPosition)) continue;
@@ -267,7 +271,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     public boolean addRailBinding(BlockPos start, BlockPos end, Player player) {
-        if (level == null || level .isClientSide) return false;
+        if (level == null || level .isClientSide()) return false;
         if (start.equals(end)) {
             message(player, "§c起点与终点不能是同一个节点！");
             return false;
@@ -295,7 +299,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     public boolean setRailBindingMask(BlockPos start, BlockPos end, long phaseMask, Player player) {
-        if (level == null || level .isClientSide) return false;
+        if (level == null || level .isClientSide()) return false;
         final RailPhaseBinding binding = findRailBinding(start, end);
         if (binding == null) {
             message(player, "§c这条轨道尚未链接到本组！");
@@ -331,7 +335,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     public boolean removeRailBinding(BlockPos start, BlockPos end, Player player) {
-        if (level == null || level .isClientSide) return false;
+        if (level == null || level .isClientSide()) return false;
 
         boolean removed = railBindings.removeIf(binding -> binding.matches(start, end));
         if (!removed) {
@@ -348,7 +352,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     public void clearRailBindings(Player player) {
-        if (level == null || level .isClientSide) return;
+        if (level == null || level .isClientSide()) return;
         final int count = railBindings.size();
         railBindings.clear();
         propagateRailBindings();
@@ -358,7 +362,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     private void propagateRailBindings() {
-        if (level == null || level .isClientSide || groupId == null) return;
+        if (level == null || level .isClientSide() || groupId == null) return;
         for (BlockPos pos : groupPositions) {
             if (pos.equals(this.worldPosition)) continue;
             if (!level.isLoaded(pos)) continue;
@@ -369,7 +373,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     private void publishRailSignals() {
-        if (level == null || level .isClientSide) return;
+        if (level == null || level .isClientSide()) return;
         final BlockPos anchor = groupAnchor();
         if (railBindings.isEmpty()) {
             RailSignalRegistry.removeGroup(anchor);
@@ -398,7 +402,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     private static void message(Player player, String text) {
         if (player != null) {
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal(text), true);
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal(text), true);
         }
     }
 
@@ -528,46 +532,46 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public boolean setPhaseIndices(List<Integer> indices, Player player) {
         if (phaseTimes == null || phaseCount <= 0) {
-            if (player != null && !level .isClientSide) {
-                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c请先使用命令设置时间！"), true);
+            if (player != null && !level .isClientSide()) {
+                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c请先使用命令设置时间！"), true);
             }
             return false;
         }
         if (groupId == null) {
-            if (player != null && !level .isClientSide) {
-                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c此红绿灯未链接到任何组！"), true);
+            if (player != null && !level .isClientSide()) {
+                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c此红绿灯未链接到任何组！"), true);
             }
             return false;
         }
         int maxAllowed = Math.min(MAX_PHASE_INDICES, phaseCount);
         if (indices.size() > maxAllowed) {
-            if (player != null && !level .isClientSide) {
-                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c最多只能设置 " + maxAllowed + " 个相位！"), true);
+            if (player != null && !level .isClientSide()) {
+                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c最多只能设置 " + maxAllowed + " 个相位！"), true);
             }
             return false;
         }
         if (new HashSet<>(indices).size() != indices.size()) {
-            if (player != null && !level .isClientSide) {
-                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c相位不可以重复！"), true);
+            if (player != null && !level .isClientSide()) {
+                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c相位不可以重复！"), true);
             }
             return false;
         }
         for (int index : indices) {
             if (index < 0 || index >= phaseCount) {
-                if (player != null && !level .isClientSide) {
-                    player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c无效的相位索引！范围：1-" + phaseCount), true);
+                if (player != null && !level .isClientSide()) {
+                    ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c无效的相位索引！范围：1-" + phaseCount), true);
                 }
                 return false;
             }
         }
         this.phaseIndices = new ArrayList<>(indices);
-        if (player != null && !level .isClientSide) {
+        if (player != null && !level .isClientSide()) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < indices.size(); i++) {
                 if (i > 0) sb.append(", ");
                 sb.append(indices.get(i) + 1);
             }
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§a相位已设置为 §6" + sb + " §7(共" + phaseCount + "个相位)"), true);
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§a相位已设置为 §6" + sb + " §7(共" + phaseCount + "个相位)"), true);
         }
         markGroupStateDirty();
         return true;
@@ -589,7 +593,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     private void verifyGroupIntegrity() {
-        if (level == null || level.isClientSide || groupPositions == null || groupPositions.isEmpty()) {
+        if (level == null || level.isClientSide() || groupPositions == null || groupPositions.isEmpty()) {
             return;
         }
         boolean missing = false;
@@ -617,11 +621,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         stopCycle();
 
-        if (level != null && !level .isClientSide) {
+        if (level != null && !level .isClientSide()) {
             RailSignalRegistry.removeGroup(groupAnchor());
         }
 
-        if (level != null && !level .isClientSide && groupPositions != null) {
+        if (level != null && !level .isClientSide() && groupPositions != null) {
             for (BlockPos pos : groupPositions) {
                 if (pos.equals(this.worldPosition)) continue;
                 BlockEntity be = level.getBlockEntity(pos);
@@ -671,10 +675,10 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.currentActivePhase = 0;
         this.cycleActive = false;
         this.cycleStartGameTime = Long.MIN_VALUE;
-        if (level != null && !level .isClientSide) {
+        if (level != null && !level .isClientSide()) {
             RailSignalRegistry.removeGroup(groupAnchor());
         }
-        if (level != null && !level .isClientSide) {
+        if (level != null && !level .isClientSide()) {
             BlockState state = getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
                 level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, TrafficLightsBlock.LightState.RED), VersionServices.blocks().updateAll());
@@ -686,15 +690,15 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     public boolean setStaticState(DirectionType direction, TrafficLightsBlock.LightState color,
                                    boolean showSeconds, int fixedSeconds, Player player) {
         if (isInGroup()) {
-            if (player != null && !level .isClientSide) {
-                player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯已加入相位组，无法单独设置静态状态！"), true);
+            if (player != null && !level .isClientSide()) {
+                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c该红绿灯已加入相位组，无法单独设置静态状态！"), true);
             }
             return false;
         }
         this.directionType = direction;
         this.showSeconds = showSeconds;
         this.fixedSeconds = fixedSeconds;
-        if (level != null && !level .isClientSide) {
+        if (level != null && !level .isClientSide()) {
             BlockState state = getBlockState();
             if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
                 level.setBlock(worldPosition, state.setValue(TrafficLightsBlock.LIGHT_STATE, color), VersionServices.blocks().updateAll());
@@ -820,41 +824,41 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
         if (nbt.contains("phaseIndices")) {
-            int[] arr = nbt.getIntArray("phaseIndices");
+            int[] arr = NbtCompat.getIntArray(nbt, "phaseIndices");
             this.phaseIndices = new ArrayList<>();
             for (int v : arr) this.phaseIndices.add(v);
         } else if (nbt.contains("phaseIndex")) {
-            int old = nbt.getInt("phaseIndex");
+            int old = NbtCompat.getInt(nbt, "phaseIndex");
             this.phaseIndices = new ArrayList<>();
             if (old >= 0) this.phaseIndices.add(old);
         } else {
             this.phaseIndices = new ArrayList<>();
         }
-        this.groupId = nbt.contains("groupId") ? nbt.getString("groupId") : null;
-        this.phaseCount = nbt.getInt("phaseCount");
-        this.directionType = DirectionType.fromName(nbt.getString("directionType"));
-        this.countdownDisplayMode = nbt.getInt("countdownDisplayMode");
-        this.countdownThreshold = nbt.contains("countdownThreshold") ? nbt.getInt("countdownThreshold") : 15;
-        this.showSeconds = nbt.getBoolean("showSeconds");
-        this.fixedSeconds = nbt.contains("fixedSeconds") ? nbt.getInt("fixedSeconds") : 10;
+        this.groupId = nbt.contains("groupId") ? NbtCompat.getString(nbt, "groupId") : null;
+        this.phaseCount = NbtCompat.getInt(nbt, "phaseCount");
+        this.directionType = DirectionType.fromName(NbtCompat.getString(nbt, "directionType"));
+        this.countdownDisplayMode = NbtCompat.getInt(nbt, "countdownDisplayMode");
+        this.countdownThreshold = nbt.contains("countdownThreshold") ? NbtCompat.getInt(nbt, "countdownThreshold") : 15;
+        this.showSeconds = NbtCompat.getBoolean(nbt, "showSeconds");
+        this.fixedSeconds = nbt.contains("fixedSeconds") ? NbtCompat.getInt(nbt, "fixedSeconds") : 10;
 
         if (nbt.contains("phaseTimes")) {
-            this.phaseTimes = nbt.getIntArray("phaseTimes");
+            this.phaseTimes = NbtCompat.getIntArray(nbt, "phaseTimes");
             if (this.phaseTimes.length == 0) {
                 this.phaseTimes = null;
             }
         }
 
-        this.currentActivePhase = nbt.getInt("currentActivePhase");
-        this.currentTick = nbt.getInt("currentTick");
-        this.cycleActive = nbt.getBoolean("cycleActive");
+        this.currentActivePhase = NbtCompat.getInt(nbt, "currentActivePhase");
+        this.currentTick = NbtCompat.getInt(nbt, "currentTick");
+        this.cycleActive = NbtCompat.getBoolean(nbt, "cycleActive");
         this.cycleStartGameTime = nbt.contains("cycleStartGameTime")
-                ? nbt.getLong("cycleStartGameTime")
+                ? NbtCompat.getLong(nbt, "cycleStartGameTime")
                 : Long.MIN_VALUE;
 
         if (nbt.contains("groupPositions")) {
-            CompoundTag positionsTag = nbt.getCompound("groupPositions");
-            int size = positionsTag.getInt("size");
+            CompoundTag positionsTag = NbtCompat.getCompound(nbt, "groupPositions");
+            int size = NbtCompat.getInt(positionsTag, "size");
             groupPositions.clear();
             for (int i = 0; i < size; i++) {
                 groupPositions.add(readPos(positionsTag, i));
@@ -863,18 +867,18 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         railBindings = new ArrayList<>();
         if (nbt.contains("railBindings")) {
-            CompoundTag bindingsTag = nbt.getCompound("railBindings");
-            int size = bindingsTag.getInt("size");
+            CompoundTag bindingsTag = NbtCompat.getCompound(nbt, "railBindings");
+            int size = NbtCompat.getInt(bindingsTag, "size");
             for (int i = 0; i < size; i++) {
                 if (bindingsTag.contains("b" + i)) {
-                    railBindings.add(RailPhaseBinding.fromNbt(bindingsTag.getCompound("b" + i)));
+                    railBindings.add(RailPhaseBinding.fromNbt(NbtCompat.getCompound(bindingsTag, "b" + i)));
                 }
             }
         }
 
         normalizePhaseData();
 
-        if (level != null && level .isClientSide && isInGroup() && !railBindings.isEmpty()) {
+        if (level != null && level .isClientSide() && isInGroup() && !railBindings.isEmpty()) {
             ClientRailGroupIndex.register(level, groupAnchor());
         }
     }
@@ -944,8 +948,8 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 return new BlockPos(values[0], values[1], values[2]);
             }
         }
-        CompoundTag compound = positionsTag.getCompound("pos" + index);
-        return new BlockPos(compound.getInt("X"), compound.getInt("Y"), compound.getInt("Z"));
+        CompoundTag compound = NbtCompat.getCompound(positionsTag, "pos" + index);
+        return new BlockPos(NbtCompat.getInt(compound, "X"), NbtCompat.getInt(compound, "Y"), NbtCompat.getInt(compound, "Z"));
     }
 
     @Nullable
@@ -955,7 +959,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
     public void markDirtyAndUpdate() {
         setChanged();
-        if (level != null && !level .isClientSide) {
+        if (level != null && !level .isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), VersionServices.blocks().updateAll());
             pushUpdateToNearbyPlayers();
         }

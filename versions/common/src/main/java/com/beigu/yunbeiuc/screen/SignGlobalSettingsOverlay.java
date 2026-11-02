@@ -1,10 +1,11 @@
 package com.beigu.yunbeiuc.screen;
 
+import com.beigu.yunbeiuc.api.input.Keys;
+
 import com.beigu.yunbeiuc.util.GlobalFontSettings;
 import com.beigu.yunbeiuc.util.GlobalFontSettings.FontMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import org.lwjgl.glfw.GLFW;
 
 public final class SignGlobalSettingsOverlay {
 
@@ -354,10 +355,10 @@ public final class SignGlobalSettingsOverlay {
 
     public static boolean keyPressed(int keyCode, int modifiers) {
         if (!isVisible) return false;
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (keyCode == Keys.ESCAPE) {
             close();
-        } else if (keyCode == GLFW.GLFW_KEY_ENTER
-                || (keyCode == GLFW.GLFW_KEY_S && (modifiers & GLFW.GLFW_MOD_CONTROL) != 0)) {
+        } else if (keyCode == Keys.ENTER
+                || (keyCode == Keys.S && (modifiers & Keys.MOD_CONTROL) != 0)) {
             saveAndClose();
         }
         return true;

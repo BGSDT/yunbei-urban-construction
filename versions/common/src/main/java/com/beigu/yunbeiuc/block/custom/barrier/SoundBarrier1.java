@@ -1,4 +1,6 @@
 package com.beigu.yunbeiuc.block.custom.barrier;
+
+import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.api.mapper.DirectionalBlockCompat;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
@@ -68,7 +70,7 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
                          @Nullable LivingEntity placer, ItemStack itemStack) {
         super.setPlacedBy(world, pos, state, placer, itemStack);
 
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             Direction direction = state.getValue(FACING);
             BlockPos rightPos = pos.relative(direction.getClockWise());
 
@@ -98,7 +100,7 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
         Direction direction = state.getValue(FACING);
         int layer = state.getValue(LAYER);
 
-        if (!world.isClientSide && player.isCreative()) {
+        if (!world.isClientSide() && player.isCreative()) {
             breakOtherParts(world, pos, part, direction, layer, player);
         }
     }
@@ -153,13 +155,12 @@ public class SoundBarrier1 extends DirectionalBlockCompat {
     }
 
     public PushReaction getPushReaction(BlockState state) {
-        return PushReaction.BLOCK;
+        return ApiCompat.PUSH_BLOCK;
     }
 
-    @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos,
+        protected void neighborChangedCompat(BlockState state, Level world, BlockPos pos,
                                Block block, BlockPos fromPos, boolean notify) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             BedPart part = state.getValue(PART);
             Direction direction = state.getValue(FACING);
             int layer = state.getValue(LAYER);

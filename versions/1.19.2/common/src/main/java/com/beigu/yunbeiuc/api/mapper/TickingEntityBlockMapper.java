@@ -1,5 +1,8 @@
 package com.beigu.yunbeiuc.api.mapper;
 
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -46,5 +49,36 @@ public abstract class TickingEntityBlockMapper extends BaseEntityBlock implement
     @Override
     public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         playerWillDestroyCompat(level, pos, state, player);
+    }
+
+    protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
+                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+        return super.updateShape(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
+    }
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                  LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+        return updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    protected void onRemoveCompat(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+        super.onRemove(state, level, pos, newState, moved);
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+        onRemoveCompat(state, level, pos, newState, moved);
+    }
+
+    protected void neighborChangedCompat(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block block,
+                                         BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block block,
+                                BlockPos fromPos, boolean isMoving) {
+        neighborChangedCompat(state, level, pos, block, fromPos, isMoving);
     }
 }

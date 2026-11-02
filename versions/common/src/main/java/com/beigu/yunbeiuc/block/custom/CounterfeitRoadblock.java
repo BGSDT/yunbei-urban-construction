@@ -16,7 +16,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.InteractionResult;
@@ -41,7 +41,7 @@ public class CounterfeitRoadblock extends BlockCompat {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, Type.SINGLE).setValue(ACTIVE, true));
     }
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
@@ -73,8 +73,7 @@ public class CounterfeitRoadblock extends BlockCompat {
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite()).setValue(TYPE, getRelatedType(ctx.getLevel(), ctx.getClickedPos(), ctx.getHorizontalDirection().getOpposite()));
     }
 
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+        protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (direction.getAxis().isHorizontal()) {
             return this.getRelatedBlockState(state, world, pos, state.getValue(FACING));
         }
@@ -85,7 +84,7 @@ public class CounterfeitRoadblock extends BlockCompat {
     public InteractionResult useCompat(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
 
-        if (heldItem.getItem() == ModItems.WAND.get() && !world .isClientSide) {
+        if (heldItem.getItem() == ModItems.WAND.get() && !world .isClientSide()) {
             toggleConnectedGroup(world, pos, state.getValue(FACING), !state.getValue(ACTIVE));
             return InteractionResult.SUCCESS;
         }

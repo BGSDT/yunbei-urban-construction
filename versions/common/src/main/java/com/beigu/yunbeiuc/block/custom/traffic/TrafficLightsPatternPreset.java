@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.block.custom.traffic;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import net.minecraft.world.level.block.Block;
@@ -314,7 +316,7 @@ public class TrafficLightsPatternPreset {
                     result.targets.get(i).setDirectionType(result.targetTypes.get(i));
                     result.targets.get(i).setPhaseIndices(result.targetPhases.get(i), null);
                 }
-                if (notifyPlayer != null && !world .isClientSide) {
+                if (notifyPlayer != null && !world .isClientSide()) {
                     send(notifyPlayer, "§a已将预设 §6" + name + " §a应用到链接组，共 " + result.targets.size() + " 个红绿灯");
                 }
                 return true;
@@ -424,8 +426,8 @@ public class TrafficLightsPatternPreset {
     }
 
     private static void send(@Nullable Player player, String message) {
-        if (player != null && !player.getCommandSenderWorld().isClientSide) {
-            player.displayClientMessage(com.beigu.yunbeiuc.api.text.Text.literal(message), false);
+        if (player != null && !ApiCompat.level(player).isClientSide()) {
+            ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal(message), false);
         }
     }
 }

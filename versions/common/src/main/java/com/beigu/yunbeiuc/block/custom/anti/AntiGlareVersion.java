@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -18,7 +18,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.BlockGetter;
 
 public class AntiGlareVersion extends Block {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_N = Shapes.join(Block.box(7.25, 0, 10.69508, 8.75, 12, 11.19508), Block.box(7.25, 0, 4.69508, 8.75, 12, 5.19508), BooleanOp.OR);
     private static final VoxelShape SHAPE_S = Shapes.join(Block.box(7.25, 0, 4.80492, 8.75, 12, 5.30492), Block.box(7.25, 0, 10.80492, 8.75, 12, 11.30492), BooleanOp.OR);

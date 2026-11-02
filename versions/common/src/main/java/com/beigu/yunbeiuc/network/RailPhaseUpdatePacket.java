@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.text.Text;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -40,7 +42,7 @@ public class RailPhaseUpdatePacket {
     public void apply(ServerPlayer player) {
         if (player == null) return;
 
-        final Level level = player.getCommandSenderWorld();
+        final Level level = ApiCompat.level(player);
         if (!(level.getBlockEntity(groupMember) instanceof TrafficLightsBlockEntity lights)) {
             message(player, "§c相位组已失效，请重新绑定后再编辑！");
             return;
@@ -53,6 +55,6 @@ public class RailPhaseUpdatePacket {
     }
 
     private static void message(ServerPlayer player, String text) {
-        player.displayClientMessage(Text.literal(text), false);
+        ApiCompat.message(player, Text.literal(text), false);
     }
 }

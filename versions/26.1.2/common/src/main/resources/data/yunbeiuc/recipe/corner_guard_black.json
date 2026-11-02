@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:black_concrete"
+  },
+  "result": {
+    "id": "yunbeiuc:corner_guard_black",
+    "count": 2
+  }
+}

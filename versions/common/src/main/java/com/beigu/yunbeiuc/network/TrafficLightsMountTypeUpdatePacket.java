@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
@@ -29,7 +31,7 @@ public class TrafficLightsMountTypeUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        Level world = player.getCommandSenderWorld();
+        Level world = ApiCompat.level(player);
         if (world == null) return;
 
         BlockState state = world.getBlockState(pos);

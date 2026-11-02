@@ -1,6 +1,5 @@
 package com.beigu.yunbeiuc.api.resource;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.IOException;
@@ -10,19 +9,24 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public final class ResourcePlatformImpl implements ResourcePlatform {
-    @Override public InputStream openIfPresent(ResourceManager manager, ResourceLocation id) throws IOException {
-        return manager.hasResource(id) ? manager.getResource(id).getInputStream() : null;
+    @Override public InputStream openIfPresent(ResourceManager manager, Id id) throws IOException {
+        return manager.hasResource(IdAdapter.mc(id))
+                ? manager.getResource(IdAdapter.mc(id)).getInputStream()
+                : null;
     }
 
-    @Override public List<ResourceLocation> listResources(ResourceManager manager, String path, Predicate<ResourceLocation> filter) {
-        List<ResourceLocation> result = new ArrayList<>();
-        for (ResourceLocation id : manager.listResources(path, name -> true)) {
+    @Override public List<Id> listResources(ResourceManager manager, String path, Predicate<Id> filter) {
+        List<Id> result = new ArrayList<>();
+        for (var mcId : manager.listResources(path, name -> true)) {
+            Id id = IdAdapter.of(mcId);
             if (filter.test(id)) {
                 result.add(id);
             }
         }
         return result;
     }
-    @Override public ResourceLocation create(String namespace, String path) { return new ResourceLocation(namespace, path); }
-    @Override public ResourceLocation parse(String location) { return new ResourceLocation(location); }
+
+    @Override public Id create(String namespace, String path) { return Id.of(namespace, path); }
+
+    @Override public Id parse(String location) { return Id.parse(location); }
 }

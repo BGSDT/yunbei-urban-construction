@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -28,14 +30,14 @@ public class SignExpresswayDistanceFromLocation2Entity extends CustomSignBlockEn
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.expressway1 = Expressway.fromName(nbt.getString("expressway1"));
-        this.text1 = nbt.getString("text1");
-        this.expresswayNumber = nbt.getString("expresswayNumber");
-        this.logoType1 = nbt.contains("logoType1") ? nbt.getString("logoType1").replace("provicial", "provincial") : legacyLogoType1();
-        this.text3 = nbt.getString("text3");
-        this.length1 = nbt.getString("length1");
-        this.length2 = nbt.getString("length2");
-        this.length3 = nbt.getString("length3");
+        this.expressway1 = Expressway.fromName(NbtCompat.getString(nbt, "expressway1"));
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.expresswayNumber = NbtCompat.getString(nbt, "expresswayNumber");
+        this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
+        this.text3 = NbtCompat.getString(nbt, "text3");
+        this.length1 = NbtCompat.getString(nbt, "length1");
+        this.length2 = NbtCompat.getString(nbt, "length2");
+        this.length3 = NbtCompat.getString(nbt, "length3");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

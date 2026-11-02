@@ -5,7 +5,8 @@ import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.google.gson.*;
 import dev.architectury.platform.Platform;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.*;
@@ -75,10 +76,10 @@ public class PresetManager {
     public static void loadFromResourcePacks(ResourceManager manager) {
         packPresets.clear();
         try {
-            List<ResourceLocation> files = VersionServices.resources().listResources(manager,
+            List<Id> files = VersionServices.resources().listResources(manager,
                     PatternResourceLoader.CUSTOM_UI_DIR,
-                    id -> PatternResourceLoader.isCustomUiFile(id.getPath()));
-            for (ResourceLocation id : files) {
+                    id -> PatternResourceLoader.isCustomUiFile(id.path()));
+            for (Id id : files) {
                 try (InputStream in = VersionServices.resources().openIfPresent(manager, id)) {
                     if (in == null) continue;
                     try (InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {

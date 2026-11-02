@@ -41,4 +41,10 @@ public interface BlockPlatform {
     void sendBlockEntityUpdate(ServerPlayer player, ServerLevel level, BlockPos pos,
                                ClientboundBlockEntityDataPacket packet);
 
+    /** 26.x requires every block to know its id before construction; older versions ignore this. */
+    default void beginRegistration(String name) {
+    }
+
+    default void endRegistration() {
+    }
 }

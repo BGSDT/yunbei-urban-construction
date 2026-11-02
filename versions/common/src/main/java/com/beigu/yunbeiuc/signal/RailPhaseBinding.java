@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.signal;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 
@@ -109,13 +111,13 @@ public final class RailPhaseBinding {
     public static RailPhaseBinding fromNbt(CompoundTag tag) {
         final long mask;
         if (tag.contains("mask")) {
-            mask = tag.getLong("mask");
+            mask = NbtCompat.getLong(tag, "mask");
         } else {
-            mask = bit(tag.getInt("phase"));
+            mask = bit(NbtCompat.getInt(tag, "phase"));
         }
         return new RailPhaseBinding(
-                BlockPos.of(tag.getLong("start")),
-                BlockPos.of(tag.getLong("end")),
+                BlockPos.of(NbtCompat.getLong(tag, "start")),
+                BlockPos.of(NbtCompat.getLong(tag, "end")),
                 mask);
     }
 }

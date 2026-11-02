@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "result": {
+    "id": "yunbeiuc:safety_island_gray",
+    "count": 1
+  },
+  "ingredient": {
+    "item": "minecraft:gray_concrete"
+  }
+}

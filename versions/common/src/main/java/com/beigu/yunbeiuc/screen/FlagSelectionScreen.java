@@ -12,7 +12,8 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
@@ -170,7 +171,7 @@ public class FlagSelectionScreen extends Screen {
         if (selectedFlag == null) return;
 
         try {
-            ResourceLocation texture = selectedFlag.getTexture();
+            Id texture = selectedFlag.getTexture();
 
             int originalWidth = 1062;
             int originalHeight = 2834;
@@ -185,7 +186,7 @@ public class FlagSelectionScreen extends Screen {
             int centeredX = x;
             int centeredY = y;
 
-            context.drawTexture(texture, centeredX, centeredY, scaledWidth, scaledHeight, 0, 0, originalWidth, originalHeight, originalWidth, originalHeight);
+            context.drawTexture(IdAdapter.mc(texture), centeredX, centeredY, scaledWidth, scaledHeight, 0, 0, originalWidth, originalHeight, originalWidth, originalHeight);
 
         } catch (Exception e) {
             int[] scaledDimensions = getScaledDimensions(maxSize);

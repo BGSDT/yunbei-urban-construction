@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.render;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.gui.RenderPlatform;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
@@ -37,15 +39,15 @@ public class LinkWandRenderer {
         List<BlockPos> linkedPositions = LinkWand.getPlayerLinkedPositions(player.getUUID());
         if (linkedPositions == null || linkedPositions.isEmpty()) return;
 
-        Vec3 cameraPos = camera.getPosition();
+        Vec3 cameraPos = ApiCompat.cameraPos(camera);
 
         matrices.pushPose();
         matrices.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
-        RenderSystem.lineWidth(4.0f);
+        ApiCompat.enableBlend();
+        ApiCompat.defaultBlendFunc();
+        ApiCompat.disableDepthTest();
+        ApiCompat.lineWidth(4.0f);
 
         RenderPlatform render = VersionServices.render();
 
@@ -89,9 +91,9 @@ public class LinkWandRenderer {
             render.endLines();
         }
 
-        RenderSystem.lineWidth(1.0f);
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableBlend();
+        ApiCompat.lineWidth(1.0f);
+        ApiCompat.enableDepthTest();
+        ApiCompat.disableBlend();
 
         matrices.popPose();
     }

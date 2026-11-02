@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "result": {
+    "id": "minecraft:orange_concrete",
+    "count": 1
+  },
+  "ingredient": {
+    "item": "yunbeiuc:barrier_gate_1_main"
+  }
+}

@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -25,11 +27,11 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
-        this.image = BoardImage.fromName(nbt.getString("image"));
-        this.andX = nbt.getFloat("andX");
-        this.andY = nbt.getFloat("andY");
-        this.andScale = nbt.getFloat("andScale");
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.image = BoardImage.fromName(NbtCompat.getString(nbt, "image"));
+        this.andX = NbtCompat.getFloat(nbt, "andX");
+        this.andY = NbtCompat.getFloat(nbt, "andY");
+        this.andScale = NbtCompat.getFloat(nbt, "andScale");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

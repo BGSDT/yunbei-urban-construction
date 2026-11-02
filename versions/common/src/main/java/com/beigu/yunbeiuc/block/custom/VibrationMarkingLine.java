@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -20,7 +20,7 @@ public class VibrationMarkingLine extends Block {
     private static final VoxelShape SHAPE_E = Block.box(6, 0, 0, 10, 0.5, 16);
     private static final VoxelShape SHAPE_S = Block.box(0, 0, 6, 16, 0.5, 10);
     private static final VoxelShape SHAPE_W = Block.box(6, 0, 0, 10, 0.5, 16);
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public VibrationMarkingLine(BlockBehaviour.Properties properties) {
         super(properties);

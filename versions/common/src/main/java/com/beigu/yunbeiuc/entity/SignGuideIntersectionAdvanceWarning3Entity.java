@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import net.minecraft.world.level.block.Block;
@@ -33,19 +35,19 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = nbt.getString("text1");
-        this.cnText2 = nbt.getString("cnText2");
-        this.enText2 = nbt.getString("enText2");
-        this.cnText3 = nbt.getString("cnText3");
-        this.enText3 = nbt.getString("enText3");
-        this.cnText4 = nbt.getString("cnText4");
-        this.enText4 = nbt.getString("enText4");
-        this.cnText5 = nbt.getString("cnText5");
-        this.enText5 = nbt.getString("enText5");
-        this.cnText6 = nbt.getString("cnText6");
-        this.enText6 = nbt.getString("enText6");
-        this.cnText7 = nbt.getString("cnText7");
-        this.enText7 = nbt.getString("enText7");
+        this.text1 = NbtCompat.getString(nbt, "text1");
+        this.cnText2 = NbtCompat.getString(nbt, "cnText2");
+        this.enText2 = NbtCompat.getString(nbt, "enText2");
+        this.cnText3 = NbtCompat.getString(nbt, "cnText3");
+        this.enText3 = NbtCompat.getString(nbt, "enText3");
+        this.cnText4 = NbtCompat.getString(nbt, "cnText4");
+        this.enText4 = NbtCompat.getString(nbt, "enText4");
+        this.cnText5 = NbtCompat.getString(nbt, "cnText5");
+        this.enText5 = NbtCompat.getString(nbt, "enText5");
+        this.cnText6 = NbtCompat.getString(nbt, "cnText6");
+        this.enText6 = NbtCompat.getString(nbt, "enText6");
+        this.cnText7 = NbtCompat.getString(nbt, "cnText7");
+        this.enText7 = NbtCompat.getString(nbt, "enText7");
         if (!nbt.contains("TextLines")) {
             ensureDefaultTextLines();
         }

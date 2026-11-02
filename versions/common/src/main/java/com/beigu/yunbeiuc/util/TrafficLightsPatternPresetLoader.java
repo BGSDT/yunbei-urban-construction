@@ -7,7 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.resources.ResourceLocation;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,7 +34,7 @@ public class TrafficLightsPatternPresetLoader {
 
         try {
             for (String namespace : resourceManager.getNamespaces()) {
-                ResourceLocation fileId = VersionServices.resources().create(namespace, "traffic_lights_yunbeiuc.json");
+                Id fileId = VersionServices.resources().create(namespace, "traffic_lights_yunbeiuc.json");
 
                 try (InputStream stream = VersionServices.resources().openIfPresent(resourceManager, fileId)) {
                     if (stream == null) continue;

@@ -1,5 +1,9 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
+import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,8 +21,8 @@ public class FlagUpdatePacket {
     public FlagUpdatePacket(FriendlyByteBuf buf) {
         CompoundTag nbt = buf.readNbt();
         if (nbt != null) {
-            this.pos = BlockPos.of(nbt.getLong("pos"));
-            this.flagId = nbt.getString("flagId");
+            this.pos = BlockPos.of(NbtCompat.getLong(nbt, "pos"));
+            this.flagId = NbtCompat.getString(nbt, "flagId");
         } else {
             this.pos = BlockPos.ZERO;
             this.flagId = "";
@@ -33,7 +37,7 @@ public class FlagUpdatePacket {
     }
 
     public void apply(ServerPlayer player) {
-        if (player.getCommandSenderWorld().getBlockEntity(this.pos) instanceof com.beigu.yunbeiuc.entity.FlagBlockEntity flagEntity) {
+        if (ApiCompat.level(player).getBlockEntity(this.pos) instanceof com.beigu.yunbeiuc.entity.FlagBlockEntity flagEntity) {
             flagEntity.setFlagId(this.flagId);
         }
     }

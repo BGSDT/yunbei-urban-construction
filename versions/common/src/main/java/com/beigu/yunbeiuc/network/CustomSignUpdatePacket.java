@@ -1,5 +1,7 @@
 package com.beigu.yunbeiuc.network;
 
+import com.beigu.yunbeiuc.api.ApiCompat;
+
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
@@ -45,16 +47,16 @@ public class CustomSignUpdatePacket {
 
     public void apply(ServerPlayer player) {
 
-        if (!player.getCommandSenderWorld().hasChunkAt(pos)) {
+        if (!ApiCompat.level(player).hasChunkAt(pos)) {
             return;
         }
 
-        BlockEntity be = player.getCommandSenderWorld().getBlockEntity(pos);
+        BlockEntity be = ApiCompat.level(player).getBlockEntity(pos);
         if (be instanceof CustomSignBlockEntity sign) {
             sign.setTextLines(textLines);
             sign.setChanged();
 
-            player.getCommandSenderWorld().sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), VersionServices.blocks().updateAll());
+            ApiCompat.level(player).sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), VersionServices.blocks().updateAll());
 
         }
     }
