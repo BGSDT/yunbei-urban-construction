@@ -40,7 +40,7 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
         if (!getTextLines().isEmpty()) return;
         Block block = blockStateForDefaults().getBlock();
         List<TextLineData> lines = new ArrayList<>();
-        if (block == SignBlocks.ZONES_BOARD_OVER_WEIGHT.get() || block == SignBlocks.ZONES_BOARD_TIME_LILGPL V3.get()) {
+        if (block == SignBlocks.ZONES_BOARD_OVER_WEIGHT.get() || block == SignBlocks.ZONES_BOARD_TIME_LIMIT.get()) {
             lines.add(SignTextLinesHelper.left("{text1}", -5f, 5.5f, 0.03f, 0x000000, "b"));
         } else if (block == SignBlocks.ZONES_BOARD_SUGGESTED_SPEED.get()) {
             lines.add(SignTextLinesHelper.left("{text1}", -6f, 0f, 0.04f, 0x000000, "b"));

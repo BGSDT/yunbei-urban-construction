@@ -1137,6 +1137,7 @@
   "itemGroup.yunbeiuc.wand": "云北城建 | 魔杖工具",
   "yunbeiuc.gui.sidebar.title": "图案与字体",
   "yunbeiuc.gui.sidebar.home": "主页",
+  "yunbeiuc.gui.sidebar.ack": "版权声明",
   "yunbeiuc.gui.tabs.patterns": "图案",
   "yunbeiuc.gui.tabs.fonts": "字体",
   "yunbeiuc.gui.button.insert": "插入",
@@ -1267,5 +1268,19 @@
   "yunbeiuc.gui.homepage.quickstart.step1": "在左侧选择分类",
   "yunbeiuc.gui.homepage.quickstart.step2": "点击图案或字体",
   "yunbeiuc.gui.homepage.quickstart.step3": "内容自动写入文本行",
-  "gui.yunbeiuc.custom_sign": "文本编辑"
+  "gui.yunbeiuc.custom_sign": "文本编辑",
+  "yunbeiuc.gui.ack.page_title": "版权声明",
+  "yunbeiuc.gui.ack.title": "鸣谢",
+  "yunbeiuc.gui.ack.intro": "本模组部分代码与资源来自豹猫指示牌（Ocelot Sign）模组，在此向原作者表示衷心感谢。",
+  "yunbeiuc.gui.ack.mod.ocelotsign.name": "豹猫指示牌（Ocelot Sign）\n原作者：Creeper-Cola123\n来源：部分代码与纹理资源",
+  "yunbeiuc.gui.ack.mod.ocelotsign.repo": "豹猫指示牌开源仓库\nGitHub: Creeper-Cola123/OcelotSignMod-Minecraft",
+  "yunbeiuc.gui.ack.link.mcmod": "MC 百科介绍页",
+  "yunbeiuc.gui.ack.link.github": "GitHub 仓库",
+  "yunbeiuc.gui.ack.decl.title": "模组声明",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.name": "云北城建（YunbeiUrbanConstruction）",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.license": "开源许可证：详见仓库 LICENSE 文件",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.repo": "开源仓库：https://github.com/BGSDT/yunbei-urban-construction",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "本模组在豹猫指示牌模组基础上进行了功能扩展与适配，代码与资源使用已遵循原作者许可。",
+  "yunbeiuc.gui.ack.quote.title": "引用声明",
+  "yunbeiuc.gui.ack.quote.ocelot": "豹猫指示牌模组（Ocelot Sign Mod）是一款由 Creeper-Cola123 开发的 Minecraft 告示牌扩展模组，为本模组的图案与字体选择系统提供了基础参考。"
 }

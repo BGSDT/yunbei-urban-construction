@@ -26,7 +26,7 @@ public final class RoadOrientation {
             return state.getValue(FACING).getAxis();
         }
         if (state.hasProperty(CORNER)) {
-            return state.getValue(CORNER).facing().getAxis();
+            return state.getValue(CORNER).asFacing().getAxis();
         }
         return Direction.Axis.Z;
     }
@@ -40,7 +40,7 @@ public final class RoadOrientation {
             return state.getValue(FACING);
         }
         if (state.hasProperty(CORNER)) {
-            return state.getValue(CORNER).facing();
+            return state.getValue(CORNER).asFacing();
         }
         return axisOf(state) == Direction.Axis.X ? Direction.EAST : Direction.NORTH;
     }

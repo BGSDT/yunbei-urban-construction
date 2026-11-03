@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.api.gui;
 
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 import com.beigu.yunbeiuc.api.resource.Id;
 import com.beigu.yunbeiuc.api.resource.IdAdapter;
@@ -17,7 +17,7 @@ public final class RenderPlatformImpl implements RenderPlatform {
     @Override
     public void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
                             com.mojang.blaze3d.vertex.PoseStack matrices,
-                            com.beigu.yunbeiuc.api.render.GeometrySink buffers, int backgroundColor, int light) {
+                            net.minecraft.client.renderer.MultiBufferSource buffers, int backgroundColor, int light) {
         font.drawInBatch(text, x, y, color, shadow, matrices.last().pose(), buffers,
                 Font.DisplayMode.NORMAL, backgroundColor, light);
     }

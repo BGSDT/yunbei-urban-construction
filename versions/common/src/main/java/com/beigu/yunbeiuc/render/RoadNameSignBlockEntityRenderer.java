@@ -8,7 +8,7 @@ import com.beigu.yunbeiuc.block.custom.sign.SignGuideIntersectionAdvanceWarning1
 import com.beigu.yunbeiuc.entity.RoadNameSignBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.gui.Font;
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Style;
@@ -68,7 +68,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
     );
 
     @Override
-    public void render(RoadNameSignBlockEntity entity, float tickDelta, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay) {
+    public void render(RoadNameSignBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         String chineseText = entity.getChineseText();
         String englishText = entity.getEnglishText();
         if (chineseText == null || chineseText.isEmpty()) return;
@@ -108,7 +108,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         return Math.max(xScale, MIN_X_SCALE_FACTOR);
     }
 
-    private void renderText(PoseStack matrices, GeometrySink vertexConsumers, int light, Direction facing, String text, boolean isBlack, float andY, boolean backTF, boolean isSmallScale) {
+    private void renderText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, String text, boolean isBlack, float andY, boolean backTF, boolean isSmallScale) {
         matrices.pushPose();
 
         matrices.translate(0.5, 0.5, 0.5);
@@ -152,7 +152,7 @@ public class RoadNameSignBlockEntityRenderer extends BlockEntityRendererCompat<R
         matrices.popPose();
     }
 
-    private void renderDirectionText(PoseStack matrices, GeometrySink vertexConsumers, int light, Direction facing, String directionKey, boolean backTF, boolean leftTF, boolean cnTF) {
+    private void renderDirectionText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, String directionKey, boolean backTF, boolean leftTF, boolean cnTF) {
         matrices.pushPose();
 
         matrices.translate(0.5, 0.5, 0.5);

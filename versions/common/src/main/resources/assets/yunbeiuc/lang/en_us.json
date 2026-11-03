@@ -1137,6 +1137,7 @@
   "itemGroup.yunbeiuc.wand": "Yunbei Urban Construction | Wand Tools",
   "yunbeiuc.gui.sidebar.title": "Patterns & Fonts",
   "yunbeiuc.gui.sidebar.home": "Home",
+  "yunbeiuc.gui.sidebar.ack": "Copyright",
   "yunbeiuc.gui.tabs.patterns": "Patterns",
   "yunbeiuc.gui.tabs.fonts": "Fonts",
   "yunbeiuc.gui.button.insert": "Insert",
@@ -1267,5 +1268,19 @@
   "yunbeiuc.gui.homepage.quickstart.step1": "Select a category on the left",
   "yunbeiuc.gui.homepage.quickstart.step2": "Click a pattern or font",
   "yunbeiuc.gui.homepage.quickstart.step3": "Content is automatically written to the text line",
-  "gui.yunbeiuc.custom_sign": "Text Editor"
+  "gui.yunbeiuc.custom_sign": "Text Editor",
+  "yunbeiuc.gui.ack.page_title": "Copyright Notice",
+  "yunbeiuc.gui.ack.title": "Acknowledgments",
+  "yunbeiuc.gui.ack.intro": "Some code and assets in this mod are derived from the Ocelot Sign mod. We hereby express our sincere gratitude to the original author.",
+  "yunbeiuc.gui.ack.mod.ocelotsign.name": "Ocelot Sign\nAuthor: Creeper-Cola123\nSource: Partial code and texture assets",
+  "yunbeiuc.gui.ack.mod.ocelotsign.repo": "Ocelot Sign Repository\nGitHub: Creeper-Cola123/OcelotSignMod-Minecraft",
+  "yunbeiuc.gui.ack.link.mcmod": "MCMod Wiki Page",
+  "yunbeiuc.gui.ack.link.github": "GitHub Repository",
+  "yunbeiuc.gui.ack.decl.title": "Mod Declaration",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.name": "Yunbei Urban Construction (YunbeiUrbanConstruction)",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.license": "Open Source License: See LICENSE file in the repository",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.repo": "Repository: https://github.com/BGSDT/yunbei-urban-construction",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "This mod extends and adapts functionality based on the Ocelot Sign mod. Use of code and assets complies with the original author's license.",
+  "yunbeiuc.gui.ack.quote.title": "Citation",
+  "yunbeiuc.gui.ack.quote.ocelot": "The Ocelot Sign Mod is a Minecraft sign extension developed by Creeper-Cola123, which provided the foundational reference for the pattern and font selection system in this mod."
 }

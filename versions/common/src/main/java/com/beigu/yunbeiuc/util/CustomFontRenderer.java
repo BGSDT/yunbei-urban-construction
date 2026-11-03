@@ -5,7 +5,7 @@ import com.beigu.yunbeiuc.api.ApiCompat;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.beigu.yunbeiuc.api.resource.Id;
@@ -172,7 +172,7 @@ public class CustomFontRenderer {
 
     public static void renderText(
             PoseStack matrices,
-            GeometrySink vertexConsumers,
+            MultiBufferSource vertexConsumers,
             String text,
             int color,
             float x, float y, float z,
@@ -187,7 +187,7 @@ public class CustomFontRenderer {
 
     public static void renderText(
             PoseStack matrices,
-            GeometrySink vertexConsumers,
+            MultiBufferSource vertexConsumers,
             String text,
             int color,
             float x, float y, float z,
@@ -201,7 +201,7 @@ public class CustomFontRenderer {
 
     public static void renderText(
             PoseStack matrices,
-            GeometrySink vertexConsumers,
+            MultiBufferSource vertexConsumers,
             String text,
             int color,
             float x, float y, float z,

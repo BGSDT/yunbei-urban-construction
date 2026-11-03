@@ -6,7 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 public interface RenderPlatform {
     enum LinePrimitive {
@@ -38,7 +38,7 @@ public interface RenderPlatform {
     void rotateX(PoseStack matrices, float degrees);
 
     void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
-                     PoseStack matrices, GeometrySink buffers, int backgroundColor, int light);
+                     PoseStack matrices, MultiBufferSource buffers, int backgroundColor, int light);
 
     void vertex(VertexConsumer consumer, PoseStack matrices, float x, float y, float z);
 

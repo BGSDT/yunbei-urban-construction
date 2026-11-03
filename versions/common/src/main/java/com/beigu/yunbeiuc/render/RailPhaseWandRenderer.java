@@ -17,7 +17,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -101,7 +101,7 @@ public final class RailPhaseWandRenderer {
         ApiCompat.disableDepthTest();
         ApiCompat.disableCull();
 
-        final GeometrySink buffers = new com.beigu.yunbeiuc.render.DeferredGeometry();
+        final MultiBufferSource.BufferSource buffers = client.renderBuffers().bufferSource();
         final RenderPlatform render = VersionServices.render();
 
         final List<CachedRail> visible = new ArrayList<>(rails.size());
@@ -156,7 +156,7 @@ public final class RailPhaseWandRenderer {
     }
 
     private static void drawLabel(PoseStack matrices, RenderPlatform render, Font font,
-                                  GeometrySink buffers, float billboardYaw,
+                                  MultiBufferSource buffers, float billboardYaw,
                                   double x, double y, double z, Component label, int argb) {
         matrices.pushPose();
         matrices.translate(x, y, z);

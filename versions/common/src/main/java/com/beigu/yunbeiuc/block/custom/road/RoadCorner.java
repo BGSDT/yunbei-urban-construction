@@ -10,60 +10,60 @@ public enum RoadCorner {
     NORTH_EAST(Direction.NORTH, Direction.EAST),
     SOUTH_EAST(Direction.SOUTH, Direction.EAST);
 
-    public final Direction dir1;
-    public final Direction dir2;
+    public final Direction side1;
+    public final Direction side2;
 
-    RoadCorner(Direction dir1, Direction dir2) {
-        this.dir1 = dir1;
-        this.dir2 = dir2;
+    RoadCorner(Direction side1, Direction side2) {
+        this.side1 = side1;
+        this.side2 = side2;
     }
 
-    public static RoadCorner of(Direction dir1, Direction dir2) {
+    public static RoadCorner of(Direction side1, Direction side2) {
         for (RoadCorner corner : values()) {
-            if ((corner.dir1 == dir1 && corner.dir2 == dir2) || (corner.dir1 == dir2 && corner.dir2 == dir1)) {
+            if ((corner.side1 == side1 && corner.side2 == side2) || (corner.side1 == side2 && corner.side2 == side1)) {
                 return corner;
             }
         }
         throw new IllegalArgumentException("There is no horizontal corner direction composed of "
-            + dir1.getSerializedName() + " " + dir2.getSerializedName() + ".");
+            + side1.getSerializedName() + " " + side2.getSerializedName() + ".");
     }
 
     public static RoadCorner of(Direction facing) {
         return of(facing, facing.getClockWise());
     }
 
-    public Direction facing() {
-        return dir1.getClockWise() == dir2 ? dir1 : dir2;
+    public Direction asFacing() {
+        return side1.getClockWise() == side2 ? side1 : side2;
     }
 
-    public Direction getDirectionInAxis(Direction.Axis axis) {
-        if (dir1.getAxis() == axis) {
-            return dir1;
+    public Direction dirInAxis(Direction.Axis axis) {
+        if (side1.getAxis() == axis) {
+            return side1;
         }
-        if (dir2.getAxis() == axis) {
-            return dir2;
+        if (side2.getAxis() == axis) {
+            return side2;
         }
         throw new IllegalStateException("Corner " + this.name() + " has no direction in axis " + axis.getSerializedName() + ".");
     }
 
-    public boolean hasDirection(Direction direction) {
-        return direction == dir1 || direction == dir2;
+    public boolean containsDir(Direction direction) {
+        return direction == side1 || direction == side2;
     }
 
-    public RoadCorner mirror(Mirror mirror) {
-        return of(mirror.mirror(dir1), mirror.mirror(dir2));
+    public RoadCorner mirrored(Mirror mirror) {
+        return of(mirror.mirror(side1), mirror.mirror(side2));
     }
 
-    public RoadCorner mirror(Direction direction) {
+    public RoadCorner mirrored(Direction direction) {
         final Mirror mirror = switch (direction.getAxis()) {
             case X -> Mirror.LEFT_RIGHT;
             case Z -> Mirror.FRONT_BACK;
             default -> Mirror.NONE;
         };
-        return mirror(mirror);
+        return mirrored(mirror);
     }
 
-    public RoadCorner rotate(Rotation rotation) {
-        return of(rotation.rotate(dir1), rotation.rotate(dir2));
+    public RoadCorner rotated(Rotation rotation) {
+        return of(rotation.rotate(side1), rotation.rotate(side2));
     }
 }

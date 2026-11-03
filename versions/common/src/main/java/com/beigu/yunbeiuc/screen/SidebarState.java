@@ -4,6 +4,7 @@ public final class SidebarState {
 
     public static final int NAV_NONE = -1;
     public static final int NAV_HOME = 0;
+    public static final int NAV_ACK = 1;
 
     private static boolean collapsed = false;
 
@@ -29,6 +30,7 @@ public final class SidebarState {
     public static void selectNavTop(int which) {
         PatternAndFontOverlay.navSelection = which;
         PatternAndFontOverlay.isHomeSelected = (which == NAV_HOME);
+        PatternAndFontOverlay.isAckSelected = (which == NAV_ACK);
         if (which != NAV_NONE) {
             PatternAndFontOverlay.selectedH2 = null;
             PatternAndFontOverlay.selectedH3 = null;
@@ -39,16 +41,19 @@ public final class SidebarState {
     public static void clearNavTop() {
         PatternAndFontOverlay.navSelection = NAV_NONE;
         PatternAndFontOverlay.isHomeSelected = false;
+        PatternAndFontOverlay.isAckSelected = false;
     }
 
     public static void enforceNavMutualExclusion() {
-        if (PatternAndFontOverlay.isHomeSelected) {
+        if (PatternAndFontOverlay.isHomeSelected || PatternAndFontOverlay.isAckSelected) {
             PatternAndFontOverlay.selectedH2 = null;
             PatternAndFontOverlay.selectedH3 = null;
-        } else if (PatternAndFontOverlay.navSelection == NAV_HOME
+        } else if ((PatternAndFontOverlay.navSelection == NAV_HOME
+                || PatternAndFontOverlay.navSelection == NAV_ACK)
                 && PatternAndFontOverlay.selectedH2 == null
                 && PatternAndFontOverlay.selectedH3 == null) {
-            PatternAndFontOverlay.isHomeSelected = true;
+            PatternAndFontOverlay.isHomeSelected = (PatternAndFontOverlay.navSelection == NAV_HOME);
+            PatternAndFontOverlay.isAckSelected = (PatternAndFontOverlay.navSelection == NAV_ACK);
         }
     }
 }

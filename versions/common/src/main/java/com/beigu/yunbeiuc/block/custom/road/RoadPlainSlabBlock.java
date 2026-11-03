@@ -2,7 +2,7 @@ package com.beigu.yunbeiuc.block.custom.road;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public class RoadPlainSlabBlock extends AbstractRoadSlabBlock {
+public class RoadPlainSlabBlock extends AbstractRoadSlabBase {
     public RoadPlainSlabBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }

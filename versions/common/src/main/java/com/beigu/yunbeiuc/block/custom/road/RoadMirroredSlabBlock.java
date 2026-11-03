@@ -2,7 +2,7 @@ package com.beigu.yunbeiuc.block.custom.road;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public class RoadMirroredSlabBlock extends AbstractRoadSlabBlock {
+public class RoadMirroredSlabBlock extends AbstractRoadSlabBase {
     public RoadMirroredSlabBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }

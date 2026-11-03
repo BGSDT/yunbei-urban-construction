@@ -2,7 +2,7 @@ package com.beigu.yunbeiuc.block.custom.road;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public class RoadAxisMirrorSlabBlock extends AbstractRoadSlabBlock implements AxisMirrorOriented {
+public class RoadAxisMirrorSlabBlock extends AbstractRoadSlabBase implements AxisMirrorOriented {
     private final Mode mode;
 
     public RoadAxisMirrorSlabBlock(BlockBehaviour.Properties properties, Mode mode) {

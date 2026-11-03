@@ -7,7 +7,7 @@ import com.beigu.yunbeiuc.block.custom.pole.RoadPoleFlag;
 import com.beigu.yunbeiuc.entity.FlagBlockEntity;
 import com.beigu.yunbeiuc.util.CustomFlag;
 import com.beigu.yunbeiuc.util.FlagLoader;
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.beigu.yunbeiuc.api.resource.Id;
@@ -22,7 +22,7 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
     }
 
     @Override
-    public void render(FlagBlockEntity entity, float tickDelta, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay) {
+    public void render(FlagBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         String flagId = entity.getFlagId();
         if (flagId == null || flagId.isEmpty()) return;
 
@@ -61,7 +61,7 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
         }
     }
 
-    private void renderTwoFaces(PoseStack matrices, GeometrySink vertexConsumers, Id texture,
+    private void renderTwoFaces(PoseStack matrices, MultiBufferSource vertexConsumers, Id texture,
                                 float width, float height, Direction facing, int light, int overlay) {
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(ApiCompat.entityCutout(IdAdapter.mc(texture)));
         PoseStack.Pose entry = matrices.last();

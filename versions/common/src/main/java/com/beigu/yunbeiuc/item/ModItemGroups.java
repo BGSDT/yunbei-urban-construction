@@ -18,7 +18,7 @@ public final class ModItemGroups {
 
     public static final CreativeTabHandle YUNBEIUC_SIGN_GROUP = VersionServices.creativeTabs().create(
             VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, "sign"),
-            () -> new ItemStack(ModItems.SIGN_SPEED_LILGPL V3_005.get()));
+            () -> new ItemStack(ModItems.SIGN_SPEED_LIMIT_005.get()));
 
     public static final CreativeTabHandle YUNBEIUC_WAND_GROUP = VersionServices.creativeTabs().create(
             VersionServices.resources().create(YunbeiUrbanConstruction.MOD_ID, "wand"),

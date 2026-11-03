@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -125,7 +125,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
     private static final ResourceLocation SLOW_GREEN = ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "textures/block/lights/slow_green.png");
 
     @Override
-    public void render(TrafficLightsBlockEntity entity, float tickDelta, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay) {
+    public void render(TrafficLightsBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         TrafficLightsBlockEntity.DirectionType directiontype = entity.getDirectionType();
 
         Direction facing = entity.getBlockState().getValue(TrafficLightsBlock.FACING);
@@ -148,7 +148,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         }
     }
 
-    private void renderPavementSeconds(TrafficLightsBlockEntity entity, PoseStack matrices, GeometrySink vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
+    private void renderPavementSeconds(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
@@ -216,7 +216,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.popPose();
     }
 
-    private void renderLogo(PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay, Direction facing, TrafficLightsBlockEntity.DirectionType directionType, TrafficLightsBlock.LightState lightState, Block currentBlock, TrafficLightsBlock.MountType mountType) {
+    private void renderLogo(PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Direction facing, TrafficLightsBlockEntity.DirectionType directionType, TrafficLightsBlock.LightState lightState, Block currentBlock, TrafficLightsBlock.MountType mountType) {
         ResourceLocation texture;
 
         if (directionType == TrafficLightsBlockEntity.DirectionType.COLOR_FLASH) {
@@ -417,7 +417,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.popPose();
     }
 
-    private void renderPhaseText(TrafficLightsBlockEntity entity, PoseStack matrices, GeometrySink vertexConsumers, int light, Block currentBlock) {
+    private void renderPhaseText(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Block currentBlock) {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
 
@@ -495,7 +495,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.popPose();
     }
 
-    private void renderText(TrafficLightsBlockEntity entity, PoseStack matrices, GeometrySink vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
+    private void renderText(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
 
@@ -576,7 +576,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.popPose();
     }
 
-    private void renderTimeText(TrafficLightsBlockEntity entity, PoseStack matrices, GeometrySink vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
+    private void renderTimeText(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
         boolean isTaipei = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();

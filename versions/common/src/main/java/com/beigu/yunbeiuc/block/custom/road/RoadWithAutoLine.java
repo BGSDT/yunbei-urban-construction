@@ -35,11 +35,11 @@ public abstract class RoadWithAutoLine extends BlockCompat {
 
     private static final int PAIRED_COLOR_LEVEL = 3;
 
-    protected final RoadAutoLineType type;
+    protected final AutoMarkMode mode;
 
-    protected RoadWithAutoLine(BlockBehaviour.Properties properties, RoadAutoLineType type) {
+    protected RoadWithAutoLine(BlockBehaviour.Properties properties, AutoMarkMode mode) {
         super(properties);
-        this.type = type;
+        this.mode = mode;
     }
 
     @Override
@@ -60,7 +60,7 @@ public abstract class RoadWithAutoLine extends BlockCompat {
             && !Direction.Plane.VERTICAL.test(hit.getDirection())) {
             return InteractionResult.PASS;
         }
-        world.setBlock(pos, tryMakeState(this.type, getConnectionStateMap(world, pos), state, pos), 2);
+        world.setBlock(pos, attemptState(this.mode, collectLinkStates(world, pos), state, pos), 2);
         return InteractionResult.SUCCESS;
     }
 
@@ -70,14 +70,14 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         if (!sourcePos.equals(pos.above())
             && !sourcePos.equals(pos.below())
             && !(world.getBlockState(sourcePos).getBlock() instanceof AirBlock)) {
-            world.setBlock(pos, tryMakeState(this.type, getConnectionStateMap(world, pos), state, pos), 2);
+            world.setBlock(pos, attemptState(this.mode, collectLinkStates(world, pos), state, pos), 2);
         }
     }
 
-    static BlockState makeState(RoadAutoLineType type, EnumMap<Direction, RoadConnectionState> connectionStateMap, BlockState defaultState) {
+    static BlockState buildState(AutoMarkMode mode, EnumMap<Direction, RoadLinkState> linkStates, BlockState defaultState) {
         int connected = 0;
-        for (Map.Entry<Direction, RoadConnectionState> e : connectionStateMap.entrySet()) {
-            if (e.getValue().mayConnect()) {
+        for (Map.Entry<Direction, RoadLinkState> e : linkStates.entrySet()) {
+            if (e.getValue().canLink()) {
                 connected++;
             }
         }
@@ -85,13 +85,13 @@ public abstract class RoadWithAutoLine extends BlockCompat {
             case 0:
                 return RoadBlocks.ROAD_BLOCK.get().defaultBlockState();
             case 4: {
-                final int sumYellow = connectionStateMap.values().stream().mapToInt(state -> state.lineColor() == LineColor.YELLOW ? 1 : 0).sum();
+                final int sumYellow = linkStates.values().stream().mapToInt(st -> st.markColor() == MarkColor.YELLOW ? 1 : 0).sum();
                 final boolean yellow = sumYellow >= 2;
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
-                    final EightHorizontalDirection direction1 = connectionStateMap.get(direction.getClockWise()).direction();
-                    final EightHorizontalDirection direction2 = connectionStateMap.get(direction.getCounterClockWise()).direction();
-                    if (direction1.right().map(cornerDirection -> cornerDirection.hasDirection(direction)).orElse(false)
-                        && direction2.right().map(cornerDirection -> cornerDirection.hasDirection(direction)).orElse(false)) {
+                    final RoadDir8 cwDir = linkStates.get(direction.getClockWise()).dir();
+                    final RoadDir8 ccwDir = linkStates.get(direction.getCounterClockWise()).dir();
+                    if (cwDir.corner().map(cd -> cd.containsDir(direction)).orElse(false)
+                        && ccwDir.corner().map(cd -> cd.containsDir(direction)).orElse(false)) {
                         return RoadOrientation.align(
                             (yellow ? RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE : RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE).get(),
                             direction);
@@ -100,159 +100,159 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                 return (yellow ? RoadBlocks.ROAD_WITH_YELLOW_CROSS_LINE : RoadBlocks.ROAD_WITH_WHITE_CROSS_LINE).get().defaultBlockState();
             }
             case 2:
-                for (Map.Entry<Direction, RoadConnectionState> entry : connectionStateMap.entrySet()) {
-                    final RoadConnectionState connectionState = entry.getValue();
-                    if (!connectionState.mayConnect()) {
+                for (Map.Entry<Direction, RoadLinkState> entry : linkStates.entrySet()) {
+                    final RoadLinkState linkState = entry.getValue();
+                    if (!linkState.canLink()) {
                         continue;
                     }
                     final Direction direction = entry.getKey();
 
-                    final Direction adjacentDirection;
-                    final RoadConnectionState adjacentState;
-                    if (connectionStateMap.get(direction.getOpposite()).mayConnect()) {
-                        adjacentDirection = direction.getOpposite();
-                    } else if (connectionStateMap.get(direction.getClockWise()).mayConnect()) {
-                        adjacentDirection = direction.getClockWise();
+                    final Direction neighborDir;
+                    final RoadLinkState neighborState;
+                    if (linkStates.get(direction.getOpposite()).canLink()) {
+                        neighborDir = direction.getOpposite();
+                    } else if (linkStates.get(direction.getClockWise()).canLink()) {
+                        neighborDir = direction.getClockWise();
                     } else {
-                        adjacentDirection = direction.getCounterClockWise();
+                        neighborDir = direction.getCounterClockWise();
                     }
-                    adjacentState = connectionStateMap.get(adjacentDirection);
+                    neighborState = linkStates.get(neighborDir);
 
-                    if (adjacentDirection == direction.getOpposite()) {
-                        final LineColor color;
-                        if (connectionState.lineColor() == adjacentState.lineColor()) {
-                            color = connectionState.lineColor();
-                        } else if (connectionState.lineColor() == LineColor.UNKNOWN) {
-                            color = adjacentState.lineColor();
-                        } else if (adjacentState.lineColor() == LineColor.UNKNOWN) {
-                            color = connectionState.lineColor();
+                    if (neighborDir == direction.getOpposite()) {
+                        final MarkColor color;
+                        if (linkState.markColor() == neighborState.markColor()) {
+                            color = linkState.markColor();
+                        } else if (linkState.markColor() == MarkColor.UNKNOWN) {
+                            color = neighborState.markColor();
+                        } else if (neighborState.markColor() == MarkColor.UNKNOWN) {
+                            color = linkState.markColor();
                         } else {
-                            color = maxEnum(connectionState.lineColor(), adjacentState.lineColor());
+                            color = maxEnum(linkState.markColor(), neighborState.markColor());
                         }
-                        final LineType lineType;
-                        if (connectionState.lineType() == adjacentState.lineType()) {
-                            lineType = connectionState.lineType();
-                        } else if (connectionState.sureConnect() == adjacentState.sureConnect()) {
-                            lineType = maxEnum(connectionState.lineType(), adjacentState.lineType());
+                        final MarkPattern markPattern;
+                        if (linkState.markPattern() == neighborState.markPattern()) {
+                            markPattern = linkState.markPattern();
+                        } else if (linkState.isConfirmed() == neighborState.isConfirmed()) {
+                            markPattern = maxEnum(linkState.markPattern(), neighborState.markPattern());
                         } else {
-                            lineType = connectionState.sureConnect() ? connectionState.lineType() : adjacentState.lineType();
+                            markPattern = linkState.isConfirmed() ? linkState.markPattern() : neighborState.markPattern();
                         }
 
-                        if (connectionState.offsetLevel() != 0 && (adjacentState.offsetLevel() != 0 || !adjacentState.sureConnect())) {
-                            if ((connectionState.offsetDirection() == adjacentState.offsetDirection() && connectionState.offsetLevel() == adjacentState.offsetLevel() || !adjacentState.sureConnect())) {
-                                return composeOffsetStraightLine(connectionState.offsetDirection(), connectionState.offsetLevel(), color);
+                        if (linkState.shiftAmount() != 0 && (neighborState.shiftAmount() != 0 || !neighborState.isConfirmed())) {
+                            if ((linkState.shiftDir() == neighborState.shiftDir() && linkState.shiftAmount() == neighborState.shiftAmount() || !neighborState.isConfirmed())) {
+                                return buildShiftedStraight(linkState.shiftDir(), linkState.shiftAmount(), color);
                             }
-                        } else if (!connectionState.sureConnect() && adjacentState.offsetLevel() != 0) {
+                        } else if (!linkState.isConfirmed() && neighborState.shiftAmount() != 0) {
                             continue;
                         }
 
                         return RoadOrientation.align((switch (color) {
-                            case YELLOW -> switch (lineType) {
-                                case DOUBLE -> RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE;
-                                case THICK -> RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE;
+                            case YELLOW -> switch (markPattern) {
+                                case PAIRED -> RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE;
+                                case WIDE -> RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE;
                                 default -> RoadBlocks.ROAD_WITH_YELLOW_LINE;
                             };
-                            default -> switch (lineType) {
-                                case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE;
-                                case THICK -> RoadBlocks.ROAD_WITH_WHITE_THICK_LINE;
+                            default -> switch (markPattern) {
+                                case PAIRED -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE;
+                                case WIDE -> RoadBlocks.ROAD_WITH_WHITE_THICK_LINE;
                                 default -> RoadBlocks.ROAD_WITH_WHITE_LINE;
                             };
                         }).get().defaultBlockState(), direction);
                     } else {
-                        if (type == RoadAutoLineType.RIGHT_ANGLE) {
-                            if (connectionState.lineColor() == adjacentState.lineColor() || adjacentState.lineColor() == LineColor.UNKNOWN) {
-                                if (connectionState.offsetLevel() == 2
-                                    && (connectionState.offsetLevel() == adjacentState.offsetLevel() && (connectionState.offsetDirection() == adjacentDirection) == (adjacentState.offsetDirection() == direction) || !adjacentState.sureConnect())) {
-                                    return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), RoadCorner.of(direction, adjacentDirection), connectionState.offsetDirection() == adjacentDirection, type);
-                                } else if (connectionState.offsetLevel() == 2 && adjacentState.offsetLevel() != 2) {
-                                    return composeAngleLineWithOnePartOffset(connectionState.lineColor(), RoadCorner.of(direction, adjacentDirection), adjacentDirection.getAxis(), connectionState.offsetDirection() == adjacentDirection);
-                                } else if (connectionState.offsetLevel() != 2 && adjacentState.offsetLevel() == 2) {
+                        if (mode == AutoMarkMode.CROSS) {
+                            if (linkState.markColor() == neighborState.markColor() || neighborState.markColor() == MarkColor.UNKNOWN) {
+                                if (linkState.shiftAmount() == 2
+                                    && (linkState.shiftAmount() == neighborState.shiftAmount() && (linkState.shiftDir() == neighborDir) == (neighborState.shiftDir() == direction) || !neighborState.isConfirmed())) {
+                                    return buildAngleTwoPartShift(linkState.markColor(), RoadCorner.of(direction, neighborDir), linkState.shiftDir() == neighborDir, mode);
+                                } else if (linkState.shiftAmount() == 2 && neighborState.shiftAmount() != 2) {
+                                    return buildAngleOnePartShift(linkState.markColor(), RoadCorner.of(direction, neighborDir), neighborDir.getAxis(), linkState.shiftDir() == neighborDir);
+                                } else if (linkState.shiftAmount() != 2 && neighborState.shiftAmount() == 2) {
                                     continue;
                                 }
                             }
 
-                            if (connectionState.lineColor() == LineColor.YELLOW && adjacentState.lineColor() == LineColor.WHITE) {
+                            if (linkState.markColor() == MarkColor.YELLOW && neighborState.markColor() == MarkColor.WHITE) {
                                 continue;
-                            } else if (connectionState.lineColor() == LineColor.WHITE && adjacentState.lineColor() == LineColor.YELLOW) {
+                            } else if (linkState.markColor() == MarkColor.WHITE && neighborState.markColor() == MarkColor.YELLOW) {
                                 final Block block;
-                                if (connectionState.lineType() == LineType.THICK && adjacentState.lineType() == LineType.DOUBLE) {
+                                if (linkState.markPattern() == MarkPattern.WIDE && neighborState.markPattern() == MarkPattern.PAIRED) {
                                     block = RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE.get();
-                                } else if (adjacentState.lineType() == LineType.DOUBLE) {
+                                } else if (neighborState.markPattern() == MarkPattern.PAIRED) {
                                     block = RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE.get();
-                                } else if (connectionState.lineType() == LineType.THICK) {
+                                } else if (linkState.markPattern() == MarkPattern.WIDE) {
                                     block = RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE.get();
                                 } else {
                                     block = RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE.get();
                                 }
-                                return RoadOrientation.align(block, adjacentDirection, direction.getClockWise() == adjacentDirection);
-                            } else if (connectionState.lineColor() == LineColor.WHITE && adjacentState.lineColor() == LineColor.WHITE) {
-                                if (connectionState.lineType() == LineType.THICK && adjacentState.lineType() == LineType.NORMAL) {
-                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), adjacentDirection, direction.getClockWise() == adjacentDirection);
-                                } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.THICK) {
-                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), direction, adjacentDirection.getClockWise() == direction);
-                                } else if (connectionState.lineType() == LineType.NORMAL && adjacentState.lineType() == LineType.NORMAL) {
-                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get(), cornerToFacing(RoadCorner.of(direction, adjacentDirection)));
+                                return RoadOrientation.align(block, neighborDir, direction.getClockWise() == neighborDir);
+                            } else if (linkState.markColor() == MarkColor.WHITE && neighborState.markColor() == MarkColor.WHITE) {
+                                if (linkState.markPattern() == MarkPattern.WIDE && neighborState.markPattern() == MarkPattern.SOLID) {
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), neighborDir, direction.getClockWise() == neighborDir);
+                                } else if (linkState.markPattern() == MarkPattern.SOLID && neighborState.markPattern() == MarkPattern.WIDE) {
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), direction, neighborDir.getClockWise() == direction);
+                                } else if (linkState.markPattern() == MarkPattern.SOLID && neighborState.markPattern() == MarkPattern.SOLID) {
+                                    return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get(), cornerToFacing(RoadCorner.of(direction, neighborDir)));
                                 }
                             }
                         }
 
-                        if (connectionState.lineColor() == adjacentState.lineColor() || adjacentState.lineColor() == LineColor.UNKNOWN) {
-                            final LineType lineType = connectionState.sureConnect() && adjacentState.sureConnect() ? minEnum(connectionState.lineType(), adjacentState.lineType()) : connectionState.sureConnect() ? connectionState.lineType() : adjacentState.lineType();
+                        if (linkState.markColor() == neighborState.markColor() || neighborState.markColor() == MarkColor.UNKNOWN) {
+                            final MarkPattern markPattern = linkState.isConfirmed() && neighborState.isConfirmed() ? minEnum(linkState.markPattern(), neighborState.markPattern()) : linkState.isConfirmed() ? linkState.markPattern() : neighborState.markPattern();
 
-                            if (connectionState.offsetLevel() == 2) {
-                                boolean isInwards = connectionState.offsetDirection() == adjacentDirection;
-                                if ((adjacentState.offsetLevel() == 2 &&
-                                    (adjacentState.offsetDirection() == direction) == isInwards
-                                    || !adjacentState.sureConnect())) {
-                                    return composeAngleLineWithTwoPartsOffset(connectionState.lineColor(), RoadCorner.of(direction, adjacentDirection), isInwards, type);
+                            if (linkState.shiftAmount() == 2) {
+                                boolean inward = linkState.shiftDir() == neighborDir;
+                                if ((neighborState.shiftAmount() == 2 &&
+                                    (neighborState.shiftDir() == direction) == inward
+                                    || !neighborState.isConfirmed())) {
+                                    return buildAngleTwoPartShift(linkState.markColor(), RoadCorner.of(direction, neighborDir), inward, mode);
                                 }
                             }
 
-                            return RoadOrientation.align((switch (connectionState.lineColor()) {
-                                case YELLOW -> switch (type) {
-                                    case BEVEL -> switch (lineType) {
-                                        case DOUBLE -> RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE;
-                                        case THICK -> RoadBlocks.ROAD_WITH_YELLOW_BEVEL_THICK_LINE;
+                            return RoadOrientation.align((switch (linkState.markColor()) {
+                                case YELLOW -> switch (mode) {
+                                    case DIAGONAL -> switch (markPattern) {
+                                        case PAIRED -> RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE;
+                                        case WIDE -> RoadBlocks.ROAD_WITH_YELLOW_BEVEL_THICK_LINE;
                                         default -> RoadBlocks.ROAD_WITH_YELLOW_BEVEL_LINE;
                                     };
-                                    case RIGHT_ANGLE -> RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE;
+                                    case CROSS -> RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE;
                                 };
-                                case WHITE, NONE, UNKNOWN -> switch (type) {
-                                    case BEVEL -> switch (lineType) {
-                                        case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE;
-                                        case THICK -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_THICK_LINE;
+                                case WHITE, NONE, UNKNOWN -> switch (mode) {
+                                    case DIAGONAL -> switch (markPattern) {
+                                        case PAIRED -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE;
+                                        case WIDE -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_THICK_LINE;
                                         default -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE;
                                     };
-                                    case RIGHT_ANGLE -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
+                                    case CROSS -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
                                 };
-                            }).get(), cornerToFacing(RoadCorner.of(direction, adjacentDirection)));
-                        } else if (connectionState.lineColor() == LineColor.UNKNOWN) {
+                            }).get(), cornerToFacing(RoadCorner.of(direction, neighborDir)));
+                        } else if (linkState.markColor() == MarkColor.UNKNOWN) {
                             continue;
                         }
 
-                        return RoadOrientation.align((switch (type) {
-                            case BEVEL -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE;
-                            case RIGHT_ANGLE -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
-                        }).get(), cornerToFacing(RoadCorner.of(direction, adjacentDirection)));
+                        return RoadOrientation.align((switch (mode) {
+                            case DIAGONAL -> RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE;
+                            case CROSS -> RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE;
+                        }).get(), cornerToFacing(RoadCorner.of(direction, neighborDir)));
                     }
                 }
                 return defaultState;
             case 1:
-                for (Map.Entry<Direction, RoadConnectionState> entry : connectionStateMap.entrySet()) {
-                    final RoadConnectionState connectionState = entry.getValue();
-                    if (connectionState.mayConnect()) {
-                        if (connectionState.offsetLevel() != 0) {
-                            return composeOffsetStraightLine(connectionState.offsetDirection(), connectionState.offsetLevel(), connectionState.lineColor());
+                for (Map.Entry<Direction, RoadLinkState> entry : linkStates.entrySet()) {
+                    final RoadLinkState linkState = entry.getValue();
+                    if (linkState.canLink()) {
+                        if (linkState.shiftAmount() != 0) {
+                            return buildShiftedStraight(linkState.shiftDir(), linkState.shiftAmount(), linkState.markColor());
                         }
-                        return RoadOrientation.align((switch (connectionState.lineColor()) {
-                            case YELLOW -> switch (connectionState.lineType()) {
-                                case THICK -> RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE;
-                                case DOUBLE -> RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE;
+                        return RoadOrientation.align((switch (linkState.markColor()) {
+                            case YELLOW -> switch (linkState.markPattern()) {
+                                case WIDE -> RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE;
+                                case PAIRED -> RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE;
                                 default -> RoadBlocks.ROAD_WITH_YELLOW_LINE;
                             };
-                            default -> switch (connectionState.lineType()) {
-                                case THICK -> RoadBlocks.ROAD_WITH_WHITE_THICK_LINE;
-                                case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE;
+                            default -> switch (linkState.markPattern()) {
+                                case WIDE -> RoadBlocks.ROAD_WITH_WHITE_THICK_LINE;
+                                case PAIRED -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE;
                                 default -> RoadBlocks.ROAD_WITH_WHITE_LINE;
                             };
                         }).get(), entry.getKey());
@@ -260,102 +260,102 @@ public abstract class RoadWithAutoLine extends BlockCompat {
                 }
                 return defaultState;
             case 3:
-                for (Map.Entry<Direction, RoadConnectionState> entry : connectionStateMap.entrySet()) {
-                    final RoadConnectionState unconnectedState = entry.getValue();
-                    if (unconnectedState.mayConnect()) {
+                for (Map.Entry<Direction, RoadLinkState> entry : linkStates.entrySet()) {
+                    final RoadLinkState noLinkState = entry.getValue();
+                    if (noLinkState.canLink()) {
                         continue;
                     }
 
-                    final Direction unconnectedDirection = entry.getKey();
-                    final Direction facingDirection = unconnectedDirection.getOpposite();
-                    final RoadConnectionState facingState = connectionStateMap.get(facingDirection);
-                    if (facingState.direction() == null
-                        || facingState.direction().left().isPresent()
-                        || type != RoadAutoLineType.BEVEL) {
-                        final RoadConnectionState stateLeft = connectionStateMap.get(facingDirection.getCounterClockWise());
-                        final RoadConnectionState stateRight = connectionStateMap.get(facingDirection.getClockWise());
+                    final Direction noLinkDir = entry.getKey();
+                    final Direction facingDir = noLinkDir.getOpposite();
+                    final RoadLinkState facingState = linkStates.get(facingDir);
+                    if (facingState.dir() == null
+                        || facingState.dir().cardinal().isPresent()
+                        || mode != AutoMarkMode.DIAGONAL) {
+                        final RoadLinkState stateLeft = linkStates.get(facingDir.getCounterClockWise());
+                        final RoadLinkState stateRight = linkStates.get(facingDir.getClockWise());
 
-                        if (type == RoadAutoLineType.BEVEL
-                            && stateLeft.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)
-                            && stateRight.direction().right().map(cornerDirection -> cornerDirection.hasDirection(facingDirection)).orElse(false)) {
-                            if (facingState.lineColor() == LineColor.YELLOW && (stateLeft.lineColor() == LineColor.YELLOW || stateRight.lineColor() == LineColor.YELLOW)) {
-                                return RoadOrientation.align(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get(), facingDirection);
+                        if (mode == AutoMarkMode.DIAGONAL
+                            && stateLeft.dir().corner().map(cd -> cd.containsDir(facingDir)).orElse(false)
+                            && stateRight.dir().corner().map(cd -> cd.containsDir(facingDir)).orElse(false)) {
+                            if (facingState.markColor() == MarkColor.YELLOW && (stateLeft.markColor() == MarkColor.YELLOW || stateRight.markColor() == MarkColor.YELLOW)) {
+                                return RoadOrientation.align(RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get(), facingDir);
                             } else {
-                                return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get(), facingDirection);
+                                return RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get(), facingDir);
                             }
                         }
 
-                        final LineOffset facingOffset = facingState.lineOffset();
-                        if (stateLeft.lineColor() == stateRight.lineColor() && stateLeft.lineType() == stateRight.lineType()) {
-                            if (stateLeft.lineColor() != facingState.lineColor() && facingState.lineColor() != LineColor.UNKNOWN) {
-                                if (stateLeft.lineColor() == LineColor.WHITE && facingState.lineColor() == LineColor.YELLOW) {
-                                    final Block block = switch (stateLeft.lineType()) {
-                                        case THICK -> (facingState.lineType() == LineType.DOUBLE ? RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE.get());
-                                        default -> (facingState.lineType() == LineType.DOUBLE ? RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE.get());
+                        final MarkShift facingShift = facingState.markShift();
+                        if (stateLeft.markColor() == stateRight.markColor() && stateLeft.markPattern() == stateRight.markPattern()) {
+                            if (stateLeft.markColor() != facingState.markColor() && facingState.markColor() != MarkColor.UNKNOWN) {
+                                if (stateLeft.markColor() == MarkColor.WHITE && facingState.markColor() == MarkColor.YELLOW) {
+                                    final Block block = switch (stateLeft.markPattern()) {
+                                        case WIDE -> (facingState.markPattern() == MarkPattern.PAIRED ? RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE.get());
+                                        default -> (facingState.markPattern() == MarkPattern.PAIRED ? RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE.get());
                                     };
-                                    return composeJointLine(block, facingDirection, facingOffset);
+                                    return buildTJunction(block, facingDir, facingShift);
                                 }
-                                if (stateLeft.lineColor() == LineColor.YELLOW && facingState.lineColor() == LineColor.WHITE) {
-                                    return composeJointLine(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), facingDirection, facingOffset);
+                                if (stateLeft.markColor() == MarkColor.YELLOW && facingState.markColor() == MarkColor.WHITE) {
+                                    return buildTJunction(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), facingDir, facingShift);
                                 } else {
-                                    return composeJointLine(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), facingDirection, facingOffset);
+                                    return buildTJunction(RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), facingDir, facingShift);
                                 }
                             } else {
-                                if (facingState.lineColor() == LineColor.YELLOW || (facingState.lineColor() == LineColor.UNKNOWN && stateLeft.lineColor() == LineColor.YELLOW)) {
-                                    return composeJointLine(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), facingDirection, facingOffset);
+                                if (facingState.markColor() == MarkColor.YELLOW || (facingState.markColor() == MarkColor.UNKNOWN && stateLeft.markColor() == MarkColor.YELLOW)) {
+                                    return buildTJunction(RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), facingDir, facingShift);
                                 } else {
-                                    final Block block = switch (facingState.lineType()) {
-                                        case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE.get();
-                                        case THICK -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_THICK_LINE.get();
-                                        default -> switch (stateLeft.lineType()) {
-                                            case DOUBLE -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE.get();
-                                            case THICK -> RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE.get();
+                                    final Block block = switch (facingState.markPattern()) {
+                                        case PAIRED -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE.get();
+                                        case WIDE -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_THICK_LINE.get();
+                                        default -> switch (stateLeft.markPattern()) {
+                                            case PAIRED -> RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE.get();
+                                            case WIDE -> RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE.get();
                                             default -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get();
                                         };
                                     };
-                                    return composeJointLine(block, facingDirection, facingOffset);
+                                    return buildTJunction(block, facingDir, facingShift);
                                 }
                             }
                         } else {
-                            final Block block = switch (facingState.lineColor()) {
+                            final Block block = switch (facingState.markColor()) {
                                 case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get();
                                 case WHITE, UNKNOWN, NONE -> RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get();
                             };
-                            return composeJointLine(block, facingDirection, facingOffset);
+                            return buildTJunction(block, facingDir, facingShift);
                         }
-                    } else if (facingState.direction().right().isPresent()) {
-                        final RoadCorner facingStateDirection = facingState.direction().right().get();
+                    } else if (facingState.dir().corner().isPresent()) {
+                        final RoadCorner facingStateDir = facingState.dir().corner().get();
 
-                        final Direction bevelConDirection = facingStateDirection.getDirectionInAxis(facingDirection.getClockWise().getAxis());
-                        final RoadConnectionState bevelConState = connectionStateMap.get(bevelConDirection);
-                        final Direction bevelNonDirection = bevelConDirection.getOpposite();
-                        final RoadConnectionState bevelNonState = connectionStateMap.get(bevelNonDirection);
+                        final Direction diagConDir = facingStateDir.dirInAxis(facingDir.getClockWise().getAxis());
+                        final RoadLinkState diagConState = linkStates.get(diagConDir);
+                        final Direction diagNonDir = diagConDir.getOpposite();
+                        final RoadLinkState diagNonState = linkStates.get(diagNonDir);
                         final Block block;
-                        if (facingState.lineColor() == LineColor.YELLOW) {
-                            if (bevelNonState.lineColor() == LineColor.WHITE && bevelNonState.lineType() == LineType.THICK
-                                && (bevelConState.lineColor() == LineColor.WHITE && bevelConState.lineType() == LineType.THICK
-                                || bevelConState.lineColor() == LineColor.YELLOW)) {
+                        if (facingState.markColor() == MarkColor.YELLOW) {
+                            if (diagNonState.markColor() == MarkColor.WHITE && diagNonState.markPattern() == MarkPattern.WIDE
+                                && (diagConState.markColor() == MarkColor.WHITE && diagConState.markPattern() == MarkPattern.WIDE
+                                || diagConState.markColor() == MarkColor.YELLOW)) {
                                 block = RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE.get();
-                            } else if (bevelNonState.lineColor() == LineColor.YELLOW && bevelNonState.lineType() == LineType.THICK && bevelConState.lineColor() == LineColor.YELLOW) {
+                            } else if (diagNonState.markColor() == MarkColor.YELLOW && diagNonState.markPattern() == MarkPattern.WIDE && diagConState.markColor() == MarkColor.YELLOW) {
                                 block = RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE.get();
-                            } else if (bevelNonState.lineColor() == LineColor.WHITE) {
+                            } else if (diagNonState.markColor() == MarkColor.WHITE) {
                                 block = RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_YELLOW_LINE.get();
                             } else {
                                 block = RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_LINE.get();
                             }
                         } else {
-                            if (bevelNonState.lineColor() == LineColor.YELLOW && bevelNonState.lineType() == LineType.THICK
-                                && (bevelConState.lineColor() != LineColor.YELLOW || bevelConState.lineType() == LineType.THICK)) {
+                            if (diagNonState.markColor() == MarkColor.YELLOW && diagNonState.markPattern() == MarkPattern.WIDE
+                                && (diagConState.markColor() != MarkColor.YELLOW || diagConState.markPattern() == MarkPattern.WIDE)) {
                                 block = RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE.get();
-                            } else if (bevelNonState.lineType() == LineType.THICK && bevelConState.lineColor() != LineColor.YELLOW) {
+                            } else if (diagNonState.markPattern() == MarkPattern.WIDE && diagConState.markColor() != MarkColor.YELLOW) {
                                 block = RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE.get();
-                            } else if (bevelNonState.lineColor() == LineColor.YELLOW) {
+                            } else if (diagNonState.markColor() == MarkColor.YELLOW) {
                                 block = RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_WHITE_LINE.get();
                             } else {
                                 block = RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE.get();
                             }
                         }
-                        return RoadOrientation.align(block, bevelConDirection);
+                        return RoadOrientation.align(block, diagConDir);
                     }
                 }
                 return defaultState;
@@ -364,21 +364,21 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         }
     }
 
-    static BlockState tryMakeState(RoadAutoLineType type, EnumMap<Direction, RoadConnectionState> connectionStateMap, BlockState defaultState, BlockPos pos) {
+    static BlockState attemptState(AutoMarkMode mode, EnumMap<Direction, RoadLinkState> linkStates, BlockState defaultState, BlockPos pos) {
         try {
-            return makeState(type, connectionStateMap, defaultState);
+            return buildState(mode, linkStates, defaultState);
         } catch (Throwable throwable) {
             LOGGER.error("An error was found when converting road block at {}:", pos, throwable);
             return defaultState;
         }
     }
 
-    private static BlockState composeJointLine(Block block, Direction facingDirection, LineOffset facingOffset) {
-        if (facingOffset != null && facingOffset.level() == 2 && getOffsetTRoads().containsKey(block)) {
+    private static BlockState buildTJunction(Block block, Direction facingDir, MarkShift facingShift) {
+        if (facingShift != null && facingShift.shiftAmount() == 2 && getOffsetTRoads().containsKey(block)) {
             final Block offsetSide = getOffsetTRoads().get(block);
-            return RoadOrientation.align(offsetSide, facingOffset.offsetDirection().getCounterClockWise());
+            return RoadOrientation.align(offsetSide, facingShift.shiftDir().getCounterClockWise());
         } else {
-            return RoadOrientation.align(block, facingDirection);
+            return RoadOrientation.align(block, facingDir);
         }
     }
 
@@ -398,315 +398,315 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         );
     }
 
-    private static BlockState composeAngleLineWithOnePartOffset(LineColor lineColor, RoadCorner facing, Direction.Axis axis, boolean isInwards) {
+    private static BlockState buildAngleOnePartShift(MarkColor markColor, RoadCorner facing, Direction.Axis axis, boolean inward) {
         final Block block;
-        block = switch (lineColor) {
-            case YELLOW -> (isInwards ? RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_OUT.get());
-            default -> (isInwards ? RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_OUT.get());
+        block = switch (markColor) {
+            case YELLOW -> (inward ? RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_OUT.get());
+            default -> (inward ? RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_IN.get() : RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_OUT.get());
         };
-        return RoadOrientation.align(block, facing.getDirectionInAxis(axis));
+        return RoadOrientation.align(block, facing.dirInAxis(axis));
     }
 
-    private static BlockState composeAngleLineWithTwoPartsOffset(LineColor lineColor, RoadCorner facing, boolean isInwards, RoadAutoLineType type) {
+    private static BlockState buildAngleTwoPartShift(MarkColor markColor, RoadCorner facing, boolean inward, AutoMarkMode mode) {
         final Block block;
-        if (type == RoadAutoLineType.RIGHT_ANGLE) {
-            block = switch (lineColor) {
-                case YELLOW -> (isInwards ? RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_RIGHTANGLE_LINE.get());
-                default -> (isInwards ? RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_RIGHTANGLE_LINE.get());
+        if (mode == AutoMarkMode.CROSS) {
+            block = switch (markColor) {
+                case YELLOW -> (inward ? RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_RIGHTANGLE_LINE.get());
+                default -> (inward ? RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_RIGHTANGLE_LINE.get());
             };
         } else {
-            block = switch (lineColor) {
-                case YELLOW -> (isInwards ? RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get());
-                default -> (isInwards ? RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get());
+            block = switch (markColor) {
+                case YELLOW -> (inward ? RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get());
+                default -> (inward ? RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get() : RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get());
             };
         }
         return RoadOrientation.align(block, cornerToFacing(facing));
     }
 
-    private static BlockState composeOffsetStraightLine(Direction offsetDirection, int offsetLevel, LineColor color) {
-        return switch (offsetLevel) {
-            case PAIRED_COLOR_LEVEL -> RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get(), offsetDirection.getClockWise());
+    private static BlockState buildShiftedStraight(Direction shiftDir, int shiftAmount, MarkColor color) {
+        return switch (shiftAmount) {
+            case PAIRED_COLOR_LEVEL -> RoadOrientation.align(RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get(), shiftDir.getClockWise());
             case 2 -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_OFFSET_LINE.get();
                 };
-                yield RoadOrientation.align(block, offsetDirection.getClockWise());
+                yield RoadOrientation.align(block, shiftDir.getClockWise());
             }
             case 1 -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE.get();
                 };
-                yield RoadOrientation.align(block, offsetDirection.getClockWise());
+                yield RoadOrientation.align(block, shiftDir.getClockWise());
             }
             default -> {
                 final Block block = switch (color) {
                     case YELLOW -> RoadBlocks.ROAD_WITH_YELLOW_LINE.get();
                     default -> RoadBlocks.ROAD_WITH_WHITE_LINE.get();
                 };
-                yield RoadOrientation.align(block, dirForAxis(offsetDirection.getClockWise().getAxis()));
+                yield RoadOrientation.align(block, dirForAxis(shiftDir.getClockWise().getAxis()));
             }
         };
     }
 
-    static EnumMap<Direction, RoadConnectionState> getConnectionStateMap(LevelAccessor world, BlockPos pos0) {
-        final EnumMap<Direction, RoadConnectionState> connectionStateMap = new EnumMap<>(Direction.class);
+    static EnumMap<Direction, RoadLinkState> collectLinkStates(LevelAccessor world, BlockPos pos0) {
+        final EnumMap<Direction, RoadLinkState> linkStates = new EnumMap<>(Direction.class);
         for (Direction direction : Direction.Plane.HORIZONTAL) {
-            RoadConnectionState state = null;
+            RoadLinkState state = null;
             for (BlockPos pos : new BlockPos[]{pos0, pos0.above(), pos0.below()}) {
                 final BlockState nextState = world.getBlockState(pos.relative(direction, 1));
-                final RoadLineInfo info = getBlockInfo().get(nextState.getBlock());
+                final RoadBlockInfo info = getBlockInfo().get(nextState.getBlock());
                 if (info != null) {
-                    state = info.getValue(nextState, direction.getOpposite());
+                    state = info.read(nextState, direction.getOpposite());
                     break;
                 }
             }
-            connectionStateMap.put(direction, state == null ? RoadConnectionState.empty() : state);
+            linkStates.put(direction, state == null ? RoadLinkState.none() : state);
         }
-        return connectionStateMap;
+        return linkStates;
     }
 
     @FunctionalInterface
-    interface RoadLineInfo {
-        RoadConnectionState getValue(BlockState state, Direction direction);
+    interface RoadBlockInfo {
+        RoadLinkState read(BlockState state, Direction direction);
     }
 
-    static Map<Block, RoadLineInfo> getBlockInfo() {
+    static Map<Block, RoadBlockInfo> getBlockInfo() {
         return BlockInfoHolder.INFO;
     }
 
     private static final class BlockInfoHolder {
-        static final Map<Block, RoadLineInfo> INFO = buildInfo();
+        static final Map<Block, RoadBlockInfo> INFO = buildInfo();
     }
 
-    private static void put(Map<Block, RoadLineInfo> info, Block block, RoadLineInfo roadLineInfo) {
-        info.put(block, roadLineInfo);
+    private static void put(Map<Block, RoadBlockInfo> info, Block block, RoadBlockInfo roadBlockInfo) {
+        info.put(block, roadBlockInfo);
     }
 
-    private static Map<Block, RoadLineInfo> buildInfo() {
-        final Map<Block, RoadLineInfo> info = new HashMap<>();
+    private static Map<Block, RoadBlockInfo> buildInfo() {
+        final Map<Block, RoadBlockInfo> info = new HashMap<>();
         put(info, RoadBlocks.ROAD_WITH_AUTO_BEVEL_LINE.get(), auto());
         put(info, RoadBlocks.ROAD_WITH_AUTO_RIGHTANGLE_LINE.get(), auto());
         put(info, RoadBlocks.ROAD_SLAB_WITH_AUTO_BEVEL_LINE.get(), auto());
         put(info, RoadBlocks.ROAD_SLAB_WITH_AUTO_RIGHTANGLE_LINE.get(), auto());
-        put(info, RoadBlocks.ROAD_WITH_WHITE_LINE.get(), straight(LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE.get(), straight(LineColor.WHITE, LineType.DOUBLE));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_THICK_LINE.get(), straight(LineColor.WHITE, LineType.THICK));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_LINE.get(), straight(LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE.get(), straight(LineColor.YELLOW, LineType.DOUBLE));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE.get(), straight(LineColor.YELLOW, LineType.THICK));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_LINE.get(), offsetStraight(LineColor.WHITE, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE.get(), offsetStraight(LineColor.YELLOW, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE.get(), offsetStraight(LineColor.WHITE, LineType.NORMAL, 1));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE.get(), offsetStraight(LineColor.YELLOW, LineType.NORMAL, 1));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get(), offsetStraight(LineColor.WHITE, LineType.DOUBLE, PAIRED_COLOR_LEVEL));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get(), corner(LineColor.WHITE, LineType.NORMAL, false));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE.get(), corner(LineColor.YELLOW, LineType.NORMAL, false));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE.get(), corner(LineColor.WHITE, LineType.NORMAL, true));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE.get(), corner(LineColor.WHITE, LineType.DOUBLE, true));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_THICK_LINE.get(), corner(LineColor.WHITE, LineType.THICK, true));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_LINE.get(), corner(LineColor.YELLOW, LineType.NORMAL, true));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE.get(), corner(LineColor.YELLOW, LineType.DOUBLE, true));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_THICK_LINE.get(), corner(LineColor.YELLOW, LineType.THICK, true));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE.get(), diffAngle(LineColor.WHITE, LineType.NORMAL, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), diffAngle(LineColor.WHITE, LineType.THICK, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE.get(), diffAngle(LineColor.WHITE, LineType.THICK, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE.get(), diffAngle(LineColor.WHITE, LineType.NORMAL, LineColor.YELLOW, LineType.DOUBLE));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE.get(), diffAngle(LineColor.WHITE, LineType.THICK, LineColor.YELLOW, LineType.DOUBLE));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_OUT.get(), angleLineOnePartOffset(LineColor.WHITE, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_IN.get(), angleLineOnePartOffset(LineColor.WHITE, -2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_OUT.get(), angleLineOnePartOffset(LineColor.YELLOW, 2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_IN.get(), angleLineOnePartOffset(LineColor.YELLOW, -2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.WHITE, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.WHITE, -2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.YELLOW, 2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.YELLOW, -2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.WHITE, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.WHITE, -2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.YELLOW, 2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartsOffset(LineColor.YELLOW, -2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), joint(LineColor.WHITE, LineType.NORMAL, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), joint(LineColor.YELLOW, LineType.NORMAL, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE.get(), joint(LineColor.WHITE, LineType.NORMAL, LineColor.WHITE, LineType.DOUBLE));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_THICK_LINE.get(), joint(LineColor.WHITE, LineType.NORMAL, LineColor.WHITE, LineType.THICK));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE.get(), joint(LineColor.WHITE, LineType.DOUBLE, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE.get(), joint(LineColor.WHITE, LineType.THICK, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE.get(), joint(LineColor.WHITE, LineType.NORMAL, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), joint(LineColor.YELLOW, LineType.NORMAL, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE.get(), joint(LineColor.WHITE, LineType.NORMAL, LineColor.YELLOW, LineType.DOUBLE));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE.get(), joint(LineColor.WHITE, LineType.THICK, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE.get(), joint(LineColor.WHITE, LineType.THICK, LineColor.YELLOW, LineType.DOUBLE));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(LineColor.WHITE, LineType.NORMAL, LineColor.WHITE, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(LineColor.YELLOW, LineType.NORMAL, LineColor.YELLOW, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(LineColor.WHITE, LineType.DOUBLE, LineColor.WHITE, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(LineColor.WHITE, LineType.THICK, LineColor.WHITE, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_YELLOW_LINE.get(), jointOffsetSide(LineColor.WHITE, LineType.THICK, LineColor.YELLOW, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE.get(), jointOffsetSide(LineColor.YELLOW, LineType.NORMAL, LineColor.WHITE, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE.get(), jointOffsetSide(LineColor.WHITE, LineType.NORMAL, LineColor.YELLOW, LineType.NORMAL, 2));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_CROSS_LINE.get(), cross(LineColor.WHITE));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_CROSS_LINE.get(), cross(LineColor.YELLOW));
-        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get(), biBevel(LineColor.WHITE, false));
-        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get(), biBevel(LineColor.YELLOW, false));
-        put(info, RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE.get(), biBevel(LineColor.WHITE, true));
-        put(info, RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE.get(), biBevel(LineColor.YELLOW, true));
-        put(info, RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE.get(), straightAndAngle(LineColor.WHITE, LineType.NORMAL, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_LINE.get(), straightAndAngle(LineColor.YELLOW, LineType.NORMAL, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_YELLOW_LINE.get(), straightAndAngle(LineColor.WHITE, LineType.NORMAL, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_WHITE_LINE.get(), straightAndAngle(LineColor.YELLOW, LineType.NORMAL, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE.get(), straightAndAngle(LineColor.WHITE, LineType.THICK, LineColor.WHITE, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_LINE.get(), straightAndAngle(LineColor.YELLOW, LineType.THICK, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE.get(), straightAndAngle(LineColor.WHITE, LineType.THICK, LineColor.YELLOW, LineType.NORMAL));
-        put(info, RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE.get(), straightAndAngle(LineColor.YELLOW, LineType.THICK, LineColor.WHITE, LineType.NORMAL));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_LINE.get(), straight(MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_DOUBLE_LINE.get(), straight(MarkColor.WHITE, MarkPattern.PAIRED));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_THICK_LINE.get(), straight(MarkColor.WHITE, MarkPattern.WIDE));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_LINE.get(), straight(MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_DOUBLE_LINE.get(), straight(MarkColor.YELLOW, MarkPattern.PAIRED));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_THICK_LINE.get(), straight(MarkColor.YELLOW, MarkPattern.WIDE));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_LINE.get(), offsetStraight(MarkColor.WHITE, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_LINE.get(), offsetStraight(MarkColor.YELLOW, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_HALF_DOUBLE_LINE.get(), offsetStraight(MarkColor.WHITE, MarkPattern.SOLID, 1));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_HALF_DOUBLE_LINE.get(), offsetStraight(MarkColor.YELLOW, MarkPattern.SOLID, 1));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOW_DOUBLE_LINE.get(), offsetStraight(MarkColor.WHITE, MarkPattern.PAIRED, PAIRED_COLOR_LEVEL));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE.get(), corner(MarkColor.WHITE, MarkPattern.SOLID, false));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE.get(), corner(MarkColor.YELLOW, MarkPattern.SOLID, false));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_LINE.get(), corner(MarkColor.WHITE, MarkPattern.SOLID, true));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_DOUBLE_LINE.get(), corner(MarkColor.WHITE, MarkPattern.PAIRED, true));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_THICK_LINE.get(), corner(MarkColor.WHITE, MarkPattern.WIDE, true));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_LINE.get(), corner(MarkColor.YELLOW, MarkPattern.SOLID, true));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DOUBLE_LINE.get(), corner(MarkColor.YELLOW, MarkPattern.PAIRED, true));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_THICK_LINE.get(), corner(MarkColor.YELLOW, MarkPattern.WIDE, true));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOW_RIGHTANGLE_LINE.get(), diffAngle(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_NORMAL_RIGHTANGLE_LINE.get(), diffAngle(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_YELLOW_RIGHTANGLE_LINE.get(), diffAngle(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_YELLOWDOUBLE_RIGHTANGLE_LINE.get(), diffAngle(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.PAIRED));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_YELLOWDOUBLE_RIGHTANGLE_LINE.get(), diffAngle(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.YELLOW, MarkPattern.PAIRED));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_OUT.get(), angleLineOnePartShift(MarkColor.WHITE, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_RIGHTANGLE_LINE_OFFSET_IN.get(), angleLineOnePartShift(MarkColor.WHITE, -2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_OUT.get(), angleLineOnePartShift(MarkColor.YELLOW, 2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_RIGHTANGLE_LINE_OFFSET_IN.get(), angleLineOnePartShift(MarkColor.YELLOW, -2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.WHITE, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.WHITE, -2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.YELLOW, 2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.YELLOW, -2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.WHITE, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.WHITE, -2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_OUT_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.YELLOW, 2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_OFFSET_IN_BEVEL_RIGHTANGLE_LINE.get(), angleLineTwoPartShift(MarkColor.YELLOW, -2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_LINE.get(), joint(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_LINE.get(), joint(MarkColor.YELLOW, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_DOUBLE_LINE.get(), joint(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.PAIRED));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_THICK_LINE.get(), joint(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.WIDE));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_DOUBLE_TSHAPE_LINE.get(), joint(MarkColor.WHITE, MarkPattern.PAIRED, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_LINE.get(), joint(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOW_LINE.get(), joint(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_WHITE_LINE.get(), joint(MarkColor.YELLOW, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_YELLOWDOUBLE_LINE.get(), joint(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.PAIRED));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_THICK_TSHAPE_YELLOW_LINE.get(), joint(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_YELLOWDOUBLE_LINE.get(), joint(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.YELLOW, MarkPattern.PAIRED));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(MarkColor.YELLOW, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITEDOUBLE_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(MarkColor.WHITE, MarkPattern.PAIRED, MarkColor.WHITE, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_LINE.get(), jointOffsetSide(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.WHITE, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_TSHAPE_OFFSET_YELLOW_LINE.get(), jointOffsetSide(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.YELLOW, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_TSHAPE_OFFSET_WHITE_LINE.get(), jointOffsetSide(MarkColor.YELLOW, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_TSHAPE_OFFSET_YELLOW_LINE.get(), jointOffsetSide(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.SOLID, 2));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_CROSS_LINE.get(), cross(MarkColor.WHITE));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_CROSS_LINE.get(), cross(MarkColor.YELLOW));
+        put(info, RoadBlocks.ROAD_WITH_WHITE_BEVEL_DB_LINE.get(), biBevel(MarkColor.WHITE, false));
+        put(info, RoadBlocks.ROAD_WITH_YELLOW_BEVEL_DB_LINE.get(), biBevel(MarkColor.YELLOW, false));
+        put(info, RoadBlocks.ROAD_WITH_WHITENORMAL_AND_BEVEL_DB_LINE.get(), biBevel(MarkColor.WHITE, true));
+        put(info, RoadBlocks.ROAD_WITH_YELLOWNORMAL_AND_BEVEL_DB_LINE.get(), biBevel(MarkColor.YELLOW, true));
+        put(info, RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_LINE.get(), straightAndAngle(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_LINE.get(), straightAndAngle(MarkColor.YELLOW, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITENORMAL_BEVEL_YELLOW_LINE.get(), straightAndAngle(MarkColor.WHITE, MarkPattern.SOLID, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_YELLOWNORMAL_BEVEL_WHITE_LINE.get(), straightAndAngle(MarkColor.YELLOW, MarkPattern.SOLID, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_LINE.get(), straightAndAngle(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.WHITE, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_LINE.get(), straightAndAngle(MarkColor.YELLOW, MarkPattern.WIDE, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_WHITETHICK_BEVEL_YELLOW_LINE.get(), straightAndAngle(MarkColor.WHITE, MarkPattern.WIDE, MarkColor.YELLOW, MarkPattern.SOLID));
+        put(info, RoadBlocks.ROAD_WITH_YELLOWTHICK_BEVEL_WHITE_LINE.get(), straightAndAngle(MarkColor.YELLOW, MarkPattern.WIDE, MarkColor.WHITE, MarkPattern.SOLID));
         return info;
     }
 
-    private static RoadLineInfo auto() {
+    private static RoadBlockInfo auto() {
         return (state, direction) ->
-            new RoadConnectionState(WhetherConnected.MAY_CONNECT, LineColor.UNKNOWN, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
+            new RoadLinkState(LinkStatus.POSSIBLE, MarkColor.UNKNOWN, RoadDir8.of(direction), MarkPattern.SOLID, null);
     }
 
-    private static RoadLineInfo straight(LineColor color, LineType type) {
+    private static RoadBlockInfo straight(MarkColor color, MarkPattern pattern) {
         return (state, direction) -> direction.getAxis() == RoadOrientation.axisOf(state)
-            ? conn(color, EightHorizontalDirection.of(direction), type, null)
-            : RoadConnectionState.empty();
+            ? linked(color, RoadDir8.of(direction), pattern, null)
+            : RoadLinkState.none();
     }
 
-    private static RoadLineInfo offsetStraight(LineColor color, LineType type, int level) {
+    private static RoadBlockInfo offsetStraight(MarkColor color, MarkPattern pattern, int amount) {
         return (state, direction) -> {
             if (direction.getAxis() != RoadOrientation.axisOf(state)) {
-                return RoadConnectionState.empty();
+                return RoadLinkState.none();
             }
-            return conn(color, EightHorizontalDirection.of(direction), type,
-                new LineOffset(RoadOrientation.directionOf(state).getCounterClockWise(), level));
+            return linked(color, RoadDir8.of(direction), pattern,
+                new MarkShift(RoadOrientation.directionOf(state).getCounterClockWise(), amount));
         };
     }
 
-    private static RoadLineInfo corner(LineColor color, LineType type, boolean isBevel) {
+    private static RoadBlockInfo corner(MarkColor color, MarkPattern pattern, boolean isBevel) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             final RoadCorner corner = facingToCorner(facing);
-            if (!corner.hasDirection(direction)) {
-                return RoadConnectionState.empty();
+            if (!corner.containsDir(direction)) {
+                return RoadLinkState.none();
             }
-            return conn(color,
-                isBevel ? EightHorizontalDirection.of(corner.mirror(direction)) : EightHorizontalDirection.of(direction),
-                type, null);
+            return linked(color,
+                isBevel ? RoadDir8.of(corner.mirrored(direction)) : RoadDir8.of(direction),
+                pattern, null);
         };
     }
 
-    private static RoadLineInfo diffAngle(LineColor color1, LineType type1, LineColor color2, LineType type2) {
+    private static RoadBlockInfo diffAngle(MarkColor color1, MarkPattern pattern1, MarkColor color2, MarkPattern pattern2) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing) {
-                return conn(color2, EightHorizontalDirection.of(direction), type2, null);
+                return linked(color2, RoadDir8.of(direction), pattern2, null);
             }
             if (direction == facing.getClockWise()) {
-                return conn(color1, EightHorizontalDirection.of(direction), type1, null);
+                return linked(color1, RoadDir8.of(direction), pattern1, null);
             }
-            return RoadConnectionState.empty();
+            return RoadLinkState.none();
         };
     }
 
-    private static RoadLineInfo angleLineOnePartOffset(LineColor color, int offsetOutwards) {
+    private static RoadBlockInfo angleLineOnePartShift(MarkColor color, int shiftOutward) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing) {
-                return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
+                return linked(color, RoadDir8.of(direction), MarkPattern.SOLID, null);
             }
             if (direction == facing.getClockWise()) {
-                return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL,
-                    LineOffset.of(facing.getOpposite(), offsetOutwards));
+                return linked(color, RoadDir8.of(direction), MarkPattern.SOLID,
+                    MarkShift.of(facing.getOpposite(), shiftOutward));
             }
-            return RoadConnectionState.empty();
+            return RoadLinkState.none();
         };
     }
 
-    private static RoadLineInfo angleLineTwoPartsOffset(LineColor color, int offsetOutwards) {
+    private static RoadBlockInfo angleLineTwoPartShift(MarkColor color, int shiftOutward) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             final RoadCorner corner = facingToCorner(facing);
-            if (!corner.hasDirection(direction)) {
-                return RoadConnectionState.empty();
+            if (!corner.containsDir(direction)) {
+                return RoadLinkState.none();
             }
-            final Direction offsetDir = corner.getDirectionInAxis(direction.getClockWise().getAxis()).getOpposite();
-            return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, LineOffset.of(offsetDir, offsetOutwards));
+            final Direction shiftDir = corner.dirInAxis(direction.getClockWise().getAxis()).getOpposite();
+            return linked(color, RoadDir8.of(direction), MarkPattern.SOLID, MarkShift.of(shiftDir, shiftOutward));
         };
     }
 
-    private static RoadLineInfo joint(LineColor mainColor, LineType mainType, LineColor sideColor, LineType sideType) {
+    private static RoadBlockInfo joint(MarkColor mainColor, MarkPattern mainPattern, MarkColor sideColor, MarkPattern sidePattern) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing.getOpposite()) {
-                return RoadConnectionState.empty();
+                return RoadLinkState.none();
             }
             if (direction == facing) {
-                return conn(sideColor, EightHorizontalDirection.of(direction), sideType, null);
+                return linked(sideColor, RoadDir8.of(direction), sidePattern, null);
             }
-            return conn(mainColor, EightHorizontalDirection.of(direction), mainType, null);
+            return linked(mainColor, RoadDir8.of(direction), mainPattern, null);
         };
     }
 
-    private static RoadLineInfo jointOffsetSide(LineColor mainColor, LineType mainType, LineColor sideColor, LineType sideType, int level) {
+    private static RoadBlockInfo jointOffsetSide(MarkColor mainColor, MarkPattern mainPattern, MarkColor sideColor, MarkPattern sidePattern, int amount) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing.getOpposite()) {
-                return RoadConnectionState.empty();
+                return RoadLinkState.none();
             }
             if (direction == facing) {
-                return conn(sideColor, EightHorizontalDirection.of(direction), sideType,
-                    new LineOffset(facing.getClockWise(), level));
+                return linked(sideColor, RoadDir8.of(direction), sidePattern,
+                    new MarkShift(facing.getClockWise(), amount));
             }
-            return conn(mainColor, EightHorizontalDirection.of(direction), mainType, null);
+            return linked(mainColor, RoadDir8.of(direction), mainPattern, null);
         };
     }
 
-    private static RoadLineInfo cross(LineColor color) {
-        return (state, direction) -> conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
+    private static RoadBlockInfo cross(MarkColor color) {
+        return (state, direction) -> linked(color, RoadDir8.of(direction), MarkPattern.SOLID, null);
     }
 
-    private static RoadLineInfo biBevel(LineColor color, boolean threeLayer) {
+    private static RoadBlockInfo biBevel(MarkColor color, boolean threeLayer) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             if (threeLayer) {
                 if (facing == direction || facing == direction.getOpposite()) {
-                    return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
+                    return linked(color, RoadDir8.of(direction), MarkPattern.SOLID, null);
                 }
-                return conn(color, EightHorizontalDirection.of(RoadCorner.of(facing, direction.getOpposite())), LineType.NORMAL, null);
+                return linked(color, RoadDir8.of(RoadCorner.of(facing, direction.getOpposite())), MarkPattern.SOLID, null);
             } else {
                 if (facing == direction) {
-                    return conn(color, EightHorizontalDirection.of(direction), LineType.NORMAL, null);
+                    return linked(color, RoadDir8.of(direction), MarkPattern.SOLID, null);
                 }
                 if (facing != direction.getOpposite()) {
-                    return conn(color, EightHorizontalDirection.of(RoadCorner.of(facing, direction.getOpposite())), LineType.NORMAL, null);
+                    return linked(color, RoadDir8.of(RoadCorner.of(facing, direction.getOpposite())), MarkPattern.SOLID, null);
                 }
-                return RoadConnectionState.empty();
+                return RoadLinkState.none();
             }
         };
     }
 
-    private static RoadLineInfo straightAndAngle(LineColor straightColor, LineType straightType, LineColor bevelColor, LineType bevelType) {
+    private static RoadBlockInfo straightAndAngle(MarkColor straightColor, MarkPattern straightPattern, MarkColor bevelColor, MarkPattern bevelPattern) {
         return (state, direction) -> {
             final Direction facing = RoadOrientation.directionOf(state);
             if (direction == facing || direction == facing.getOpposite()) {
-                return conn(straightColor, EightHorizontalDirection.of(direction), straightType, null);
+                return linked(straightColor, RoadDir8.of(direction), straightPattern, null);
             }
             if (direction == facing.getClockWise()) {
-                return conn(bevelColor, EightHorizontalDirection.of(facingToCorner(facing).mirror(direction)), bevelType, null);
+                return linked(bevelColor, RoadDir8.of(facingToCorner(facing).mirrored(direction)), bevelPattern, null);
             }
-            return RoadConnectionState.empty();
+            return RoadLinkState.none();
         };
     }
 
-    private static RoadConnectionState conn(LineColor color, EightHorizontalDirection direction, LineType type, LineOffset offset) {
-        return new RoadConnectionState(WhetherConnected.CONNECTED, color, direction, type, offset);
+    private static RoadLinkState linked(MarkColor color, RoadDir8 direction, MarkPattern pattern, MarkShift shift) {
+        return new RoadLinkState(LinkStatus.LINKED, color, direction, pattern, shift);
     }
 
     private static Direction cornerToFacing(RoadCorner corner) {
-        if (corner.dir1.getClockWise() == corner.dir2) {
-            return corner.dir1;
+        if (corner.side1.getClockWise() == corner.side2) {
+            return corner.side1;
         }
-        return corner.dir2;
+        return corner.side2;
     }
 
     private static RoadCorner facingToCorner(Direction facing) {
@@ -725,43 +725,43 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         return a.compareTo(b) <= 0 ? a : b;
     }
 
-    enum RoadAutoLineType {
-        RIGHT_ANGLE,
-        BEVEL
+    enum AutoMarkMode {
+        CROSS,
+        DIAGONAL
     }
 
-    enum LineColor {
+    enum MarkColor {
         WHITE,
         YELLOW,
         UNKNOWN,
         NONE
     }
 
-    enum LineType {
-        NORMAL,
-        DOUBLE,
-        THICK
+    enum MarkPattern {
+        SOLID,
+        PAIRED,
+        WIDE
     }
 
-    record LineOffset(Direction offsetDirection, int level) {
-        LineOffset {
-            if (level < 0) {
+    record MarkShift(Direction shiftDir, int shiftAmount) {
+        MarkShift {
+            if (shiftAmount < 0) {
                 throw new IllegalArgumentException();
             }
         }
 
-        static LineOffset of(Direction direction, int level) {
-            if (level == 0) {
+        static MarkShift of(Direction direction, int amount) {
+            if (amount == 0) {
                 return null;
-            } else if (level > 0) {
-                return new LineOffset(direction, level);
+            } else if (amount > 0) {
+                return new MarkShift(direction, amount);
             } else {
-                return new LineOffset(direction.getOpposite(), -level);
+                return new MarkShift(direction.getOpposite(), -amount);
             }
         }
     }
 
-    enum EightHorizontalDirection {
+    enum RoadDir8 {
         SOUTH(Direction.SOUTH),
         SOUTH_WEST(RoadCorner.SOUTH_WEST),
         WEST(Direction.WEST),
@@ -772,22 +772,22 @@ public abstract class RoadWithAutoLine extends BlockCompat {
         SOUTH_EAST(RoadCorner.SOUTH_EAST);
 
         private final Direction direction;
-        private final RoadCorner cornerDirection;
+        private final RoadCorner cornerDir;
         private final boolean isCorner;
 
-        EightHorizontalDirection(Direction direction) {
+        RoadDir8(Direction direction) {
             this.direction = direction;
-            this.cornerDirection = null;
+            this.cornerDir = null;
             this.isCorner = false;
         }
 
-        EightHorizontalDirection(RoadCorner cornerDirection) {
+        RoadDir8(RoadCorner cornerDir) {
             this.direction = null;
-            this.cornerDirection = cornerDirection;
+            this.cornerDir = cornerDir;
             this.isCorner = true;
         }
 
-        static EightHorizontalDirection of(Direction direction) {
+        static RoadDir8 of(Direction direction) {
             return switch (direction) {
                 case NORTH -> NORTH;
                 case EAST -> EAST;
@@ -796,8 +796,8 @@ public abstract class RoadWithAutoLine extends BlockCompat {
             };
         }
 
-        static EightHorizontalDirection of(RoadCorner cornerDirection) {
-            return switch (cornerDirection) {
+        static RoadDir8 of(RoadCorner cornerDir) {
+            return switch (cornerDir) {
                 case SOUTH_WEST -> SOUTH_WEST;
                 case NORTH_WEST -> NORTH_WEST;
                 case NORTH_EAST -> NORTH_EAST;
@@ -805,40 +805,40 @@ public abstract class RoadWithAutoLine extends BlockCompat {
             };
         }
 
-        Optional<Direction> left() {
+        Optional<Direction> cardinal() {
             return isCorner ? Optional.empty() : Optional.of(direction);
         }
 
-        Optional<RoadCorner> right() {
-            return isCorner ? Optional.of(cornerDirection) : Optional.empty();
+        Optional<RoadCorner> corner() {
+            return isCorner ? Optional.of(cornerDir) : Optional.empty();
         }
     }
 
-    enum WhetherConnected {
-        NOT_CONNECTED,
-        MAY_CONNECT,
-        CONNECTED
+    enum LinkStatus {
+        UNLINKED,
+        POSSIBLE,
+        LINKED
     }
 
-    record RoadConnectionState(WhetherConnected whetherConnected, LineColor lineColor, EightHorizontalDirection direction, LineType lineType, LineOffset lineOffset) {
-        static RoadConnectionState empty() {
-            return new RoadConnectionState(WhetherConnected.NOT_CONNECTED, LineColor.NONE, null, LineType.NORMAL, null);
+    record RoadLinkState(LinkStatus linkStatus, MarkColor markColor, RoadDir8 dir, MarkPattern markPattern, MarkShift markShift) {
+        static RoadLinkState none() {
+            return new RoadLinkState(LinkStatus.UNLINKED, MarkColor.NONE, null, MarkPattern.SOLID, null);
         }
 
-        boolean mayConnect() {
-            return this.whetherConnected.ordinal() >= WhetherConnected.MAY_CONNECT.ordinal();
+        boolean canLink() {
+            return this.linkStatus.ordinal() >= LinkStatus.POSSIBLE.ordinal();
         }
 
-        boolean sureConnect() {
-            return this.whetherConnected == WhetherConnected.CONNECTED;
+        boolean isConfirmed() {
+            return this.linkStatus == LinkStatus.LINKED;
         }
 
-        Direction offsetDirection() {
-            return lineOffset == null ? null : lineOffset.offsetDirection();
+        Direction shiftDir() {
+            return markShift == null ? null : markShift.shiftDir();
         }
 
-        int offsetLevel() {
-            return lineOffset == null ? 0 : lineOffset.level();
+        int shiftAmount() {
+            return markShift == null ? 0 : markShift.shiftAmount();
         }
     }
 }

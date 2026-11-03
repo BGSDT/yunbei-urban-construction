@@ -21,13 +21,13 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class RoadSlabWithAutoLine extends AbstractRoadSlabBlock {
+public abstract class RoadSlabWithAutoLine extends AbstractRoadSlabBase {
 
-    private final RoadWithAutoLine.RoadAutoLineType type;
+    private final RoadWithAutoLine.AutoMarkMode mode;
 
-    public RoadSlabWithAutoLine(BlockBehaviour.Properties properties, RoadWithAutoLine.RoadAutoLineType type) {
+    public RoadSlabWithAutoLine(BlockBehaviour.Properties properties, RoadWithAutoLine.AutoMarkMode mode) {
         super(properties);
-        this.type = type;
+        this.mode = mode;
     }
 
     @Override
@@ -48,7 +48,7 @@ public abstract class RoadSlabWithAutoLine extends AbstractRoadSlabBlock {
             && !Direction.Plane.VERTICAL.test(hit.getDirection())) {
             return InteractionResult.PASS;
         }
-        world.setBlock(pos, convertToSlab(state, RoadWithAutoLine.tryMakeState(type, getConnectionStateMap(world, pos), state, pos)), 2);
+        world.setBlock(pos, convertToSlab(state, RoadWithAutoLine.attemptState(mode, gatherLinkStates(world, pos), state, pos)), 2);
         return InteractionResult.SUCCESS;
     }
 
@@ -58,25 +58,25 @@ public abstract class RoadSlabWithAutoLine extends AbstractRoadSlabBlock {
         if (!sourcePos.equals(pos.above())
             && !sourcePos.equals(pos.below())
             && !(world.getBlockState(sourcePos).getBlock() instanceof AirBlock)) {
-            world.setBlock(pos, convertToSlab(state, RoadWithAutoLine.tryMakeState(type, getConnectionStateMap(world, pos), state, pos)), 2);
+            world.setBlock(pos, convertToSlab(state, RoadWithAutoLine.attemptState(mode, gatherLinkStates(world, pos), state, pos)), 2);
         }
     }
 
-    private EnumMap<Direction, RoadWithAutoLine.RoadConnectionState> getConnectionStateMap(LevelAccessor world, BlockPos pos0) {
-        final EnumMap<Direction, RoadWithAutoLine.RoadConnectionState> connectionStateMap = new EnumMap<>(Direction.class);
+    private EnumMap<Direction, RoadWithAutoLine.RoadLinkState> gatherLinkStates(LevelAccessor world, BlockPos pos0) {
+        final EnumMap<Direction, RoadWithAutoLine.RoadLinkState> linkStates = new EnumMap<>(Direction.class);
         for (Direction direction : Direction.Plane.HORIZONTAL) {
-            RoadWithAutoLine.RoadConnectionState state = null;
+            RoadWithAutoLine.RoadLinkState state = null;
             for (BlockPos pos : new BlockPos[]{pos0, pos0.above(), pos0.below()}) {
                 final BlockState nextState = world.getBlockState(pos.relative(direction, 1));
-                final RoadWithAutoLine.RoadLineInfo info = RoadWithAutoLine.getBlockInfo().get(getBaseVariant(nextState.getBlock()));
+                final RoadWithAutoLine.RoadBlockInfo info = RoadWithAutoLine.getBlockInfo().get(getBaseVariant(nextState.getBlock()));
                 if (info != null) {
-                    state = info.getValue(nextState, direction.getOpposite());
+                    state = info.read(nextState, direction.getOpposite());
                     break;
                 }
             }
-            connectionStateMap.put(direction, state == null ? RoadWithAutoLine.RoadConnectionState.empty() : state);
+            linkStates.put(direction, state == null ? RoadWithAutoLine.RoadLinkState.none() : state);
         }
-        return connectionStateMap;
+        return linkStates;
     }
 
     private BlockState convertToSlab(BlockState currentState, BlockState resultState) {

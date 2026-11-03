@@ -1,10 +1,11 @@
 package com.beigu.yunbeiuc.api;
 
-import com.beigu.yunbeiuc.api.ApiCompat;
-
-import com.beigu.yunbeiuc.api.render.GeometrySink;
-
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -17,46 +18,46 @@ public final class ApiCompat {
     private ApiCompat() {
     }
 
-    public static Level level(Entity entity) { return ApiCompat.level(entity); }
+    public static Level level(Entity entity) { return entity.level(); }
 
     public static void message(Player player, Component text, boolean overlay) {
-        ApiCompat.message(player, text, overlay);
+        player.displayClientMessage(text, overlay);
     }
 
     public static InteractionResult sidedSuccess(boolean clientSide) {
-        return ApiCompat.sidedSuccess(clientSide);
+        return InteractionResult.sidedSuccess(clientSide);
     }
 
-    public static net.minecraft.resources.ResourceLocation font(com.beigu.yunbeiuc.api.resource.Id id) {
+    public static ResourceLocation font(com.beigu.yunbeiuc.api.resource.Id id) {
         return com.beigu.yunbeiuc.api.resource.IdAdapter.mc(id);
     }
 
-    public static net.minecraft.client.renderer.RenderType text(net.minecraft.resources.ResourceLocation id) {
-        return net.minecraft.client.renderer.ApiCompat.text(id);
+    public static RenderType text(ResourceLocation id) {
+        return RenderType.text(id);
     }
 
-    public static net.minecraft.client.renderer.RenderType textSeeThrough(net.minecraft.resources.ResourceLocation id) {
-        return net.minecraft.client.renderer.ApiCompat.textSeeThrough(id);
+    public static RenderType textSeeThrough(ResourceLocation id) {
+        return RenderType.textSeeThrough(id);
     }
 
-    public static net.minecraft.client.renderer.RenderType entityCutout(net.minecraft.resources.ResourceLocation id) {
-        return net.minecraft.client.renderer.ApiCompat.entityCutout(id);
+    public static RenderType entityCutout(ResourceLocation id) {
+        return RenderType.entityCutout(id);
     }
 
     // 26.x folds blend/depth/cull state into the render pipeline, so these become no-ops there.
-    public static void enableBlend() { com.mojang.blaze3d.systems.ApiCompat.enableBlend(); }
+    public static void enableBlend() { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); }
 
-    public static void disableBlend() { com.mojang.blaze3d.systems.ApiCompat.disableBlend(); }
+    public static void disableBlend() { com.mojang.blaze3d.systems.RenderSystem.disableBlend(); }
 
-    public static void defaultBlendFunc() { com.mojang.blaze3d.systems.ApiCompat.defaultBlendFunc(); }
+    public static void defaultBlendFunc() { com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc(); }
 
-    public static void enableDepthTest() { com.mojang.blaze3d.systems.ApiCompat.enableDepthTest(); }
+    public static void enableDepthTest() { com.mojang.blaze3d.systems.RenderSystem.enableDepthTest(); }
 
-    public static void disableDepthTest() { com.mojang.blaze3d.systems.ApiCompat.disableDepthTest(); }
+    public static void disableDepthTest() { com.mojang.blaze3d.systems.RenderSystem.disableDepthTest(); }
 
-    public static void enableCull() { com.mojang.blaze3d.systems.ApiCompat.enableCull(); }
+    public static void enableCull() { com.mojang.blaze3d.systems.RenderSystem.enableCull(); }
 
-    public static void disableCull() { com.mojang.blaze3d.systems.ApiCompat.disableCull(); }
+    public static void disableCull() { com.mojang.blaze3d.systems.RenderSystem.disableCull(); }
 
     /** Version-neutral result of an item use, mapped to the platform type in {@link #use}. */
     public enum UseResult {
@@ -65,9 +66,9 @@ public final class ApiCompat {
         FAIL
     }
 
-    public static net.minecraft.client.renderer.texture.DynamicTexture dynamicTexture(
+    public static DynamicTexture dynamicTexture(
             com.mojang.blaze3d.platform.NativeImage image) {
-        return new net.minecraft.client.renderer.texture.DynamicTexture(image);
+        return new DynamicTexture(image);
     }
 
     public static boolean mouseClicked(net.minecraft.client.gui.components.events.GuiEventListener widget,
@@ -87,7 +88,7 @@ public final class ApiCompat {
         return player.serverLevel();
     }
 
-    public static net.minecraft.client.gui.Font font(
+    public static Font font(
             net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context ctx) {
         return ctx.getFont();
     }
@@ -104,12 +105,12 @@ public final class ApiCompat {
         return image.getPixelRGBA(x, y);
     }
 
-    public static net.minecraft.client.renderer.RenderType lines() {
-        return net.minecraft.client.renderer.RenderType.lines();
+    public static RenderType lines() {
+        return RenderType.lines();
     }
 
-    public static void endBatch(com.beigu.yunbeiuc.api.render.GeometrySink buffers) {
-        if (buffers instanceof com.beigu.yunbeiuc.api.render.GeometrySink queued) {
+    public static void endBatch(MultiBufferSource buffers) {
+        if (buffers instanceof MultiBufferSource.BufferSource queued) {
             queued.endBatch();
         }
     }
