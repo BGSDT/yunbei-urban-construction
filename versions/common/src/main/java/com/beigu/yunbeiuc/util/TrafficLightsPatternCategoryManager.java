@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 // 相位预设分类的持久化：yunbeiuc_pattern_categories.json 只存用户新建分类的 名称->颜色。
-// 默认分类与资源包内置分类始终存在、不可删除、不写入文件。
 
 public class TrafficLightsPatternCategoryManager {
     public static final String DEFAULT_CATEGORY = "默认分类";

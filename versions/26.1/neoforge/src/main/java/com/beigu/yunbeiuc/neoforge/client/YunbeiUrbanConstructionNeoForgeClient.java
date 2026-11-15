@@ -79,7 +79,5 @@ public class YunbeiUrbanConstructionNeoForgeClient {
     }
 
     private static void onRenderLevelStage(RenderLevelStageEvent event) {
-        // NeoForge 26.x reworked RenderLevelStageEvent (stage accessor removed); the wand outline
-        // overlay is disabled here until the new stage API is wired up.
     }
 }

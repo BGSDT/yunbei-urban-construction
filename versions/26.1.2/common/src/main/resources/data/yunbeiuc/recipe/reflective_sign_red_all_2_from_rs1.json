@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:reflective_sign_red_all_1"
-    }
+    "yunbeiuc:reflective_sign_red_all_1"
   ],
   "result": {
     "count": 1,

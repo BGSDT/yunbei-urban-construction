@@ -2,10 +2,7 @@ package com.beigu.yunbeiuc.api.resource;
 
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * Bridges the version-neutral {@link Id} to this Minecraft version's identifier type
- * ({@code ResourceLocation} before 26.x, {@code Identifier} from 26.x on).
- */
+// Bridges the version-neutral {@link Id} to this Minecraft version's identifier type.
 public final class IdAdapter {
     private IdAdapter() {
     }

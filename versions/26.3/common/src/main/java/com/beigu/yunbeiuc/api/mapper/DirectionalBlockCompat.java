@@ -49,8 +49,6 @@ public abstract class DirectionalBlockCompat extends DirectionalBlock implements
         return state;
     }
 
-
-
     private static final class Fallback extends DirectionalBlock {
         private Fallback(BlockBehaviour.Properties properties) {
             super(properties);
@@ -58,16 +56,15 @@ public abstract class DirectionalBlockCompat extends DirectionalBlock implements
 
     }
 
-    /** Version-neutral hook: 26.x added the tick/random parameters to {@code Block#updateShape}. */
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return state;
     }
 
     @Override
     protected BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess ticks, BlockPos pos,
                                   Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
-        return updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
+        return updateShapeCompat(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
     }
 
     protected void onRemoveCompat(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
@@ -85,6 +82,6 @@ public abstract class DirectionalBlockCompat extends DirectionalBlock implements
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block block,
                                    net.minecraft.world.level.redstone.Orientation orientation, boolean isMoving) {
-        neighborChangedCompat(state, level, pos, block, null, isMoving);
+        neighborChangedCompat(state, level, pos, block, pos, isMoving);
     }
 }

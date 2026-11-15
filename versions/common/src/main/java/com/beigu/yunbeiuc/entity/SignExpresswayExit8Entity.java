@@ -44,7 +44,7 @@ public class SignExpresswayExit8Entity extends CustomSignBlockEntity {
         this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.logoType2 = nbt.contains("logoType2") ? NbtCompat.getString(nbt, "logoType2").replace("provicial", "provincial") : legacyLogoType2();
         this.exitNumber = NbtCompat.getString(nbt, "exitNumber");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

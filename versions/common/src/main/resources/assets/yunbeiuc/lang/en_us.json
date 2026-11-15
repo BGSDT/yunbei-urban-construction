@@ -1276,11 +1276,10 @@
   "yunbeiuc.gui.ack.mod.ocelotsign.repo": "Ocelot Sign Repository\nGitHub: Creeper-Cola123/OcelotSignMod-Minecraft",
   "yunbeiuc.gui.ack.link.mcmod": "MCMod Wiki Page",
   "yunbeiuc.gui.ack.link.github": "GitHub Repository",
-  "yunbeiuc.gui.ack.decl.title": "Mod Declaration",
+  "yunbeiuc.gui.ack.decl.title": "Copyright",
   "yunbeiuc.gui.ack.decl.yunbeiuc.name": "Yunbei Urban Construction (YunbeiUrbanConstruction)",
-  "yunbeiuc.gui.ack.decl.yunbeiuc.license": "Open Source License: See LICENSE file in the repository",
-  "yunbeiuc.gui.ack.decl.yunbeiuc.repo": "Repository: https://github.com/BGSDT/yunbei-urban-construction",
-  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "This mod extends and adapts functionality based on the Ocelot Sign mod. Use of code and assets complies with the original author's license.",
-  "yunbeiuc.gui.ack.quote.title": "Citation",
-  "yunbeiuc.gui.ack.quote.ocelot": "The Ocelot Sign Mod is a Minecraft sign extension developed by Creeper-Cola123, which provided the foundational reference for the pattern and font selection system in this mod."
+  "yunbeiuc.gui.ack.decl.yunbeiuc.license": "License: LGPL V3 (GNU Lesser General Public License v3.0)\nFull license text: see the LICENSE file in the repository",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.mcmod": "Yunbei UC on MCMod Wiki\nmcmod.cn/class/26158",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.github": "Yunbei UC Repository\nGitHub: BGSDT/yunbei-urban-construction",
+  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "This mod extends and adapts functionality based on the Ocelot Sign mod. Use of code and assets complies with the original author's license."
 }

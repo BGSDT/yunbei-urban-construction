@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 // 客户端相位组锚点索引：魔杖上不存「我在哪一组」，改为从世界里现查。
-// 读取时顺手剔除失效项（方块实体没了 / 退组 / 区块卸载）；换世界按 lastLevel 引用比较清空，不需要区块事件。
 
 public final class ClientRailGroupIndex {
 

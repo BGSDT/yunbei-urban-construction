@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "minecraft:yellow_concrete"
-    },
-    {
-      "item": "minecraft:torch"
-    },
-    {
-      "item": "yunbeiuc:road_pole_horizontal"
-    }
+    "minecraft:yellow_concrete",
+    "minecraft:torch",
+    "yunbeiuc:road_pole_horizontal"
   ],
   "result": {
     "count": 1,

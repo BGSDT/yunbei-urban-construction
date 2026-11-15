@@ -9,6 +9,32 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 
 public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
+    public boolean keyPressedCompat(net.minecraft.client.gui.components.events.GuiEventListener widget,
+                                    int keyCode, int scanCode, int modifiers) {
+        return widget.keyPressed(keyCode, scanCode, modifiers);
+    }
+    public boolean dispatchWidgetClickCompat(double mouseX, double mouseY, int button) {
+        java.util.List<net.minecraft.client.gui.components.events.GuiEventListener> clickChildren =
+                new java.util.ArrayList<>(this.children());
+        for (int i = clickChildren.size() - 1; i >= 0; i--) {
+            net.minecraft.client.gui.components.events.GuiEventListener child = clickChildren.get(i);
+            if (child instanceof net.minecraft.client.gui.components.AbstractWidget widget
+                    && widget.visible && widget.active && widget.isMouseOver(mouseX, mouseY)) {
+                if (child.mouseClicked(mouseX, mouseY, button)) {
+                    this.setFocused((net.minecraft.client.gui.components.events.GuiEventListener) child);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isTextInputFocusedCompat() {
+        for (var child : this.children()) {
+            if (child instanceof net.minecraft.client.gui.components.EditBox box && box.isFocused()) return true;
+        }
+        return false;
+    }
     protected Minecraft client;
     protected Font textRenderer;
 
@@ -19,7 +45,15 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         super.init();
         client = super.minecraft;
         textRenderer = super.font;
+        onScreenShownCompat();
     }
+
+    public void rebuildWidgetsCompat() {
+        this.clearChildren();
+        init();
+    }
+    protected boolean keepMenuBackground() { return true; }
+    public void onScreenShownCompat() { }
 
     @Override
     public final void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {

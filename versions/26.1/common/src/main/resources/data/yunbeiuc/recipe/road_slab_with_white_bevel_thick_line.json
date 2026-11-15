@@ -1,8 +1,6 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "yunbeiuc:road_with_white_bevel_thick_line"
-  },
+  "ingredient": "yunbeiuc:road_with_white_bevel_thick_line",
   "result": {
     "id": "yunbeiuc:road_slab_with_white_bevel_thick_line",
     "count": 2

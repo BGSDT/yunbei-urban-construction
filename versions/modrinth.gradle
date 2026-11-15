@@ -46,6 +46,12 @@ subprojects { platformProject ->
                 if (changelogFile.isFile()) {
                     changelog = changelogFile.getText('UTF-8')
                 }
+                dependencies {
+                    required.project 'architectury-api'
+                    if (loader == 'fabric') {
+                        required.project 'fabric-api'
+                    }
+                }
             }
 
             platformProject.tasks.named('modrinth').configure {

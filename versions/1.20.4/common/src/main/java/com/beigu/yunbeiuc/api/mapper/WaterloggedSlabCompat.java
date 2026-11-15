@@ -17,7 +17,6 @@ public abstract class WaterloggedSlabCompat extends BlockCompat implements Simpl
         super(properties);
     }
 
-    // 1.20.2 起 SimpleWaterloggedBlock.canPlaceLiquid 增加 Player 首参。
     @Override
     public boolean canPlaceLiquid(Player player, BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
         return state.getValue(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 // 相位分配预设选择界面（二级菜单）：列出所属分类下的预设，应用到点击的红绿灯所在链接组。
-// 服务端做「完美嵌入」校验，全部匹配才写入。
 
 public class TrafficLightsPatternSelectScreen extends Screen {
     private static final int RIGHT_PANEL_WIDTH = 220;

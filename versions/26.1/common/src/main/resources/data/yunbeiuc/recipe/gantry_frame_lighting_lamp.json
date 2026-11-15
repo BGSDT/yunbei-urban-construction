@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "minecraft:white_concrete"
-    },
-    {
-      "item": "minecraft:torch"
-    },
-    {
-      "item": "minecraft:stick"
-    }
+    "minecraft:white_concrete",
+    "minecraft:torch",
+    "minecraft:stick"
   ],
   "result": {
     "count": 1,

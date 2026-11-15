@@ -53,7 +53,7 @@ public class CustomSignUpdatePacket {
 
         BlockEntity be = ApiCompat.level(player).getBlockEntity(pos);
         if (be instanceof CustomSignBlockEntity sign) {
-            sign.setTextLines(textLines);
+            sign.applyUserTextLines(textLines);
             sign.setChanged();
 
             ApiCompat.level(player).sendBlockUpdated(pos, sign.getBlockState(), sign.getBlockState(), VersionServices.blocks().updateAll());

@@ -24,6 +24,11 @@ public final class ResourcePlatformImpl implements ResourcePlatform {
         return result;
     }
 
+    @Override public List<String> listNamespaces(ResourceManager manager) {
+        List<String> result = new ArrayList<>(manager.getNamespaces());
+        result.sort(String::compareTo);
+        return result;
+    }
     @Override public Id create(String namespace, String path) { return Id.of(namespace, path); }
 
     @Override public Id parse(String location) { return Id.parse(location); }

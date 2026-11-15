@@ -31,11 +31,6 @@ public class ModItems {
     private static final Supplier<CreativeTabHandle> ROAD_TAB = () -> ModItemGroups.YUNBEIUC_ROAD_GROUP;
     private static final Supplier<CreativeTabHandle> SIGN_TAB = () -> ModItemGroups.YUNBEIUC_SIGN_GROUP;
 
-    /**
-     * Publishes the registry name for the duration of {@code supplier.get()}. Minecraft 26.x needs
-     * the id on {@code Item.Properties} before the item is constructed; the version specific
-     * compatibility layer reads the name from {@link RegistrationContext} and stamps it.
-     */
     private static <T extends Item> Supplier<T> stamped(String name, Supplier<T> supplier) {
         return () -> {
             RegistrationContext.beginItem(name);
@@ -60,6 +55,7 @@ public class ModItems {
         Supplier<Item> supplier = () -> {
             Block block = blockSupplier.get();
             Item.Properties properties = VersionServices.creativeTabs().apply(new Item.Properties(), tabSupplier.get());
+            properties = VersionServices.creativeTabs().blockDescription(properties);
             BlockItem blockItem = new BlockItem(block, properties);
             Item.BY_BLOCK.put(block, blockItem);
             return blockItem;

@@ -47,7 +47,7 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.logoType2 = nbt.contains("logoType2") ? NbtCompat.getString(nbt, "logoType2").replace("provicial", "provincial") : legacyLogoType2();
         this.logoType3 = nbt.contains("logoType3") ? NbtCompat.getString(nbt, "logoType3").replace("provicial", "provincial") : legacyLogoType3();
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             getTextLines().clear();
             ensureDefaultTextLines();
         }

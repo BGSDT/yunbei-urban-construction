@@ -250,6 +250,17 @@ public static final DeferredRegister<Block> BLOCKS = VersionServices.registries(
         return VersionServices.blocks().copyProperties(VanillaBlocks.CYAN_TERRACOTTA)
                 .requiresCorrectToolForDrops()
                 .noOcclusion()
-                .lightLevel(state -> state.getValue(TrafficLightsBlock.LIGHT_STATE) == litState ? 15 : 0);
+                .lightLevel(state -> isWarningCrossingLit(litState,
+                        state.getValue(TrafficLightsBlock.LIGHT_STATE)) ? 15 : 0);
+    }
+
+    public static boolean isWarningCrossingLit(TrafficLightsBlock.LightState litState,
+                                               TrafficLightsBlock.LightState current) {
+        return current == litState || current == TrafficLightsBlock.LightState.YELLOW;
+    }
+
+    public static boolean isWarningCrossingLit(Block block, TrafficLightsBlock.LightState current) {
+        if (!(block instanceof InstrumentWarningCrossingFluorescent fluorescent)) return false;
+        return isWarningCrossingLit(fluorescent.getLitState(), current);
     }
 }

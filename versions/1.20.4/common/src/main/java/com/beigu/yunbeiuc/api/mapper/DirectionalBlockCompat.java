@@ -38,14 +38,12 @@ public abstract class DirectionalBlockCompat extends DirectionalBlock implements
         return useCompat(state, level, pos, player, hand, hit);
     }
 
-    // 1.20.2 起 playerWillDestroy 返回值由 void 改为 BlockState。
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         playerWillDestroyCompat(level, pos, state, player);
         return state;
     }
 
-    // 1.20.2 起 Block 新增 codec()（Block 有默认实现，但 DirectionalBlock 仍是抽象，必须实现）。
     private static final MapCodec<DirectionalBlockCompat.Fallback> FALLBACK_CODEC =
             simpleCodec(DirectionalBlockCompat.Fallback::new);
 
@@ -65,9 +63,8 @@ public abstract class DirectionalBlockCompat extends DirectionalBlock implements
         }
     }
 
-    /** Version-neutral hook: 26.x changed the signature of {@code Block#updateShape}. */
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return super.updateShape(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
     }
 

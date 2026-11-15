@@ -23,8 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 // 普通魔杖：手持显示周围所有已组轨道的高亮线，瞄准轨道右键开 RailPhaseScreen。
-// 不存任何组信息（一律从世界里现查）；右键编辑距离上限 7 格，超出静默不动作；潜行一律 PASS。
-// 物品上没有 tooltip；轨道魔杖判定统一在 isHoldingRailWand（普通魔杖或链接魔杖）。
 
 public class PhaseWand extends ItemCompat {
 

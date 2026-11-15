@@ -29,9 +29,9 @@ public class CaltropBlock extends BlockCompat {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_N = Block.box(0, 0, -2, 16, 25, 18);
-    private static final VoxelShape SHAPE_E = Block.box(-2, 0, 0, 18, 25, 16);
+    private static final VoxelShape SHAPE_E = Block.box(-18, 0, 0, 2, 25, 16);
     private static final VoxelShape SHAPE_S = Block.box(0, 0, -18, 16, 25, 2);
-    private static final VoxelShape SHAPE_W = Block.box(-18, 0, 0, 2, 25, 16);
+    private static final VoxelShape SHAPE_W = Block.box(-2, 0, 0, 18, 25, 16);
 
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 

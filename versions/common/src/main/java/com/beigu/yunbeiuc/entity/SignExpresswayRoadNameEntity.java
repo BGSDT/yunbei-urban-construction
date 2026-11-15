@@ -23,7 +23,7 @@ public class SignExpresswayRoadNameEntity extends CustomSignBlockEntity {
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
         this.text1 = NbtCompat.getString(nbt, "text1");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

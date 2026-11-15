@@ -14,6 +14,33 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 
 public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
+    public boolean keyPressedCompat(net.minecraft.client.gui.components.events.GuiEventListener widget,
+                                    int keyCode, int scanCode, int modifiers) {
+        return widget.keyPressed(new net.minecraft.client.input.KeyEvent(keyCode, scanCode, modifiers));
+    }
+    public boolean dispatchWidgetClickCompat(double mouseX, double mouseY, int button) {
+        java.util.List<net.minecraft.client.gui.components.events.GuiEventListener> clickChildren =
+                new java.util.ArrayList<>(this.children());
+        for (int i = clickChildren.size() - 1; i >= 0; i--) {
+            net.minecraft.client.gui.components.events.GuiEventListener child = clickChildren.get(i);
+            if (child instanceof net.minecraft.client.gui.components.AbstractWidget widget
+                    && widget.visible && widget.active && widget.isMouseOver(mouseX, mouseY)) {
+                if (child.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(mouseX, mouseY,
+                        new net.minecraft.client.input.MouseButtonInfo(legacyButton(button) + 1, 0)), false)) {
+                    this.setFocused((net.minecraft.client.gui.components.events.GuiEventListener) child);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isTextInputFocusedCompat() {
+        for (var child : this.children()) {
+            if (child instanceof net.minecraft.client.gui.components.EditBox box && box.isFocused()) return true;
+        }
+        return false;
+    }
     protected Minecraft client;
     protected Font textRenderer;
 
@@ -24,10 +51,27 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         super.init();
         client = super.minecraft;
         textRenderer = super.font;
+        onScreenShownCompat();
     }
 
-    // 26.x renamed the draw pass: screens now fill in a GuiGraphicsExtractor instead of
-    // drawing straight into a GuiGraphics.
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        onScreenShownCompat();
+    }
+
+    @Override
+    public void added() {
+        super.added();
+        onScreenShownCompat();
+    }
+
+    public void rebuildWidgetsCompat() {
+        super.clearWidgets();
+        init();
+    }
+    public void onScreenShownCompat() { }
+
     @Override
     public void extractRenderState(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float delta) {
         if (this.client == null) this.client = super.minecraft;
@@ -38,6 +82,14 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     private static final int BACKDROP_TOP = 0xC0101010;
     private static final int BACKDROP_BOTTOM = 0xD0101010;
     private static final int BACKDROP_GREY = 0xFF202020;
+
+    @Override
+    public void extractBackground(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float delta) {
+        if (!keepMenuBackground()) return;
+        super.extractBackground(extractor, mouseX, mouseY, delta);
+    }
+
+    protected boolean keepMenuBackground() { return true; }
 
     protected boolean renderBackdrop = false;
     protected float backdropAlpha = 1.0f;
@@ -50,21 +102,10 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         if (this.renderBackdrop) {
             renderBackground(context);
         }
-        GuiGraphicsExtractor extractor = context.getGraphics();
-        for (GuiEventListener element : this.children()) {
-            if (element instanceof Renderable renderable) {
-                renderable.extractRenderState(extractor, mouseX, mouseY, delta);
-            }
-        }
+        super.extractRenderState(context.getGraphics(), mouseX, mouseY, delta);
     }
 
     public void renderBackground(DrawContext context) {
-        if (Minecraft.getInstance().level != null) {
-            context.fillGradient(0, 0, this.width, this.height,
-                    applyAlpha(BACKDROP_TOP), applyAlpha(BACKDROP_BOTTOM));
-        } else {
-            context.fill(0, 0, this.width, this.height, applyAlpha(BACKDROP_GREY));
-        }
     }
 
     private int applyAlpha(int argb) {
@@ -96,10 +137,6 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     @Override
     public boolean isPauseScreen() { return shouldPauseCompat(); }
 
-    // --- input translation -------------------------------------------------
-    // 26.x passes input event records; the shared screens still override the classic
-    // (keyCode, scanCode, modifiers) / (mouseX, mouseY, button) signatures.
-
     @Override
     public boolean keyPressed(KeyEvent event) {
         return keyPressed(event.key(), 0, event.modifiers());
@@ -118,31 +155,36 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         return super.keyReleased(new KeyEvent(keyCode, scanCode, modifiers));
     }
 
+    private static int legacyButton(int button) {
+        return Math.max(0, button);
+    }
+
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        return mouseClicked(event.x(), event.y(), event.button());
+        boolean result = mouseClicked(event.x(), event.y(), legacyButton(event.button() - 1));
+        return result;
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return super.mouseClicked(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)), false);
+        return super.mouseClicked(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button) + 1, 0)), false);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        return mouseReleased(event.x(), event.y(), event.button());
+        return mouseReleased(event.x(), event.y(), legacyButton(event.button() - 1));
     }
 
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return super.mouseReleased(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)));
+        return super.mouseReleased(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button) + 1, 0)));
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
-        return mouseDragged(event.x(), event.y(), event.button(), deltaX, deltaY);
+        return mouseDragged(event.x(), event.y(), legacyButton(event.button() - 1), deltaX, deltaY);
     }
 
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        return super.mouseDragged(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)), deltaX, deltaY);
+        return super.mouseDragged(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button) + 1, 0)), deltaX, deltaY);
     }
 
     @Override
@@ -154,7 +196,6 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         return super.mouseScrolled(mouseX, mouseY, amount, amount);
     }
 
-    // 26.x dropped the Screen modifier helpers; the shared screens still call them unqualified.
     public static boolean hasShiftDown() {
         return isKeyDown(Keys.LEFT_SHIFT)
                 || isKeyDown(Keys.RIGHT_SHIFT);

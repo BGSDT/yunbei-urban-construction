@@ -6,6 +6,7 @@ import com.beigu.yunbeiuc.entity.CustomSignBlockEntity.TextLineData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.GameRenderer;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -64,6 +65,8 @@ public final class TextGizmo {
 
     private static final List<H> HANDLES = new ArrayList<>();
 
+    private static net.minecraft.client.renderer.MultiBufferSource.BufferSource gizmoBuffers;
+
     private static final List<LineRect> LINE_RECTS = new ArrayList<>();
     private static boolean rectsActive = false;
     private static long rectsTime = 0L;
@@ -77,13 +80,13 @@ public final class TextGizmo {
         }
     }
 
+    public static void setProjectionView(Matrix4f projectionView) {
+        projView = projectionView != null ? new Matrix4f(projectionView) : null;
+    }
     public static void beginFrameRects() {
         LINE_RECTS.clear();
         rectsActive = true;
         rectsTime = System.currentTimeMillis();
-        // 26.x no longer exposes the projection/modelview matrices; gizmo picking falls back
-        // to the block-space path when they are absent.
-        proj = null;
     }
 
     public static void clearRects() {
@@ -143,6 +146,14 @@ public final class TextGizmo {
     public static float halfWidthBlocks() { return halfWbBlocks; }
 
     public static float halfHeightBlocks() { return halfHbBlocks; }
+
+    public static void updateAndRender(int mode, Matrix4f baseFrame, Matrix4f lineFrame, TextLineData d,
+                                       float zOffsetBlocks, float halfWBlocks, float halfHBlocks,
+                                       net.minecraft.client.renderer.MultiBufferSource buffers) {
+        gizmoBuffers = buffers instanceof net.minecraft.client.renderer.MultiBufferSource.BufferSource source
+                ? source : null;
+        updateAndRender(mode, baseFrame, lineFrame, d, zOffsetBlocks, halfWBlocks, halfHBlocks);
+    }
 
     public static void updateAndRender(int mode, Matrix4f baseFrame, Matrix4f lineFrame, TextLineData d, float zOffsetBlocks, float halfWBlocks, float halfHBlocks) {
         if (d == null || lineFrame == null || baseFrame == null) {
@@ -319,8 +330,9 @@ public final class TextGizmo {
         ApiCompat.disableDepthTest();
         ApiCompat.disableCull();
 
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buf = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        net.minecraft.client.renderer.MultiBufferSource.BufferSource buffers = gizmoBuffers;
+        if (buffers == null) return;
+        VertexConsumer buf = buffers.getBuffer(net.minecraft.client.renderer.rendertype.RenderTypes.debugQuads());
 
         Matrix4f m = new Matrix4f();
         m.identity();
@@ -464,14 +476,14 @@ public final class TextGizmo {
         return v.normalize();
     }
 
-    private static void axis(BufferBuilder buf, Matrix4f m, Vector3f c, Vector3f dir, float len, int id, int r, int g, int b) {
+    private static void axis(VertexConsumer buf, Matrix4f m, Vector3f c, Vector3f dir, float len, int id, int r, int g, int b) {
         boolean hot = id == hoverId || id == grabId;
         Vector3f tip = new Vector3f(dir).mul(len).add(c);
         ribbon(buf, m, c, tip, 0.25f / 16f, r, g, b, hot ? 255 : 215);
         disc(buf, m, tip, hot ? 0.075f : 0.055f, r, g, b, 255);
     }
 
-    private static void ring(BufferBuilder buf, Matrix4f m, Vector3f c, Vector3f n, float radius, int id, int r, int g, int b) {
+    private static void ring(VertexConsumer buf, Matrix4f m, Vector3f c, Vector3f n, float radius, int id, int r, int g, int b) {
         boolean hot = id == hoverId || id == grabId;
         float th = 0.25f / 16f;
         Vector3f b1 = perp(n);
@@ -480,7 +492,7 @@ public final class TextGizmo {
         arc(buf, m, c, b1, b2, radius, (float) Math.PI, (float) (Math.PI * 2), th, hot ? 225 : 150, hot ? 225 : 150, hot ? 225 : 150, hot ? 230 : 175);
     }
 
-    private static void arc(BufferBuilder buf, Matrix4f m, Vector3f c, Vector3f b1, Vector3f b2, float radius, float a0, float a1, float th, int r, int g, int b, int a) {
+    private static void arc(VertexConsumer buf, Matrix4f m, Vector3f c, Vector3f b1, Vector3f b2, float radius, float a0, float a1, float th, int r, int g, int b, int a) {
         int seg = 24;
         Vector3f prev = ringPoint(c, b1, b2, radius, a0);
         for (int i = 1; i <= seg; i++) {
@@ -504,7 +516,7 @@ public final class TextGizmo {
         return p;
     }
 
-    private static void ribbon(BufferBuilder buf, Matrix4f m, Vector3f p0, Vector3f p1, float th, int r, int g, int b, int a) {
+    private static void ribbon(VertexConsumer buf, Matrix4f m, Vector3f p0, Vector3f p1, float th, int r, int g, int b, int a) {
         Vector3f dir = new Vector3f(p1).sub(p0);
         if (dir.lengthSquared() < 1e-12f) return;
         dir.normalize();
@@ -522,7 +534,7 @@ public final class TextGizmo {
         tri(buf, m, a0, b1, a1, r, g, b, a);
     }
 
-    private static void disc(BufferBuilder buf, Matrix4f m, Vector3f c, float radius, int r, int g, int b, int a) {
+    private static void disc(VertexConsumer buf, Matrix4f m, Vector3f c, float radius, int r, int g, int b, int a) {
         Vector3f vd = new Vector3f(c);
         if (vd.lengthSquared() < 1e-10f) vd.set(0f, 0f, -1f);
         else vd.normalize();
@@ -539,13 +551,14 @@ public final class TextGizmo {
         }
     }
 
-    private static void tri(BufferBuilder buf, Matrix4f m, Vector3f p0, Vector3f p1, Vector3f p2, int r, int g, int b, int a) {
+    private static void tri(VertexConsumer buf, Matrix4f m, Vector3f p0, Vector3f p1, Vector3f p2, int r, int g, int b, int a) {
         vert(buf, m, p0, r, g, b, a);
         vert(buf, m, p1, r, g, b, a);
         vert(buf, m, p2, r, g, b, a);
+        vert(buf, m, p2, r, g, b, a);
     }
 
-    private static void vert(BufferBuilder buf, Matrix4f m, Vector3f p, int r, int g, int b, int a) {
+    private static void vert(VertexConsumer buf, Matrix4f m, Vector3f p, int r, int g, int b, int a) {
         buf.addVertex(m, p.x, p.y, p.z).setColor(r, g, b, a);
     }
 

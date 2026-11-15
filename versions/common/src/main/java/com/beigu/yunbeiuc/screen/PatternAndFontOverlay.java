@@ -9,7 +9,7 @@ import com.beigu.yunbeiuc.api.resource.Id;
 import com.beigu.yunbeiuc.api.resource.IdAdapter;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import net.minecraft.Util;
+import com.beigu.yunbeiuc.api.ApiCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -882,9 +882,9 @@ public final class PatternAndFontOverlay {
     public static void insertToCurrentLine(String text) {
         Minecraft client = Minecraft.getInstance();
         TextDisplayScreen target = null;
-        if (client.screen instanceof TextDisplayScreen screen) {
+        if (ApiCompat.currentScreen(client) instanceof TextDisplayScreen screen) {
             target = screen;
-        } else if (client.screen instanceof PatternAndFontBlankScreen && targetScreen != null) {
+        } else if (ApiCompat.currentScreen(client) instanceof PatternAndFontBlankScreen && targetScreen != null) {
             target = targetScreen;
         }
         if (target != null) {
@@ -921,7 +921,7 @@ public final class PatternAndFontOverlay {
 
     public static boolean openHomepageLink(String url) {
         if (url != null && !url.isEmpty()) {
-            Util.getPlatform().openUri(url);
+            ApiCompat.openUri(url);
             return true;
         }
         return false;

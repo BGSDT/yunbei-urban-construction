@@ -3,6 +3,7 @@ package com.beigu.yunbeiuc.entity;
 import com.beigu.yunbeiuc.api.nbt.NbtCompat;
 
 import com.beigu.yunbeiuc.api.mapper.BlockEntityMapper;
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -11,6 +12,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomSignBlockEntity extends BlockEntityMapper {
+    private static final String NBT_TEXT_LINES = "TextLines";
+    private static final String NBT_GLOWING_TEXT = "GlowingText";
+    private static final String NBT_TEXT_CUSTOMIZED = "TextLinesCustomized";
+    private static final String NBT_COMPAT_WRAPPER = "yunbeiuc_data";
+
     private List<TextLineData> textLines = new ArrayList<>();
     private boolean glowingText = false;
+    private boolean textLinesCustomized = false;
+    private boolean textLinesLoaded = false;
     private transient int editingLineIndex = -1;
     private transient int editingGizmoMode = -1;
 
@@ -42,9 +52,23 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     public List<TextLineData> getTextLines() { return textLines; }
 
     public void setTextLines(List<TextLineData> textLines) {
-        this.textLines = textLines;
+        this.textLines = textLines != null ? new ArrayList<>(textLines) : new ArrayList<>();
         setChanged();
-        if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        notifyTextChanged();
+    }
+
+    public void applyUserTextLines(List<TextLineData> lines) {
+        this.textLinesCustomized = true;
+        setTextLines(lines);
+        setChanged();
+    }
+
+    public boolean hasCustomizedTextLines() { return textLinesCustomized; }
+
+    public void markTextLinesCustomized() {
+        this.textLinesCustomized = true;
+        setChanged();
+        notifyTextChanged();
     }
 
     public boolean isGlowingText() { return glowingText; }
@@ -52,7 +76,22 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     public void setGlowingText(boolean glowingText) {
         this.glowingText = glowingText;
         setChanged();
-        if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        notifyTextChanged();
+    }
+
+    public void notifyTextChanged() {
+        if (level == null) return;
+        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        if (level.isClientSide() || !(level instanceof ServerLevel serverLevel)) return;
+        if (!serverLevel.isLoaded(worldPosition)) return;
+        for (ServerPlayer player : serverLevel.players()) {
+            if (player.distanceToSqr(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
+                    worldPosition.getZ() + 0.5) > 96 * 96) {
+                continue;
+            }
+            VersionServices.blocks().sendBlockEntityUpdate(player, serverLevel, worldPosition,
+                    createUpdatePacket());
+        }
     }
 
     public int getEditingLineIndex() { return editingLineIndex; }
@@ -66,17 +105,53 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         super.saveAdditionalCompat(nbt);
         ListTag list = new ListTag();
         for (TextLineData data : textLines) list.add(data.toNbt());
-        nbt.put("TextLines", list);
-        nbt.putBoolean("GlowingText", glowingText);
+        nbt.put(NBT_TEXT_LINES, list);
+        nbt.putBoolean(NBT_GLOWING_TEXT, glowingText);
+        nbt.putBoolean(NBT_TEXT_CUSTOMIZED, textLinesCustomized);
     }
 
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        textLines.clear();
-        ListTag list = NbtCompat.getList(nbt, "TextLines", 10);
-        for (int i = 0; i < list.size(); i++) textLines.add(TextLineData.fromNbt(NbtCompat.compoundAt(list, i)));
-        glowingText = NbtCompat.getBoolean(nbt, "GlowingText");
+        CompoundTag data = textDataTag(nbt);
+        if (data == null) {
+            if (!textLinesLoaded) {
+                textLines.clear();
+            }
+            setChanged();
+            return;
+        }
+        if (data.contains(NBT_TEXT_LINES)) {
+            List<TextLineData> loaded = new ArrayList<>();
+            ListTag list = NbtCompat.getList(data, NBT_TEXT_LINES, 10);
+            for (int i = 0; i < list.size(); i++) {
+                loaded.add(TextLineData.fromNbt(NbtCompat.compoundAt(list, i)));
+            }
+            this.textLines = loaded;
+            this.textLinesLoaded = true;
+            this.textLinesCustomized = data.contains(NBT_TEXT_CUSTOMIZED)
+                    ? NbtCompat.getBoolean(data, NBT_TEXT_CUSTOMIZED) : !loaded.isEmpty();
+        }
+        if (data.contains(NBT_GLOWING_TEXT)) {
+            glowingText = NbtCompat.getBoolean(data, NBT_GLOWING_TEXT);
+        }
+    }
+
+    public static boolean hasTextLinesData(CompoundTag nbt) {
+        CompoundTag data = textDataTag(nbt);
+        return data != null && data.contains(NBT_TEXT_LINES);
+    }
+
+    private static CompoundTag textDataTag(CompoundTag nbt) {
+        if (nbt == null) return null;
+        if (hasAnyTextKey(nbt)) return nbt;
+        CompoundTag wrapper = NbtCompat.getCompound(nbt, NBT_COMPAT_WRAPPER);
+        return wrapper != null && hasAnyTextKey(wrapper) ? wrapper : null;
+    }
+
+    private static boolean hasAnyTextKey(CompoundTag tag) {
+        return tag.contains(NBT_TEXT_LINES) || tag.contains(NBT_GLOWING_TEXT)
+                || tag.contains(NBT_TEXT_CUSTOMIZED);
     }
 
     @Nullable @Override public ClientboundBlockEntityDataPacket getUpdatePacket() { return createUpdatePacket(); }
@@ -117,6 +192,10 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
     }
 
     public static class TextLineData {
+        public static final int DEFAULT_GROUP_INTERVAL_MS = 3000;
+        public static final int MIN_GROUP_INTERVAL_MS = 200;
+        public static final int MAX_GROUP_INTERVAL_MS = 600000;
+
         private String text;
         private float xOffset, yOffset, zOffset;
         private float rotX, rotY, rotZ;
@@ -132,6 +211,10 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         private float scaleX, scaleY, scaleZ;
 
         private boolean builtin = false;
+
+        private int groupId = 0;
+        private String groupName = "";
+        private int groupIntervalMs = DEFAULT_GROUP_INTERVAL_MS;
 
         public TextLineData(String text) {
             this.text = text != null ? text : "";
@@ -157,6 +240,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             c.abcFont = abcFont;
             c.scaleX = scaleX; c.scaleY = scaleY; c.scaleZ = scaleZ;
             c.builtin = builtin;
+            c.groupId = groupId; c.groupName = groupName; c.groupIntervalMs = groupIntervalMs;
             return c;
         }
 
@@ -196,6 +280,9 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             nbt.putString("abcFont", abcFont);
             nbt.putFloat("scaleX", scaleX); nbt.putFloat("scaleY", scaleY); nbt.putFloat("scaleZ", scaleZ);
             nbt.putBoolean("builtin", builtin);
+            nbt.putInt("groupId", groupId);
+            nbt.putString("groupName", groupName == null ? "" : groupName);
+            nbt.putInt("groupIntervalMs", groupIntervalMs);
             return nbt;
         }
 
@@ -216,6 +303,10 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             data.scaleY = nbt.contains("scaleY") ? NbtCompat.getFloat(nbt, "scaleY") : 1.0f;
             data.scaleZ = nbt.contains("scaleZ") ? NbtCompat.getFloat(nbt, "scaleZ") : 1.0f;
             data.builtin = NbtCompat.getBoolean(nbt, "builtin");
+            data.groupId = nbt.contains("groupId") ? NbtCompat.getInt(nbt, "groupId") : 0;
+            data.groupName = nbt.contains("groupName") ? NbtCompat.getString(nbt, "groupName") : "";
+            data.groupIntervalMs = nbt.contains("groupIntervalMs")
+                    ? clampGroupInterval(NbtCompat.getInt(nbt, "groupIntervalMs")) : DEFAULT_GROUP_INTERVAL_MS;
             return data;
         }
 
@@ -242,6 +333,27 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         public float getScaleZ() { return scaleZ; } public void setScaleZ(float s) { this.scaleZ = s; }
         public boolean isGlowing() { return glowing; } public void setGlowing(boolean g) { this.glowing = g; }
         public boolean isBuiltin() { return builtin; } public void setBuiltin(boolean b) { this.builtin = b; }
+
+        public static int clampGroupInterval(int ms) {
+            if (ms <= 0) return DEFAULT_GROUP_INTERVAL_MS;
+            return Math.max(MIN_GROUP_INTERVAL_MS, Math.min(MAX_GROUP_INTERVAL_MS, ms));
+        }
+
+        public int getGroupId() { return groupId; }
+        public void setGroupId(int id) { this.groupId = Math.max(0, id); }
+        public boolean isInGroup() { return groupId > 0; }
+
+        public String getGroupName() { return groupName == null ? "" : groupName; }
+        public void setGroupName(String name) { this.groupName = name == null ? "" : name; }
+
+        public int getGroupIntervalMs() { return groupIntervalMs <= 0 ? DEFAULT_GROUP_INTERVAL_MS : groupIntervalMs; }
+        public void setGroupIntervalMs(int ms) { this.groupIntervalMs = clampGroupInterval(ms); }
+
+        public void applyGroupInfo(int id, String name, int intervalMs) {
+            this.groupId = Math.max(0, id);
+            this.groupName = name == null ? "" : name;
+            this.groupIntervalMs = clampGroupInterval(intervalMs);
+        }
     }
 
     public enum TextAlignment {

@@ -1,8 +1,5 @@
 package com.beigu.yunbeiuc.neoforge.client;
 
-import com.beigu.yunbeiuc.block.MunicipalBlocks;
-import com.beigu.yunbeiuc.block.RoadBlocks;
-import com.beigu.yunbeiuc.block.SignBlocks;
 import com.beigu.yunbeiuc.render.LinkWandRenderer;
 import com.beigu.yunbeiuc.entity.ModBlockEntities;
 import com.beigu.yunbeiuc.render.*;
@@ -13,9 +10,7 @@ import com.beigu.yunbeiuc.util.TrafficLightsPatternCategoryManager;
 import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetLoader;
 import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetManager;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -24,44 +19,6 @@ public class YunbeiUrbanConstructionNeoForgeClient {
 
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            RenderType cutout = RenderType.cutoutMipped();
-            RenderType translucent = RenderType.translucent();
-
-            RoadBlocks.BLOCKS.forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
-
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.ROAD_FLOWER_BOX_1.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.ROAD_FLOWER_BOX_2.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.ROAD_FLOWER_BOX_2_FENCE.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.ANTI_GLARE_NET.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.ANTI_GLARE_NET_POLE.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.WARNING_NETWORK.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.WARNING_NETWORK_POLE.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_WHITE_NORMAL.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_WHITE_TB.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_BLUE_NORMAL.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_BLUE_TB.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_GREEN_NORMAL.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_1_GREEN_TB.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_2_NORMAL.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_2_TB.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_3_WHITE_NORMAL.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_3_WHITE_TB.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_3_BLUE_NORMAL.get());
-            RenderTypeRegistry.register(translucent, MunicipalBlocks.SOUND_BARRIER_3_BLUE_TB.get());
-
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get());
-
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.CORNER_GUARD_BLACK.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.CORNER_GUARD_BLACK_LEFT.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.CORNER_GUARD_BLACK_RIGHT.get());
-
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get());
-            RenderTypeRegistry.register(cutout, MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_GREEN_TEXT.get());
-
-            SignBlocks.BLOCKS.forEach(blockRegistrySupplier -> RenderTypeRegistry.register(cutout, blockRegistrySupplier.get()));
-
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), FlagBlockEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY.get(), RoadNameSignBlockEntityRenderer::new);
@@ -114,12 +71,10 @@ public class YunbeiUrbanConstructionNeoForgeClient {
             TrafficLightsPatternCategoryManager.load();
         });
 
-        NeoForge.EVENT_BUS.addListener(YunbeiUrbanConstructionNeoForgeClient::onRenderLevelStage);
+        NeoForge.EVENT_BUS.addListener(YunbeiUrbanConstructionNeoForgeClient::onAfterTranslucentBlocks);
     }
 
-    private static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            LinkWandRenderer.renderLinkedLightsOutline(event.getPoseStack(), event.getCamera());
-        }
+    private static void onAfterTranslucentBlocks(RenderLevelStageEvent.AfterTranslucentBlocks event) {
+        LinkWandRenderer.renderLinkedLightsOutline(event.getPoseStack(), Minecraft.getInstance().gameRenderer.mainCamera());
     }
 }

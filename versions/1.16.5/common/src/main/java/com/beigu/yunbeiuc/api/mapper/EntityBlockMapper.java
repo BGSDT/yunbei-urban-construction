@@ -59,7 +59,7 @@ public abstract class EntityBlockMapper extends BaseEntityBlock implements Block
     }
 
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return super.updateShape(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
     }
 

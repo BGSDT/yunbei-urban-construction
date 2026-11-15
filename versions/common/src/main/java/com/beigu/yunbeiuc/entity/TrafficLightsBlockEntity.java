@@ -33,8 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 // 红绿灯方块实体：相位时间表 + 组内轨道绑定 + 灯色/读秒的唯一数据源。
-// 相位是现算的（cycleStartGameTime + level.getGameTime，组内共用起点），客户端与服务端一致，不需要同步包。
-// 灯色由 updateLightState() 写方块状态；非玩家拆除（爆炸/活塞/setblock）靠每 2 秒的组完整性自检兜底。
 
 public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private static final int MAX_PHASE_INDICES = 4;
@@ -604,8 +602,6 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             if (state.getBlock() instanceof com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock) {
                 continue;
             }
-            // 只有位置真的变成空气才认定这盏灯被拆了。被换成别的方块时不主动解散整组，
-            // 否则人行道一体化灯的附属格、或恰好被别的方块覆盖时会误伤整组。
             if (state.isAir()) {
                 missing = true;
                 break;
@@ -965,9 +961,6 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         }
     }
 
-    // sendBlockUpdated 的广播依赖 ChunkHolder 的脏块队列，1.16.5 / 1.17.1 上模组方块实体的数据
-    // 经常到不了客户端（表现为客户端 groupId 为空、右键弹出静态状态页、魔杖没有轨道高亮）。
-    // 这里用**原版** ClientboundBlockEntityDataPacket 直接补发一次；不是自定义 S2C 通道。
     private void pushUpdateToNearbyPlayers() {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!serverLevel.isLoaded(worldPosition)) return;

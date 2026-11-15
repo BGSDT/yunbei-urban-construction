@@ -56,8 +56,6 @@ public class GroundMarkBlock extends BlockCompat {
             .setValue(SLAB, isBottomSlab(below));
     }
 
-    // 只有下方是「下半砖」时才下沉：bottom 半砖的顶面在 y=8，标记方块本地坐标 -8 正好落在该顶面上。
-    // top 半砖与 double 的顶面都在 y=16，用原模型（0~0.1）即可贴合，无需下沉。
     private static boolean isBottomSlab(BlockState below) {
         return below.hasProperty(BlockStateProperties.SLAB_TYPE)
             && below.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.BOTTOM;

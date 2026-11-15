@@ -12,8 +12,6 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
     protected final Minecraft client;
     protected int left;
 
-    // 26.x entries receive only (extractor, index, y, hovered, delta); the pointer position is
-    // captured here so the shared entry code can keep its (mouseX, mouseY) parameters.
     private static int lastMouseX;
     private static int lastMouseY;
 
@@ -67,9 +65,9 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 
     public abstract static class Entry<E extends Entry<E>> extends ObjectSelectionList.Entry<E> {
         @Override
-        public final void extractContent(GuiGraphicsExtractor extractor, int index, int y, boolean hovered, float delta) {
-            render(new DrawContext(extractor), index, y, getContentX(), getWidth(), getHeight(),
-                    lastMouseX, lastMouseY, hovered, delta);
+        public final void extractContent(GuiGraphicsExtractor extractor, int mouseX, int mouseY, boolean hovered, float delta) {
+            render(new DrawContext(extractor), 0, getContentY(), getContentX(), getWidth(), getHeight(),
+                    mouseX, mouseY, hovered, delta);
         }
 
         public abstract void render(DrawContext context, int index, int y, int x, int entryWidth,
@@ -86,7 +84,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             for (ClickableWidget child : children()) {
                 if (child.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(mouseX, mouseY,
-                        new net.minecraft.client.input.MouseButtonInfo(button, 0)), false)) return true;
+                        new net.minecraft.client.input.MouseButtonInfo(button + 1, 0)), false)) return true;
             }
             return false;
         }

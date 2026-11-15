@@ -45,8 +45,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 // 红绿灯方块：MOUNT（安装方式，驱动模型与图案/读秒的 z 偏移）、LIGHT_STATE、TYPE 等状态都在这里。
-// 对链接魔杖返回 PASS，让物品的 useOn 能接管（方块 use 先于物品 useOn）。
-// 敲掉组内任意一盏灯都会解散整组（时间表与轨道绑定一起清空），所以必须给玩家明确提示。
 
 public class TrafficLightsBlock extends TickingEntityBlock {
 
@@ -99,8 +97,6 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         tooltip.add(Text.translatable("block.yunbeiuc.traffic_lights.tooltip.auto_detect"));
     }
 
-    /** Compares by registration name: the registry suppliers are not resolvable while a block is
-     *  still being registered, and 26.x builds the collision-shape cache at that very moment. */
     private static boolean isNamed(Block block, String name) {
         return name.equals(com.beigu.yunbeiuc.block.BlockRegistration.nameOf(block));
     }

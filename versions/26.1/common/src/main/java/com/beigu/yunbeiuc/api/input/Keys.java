@@ -1,12 +1,6 @@
 package com.beigu.yunbeiuc.api.input;
 
-/**
- * Version-neutral key constants.
- *
- * <p>26.3 dropped LWJGL GLFW in favour of SDL, so {@code org.lwjgl.glfw.GLFW} is no longer on the
- * classpath. The key codes below are the GLFW values Minecraft has always used for its own input
- * handling, which keeps the shared screens compiling everywhere.</p>
- */
+// Version-neutral key constants. 26.3 dropped LWJGL GLFW in favour of SDL, so these are the
 public final class Keys {
     private Keys() {
     }

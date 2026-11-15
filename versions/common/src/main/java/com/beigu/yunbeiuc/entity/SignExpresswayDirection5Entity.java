@@ -33,7 +33,7 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
         this.expresswayNumber1 = NbtCompat.getString(nbt, "expresswayNumber1");
         this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
         this.direction1 = SignCompassDirection.fromName(NbtCompat.getString(nbt, "direction1"), SignCompassDirection.NORTH);
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

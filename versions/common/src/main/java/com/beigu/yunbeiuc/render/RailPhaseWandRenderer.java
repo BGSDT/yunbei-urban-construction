@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 // 手持「轨道魔杖」（普通魔杖或链接魔杖）时画周围所有已组轨道的高亮线与「相位 x」标签（客户端）。
-// 组信息从 ClientRailGroupIndex 现查，不写物品 NBT；显示距离 128 格、几何缓存 500ms。
-// 红绿灯上方的悬浮字不在这里画，由 TrafficLightsBlockEntityRenderer 负责。
 
 public final class RailPhaseWandRenderer {
 
@@ -101,7 +99,7 @@ public final class RailPhaseWandRenderer {
         ApiCompat.disableDepthTest();
         ApiCompat.disableCull();
 
-        final MultiBufferSource.BufferSource buffers = client.renderBuffers().bufferSource();
+        final MultiBufferSource.BufferSource buffers = ApiCompat.bufferSource(client);
         final RenderPlatform render = VersionServices.render();
 
         final List<CachedRail> visible = new ArrayList<>(rails.size());

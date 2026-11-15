@@ -4,7 +4,5 @@
     "id": "yunbeiuc:road_with_white_three_square_line",
     "count": 1
   },
-  "ingredient": {
-    "item": "yunbeiuc:road_full_of_white"
-  }
+  "ingredient": "yunbeiuc:road_full_of_white"
 }

@@ -203,32 +203,35 @@ public class TrafficLightsScreen extends Screen {
 
         int buttonsYOffset = isPavement ? getPavementButtonsYOffset() : BUTTONS_Y_OFFSET;
 
+        int buttonW = 81;
+        int buttonGap = 8;
+        int colLeft = panelX + 15;
+        int colRight = colLeft + buttonW + buttonGap;
+
         saveButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
-                        .dimensions(panelX + 30, panelY + buttonsYOffset, 60, 20)
+                        .dimensions(colLeft, panelY + buttonsYOffset, buttonW, 20)
                         .build()
         );
 
         cancelButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
-                        .dimensions(panelX + 110, panelY + buttonsYOffset, 60, 20)
+                        .dimensions(colRight, panelY + buttonsYOffset, buttonW, 20)
                         .build()
         );
 
         patternPresetButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("相位预设"), button -> openPatternSelectScreen())
-                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 90, 20)
+                        .dimensions(colLeft, panelY + buttonsYOffset + 25, buttonW, 20)
                         .build()
         );
 
-        // 设过时间表之后右键只会进这个主界面，必须在这里留一个回到时间表的入口，
-        // 否则玩家再也改不了相位时长。
         if (timingButton != null) {
             this.remove(timingButton);
         }
         timingButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("时间表"), button -> openTimingScreen())
-                        .dimensions(panelX + 125, panelY + buttonsYOffset + 25, 60, 20)
+                        .dimensions(colRight, panelY + buttonsYOffset + 25, buttonW, 20)
                         .build()
         );
 
@@ -244,7 +247,7 @@ public class TrafficLightsScreen extends Screen {
                     ButtonWidget.builderCompat(
                             Text.literal(currentMountType.getDisplayName()),
                             button -> toggleMountType())
-                            .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
+                            .dimensions(colLeft, panelY + buttonsYOffset + 50, buttonW * 2 + buttonGap, 20)
                             .build()
             );
         }
@@ -271,13 +274,17 @@ public class TrafficLightsScreen extends Screen {
         );
 
         int buttonsYOffset = getPavementButtonsYOffset();
+        int buttonW = 81;
+        int buttonGap = 8;
+        int colLeft = panelX + 15;
+        int colRight = colLeft + buttonW + buttonGap;
 
         if (saveButton != null) {
             this.remove(saveButton);
         }
         saveButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.save"), button -> saveAndClose())
-                        .dimensions(panelX + 30, panelY + buttonsYOffset, 60, 20)
+                        .dimensions(colLeft, panelY + buttonsYOffset, buttonW, 20)
                         .build()
         );
 
@@ -286,7 +293,7 @@ public class TrafficLightsScreen extends Screen {
         }
         cancelButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.translatable("text.yunbeiuc.traffic_lights.cancel"), button -> this.close())
-                        .dimensions(panelX + 110, panelY + buttonsYOffset, 60, 20)
+                        .dimensions(colRight, panelY + buttonsYOffset, buttonW, 20)
                         .build()
         );
 
@@ -295,18 +302,16 @@ public class TrafficLightsScreen extends Screen {
         }
         patternPresetButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("相位预设"), button -> openPatternSelectScreen())
-                        .dimensions(panelX + 30, panelY + buttonsYOffset + 25, 90, 20)
+                        .dimensions(colLeft, panelY + buttonsYOffset + 25, buttonW, 20)
                         .build()
         );
 
-        // 设过时间表之后右键只会进这个主界面，必须在这里留一个回到时间表的入口，
-        // 否则玩家再也改不了相位时长。
         if (timingButton != null) {
             this.remove(timingButton);
         }
         timingButton = this.addDrawableChild(
                 ButtonWidget.builderCompat(Text.literal("时间表"), button -> openTimingScreen())
-                        .dimensions(panelX + 125, panelY + buttonsYOffset + 25, 60, 20)
+                        .dimensions(colRight, panelY + buttonsYOffset + 25, buttonW, 20)
                         .build()
         );
 
@@ -327,7 +332,7 @@ public class TrafficLightsScreen extends Screen {
                     ButtonWidget.builderCompat(
                             Text.literal(pendingMountType.getDisplayName()),
                             button -> toggleMountType())
-                            .dimensions(panelX + 30, panelY + buttonsYOffset + 50, 140, 20)
+                            .dimensions(colLeft, panelY + buttonsYOffset + 50, buttonW * 2 + buttonGap, 20)
                             .build()
             );
         }

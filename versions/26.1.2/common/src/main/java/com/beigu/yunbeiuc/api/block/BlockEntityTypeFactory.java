@@ -11,12 +11,7 @@ import java.lang.reflect.Proxy;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-/**
- * Minecraft 26.x removed {@code BlockEntityType.Builder}; the only remaining creation path is the
- * private constructor {@code BlockEntityType(BlockEntitySupplier, Set<Block>)} used by the vanilla
- * {@code register} helper. This factory rebuilds that call reflectively so the mod can keep
- * registering its block entity types through Architectury's {@code DeferredRegister}.
- */
+// Minecraft 26.x removed BlockEntityType.Builder; this factory calls the private
 final class BlockEntityTypeFactory {
     private BlockEntityTypeFactory() {}
 

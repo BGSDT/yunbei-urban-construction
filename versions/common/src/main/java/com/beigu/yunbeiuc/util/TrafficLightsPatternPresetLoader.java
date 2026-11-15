@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 // 内置/资源包预设加载器：遍历所有命名空间的 traffic_lights_yunbeiuc.json 并合并加载。
-// 加载出的预设与分类都视为「内置」，不允许在界面里删除。
 
 public class TrafficLightsPatternPresetLoader {
     private static final Map<String, TrafficLightsPatternPreset> BUILT_IN_PRESETS = new LinkedHashMap<>();

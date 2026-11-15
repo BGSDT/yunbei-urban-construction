@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "yunbeiuc:wand"
-    },
-    "X": {
-      "item": "minecraft:oak_sapling"
-    }
+    "#": "yunbeiuc:wand",
+    "X": "minecraft:oak_sapling"
   },
   "pattern": [
     "XXX",

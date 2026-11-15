@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 // 1.18.2 ~ 1.20.4：read 只带 PoiManager（1.21.1 起多带 RegionStorageInfo）。
-// read(...) 返回 ProtoChunk，所以回调必须收 CallbackInfoReturnable，否则运行时报 InvalidInjectionException。
 @Mixin(ChunkSerializer.class)
 public class LegacyRoadStateMixin {
 

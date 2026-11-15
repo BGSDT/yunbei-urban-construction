@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 // 1.16.5 / 1.17.1：read 带 StructureManager。
-// read(...) 返回 ProtoChunk，所以回调必须收 CallbackInfoReturnable，否则运行时报 InvalidInjectionException。
 @Mixin(ChunkSerializer.class)
 public class LegacyRoadStateMixin {
 

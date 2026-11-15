@@ -4,7 +4,5 @@
     "id": "yunbeiuc:road_with_white_tshape_yellowdouble_line",
     "count": 1
   },
-  "ingredient": {
-    "item": "yunbeiuc:road_white_yellow"
-  }
+  "ingredient": "yunbeiuc:road_white_yellow"
 }

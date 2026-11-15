@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:road_pole_horizontal"
-    },
-    {
-      "item": "yunbeiuc:reflective_sign_red_all_2"
-    }
+    "yunbeiuc:road_pole_horizontal",
+    "yunbeiuc:reflective_sign_red_all_2"
   ],
   "result": {
     "count": 1,

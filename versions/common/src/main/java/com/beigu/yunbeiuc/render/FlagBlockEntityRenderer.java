@@ -69,10 +69,12 @@ public class FlagBlockEntityRenderer extends BlockEntityRendererCompat<FlagBlock
         float halfWidth = width / 2;
         float halfHeight = height / 2;
 
-        renderFace(entry, vertexConsumer, facing, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.0f, light, overlay);
+        float faceOffset = 0.002f;
+
+        renderFace(entry, vertexConsumer, facing, -halfWidth, -halfHeight, halfWidth, halfHeight, faceOffset, light, overlay);
 
         Direction backFace = facing.getOpposite();
-        renderFace(entry, vertexConsumer, backFace, -halfWidth, -halfHeight, halfWidth, halfHeight, 0.0f, light, overlay);
+        renderFace(entry, vertexConsumer, backFace, -halfWidth, -halfHeight, halfWidth, halfHeight, faceOffset, light, overlay);
     }
 
     private void renderFace(PoseStack.Pose entry, VertexConsumer consumer, Direction face,

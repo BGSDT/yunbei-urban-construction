@@ -6,9 +6,9 @@ import dev.architectury.networking.NetworkManager;
 import net.minecraft.server.level.ServerPlayer;
 import com.beigu.yunbeiuc.api.resource.Id;
 import com.beigu.yunbeiuc.api.resource.IdAdapter;
+import com.beigu.yunbeiuc.api.network.NetworkCompat;
 
 // 本模组只有 C2S 通道，没有 S2C：客户端所需状态全部由方块实体更新包下发。
-// 服务端绝不能注册 S2C 接收器——专用服务器上没有 net.minecraft.client.*，一碰就崩。
 public class  ModMessages {
 
     public static final Id UPDATE_FLAG = id("update_flag");
@@ -27,52 +27,52 @@ public class  ModMessages {
 
     @SuppressWarnings("removal")
     public static void registerC2SPackets() {
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_FLAG), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_FLAG, (buf, context) -> {
             FlagUpdatePacket packet = new FlagUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_ROAD_NAME_SIGN), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_ROAD_NAME_SIGN, (buf, context) -> {
             RoadNameSignBlockUpdatePacket packet = new RoadNameSignBlockUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_TRAFFIC_LIGHTS), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS, (buf, context) -> {
             TrafficLightsUpdatePacket packet = new TrafficLightsUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_TRAFFIC_LIGHTS_TIMING), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_TIMING, (buf, context) -> {
             TrafficLightsTimingUpdatePacket packet = new TrafficLightsTimingUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_TRAFFIC_LIGHTS_STATIC_STATE), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_STATIC_STATE, (buf, context) -> {
             TrafficLightsStaticStateUpdatePacket packet = new TrafficLightsStaticStateUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, (buf, context) -> {
             TrafficLightsMountTypeUpdatePacket packet = new TrafficLightsMountTypeUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(APPLY_TRAFFIC_LIGHTS_PATTERN), (buf, context) -> {
+        NetworkCompat.registerC2S(APPLY_TRAFFIC_LIGHTS_PATTERN, (buf, context) -> {
             TrafficLightsPatternApplyPacket packet = new TrafficLightsPatternApplyPacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_CUSTOM_SIGN), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_CUSTOM_SIGN, (buf, context) -> {
             CustomSignUpdatePacket packet = new CustomSignUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_CUSTOM_SIGN_FIELD), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_CUSTOM_SIGN_FIELD, (buf, context) -> {
             CustomSignFieldUpdatePacket packet = new CustomSignFieldUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(UPDATE_RAIL_PHASE), (buf, context) -> {
+        NetworkCompat.registerC2S(UPDATE_RAIL_PHASE, (buf, context) -> {
             RailPhaseUpdatePacket packet = new RailPhaseUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });

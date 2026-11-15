@@ -14,5 +14,9 @@ public interface CreativeTabPlatform {
 
     Item.Properties apply(Item.Properties properties, CreativeTabHandle tab);
 
+    default Item.Properties blockDescription(Item.Properties properties) {
+        return properties;
+    }
+
     void append(CreativeTabHandle tab, List<Supplier<? extends Item>> items);
 }

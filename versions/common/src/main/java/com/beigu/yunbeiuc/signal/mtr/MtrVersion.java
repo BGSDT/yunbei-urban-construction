@@ -1,8 +1,6 @@
 package com.beigu.yunbeiuc.signal.mtr;
 
 // 探测运行环境是 MTR 3/YMTR 还是 MTR 4：只查类路径资源，绝不 Class.forName（会提前定义目标类，mixin 永不生效）。
-// 标记类：MTR 3 = mtr/data/TrainServer.class，MTR 4 = org/mtr/core/data/Rail.class；不能用 mtr.mixins.json 判断（两版同名）。
-// hasClass() 供 mixin 插件筛 targets：MTR 4.0.x 模组层在 org.mtr.mod.*，4.1 起在 org.mtr.*，两种全名都列上再筛。
 
 public enum MtrVersion {
 

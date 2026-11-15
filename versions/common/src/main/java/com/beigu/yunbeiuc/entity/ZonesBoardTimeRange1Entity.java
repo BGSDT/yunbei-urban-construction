@@ -25,7 +25,7 @@ public class ZonesBoardTimeRange1Entity extends CustomSignBlockEntity {
         super.loadCompat(nbt);
         this.time1 = NbtCompat.getString(nbt, "time1");
         this.time2 = NbtCompat.getString(nbt, "time2");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

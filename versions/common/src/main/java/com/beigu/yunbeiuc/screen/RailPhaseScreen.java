@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 
 // 轨道相位编辑界面：勾选哪些相位放行这条轨道，保存后发 RailPhaseUpdatePacket。
-// 面板固定 200×340，布局常量照抄 TrafficLightsScreen，勿按内容算高度；滑块上限 4。
 
 public class RailPhaseScreen extends Screen {
 

@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -21,7 +22,7 @@ public class ButtonWidget extends Button implements ClickableWidget {
     public void setPosition(int x, int y) { super.setX(x); super.setY(y); }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        extractWidgetRenderState(context.getGraphics(), mouseX, mouseY, delta);
+        extractRenderState(context.getGraphics(), mouseX, mouseY, delta);
     }
 
     public static final class Builder {
@@ -43,8 +44,9 @@ public class ButtonWidget extends Button implements ClickableWidget {
     }
 
     @Override
-    protected void extractContents(net.minecraft.client.gui.GuiGraphicsExtractor extractor,
+    protected void extractContents(GuiGraphicsExtractor extractor,
                                    int mouseX, int mouseY, float partialTick) {
-        // Button draws itself through extractWidgetRenderState.
+        extractDefaultSprite(extractor);
+        extractDefaultLabel(extractor.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
     }
 }

@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.screen;
 
-import net.minecraft.Util;
+import com.beigu.yunbeiuc.api.ApiCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -231,7 +231,7 @@ public final class MouseEventHandler {
     private static boolean handleHomeClick() {
         String url = PatternAndFontOverlay.getLastHoveredUrl();
         if (url != null) {
-            Util.getPlatform().openUri(url);
+            ApiCompat.openUri(url);
             return true;
         }
         return false;

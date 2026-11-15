@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.api.gui;
 
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 import com.beigu.yunbeiuc.api.resource.Id;
 import com.beigu.yunbeiuc.api.resource.IdAdapter;
@@ -10,13 +10,16 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 
+import com.beigu.yunbeiuc.render.FontCompat;
+
 public final class RenderPlatformImpl implements RenderPlatform {
     private BufferBuilder lineBuffer;
     @Override
     public void drawInBatch(Font font, Component text, float x, float y, int color, boolean shadow,
                             com.mojang.blaze3d.vertex.PoseStack matrices,
-                            com.beigu.yunbeiuc.api.render.GeometrySink buffers, int backgroundColor, int light) {
-        // 26.3 removed Font#drawInBatch; text is submitted through SubmitNodeCollector.
+                            net.minecraft.client.renderer.MultiBufferSource buffers, int backgroundColor, int light) {
+        FontCompat.drawInBatch(font, text, x, y, color, shadow, matrices.last().pose(), buffers,
+                Font.DisplayMode.NORMAL, backgroundColor, light);
     }
 
     @Override
@@ -40,7 +43,6 @@ public final class RenderPlatformImpl implements RenderPlatform {
         final float dx = x2 - x1;
         final float dy = y2 - y1;
         final float dz = z2 - z1;
-        // 1.21.1 起 vertex/color/normal 改名为 addVertex/setColor/setNormal，且不再需要 endVertex()。
         consumer.addVertex(pose.pose(), x1, y1, z1).setColor(red, green, blue, alpha)
                 .setNormal(pose, dx, dy, dz);
         consumer.addVertex(pose.pose(), x2, y2, z2).setColor(red, green, blue, alpha)
@@ -64,7 +66,6 @@ public final class RenderPlatformImpl implements RenderPlatform {
     }
     @Override
     public com.mojang.blaze3d.vertex.VertexConsumer beginLines(LinePrimitive primitive) {
-        // 26.3 removed Tesselator/VertexFormat; line geometry goes through the submit collector.
         return null;
     }
 
@@ -73,7 +74,6 @@ public final class RenderPlatformImpl implements RenderPlatform {
         if (lineBuffer == null) {
             return;
         }
-        // 26.x removed BufferUploader/MeshData; line batching is submitted elsewhere.
         lineBuffer = null;
     }
 

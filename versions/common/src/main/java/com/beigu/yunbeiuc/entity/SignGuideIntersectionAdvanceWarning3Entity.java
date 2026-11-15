@@ -48,7 +48,7 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
         this.enText6 = NbtCompat.getString(nbt, "enText6");
         this.cnText7 = NbtCompat.getString(nbt, "cnText7");
         this.enText7 = NbtCompat.getString(nbt, "enText7");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

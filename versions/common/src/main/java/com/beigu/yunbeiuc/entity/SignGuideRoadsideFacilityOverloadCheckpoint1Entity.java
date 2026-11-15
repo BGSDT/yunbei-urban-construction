@@ -26,7 +26,7 @@ public class SignGuideRoadsideFacilityOverloadCheckpoint1Entity extends CustomSi
         super.loadCompat(nbt);
         this.unit1 = Unit.fromName(NbtCompat.getString(nbt, "unit1"));
         this.length1 = NbtCompat.getString(nbt, "length1");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

@@ -19,12 +19,17 @@ public final class DrawContext {
 
     public Matrices getMatrices() { return new Matrices(extractor.pose()); }
 
+    private static int opaque(int argb) {
+        if (argb == 0) return 0;
+        return (argb & 0xFF000000) == 0 ? (argb | 0xFF000000) : argb;
+    }
+
     public void fill(int x0, int y0, int x1, int y1, int color) {
-        extractor.fill(x0, y0, x1, y1, color);
+        extractor.fill(x0, y0, x1, y1, opaque(color));
     }
 
     public void fillGradient(int x0, int y0, int x1, int y1, int colorFrom, int colorTo) {
-        extractor.fillGradient(x0, y0, x1, y1, colorFrom, colorTo);
+        extractor.fillGradient(x0, y0, x1, y1, opaque(colorFrom), opaque(colorTo));
     }
 
     public void drawBorder(int x, int y, int width, int height, int color) {
@@ -35,56 +40,55 @@ public final class DrawContext {
     }
 
     public void drawCenteredTextWithShadow(Font font, Component text, int x, int y, int color) {
-        extractor.centeredText(font, text, x, y, color);
+        extractor.centeredText(font, text, x, y, opaque(color));
     }
 
     public void drawCenteredTextWithShadow(Font font, String text, int x, int y, int color) {
-        extractor.centeredText(font, text, x, y, color);
+        extractor.centeredText(font, text, x, y, opaque(color));
     }
 
     public void drawTextWithShadow(Font font, Component text, int x, int y, int color) {
-        extractor.text(font, text, x, y, color, true);
+        extractor.text(font, text, x, y, opaque(color), true);
     }
 
     public void drawTextWithShadow(Font font, String text, int x, int y, int color) {
-        extractor.text(font, text, x, y, color, true);
+        extractor.text(font, text, x, y, opaque(color), true);
     }
 
     public void drawText(Font font, Component text, int x, int y, int color, boolean shadow) {
-        extractor.text(font, text, x, y, color, shadow);
+        extractor.text(font, text, x, y, opaque(color), shadow);
     }
 
     public void drawText(Font font, String text, int x, int y, int color, boolean shadow) {
-        extractor.text(font, text, x, y, color, shadow);
+        extractor.text(font, text, x, y, opaque(color), shadow);
     }
 
     public void drawText(Font font, FormattedCharSequence text, int x, int y, int color, boolean shadow) {
-        extractor.text(font, text, x, y, color, shadow);
+        extractor.text(font, text, x, y, opaque(color), shadow);
     }
 
     public void drawTexture(Identifier texture, int x, int y, int width, int height,
                             int u, int v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-        extractor.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, (float) u, (float) v,
-                width, height, regionWidth, regionHeight, textureWidth);
+        int tw = Math.max(1, textureWidth);
+        int th = Math.max(1, textureHeight);
+        int rw = Math.max(1, regionWidth);
+        int rh = Math.max(1, regionHeight);
+        extractor.blit(texture, x, y, x + width, y + height,
+                u / (float) tw, (u + rw) / (float) tw,
+                v / (float) th, (v + rh) / (float) th);
     }
 
     public void drawTexture(Identifier texture, int x, int y, float u, float v,
                             int width, int height, int regionWidth, int regionHeight) {
-        extractor.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v,
-                width, height, regionWidth, regionHeight, regionWidth);
+        drawTexture(texture, x, y, width, height, Math.round(u), Math.round(v),
+                regionWidth, regionHeight, Math.max(1, regionWidth), Math.max(1, regionHeight));
     }
-
     public void enableScissor(int x0, int y0, int x1, int y1) {
         extractor.enableScissor(x0, y0, x1, y1);
     }
 
     public void disableScissor() { extractor.disableScissor(); }
 
-    /**
-     * 26.x replaced the 3D {@code PoseStack} in GUI code with a 2D {@link Matrix3x2fStack} and draws
-     * strictly in submission order, so the old Z translations (used only for layering) collapse into
-     * plain 2D translations.
-     */
     public static final class Matrices {
         private final Matrix3x2fStack pose;
 

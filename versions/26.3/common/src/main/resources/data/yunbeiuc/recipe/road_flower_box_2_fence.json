@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "A": {
-      "item": "minecraft:iron_block"
-    },
-    "B": {
-      "item": "minecraft:white_concrete"
-    }
+    "A": "minecraft:iron_block",
+    "B": "minecraft:white_concrete"
   },
   "pattern": [
     "BBB",

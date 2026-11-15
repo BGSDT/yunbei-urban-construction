@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.render;
 
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 import com.beigu.yunbeiuc.entity.CustomSignBlockEntity;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -30,11 +30,15 @@ import java.util.Locale;
 
 public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBlockEntity>
         implements BlockEntityRenderer<T, TextDisplayRenderState> {
-    /** Packed full-bright light value (block + sky), formerly {@code LightTexture.FULL_BRIGHT}. */
     protected static final int FULL_BRIGHT = 0xF000F0;
 
     protected final Font textRenderer;
     private int gizmoLineIndex;
+
+    private final List<PendingText> pendingTexts = new java.util.ArrayList<>();
+
+    private record PendingText(Matrix4f matrix, float x, float y, Component text, boolean shadow,
+                               int color, int outlineColor, int light) {}
 
     protected AbstractTextDisplayEntityRenderer(BlockEntityRendererProvider.Context ctx) {
         this.textRenderer = ctx.font();
@@ -59,13 +63,17 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (entity == null) {
             return;
         }
+        if (cameraState != null && cameraState.projectionMatrix != null && cameraState.viewRotationMatrix != null) {
+            TextGizmo.setProjectionView(new Matrix4f(cameraState.projectionMatrix).mul(cameraState.viewRotationMatrix));
+        }
         DeferredGeometry deferred = new DeferredGeometry();
+        pendingTexts.clear();
         render(entity, state.partialTick(), matrices, deferred, state.lightCoords, OverlayTexture.NO_OVERLAY);
         deferred.submit(collector);
+        submitPendingTexts(collector);
     }
 
-    /** Draws one text display entity into the given buffer source. Called from {@link #submit}. */
-    public final void render(T entity, float tickDelta, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay) {
+    public final void render(T entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         matrices.pushPose();
         applyTransforms(matrices, entity);
         Matrix4f baseFrame = new Matrix4f(matrices.last().pose());
@@ -79,7 +87,9 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         int editingMode = entity.getEditingGizmoMode();
         int gizmoMode = editingIndex >= 0 ? editingMode : -1;
         if (editingIndex >= 0 || editingMode == -2) TextGizmo.beginFrameRects();
+        boolean groupEditing = editingIndex >= 0 || editingMode == -2;
         for (int i = 0; i < lines.size(); i++) {
+            if (!groupEditing && !SignTextGroupRuntime.isRenderableAt(lines, i)) continue;
             gizmoLineIndex = i;
             renderTextLine(entity, matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex, gizmoMode, baseFrame);
         }
@@ -91,7 +101,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
     protected abstract float getZOffset(T entity);
 
-    protected void renderFixedContent(T entity, PoseStack matrices, GeometrySink vertexConsumers,
+    protected void renderFixedContent(T entity, PoseStack matrices, MultiBufferSource vertexConsumers,
                                       float tickDelta, int light, int overlay, float zOffset) {
     }
 
@@ -103,7 +113,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         }
     }
 
-    private void renderTextLine(T entity, PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderTextLine(T entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         if (lineData.getText().isEmpty()) return;
         String text = lineData.getText().trim();
 
@@ -168,7 +178,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         if (lineData.getRotZ() != 0) matrices.mulPose(new org.joml.Matrix4f().rotation(Axis.ZP.rotationDegrees(lineData.getRotZ())));
     }
 
-    private void renderJsonText(PoseStack matrices, GeometrySink vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Component jsonText, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderJsonText(PoseStack matrices, MultiBufferSource vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, Component jsonText, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -205,15 +215,14 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-
         if (editing) renderEditingOutline(vertexConsumers, matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY(), 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
-        if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
+        if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale, vertexConsumers);
 
         matrices.popPose();
     }
 
-    private void renderText(T entity, PoseStack matrices, GeometrySink vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderText(T entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, float zOffset, CustomSignBlockEntity.TextLineData lineData, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
 
         float baseScale = 0.05f * lineData.getFontSize();
@@ -249,35 +258,32 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
 
         drawStyledText(renderText, renderX, renderY, lineData, matrices.last().pose(), vertexConsumers, light);
 
-
         if (editing) renderEditingOutline(vertexConsumers, matrices, renderX, renderY, textWidth, textHeight, 0.05f * lineData.getFontSize(), lineData.getScaleX(), lineData.getScaleY(), 0x00FFFF);
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, renderX, renderY, textWidth, textHeight, 1f, 1f);
-        if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale);
+        if (gizmoFrame != null) TextGizmo.updateAndRender(gizmoMode, baseFrame, gizmoFrame, lineData, zOffset, textWidth / 2f * baseScale, textHeight / 2f * baseScale, vertexConsumers);
 
         matrices.popPose();
     }
 
-    private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, GeometrySink vertexConsumers, int light) {
-        int textLight = lineData.isGlowing() ? 0xF000F0 : light;
-        boolean outline = lineData.isOutline();
-        boolean shadow = lineData.isShadow();
-        if (outline) {
-            if (shadow) {
-                this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), true,
-                        matrix, vertexConsumers, Font.DisplayMode.NORMAL, 0, textLight);
-            }
-            int outlineColor = resolveOutlineColor(lineData);
-            Component outlineText = renderText.copy()
-                    .withStyle(s -> s.withColor(net.minecraft.network.chat.TextColor.fromRgb(outlineColor & 0xFFFFFF)));
-            this.textRenderer.drawInBatch8xOutline(outlineText.getVisualOrderText(), x, y, lineData.getColor(), outlineColor,
-                    matrix, vertexConsumers, textLight);
-        } else {
-            this.textRenderer.drawInBatch(renderText, x, y, lineData.getColor(), shadow,
-                    matrix, vertexConsumers, Font.DisplayMode.NORMAL, 0, textLight);
-        }
+    private void drawStyledText(Component renderText, float x, float y, CustomSignBlockEntity.TextLineData lineData, Matrix4f matrix, MultiBufferSource vertexConsumers, int light) {
+        int textLight = lineData.isGlowing() ? FULL_BRIGHT : light;
+        int textColor = 0xFF000000 | (lineData.getColor() & 0xFFFFFF);
+        int outlineColor = lineData.isOutline() ? (0xFF000000 | (resolveOutlineColor(lineData) & 0xFFFFFF)) : 0;
+        pendingTexts.add(new PendingText(new Matrix4f(matrix), x, y, renderText, lineData.isShadow(),
+                textColor, outlineColor, textLight));
     }
 
-    private void renderRect(PoseStack matrices, GeometrySink vertexConsumers, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void submitPendingTexts(SubmitNodeCollector collector) {
+        for (PendingText pending : pendingTexts) {
+            PoseStack pose = new PoseStack();
+            pose.last().pose().set(pending.matrix());
+            collector.submitText(pose, pending.x(), pending.y(), pending.text().getVisualOrderText(),
+                    pending.shadow(), Font.DisplayMode.NORMAL, pending.light(), pending.color(), 0,
+                    pending.outlineColor());
+        }
+        pendingTexts.clear();
+    }
+    private void renderRect(PoseStack matrices, MultiBufferSource vertexConsumers, float zOffset, CustomSignBlockEntity.TextLineData lineData, float width, float height, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
         float centerX = lineData.getXOffset() / 16f;
         float centerY = lineData.getYOffset() / 16f;
@@ -323,13 +329,13 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, -halfW, -halfH, halfW * 2, halfH * 2, 1f, 1f);
         if (editing && gizmoMode >= 0) {
             TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.last().pose()), lineData,
-                    zOffset, width / 16f / 2f * lineData.getFontSize(), height / 16f / 2f * lineData.getFontSize());
+                    zOffset, width / 16f / 2f * lineData.getFontSize(), height / 16f / 2f * lineData.getFontSize(), vertexConsumers);
         }
 
         matrices.popPose();
     }
 
-    private void renderTexture(PoseStack matrices, GeometrySink vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, Identifier textureId, boolean editing, int gizmoMode, Matrix4f baseFrame) {
+    private void renderTexture(PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, float zOffset, CustomSignBlockEntity.TextLineData lineData, Identifier textureId, boolean editing, int gizmoMode, Matrix4f baseFrame) {
         matrices.pushPose();
 
         float xPos = lineData.getXOffset() / 16f;
@@ -364,7 +370,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         consumer.addVertex(positionMatrix, halfWidth, halfHeight, 0).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
         consumer.addVertex(positionMatrix, -halfWidth, halfHeight, 0).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
 
-
         if (lineData.isOutline()) {
             flushBatch(vertexConsumers);
             renderEditingOutline(vertexConsumers, matrices, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 0.25f, 1f, 1f, resolveOutlineColor(lineData));
@@ -374,13 +379,13 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         TextGizmo.addLineRect(matrices.last().pose(), gizmoLineIndex, -halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2, 1f, 1f);
         if (editing && gizmoMode >= 0) {
             TextGizmo.updateAndRender(gizmoMode, baseFrame, new Matrix4f(matrices.last().pose()), lineData,
-                    zOffset, imageSize / 2f, imageSize / 2f);
+                    zOffset, imageSize / 2f, imageSize / 2f, vertexConsumers);
         }
 
         matrices.popPose();
     }
 
-    private static void flushBatch(GeometrySink vertexConsumers) {
+    private static void flushBatch(MultiBufferSource vertexConsumers) {
     }
     private static int resolveOutlineColor(CustomSignBlockEntity.TextLineData lineData) {
         int outline = lineData.getOutlineColor();
@@ -392,7 +397,7 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         int luma = (r * 299 + g * 587 + b * 114) / 1000;
         return luma >= 128 ? 0x000000 : 0xFFFFFF;
     }
-    private void renderEditingOutline(GeometrySink vertexConsumers, PoseStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY, int rgb) {
+    private void renderEditingOutline(MultiBufferSource vertexConsumers, PoseStack matrices, float left, float top, float w, float h, float unitScale, float scaleX, float scaleY, int rgb) {
         float px = 0.25f / 16f / Math.max(1e-5f, unitScale);
         float thicknessX = px / Math.max(0.01f, scaleX);
         float thicknessY = px / Math.max(0.01f, scaleY);
@@ -428,7 +433,6 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         return 256;
     }
 
-    /** 26.x dropped {@code Component.Serializer}; parse through the codec instead. */
     private static Component parseJsonComponent(String json) {
         try {
             net.minecraft.core.RegistryAccess access = Minecraft.getInstance().level != null

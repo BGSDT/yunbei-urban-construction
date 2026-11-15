@@ -1,8 +1,6 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "minecraft:white_concrete"
-  },
+  "ingredient": "minecraft:white_concrete",
   "result": {
     "id": "yunbeiuc:sign_custom_travel_10",
     "count": 9

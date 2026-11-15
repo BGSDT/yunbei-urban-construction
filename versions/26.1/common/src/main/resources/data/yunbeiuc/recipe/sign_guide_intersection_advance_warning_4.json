@@ -1,8 +1,6 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "minecraft:white_concrete"
-  },
+  "ingredient": "minecraft:white_concrete",
   "result": {
     "id": "yunbeiuc:sign_guide_intersection_advance_warning_4",
     "count": 9

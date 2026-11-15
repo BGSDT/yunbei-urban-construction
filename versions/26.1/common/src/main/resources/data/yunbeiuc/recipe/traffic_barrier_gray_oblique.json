@@ -4,7 +4,5 @@
     "id": "yunbeiuc:traffic_barrier_gray_oblique",
     "count": 1
   },
-  "ingredient": {
-    "item": "minecraft:gray_concrete"
-  }
+  "ingredient": "minecraft:gray_concrete"
 }

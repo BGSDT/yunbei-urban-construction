@@ -46,7 +46,6 @@ public abstract class ItemCompat extends Item implements BlockCompatHooks {
                 net.minecraft.core.component.DataComponents.CUSTOM_DATA, stack, action);
     }
 
-    /** Item subclasses implement this instead of {@code use}, whose return type differs per version. */
     protected com.beigu.yunbeiuc.api.ApiCompat.UseResult useCompat(
             net.minecraft.world.level.Level level, net.minecraft.world.entity.player.Player player,
             net.minecraft.world.InteractionHand hand) {

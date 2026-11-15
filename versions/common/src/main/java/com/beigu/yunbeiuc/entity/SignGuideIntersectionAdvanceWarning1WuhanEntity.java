@@ -38,7 +38,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
         this.enText4 = NbtCompat.getString(nbt, "enText4");
         this.cnText5 = NbtCompat.getString(nbt, "cnText5");
         this.enText5 = NbtCompat.getString(nbt, "enText5");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

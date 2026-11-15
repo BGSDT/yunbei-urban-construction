@@ -70,9 +70,6 @@ subprojects {
             main {
                 java.srcDir "$rootProject.projectDir/../common/src/main/java"
                 resources.srcDir "$rootProject.projectDir/../common/src/main/resources"
-                java.srcDir "$rootProject.projectDir/common/src/main/java"
-                // Version specific resources (26.x only assets such as item model definitions).
-                resources.srcDir "$rootProject.projectDir/common/src/main/resources"
             }
         }
     } else {

@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import java.util.UUID;
 
 // 一条 MTR 轨道与相位组的绑定：只存两端节点坐标，轨道标识按同一套规则现算，故不依赖 MTR 的类、也不分 MTR 3/4。
-// 相位用位掩码表示（第 i 位 = 相位 i 放行）；掩码为 0 表示这条轨道恒为红灯。
 
 public final class RailPhaseBinding {
 

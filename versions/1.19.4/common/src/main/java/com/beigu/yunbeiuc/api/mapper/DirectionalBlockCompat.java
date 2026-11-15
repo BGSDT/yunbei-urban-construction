@@ -42,9 +42,8 @@ public abstract class DirectionalBlockCompat extends DirectionalBlock implements
         playerWillDestroyCompat(level, pos, state, player);
     }
 
-    /** Version-neutral hook: 26.x changed the signature of {@code Block#updateShape}. */
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return super.updateShape(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
     }
 

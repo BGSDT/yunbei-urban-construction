@@ -43,7 +43,6 @@ public final class RenderPlatformImpl implements RenderPlatform {
         final float dx = x2 - x1;
         final float dy = y2 - y1;
         final float dz = z2 - z1;
-        // 1.21.1 起 vertex/color/normal 改名为 addVertex/setColor/setNormal，且不再需要 endVertex()。
         consumer.addVertex(pose.pose(), x1, y1, z1).setColor(red, green, blue, alpha)
                 .setNormal(pose, dx, dy, dz);
         consumer.addVertex(pose.pose(), x2, y2, z2).setColor(red, green, blue, alpha)

@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:barrier_gate_1_pole_longitudinal"
-    }
+    "yunbeiuc:barrier_gate_1_pole_longitudinal"
   ],
   "result": {
     "count": 1,

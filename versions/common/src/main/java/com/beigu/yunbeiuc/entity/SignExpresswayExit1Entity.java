@@ -23,7 +23,7 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
         super.loadCompat(nbt);
         this.logo1 = NbtCompat.getString(nbt, "logo1");
         this.logo = NbtCompat.getString(nbt, "image");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

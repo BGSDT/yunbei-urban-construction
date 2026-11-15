@@ -7,7 +7,7 @@ import com.beigu.yunbeiuc.util.TrafficLightsPatternPresetLoader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 
 public final class YunbeiUrbanConstructionFabric implements ModInitializer {
@@ -18,8 +18,8 @@ public final class YunbeiUrbanConstructionFabric implements ModInitializer {
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
                 new SimpleSynchronousResourceReloadListener() {
                     @Override
-                    public ResourceLocation getFabricId() {
-                        return ResourceLocation.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "flag_loader");
+                    public Identifier getFabricId() {
+                        return Identifier.fromNamespaceAndPath(YunbeiUrbanConstruction.MOD_ID, "flag_loader");
                     }
 
                     @Override

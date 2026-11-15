@@ -8,9 +8,7 @@ import java.util.function.Consumer;
 
 public class TextFieldWidget extends EditBox {
     public TextFieldWidget(Font font, int x, int y, int width, int height, Component label) {
-        super(font, x, y, label);
-        setWidth(width);
-        setHeight(height);
+        super(font, x, y, width, height, label);
     }
 
     public String getText() { return super.getValue(); }
@@ -20,6 +18,6 @@ public class TextFieldWidget extends EditBox {
     public void setPosition(int x, int y) { super.setX(x); super.setY(y); }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        extractWidgetRenderState(context.getGraphics(), mouseX, mouseY, delta);
+        extractRenderState(context.getGraphics(), mouseX, mouseY, delta);
     }
 }

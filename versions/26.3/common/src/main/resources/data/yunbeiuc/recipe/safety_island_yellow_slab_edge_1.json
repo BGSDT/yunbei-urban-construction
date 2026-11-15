@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:safety_island_gray_slab"
-    },
-    {
-      "item": "yunbeiuc:reflective_sign_yellow_all_1"
-    }
+    "yunbeiuc:safety_island_gray_slab",
+    "yunbeiuc:reflective_sign_yellow_all_1"
   ],
   "result": {
     "count": 1,

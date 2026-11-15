@@ -3,13 +3,7 @@ package com.beigu.yunbeiuc.api.nbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
-/**
- * Version-neutral NBT readers.
- *
- * <p>Minecraft 1.21.5 turned the {@code CompoundTag} getters into {@code Optional} returning
- * methods (and added {@code getXOr(key, default)}), while older versions return the plain value.
- * The shared tree reads NBT through this adapter so the same source compiles on both.</p>
- */
+// Version-neutral NBT readers. 1.21.5 turned CompoundTag getters into Optional-returning methods,
 public final class NbtCompat {
     private NbtCompat() {
     }

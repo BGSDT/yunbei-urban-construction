@@ -2,14 +2,7 @@ package com.beigu.yunbeiuc.api.resource;
 
 import java.util.Objects;
 
-/**
- * Version-neutral identifier (namespace + path).
- *
- * <p>Minecraft renamed {@code ResourceLocation} to {@code Identifier} in 26.x and both types are
- * final, so the shared tree cannot name either of them. Everything that is really "our own id"
- * lives as an {@code Id} here; the conversion to the platform type happens in the version specific
- * {@link IdAdapter}.</p>
- */
+// 版本中立 id：26.x 把 ResourceLocation 改名 Identifier 且两者都 final，共享代码无法引用，统一用 Id，转换在 IdAdapter 完成。
 public final class Id {
     public static final String DEFAULT_NAMESPACE = "minecraft";
 
@@ -29,10 +22,6 @@ public final class Id {
         return new Id("yunbeiuc", path);
     }
 
-    /**
-     * Parses {@code namespace:path}, falling back to {@link #DEFAULT_NAMESPACE} when the value has
-     * no namespace separator.
-     */
     public static Id parse(String value) {
         int split = value.indexOf(':');
         if (split < 0) {

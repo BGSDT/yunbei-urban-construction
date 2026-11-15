@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.UUID;
 
 // 链接魔杖：组网 + 轨道链接一次做完 —— 右键红绿灯组网、右键两个轨道节点记轨道、Shift+右键成组。
-// 只在运行期 Session 里记进度，不写物品 NBT；Shift+右键空气清进度。
 
 public class LinkWand extends ItemCompat {
 

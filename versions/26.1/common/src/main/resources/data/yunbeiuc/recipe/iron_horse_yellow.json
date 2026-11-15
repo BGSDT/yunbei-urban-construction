@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "A": {
-      "item": "minecraft:white_concrete"
-    },
-    "B": {
-      "item": "minecraft:stick"
-    },
-    "C": {
-      "item": "minecraft:black_concrete"
-    }
+    "A": "minecraft:white_concrete",
+    "B": "minecraft:stick",
+    "C": "minecraft:black_concrete"
   },
   "pattern": [
     "ACA",

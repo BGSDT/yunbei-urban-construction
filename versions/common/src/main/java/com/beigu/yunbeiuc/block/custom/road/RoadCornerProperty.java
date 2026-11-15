@@ -31,7 +31,6 @@ public class RoadCornerProperty extends Property<RoadCorner> {
         return values;
     }
 
-    // 26.x made getInternalIndex abstract; older versions do not declare it, so no @Override.
     public int getInternalIndex(RoadCorner corner) {
         return values.indexOf(corner);
     }

@@ -2,7 +2,7 @@ package com.beigu.yunbeiuc.screen;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.text.Text;
-import net.minecraft.Util;
+import com.beigu.yunbeiuc.api.ApiCompat;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import com.beigu.yunbeiuc.api.resource.Id;
@@ -182,7 +182,7 @@ public final class HomepageRenderer {
 
     public static boolean openUrl(String url) {
         if (url != null && !url.isEmpty()) {
-            Util.getPlatform().openUri(url);
+            ApiCompat.openUri(url);
             return true;
         }
         return false;

@@ -4,7 +4,5 @@
     "id": "yunbeiuc:safety_island_gray_oblique",
     "count": 1
   },
-  "ingredient": {
-    "item": "minecraft:gray_concrete"
-  }
+  "ingredient": "minecraft:gray_concrete"
 }

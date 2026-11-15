@@ -33,7 +33,6 @@ public final class BlockPlatformImpl implements BlockPlatform {
     @Override
     public void sendBlockEntityUpdate(ServerPlayer player, ServerLevel level, BlockPos pos,
                                      ClientboundBlockEntityDataPacket packet) {
-        // 1.16.5 的更新包只对原版白名单类型 load，模组方块实体的数据会被丢弃 → 重发区块。
         player.connection.send(new ClientboundLevelChunkPacket(level.getChunkAt(pos), 65535));
     }
 }

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:road_block"
-    },
-    {
-      "item": "minecraft:white_dye"
-    },
-    {
-      "item": "minecraft:yellow_dye"
-    }
+    "yunbeiuc:road_block",
+    "minecraft:white_dye",
+    "minecraft:yellow_dye"
   ],
   "result": {
     "count": 1,

@@ -23,7 +23,6 @@ import java.util.Random;
 import java.util.Set;
 
 // 相位分配预设编辑器：编辑预设成员的方位/类型与相位勾选。
-// 保存前做与 TrafficLightsPatternPreset#tryApplyToGroup 一致的分桶校验，避免应用时才发现冲突。
 
 public class TrafficLightsPatternEditorScreen extends Screen {
     private static final Random RANDOM = new Random();
@@ -163,7 +162,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
 
     private void rebuild() {
         if (this.slotListWidget != null) {
-            this.savedScrollAmount = 0.0; // 26.x removed the scroll getter
+            this.savedScrollAmount = 0.0;
         }
         Minecraft.getInstance().execute(this::rebuildNow);
     }
@@ -201,7 +200,7 @@ public class TrafficLightsPatternEditorScreen extends Screen {
     }
 
     private void openPhaseMultiSelect(TrafficLightsPatternPreset.Slot slot) {
-        ApiCompat.setScreen(Minecraft.getInstance(), 
+        ApiCompat.setScreen(Minecraft.getInstance(),
             new TrafficLightsPhaseMultiSelectScreen(
                 this,
                 phaseCount,

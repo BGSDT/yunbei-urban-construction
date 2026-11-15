@@ -32,7 +32,7 @@ public class SignExpresswayEntranceAdvance1Entity extends CustomSignBlockEntity 
         this.text2 = NbtCompat.getString(nbt, "text2");
         this.expresswayNumber1 = NbtCompat.getString(nbt, "expresswayNumber1");
         this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

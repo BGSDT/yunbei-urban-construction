@@ -2,7 +2,7 @@ package com.beigu.yunbeiuc.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.beigu.yunbeiuc.api.render.GeometrySink;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.joml.Matrix4f;
@@ -10,21 +10,15 @@ import org.joml.Matrix4f;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Collects immediate-mode vertex writes and replays them through
- * {@link SubmitNodeCollector#submitCustomGeometry} at the end of the frame.
- *
- * <p>26.x block entity renderers no longer receive a {@code GeometrySink}; geometry has to be
- * submitted to the collector instead. The existing drawing code in this package still writes
- * vertices the old way, so it draws into this adapter and the adapter forwards everything to the
- * collector in one go. Vertices are captured in world/camera space (the matrix handed to
- * {@code addVertex} is already applied), therefore the geometry is replayed against an identity
- * pose.</p>
- */
-public final class DeferredGeometry implements GeometrySink {
+// Collects immediate-mode vertex writes and replays them through SubmitNodeCollector at the end of the frame (26.x renderers no longer receive a MultiBufferSource).
+public final class DeferredGeometry implements MultiBufferSource.BufferSource {
     private static final PoseStack IDENTITY = new PoseStack();
 
     private final Map<RenderType, Batch> batches = new LinkedHashMap<>();
+
+    @Override
+    public void endBatch() {
+    }
 
     @Override
     public VertexConsumer getBuffer(RenderType type) {
@@ -42,7 +36,6 @@ public final class DeferredGeometry implements GeometrySink {
         batches.clear();
     }
 
-    /** One RenderType worth of vertices, stored as flat arrays so replay is allocation free. */
     private static final class Batch {
         private float[] positions = new float[3 * 256];
         private int[] colors = new int[256];
@@ -53,7 +46,7 @@ public final class DeferredGeometry implements GeometrySink {
         private boolean[] hasNormal = new boolean[256];
         private int size;
 
-        private int cursor; // vertex being written
+        private int cursor;
         private boolean inVertex;
 
         private final VertexConsumer consumer = new VertexConsumer() {
@@ -116,7 +109,6 @@ public final class DeferredGeometry implements GeometrySink {
 
             @Override
             public VertexConsumer setLineWidth(float width) {
-                // not part of the replay contract
                 return this;
             }
         };
@@ -149,7 +141,6 @@ public final class DeferredGeometry implements GeometrySink {
         }
     }
 
-    /** Convenience for the renderers: apply the current pose and write a vertex. */
     public static void vertex(VertexConsumer consumer, PoseStack matrices, float x, float y, float z) {
         Matrix4f matrix = matrices.last().pose();
         consumer.addVertex(matrix, x, y, z);

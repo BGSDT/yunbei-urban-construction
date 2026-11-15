@@ -66,7 +66,7 @@ public final class GuiPlatformImpl implements GuiPlatform {
     @Override
     public void openRailPhaseScreen(BlockPos start, BlockPos end, BlockPos groupMember,
                                     int phaseCount, int[] phaseTimes, long mask) {
-        Minecraft.getInstance().setScreen(
+        com.beigu.yunbeiuc.api.ApiCompat.setScreen(Minecraft.getInstance(),
                 new RailPhaseScreen(start, end, groupMember, phaseCount, phaseTimes, mask));
     }
 

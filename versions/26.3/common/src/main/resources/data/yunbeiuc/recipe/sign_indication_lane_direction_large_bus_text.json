@@ -1,8 +1,6 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "minecraft:white_concrete"
-  },
+  "ingredient": "minecraft:white_concrete",
   "result": {
     "id": "yunbeiuc:sign_indication_lane_direction_large_bus_text",
     "count": 9

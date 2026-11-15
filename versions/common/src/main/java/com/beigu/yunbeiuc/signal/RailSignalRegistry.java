@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 // 列车信号的运行时索引（服务端专用）：轨道标识 UUID -> 当前是否放行，由红绿灯方块实体每 tick 写入。
-// 未登记的轨道一律视为无信号、绝不拦车。纯运行期缓存，持久化在方块实体的 NBT 里。
 
 public final class RailSignalRegistry {
 

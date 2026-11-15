@@ -38,6 +38,7 @@ public class CustomSignFieldUpdatePacket {
         BlockEntity be = ApiCompat.level(player).getBlockEntity(pos);
         if (be instanceof CustomSignBlockEntity sign) {
             sign.applyFieldOption(field, value);
+            sign.markTextLinesCustomized();
         }
     }
 }

@@ -32,7 +32,7 @@ public class ZonesBoardImageEntity extends CustomSignBlockEntity {
         this.andX = NbtCompat.getFloat(nbt, "andX");
         this.andY = NbtCompat.getFloat(nbt, "andY");
         this.andScale = NbtCompat.getFloat(nbt, "andScale");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

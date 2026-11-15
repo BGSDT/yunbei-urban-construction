@@ -12,15 +12,11 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
     protected int left;
 
     protected ElementListWidget(Minecraft client, int width, int height, int top, int bottom, int itemHeight) {
-        // 1.20.2 起 ObjectSelectionList 构造器改为 (Minecraft, width, height, top, itemHeight)，
-        // bottom 不再传入，高度取 bottom - top（与 1.21.1 shim 一致）。
         super(client, width, bottom - top, top, itemHeight);
         this.client = client;
         this.left = 0;
     }
 
-    // 1.20.2 起 AbstractSelectionList 继承 AbstractWidget，没有 setLeftPos/updateSize，
-    // 分别用 setX / setRectangle(width, height, x, y) 等价实现。
     public void setLeftPos(int left) {
         setX(left);
         this.left = left;
@@ -34,8 +30,6 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
     protected int getScrollbarPositionXCompat() { return super.getRowRight() + 4; }
     public void setRenderHorizontalShadows(boolean visible) { }
 
-    // 1.20.2 起 AbstractSelectionList 删除了 vanilla setRenderSelection(boolean)，
-    // 改由子类覆写 renderSelection 自行过滤（共享树 AbstractOptionListWidget 调用 setRenderSelection）。
     private boolean renderSelection = true;
 
     public void setRenderSelection(boolean visible) { this.renderSelection = visible; }

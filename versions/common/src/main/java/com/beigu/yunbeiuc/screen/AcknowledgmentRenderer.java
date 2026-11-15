@@ -38,8 +38,6 @@ public final class AcknowledgmentRenderer {
         public final Component title;
         public final List<Component> introLines = new ArrayList<>();
         public final List<Entry> entries = new ArrayList<>();
-        public Component quoteTitle;
-        public final List<Component> quoteLines = new ArrayList<>();
 
         public Block(Component title) {
             this.title = title;
@@ -74,28 +72,29 @@ public final class AcknowledgmentRenderer {
     private static List<Block> buildBlocks() {
         List<Block> blocks = new ArrayList<>();
 
+        Block copyright = new Block(Text.translatable("yunbeiuc.gui.ack.decl.title"));
+        copyright.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.name")));
+        copyright.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.license")));
+        copyright.entries.add(new Entry(
+                Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.mcmod"),
+                "https://www.mcmod.cn/class/26158.html",
+                Text.translatable("yunbeiuc.gui.ack.link.mcmod")));
+        copyright.entries.add(new Entry(
+                Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.github"),
+                "https://github.com/BGSDT/yunbei-urban-construction",
+                Text.translatable("yunbeiuc.gui.ack.link.github")));
+        blocks.add(copyright);
+
         Block ack = new Block(Text.translatable("yunbeiuc.gui.ack.title"));
         ack.introLines.add(Text.translatable("yunbeiuc.gui.ack.intro"));
 
-        ack.entries.add(new Entry(
-                Text.translatable("yunbeiuc.gui.ack.mod.ocelotsign.name"),
-                "https://www.mcmod.cn/class/26158.html",
-                Text.translatable("yunbeiuc.gui.ack.link.mcmod")));
+        ack.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.mod.ocelotsign.name")));
         ack.entries.add(new Entry(
                 Text.translatable("yunbeiuc.gui.ack.mod.ocelotsign.repo"),
                 "https://github.com/Creeper-Cola123/OcelotSignMod-Minecraft",
                 Text.translatable("yunbeiuc.gui.ack.link.github")));
+        ack.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.note")));
         blocks.add(ack);
-
-        Block decl = new Block(Text.translatable("yunbeiuc.gui.ack.decl.title"));
-        decl.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.name")));
-        decl.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.license")));
-        decl.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.repo")));
-        decl.entries.add(new Entry(Text.translatable("yunbeiuc.gui.ack.decl.yunbeiuc.note")));
-
-        decl.quoteTitle = Text.translatable("yunbeiuc.gui.ack.quote.title");
-        decl.quoteLines.add(Text.translatable("yunbeiuc.gui.ack.quote.ocelot"));
-        blocks.add(decl);
 
         return blocks;
     }
@@ -142,11 +141,6 @@ public final class AcknowledgmentRenderer {
             curY = renderEntryCard(ctx, tr, mx, my, paneW, navW, curY, clipTop, clipBottom, block.entries);
         }
 
-        if (block.quoteTitle != null || !block.quoteLines.isEmpty()) {
-            curY += 6;
-            curY = renderQuote(ctx, tr, paneW, navW, curY, clipTop, clipBottom, block);
-        }
-
         curY += 24;
         return curY;
     }
@@ -160,10 +154,6 @@ public final class AcknowledgmentRenderer {
         if (!block.entries.isEmpty()) {
             h += 4;
             h += estimateEntriesHeight(tr, paneW, block.entries);
-        }
-        if (block.quoteTitle != null || !block.quoteLines.isEmpty()) {
-            h += 6;
-            h += estimateQuoteHeight(tr, paneW, block);
         }
         h += 24;
         return h;
@@ -275,50 +265,6 @@ public final class AcknowledgmentRenderer {
             return trimmed.substring(0, 29) + "...";
         }
         return trimmed;
-    }
-
-    private static int renderQuote(DrawContext ctx, Font tr, int paneW, int navW,
-                                    int curY, int clipTop, int clipBottom, Block block) {
-        int blockX = navW + 24;
-        int blockW = paneW - 48;
-        int pad = 10;
-        int innerX = blockX + pad + 4;
-        int innerW = blockW - pad * 2 - 8;
-
-        int totalH = estimateQuoteHeight(tr, paneW, block);
-
-        if (curY + totalH >= clipTop && curY <= clipBottom) {
-            ctx.fill(blockX, curY, blockX + blockW, curY + totalH, UIConstants.CLR_INFO_BG);
-            ctx.fill(blockX, curY, blockX + 4, curY + totalH, UIConstants.CLR_ACCENT);
-
-            int y = curY + pad;
-            if (block.quoteTitle != null) {
-                ctx.drawText(tr, block.quoteTitle, innerX, y, UIConstants.CLR_ACCENT, false);
-                y += 16 + 6;
-            }
-            for (Component t : block.quoteLines) {
-                List<FormattedCharSequence> lines = tr.split(t, innerW - 8);
-                for (FormattedCharSequence line : lines) {
-                    ctx.drawText(tr, line, innerX, y, UIConstants.CLR_HOME_BODY, false);
-                    y += 13;
-                }
-                y += 4;
-            }
-        }
-        return curY + totalH;
-    }
-
-    private static int estimateQuoteHeight(Font tr, int paneW, Block block) {
-        int blockW = paneW - 48;
-        int pad = 10;
-        int innerW = blockW - pad * 2 - 8;
-        int h = pad;
-        if (block.quoteTitle != null) h += 16 + 6;
-        for (Component t : block.quoteLines) {
-            List<FormattedCharSequence> lines = tr.split(t, innerW - 8);
-            h += lines.size() * 13 + 4;
-        }
-        return h;
     }
 
     private static int renderWrappedParagraph(DrawContext ctx, Font tr, Component text,

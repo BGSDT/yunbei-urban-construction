@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 // 红绿灯方块实体渲染：灯珠/图案/读秒文字，手持魔杖时额外画「方向 + 相位 x / n」悬浮字。
-// 各版本只有渲染 API 不同，逻辑保持一致。
 
 public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<TrafficLightsBlockEntity> {
     private final Font textRenderer;
@@ -332,6 +331,11 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         }
 
         if (texture == null) {
+            return;
+        }
+
+        if (isWarningCrossingBlock(currentBlock)
+                && !com.beigu.yunbeiuc.block.MunicipalBlocks.isWarningCrossingLit(currentBlock, lightState)) {
             return;
         }
 

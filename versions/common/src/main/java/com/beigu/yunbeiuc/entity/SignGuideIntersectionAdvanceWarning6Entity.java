@@ -30,7 +30,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
         this.direction2 = SignTurnDirection.fromName(NbtCompat.getString(nbt, "direction2"), SignTurnDirection.STRAIGHT);
         this.text1 = NbtCompat.getString(nbt, "text1");
         this.text2 = NbtCompat.getString(nbt, "text2");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

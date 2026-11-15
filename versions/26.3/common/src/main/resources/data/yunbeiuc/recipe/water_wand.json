@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "yunbeiuc:wand"
-    },
-    "X": {
-      "item": "minecraft:water_bucket"
-    }
+    "#": "yunbeiuc:wand",
+    "X": "minecraft:water_bucket"
   },
   "pattern": [
     "X",

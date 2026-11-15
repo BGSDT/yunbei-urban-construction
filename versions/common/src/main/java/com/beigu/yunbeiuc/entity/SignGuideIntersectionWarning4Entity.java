@@ -28,7 +28,7 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
         super.loadCompat(nbt);
         this.direction1 = SignTurnDirection.fromName(NbtCompat.getString(nbt, "direction1"), SignTurnDirection.STRAIGHT);
         this.text1 = NbtCompat.getString(nbt, "text1");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

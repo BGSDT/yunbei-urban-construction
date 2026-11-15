@@ -11,9 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-/**
- * Small version-neutral wrappers for entity / interaction APIs that 26.x renamed.
- */
+// Small version-neutral wrappers for APIs that 26.x renamed.
 public final class ApiCompat {
     private ApiCompat() {
     }
@@ -44,7 +42,6 @@ public final class ApiCompat {
         return RenderType.entityCutout(id);
     }
 
-    // 26.x folds blend/depth/cull state into the render pipeline, so these become no-ops there.
     public static void enableBlend() { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); }
 
     public static void disableBlend() { com.mojang.blaze3d.systems.RenderSystem.disableBlend(); }
@@ -59,7 +56,6 @@ public final class ApiCompat {
 
     public static void disableCull() { com.mojang.blaze3d.systems.RenderSystem.disableCull(); }
 
-    /** Version-neutral result of an item use, mapped to the platform type in {@link #use}. */
     public enum UseResult {
         SUCCESS,
         PASS,
@@ -107,6 +103,18 @@ public final class ApiCompat {
 
     public static RenderType lines() {
         return RenderType.lines();
+    }
+
+    public static net.minecraft.client.gui.screens.Screen currentScreen(net.minecraft.client.Minecraft client) {
+        return client.screen;
+    }
+
+    public static net.minecraft.client.renderer.MultiBufferSource.BufferSource bufferSource(net.minecraft.client.Minecraft client) {
+        return client.renderBuffers().bufferSource();
+    }
+
+    public static void openUri(String url) {
+        net.minecraft.Util.getPlatform().openUri(url);
     }
 
     public static void endBatch(MultiBufferSource buffers) {

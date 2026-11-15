@@ -23,7 +23,7 @@ public class SignExpresswayDistanceFromLocation3Entity extends CustomSignBlockEn
         super.loadCompat(nbt);
         this.text1 = NbtCompat.getString(nbt, "text1");
         this.text2 = NbtCompat.getString(nbt, "text2");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

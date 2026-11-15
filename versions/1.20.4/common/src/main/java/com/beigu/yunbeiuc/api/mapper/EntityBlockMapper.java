@@ -43,14 +43,12 @@ public abstract class EntityBlockMapper extends BaseEntityBlock implements Block
         return useCompat(state, level, pos, player, hand, hit);
     }
 
-    // 1.20.2 起 playerWillDestroy 返回值由 void 改为 BlockState。
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         playerWillDestroyCompat(level, pos, state, player);
         return state;
     }
 
-    // 1.20.2 起 BaseEntityBlock 仍是抽象 codec()，必须实现（与 1.21.1 同款 fallback）。
     private static final MapCodec<EntityBlockMapper.Fallback> FALLBACK_CODEC = simpleCodec(EntityBlockMapper.Fallback::new);
 
     @Override
@@ -76,7 +74,7 @@ public abstract class EntityBlockMapper extends BaseEntityBlock implements Block
     }
 
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return super.updateShape(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
     }
 

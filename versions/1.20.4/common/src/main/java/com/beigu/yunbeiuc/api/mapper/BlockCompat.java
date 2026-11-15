@@ -36,16 +36,14 @@ public abstract class BlockCompat extends Block implements BlockCompatHooks {
         return useCompat(state, level, pos, player, hand, hit);
     }
 
-    // 1.20.2 起 playerWillDestroy 返回值由 void 改为 BlockState（调用钩子后原样返回）。
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         playerWillDestroyCompat(level, pos, state, player);
         return state;
     }
 
-    /** Version-neutral hook: 26.x changed the signature of {@code Block#updateShape}. */
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return super.updateShape(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
     }
 

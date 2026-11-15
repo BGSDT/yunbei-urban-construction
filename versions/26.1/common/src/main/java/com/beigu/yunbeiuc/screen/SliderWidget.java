@@ -16,7 +16,6 @@ public abstract class SliderWidget extends AbstractSliderButton {
         onClickCompat(event.x(), event.y());
     }
 
-    /** Shared sliders implement this instead of {@code onClick(double, double)}. */
     protected void onClickCompat(double mouseX, double mouseY) {
         if (this.lastClick != null) {
             super.onClick(this.lastClick, false);

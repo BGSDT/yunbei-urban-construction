@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 // MTR 3 / YMTR 的轨道几何后端：客户端读 mtr.client.ClientData.RAILS，服务端读 RailwayData#getRailsMap()。
-// 中心线用 Rail#getLength + Rail#getPosition，与 MTR 自己画轨道带的曲线同一套，所以高亮线在哪射线就打在哪。
 
 final class Mtr3RailBackend implements MtrRailBackend {
 
@@ -85,7 +84,6 @@ final class Mtr3RailBackend implements MtrRailBackend {
                 return (Map<BlockPos, Map<BlockPos, Object>>) map;
             }
         } catch (Throwable t) {
-            // 读不到就当作没有轨道
         }
         return null;
     }

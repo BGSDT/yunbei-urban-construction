@@ -15,6 +15,7 @@ import com.beigu.yunbeiuc.util.GlobalFontSettings;
 import com.beigu.yunbeiuc.network.CustomSignFieldUpdatePacket;
 import com.beigu.yunbeiuc.network.CustomSignUpdatePacket;
 import com.beigu.yunbeiuc.render.TextGizmo;
+import com.beigu.yunbeiuc.render.SignTextGroupRuntime;
 import com.beigu.yunbeiuc.util.PresetManager;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
@@ -37,6 +38,7 @@ public class TextDisplayScreen extends Screen {
     private static final int PANEL_TOP_HEIGHT = 20;
     private static final int PANEL_BOTTOM_HEIGHT_RATIO = 5;
     private static final int ADD_BUTTON_WIDTH = 20;
+    private static final int ADD_MENU_BUTTON_WIDTH = ADD_BUTTON_WIDTH / 2;
     private static final int BTN_SIZE = 20;
     private static final int ROT_BTN_WIDTH = 24;
     private static final int BTN_GAP = 5;
@@ -59,6 +61,15 @@ public class TextDisplayScreen extends Screen {
 
     private final List<ButtonWidget> textButtons = new ArrayList<>();
     private ButtonWidget addLineButton;
+
+    private static final String[] ADD_MENU_LABELS = {"普通文本行", "矩形", "图片", "文本列组"};
+    private static final int ADD_MENU_ITEM_HEIGHT = 18;
+    private ButtonWidget addLineMenuButton;
+    private boolean addLineMenuOpen = false;
+    private int addMenuX, addMenuY, addMenuWidth;
+
+    private final List<GroupBadge> groupBadges = new ArrayList<>();
+    private int pendingSelectionRestore = -1;
 
     private TextFieldWidget textField;
     private ButtonWidget xButton, yButton, zButton, fontSizeButton, colorButton;
@@ -118,6 +129,7 @@ public class TextDisplayScreen extends Screen {
     private boolean suppressTextFieldListener = false;
     private String currentPlaceholderText = "";
     private String currentResolvedText = "";
+    private String initialLinesSignature = null;
 
     private int grabbedGizmo = -1;
     private float grabValueStart, grabAxisStart, grabSize0, grabLen0;
@@ -210,8 +222,8 @@ public class TextDisplayScreen extends Screen {
         }
         if (text.startsWith("-rect")) {
             String[] parts = text.split("\\s+");
-            if (parts.length >= 3) return "rect " + parts[1] + "*" + parts[2];
-            return "rect";
+            if (parts.length >= 3) return "矩形 " + parts[1] + "*" + parts[2];
+            return "矩形";
         }
         if (text.startsWith("-texture")) {
             String[] parts = text.split("\\s+", 3);
@@ -220,9 +232,14 @@ public class TextDisplayScreen extends Screen {
                 int slash = path.lastIndexOf('/');
                 return slash >= 0 ? path.substring(slash + 1) : path;
             }
-            return "texture";
+            return "图片";
         }
         return text;
+    }
+
+    @Override
+    protected boolean keepMenuBackground() {
+        return false;
     }
 
     @Override
@@ -230,16 +247,7 @@ public class TextDisplayScreen extends Screen {
         super.init();
 
         int sw = this.width, sh = this.height;
-
-        panelBottomHeight = sh / PANEL_BOTTOM_HEIGHT_RATIO;
-        panelBottomWidth = sw;
-        panelBottomX = 0;
-        panelBottomY = sh - panelBottomHeight;
-
-        panelTopHeight = PANEL_TOP_HEIGHT;
-        panelTopX = 0;
-        panelTopY = panelBottomY - panelTopHeight - SAVE_BTN_ROW_HEIGHT;
-        panelTopWidth = sw - ADD_BUTTON_WIDTH;
+        computePanelBounds();
 
         savePresetButton = ButtonWidget.builderCompat(Text.literal("保存为预设"), btn -> {
             if (selectedPresetIndices.isEmpty()) return;
@@ -258,13 +266,16 @@ public class TextDisplayScreen extends Screen {
         alignCatButton = ButtonWidget.builderCompat(Text.literal("对齐"), b -> selectCategory(Category.ALIGN)).dimensions(catX, catY, catBtnW, 20).build();
 
         patternButton = ButtonWidget.builderCompat(Text.translatable("yunbeiuc.gui.button.pattern"), btn -> {
+            addLineMenuOpen = false;
             PatternAndFontOverlay.targetScreen = this;
             PatternAndFontOverlay.isVisible = true;
             PatternAndFontOverlay.selectSidebarTop(PatternAndFontOverlay.NAV_TOP_HOME);
         }).dimensions(0, 0, catBtnW, 20).build();
 
-        settingsButton = ButtonWidget.builderCompat(Text.translatable("yunbeiuc.gui.button.settings"), btn -> SignGlobalSettingsOverlay.open(this))
-                .dimensions(0, 0, catBtnW, 20).build();
+        settingsButton = ButtonWidget.builderCompat(Text.translatable("yunbeiuc.gui.button.settings"), btn -> {
+            addLineMenuOpen = false;
+            SignGlobalSettingsOverlay.open(this);
+        }).dimensions(0, 0, catBtnW, 20).build();
 
         updateCategoryButtonsLocked();
 
@@ -300,20 +311,28 @@ public class TextDisplayScreen extends Screen {
 
         addLineButton = ButtonWidget.builderCompat(Text.literal("+"), button -> {
             if (presetSelectMode || presetSaveMode || presetLoadMode) return;
-            TextLineData newData = createUserTextLine("Text");
-            textLineWidgets.add(new TextLineWidget(newData));
-            blockEntity.getTextLines().add(newData);
-            selectOnlyLine(textLineWidgets.size() - 1);
-            topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
-            refreshTopPanel(); refreshBottomPanel();
-            syncAndUpdateClient();
-            sendUpdateToServer();
+            addLineMenuOpen = false;
+            if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+                int gid = textLineWidgets.get(selectedIndex).data.getGroupId();
+                if (gid > 0) { addLineToGroup(gid); return; }
+            }
+            addTextLineWidget("Text");
         }).dimensions(panelTopX + panelTopWidth, panelTopY, ADD_BUTTON_WIDTH, panelTopHeight).build();
+
+        addLineMenuButton = ButtonWidget.builderCompat(Text.literal("▼"), button -> {
+            if (presetSelectMode || presetSaveMode || presetLoadMode) return;
+            addLineMenuOpen = !addLineMenuOpen;
+            layoutAddMenu();
+        }).dimensions(panelTopX + panelTopWidth + ADD_BUTTON_WIDTH, panelTopY, ADD_MENU_BUTTON_WIDTH, panelTopHeight).build();
 
         createBottomPanelWidgets();
         initializeTextLines();
+        if (initialLinesSignature == null) {
+            initialLinesSignature = linesSignature(blockEntity.getTextLines());
+        }
         refreshTopPanel(); refreshBottomPanel();
         this.addDrawableChild(addLineButton);
+        this.addDrawableChild(addLineMenuButton);
         this.addDrawableChild(savePresetButton);
         this.addDrawableChild(posCatButton);
         this.addDrawableChild(rotCatButton);
@@ -326,6 +345,69 @@ public class TextDisplayScreen extends Screen {
         this.addDrawableChild(pasteLineButton);
         this.addDrawableChild(deleteLineButton);
         this.addDrawableChild(formatPainterButton);
+        onScreenShownCompat();
+    }
+
+    private void computePanelBounds() {
+        panelBottomHeight = this.height / PANEL_BOTTOM_HEIGHT_RATIO;
+        panelBottomWidth = this.width;
+        panelBottomX = 0;
+        panelBottomY = this.height - panelBottomHeight;
+
+        panelTopHeight = PANEL_TOP_HEIGHT;
+        panelTopX = 0;
+        panelTopY = panelBottomY - panelTopHeight - SAVE_BTN_ROW_HEIGHT;
+        panelTopWidth = this.width - ADD_BUTTON_WIDTH - ADD_MENU_BUTTON_WIDTH;
+    }
+
+    @Override
+    public void onScreenShownCompat() {
+        if (suppressShownHook) return;
+        suppressShownHook = true;
+        try {
+            runPendingActionsBeforeRebuild();
+            rebuildWidgetsCompat();
+            computePanelBounds();
+            runPendingActions();
+        } finally {
+            suppressShownHook = false;
+        }
+    }
+
+    private boolean suppressShownHook;
+
+    private void runPendingActionsBeforeRebuild() {
+        if (pendingSelectionRestore >= 0 && pendingSelectionRestore < textLineWidgets.size()) {
+            selectOnlyLine(pendingSelectionRestore);
+        }
+        pendingSelectionRestore = -1;
+        String pendingTextureId = TexturePickerScreen.pendingTexture;
+        if (pendingTextureId != null) {
+            TexturePickerScreen.pendingTexture = null;
+            applyPickedTexture(pendingTextureId);
+        }
+        selectedLineIndices.removeIf(i -> i < 0 || i >= textLineWidgets.size());
+        if (selectedIndex >= textLineWidgets.size()) {
+            selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
+        }
+    }
+
+    private void runPendingActions() {
+        if (pendingSelectionRestore >= 0 && pendingSelectionRestore < textLineWidgets.size()) {
+            selectOnlyLine(pendingSelectionRestore);
+            updateBottomPanelDisplay();
+            topScrollOffset = Math.max(0, Math.min(pendingSelectionRestore, textLineWidgets.size() - MAX_VISIBLE_TABS));
+        }
+        pendingSelectionRestore = -1;
+        String pendingTextureId = TexturePickerScreen.pendingTexture;
+        if (pendingTextureId != null) {
+            TexturePickerScreen.pendingTexture = null;
+            applyPickedTexture(pendingTextureId);
+        }
+        selectedLineIndices.removeIf(i -> i < 0 || i >= textLineWidgets.size());
+        if (selectedIndex >= textLineWidgets.size()) selectedIndex = textLineWidgets.isEmpty() ? -1 : textLineWidgets.size() - 1;
+        refreshTopPanel();
+        refreshBottomPanel();
     }
 
     private void createBottomPanelWidgets() {
@@ -657,6 +739,276 @@ public class TextDisplayScreen extends Screen {
         return newData;
     }
 
+    private void applyPickedTexture(String textureId) {
+        if (textureId == null || textureId.isEmpty()) return;
+        String content = "-texture " + textureId;
+        if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
+            textLineWidgets.get(selectedIndex).data.setText(content);
+        } else {
+            addTextLineWidget(content);
+            return;
+        }
+        refreshTopPanel(); refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
+    private TextLineData addTextLineWidget(String text) {
+        TextLineData newData = createUserTextLine(text);
+        textLineWidgets.add(new TextLineWidget(newData));
+        blockEntity.getTextLines().add(newData);
+        selectOnlyLine(textLineWidgets.size() - 1);
+        topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
+        refreshTopPanel(); refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+        return newData;
+    }
+
+    private void layoutAddMenu() {
+        int w = 76;
+        for (String label : ADD_MENU_LABELS) w = Math.max(w, textRenderer.width(Text.literal(label)) + 20);
+        addMenuWidth = w;
+        int anchorRight = addLineMenuButton != null
+                ? addLineMenuButton.getX() + addLineMenuButton.getWidth() : width;
+        addMenuX = Math.max(2, Math.min(width - addMenuWidth - 2, anchorRight - addMenuWidth));
+        addMenuY = panelTopY + panelTopHeight + 1;
+    }
+
+    private int addMenuItemAt(double mouseX, double mouseY) {
+        if (!addLineMenuOpen) return -1;
+        for (int i = 0; i < ADD_MENU_LABELS.length; i++) {
+            int y = addMenuY + i * (ADD_MENU_ITEM_HEIGHT + 1);
+            if (mouseX >= addMenuX && mouseX < addMenuX + addMenuWidth
+                    && mouseY >= y && mouseY < y + ADD_MENU_ITEM_HEIGHT) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void runAddMenuAction(int index) {
+        switch (index) {
+            case 0 -> addTextLineWidget("Text");
+            case 1 -> addTextLineWidget("-rect 16 16");
+            case 2 -> openTexturePicker();
+            case 3 -> addNewTextGroup();
+            default -> { }
+        }
+    }
+
+    private void openTexturePicker() {
+        pendingSelectionRestore = selectedIndex;
+        addLineMenuOpen = false;
+        TexturePickerScreen.pendingTexture = null;
+        ApiCompat.setScreen(Minecraft.getInstance(), new TexturePickerScreen(this));
+    }
+
+    private void drawAddMenu(DrawContext context, int mouseX, int mouseY) {
+        if (!addLineMenuOpen) return;
+        layoutAddMenu();
+        int itemH = ADD_MENU_ITEM_HEIGHT;
+        int totalH = ADD_MENU_LABELS.length * (itemH + 1);
+        context.getMatrices().pushPose();
+        context.getMatrices().translate(0, 0, 300);
+        context.fill(addMenuX - 1, addMenuY - 1, addMenuX + addMenuWidth + 1, addMenuY + totalH + 1, 0xFF1E1E2E);
+        context.drawBorder(addMenuX - 1, addMenuY - 1, addMenuWidth + 2, totalH + 2, 0xFF8888AA);
+        int hovered = addMenuItemAt(mouseX, mouseY);
+        for (int i = 0; i < ADD_MENU_LABELS.length; i++) {
+            int y = addMenuY + i * (itemH + 1);
+            boolean hot = i == hovered;
+            if (hot) context.fill(addMenuX, y, addMenuX + addMenuWidth, y + itemH, 0x66446688);
+            context.drawText(textRenderer, Text.literal(ADD_MENU_LABELS[i]), addMenuX + 6,
+                    y + (itemH - textRenderer.lineHeight) / 2 + 1, hot ? 0xFF66FFCC : 0xFFDDDDDD, false);
+        }
+        context.getMatrices().popPose();
+    }
+
+    private int nextGroupId() {
+        int max = 0;
+        for (TextLineWidget w : textLineWidgets) max = Math.max(max, w.data.getGroupId());
+        return max + 1;
+    }
+
+    private String defaultGroupName(int gid) {
+        return "组" + gid;
+    }
+
+    private String groupDisplayName(int gid) {
+        for (TextLineWidget w : textLineWidgets) {
+            if (w.data.getGroupId() != gid) continue;
+            String name = w.data.getGroupName();
+            if (name != null && !name.trim().isEmpty()) return name.trim();
+            break;
+        }
+        return defaultGroupName(gid);
+    }
+
+    private String groupOpenLabel(int gid) {
+        return "[" + groupDisplayName(gid) + ":";
+    }
+
+    public static String formatGroupInterval(int ms) {
+        if (ms % 1000 == 0) return (ms / 1000) + " 秒";
+        return String.format(java.util.Locale.ROOT, "%.1f 秒", ms / 1000.0);
+    }
+
+    private void addNewTextGroup() {
+        int gid = nextGroupId();
+        String name = defaultGroupName(gid);
+        int interval = TextLineData.DEFAULT_GROUP_INTERVAL_MS;
+        for (int i = 0; i < 2; i++) {
+            TextLineData data = createUserTextLine("Text");
+            data.applyGroupInfo(gid, name, interval);
+            textLineWidgets.add(new TextLineWidget(data));
+            blockEntity.getTextLines().add(data);
+        }
+        selectOnlyLine(textLineWidgets.size() - 2);
+        topScrollOffset = Math.max(0, textLineWidgets.size() - MAX_VISIBLE_TABS);
+        refreshTopPanel(); refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+        openGroupSettings(gid);
+    }
+
+    public List<Integer> getGroupLineIndices(int gid) {
+        List<Integer> out = new ArrayList<>();
+        if (gid <= 0) return out;
+        for (int i = 0; i < textLineWidgets.size(); i++) {
+            if (textLineWidgets.get(i).data.getGroupId() == gid) out.add(i);
+        }
+        return out;
+    }
+
+    public List<String> getGroupLineTexts(int gid) {
+        List<String> out = new ArrayList<>();
+        for (int i : getGroupLineIndices(gid)) {
+            String label = lineButtonLabel(blockEntity.resolvePlaceholders(textLineWidgets.get(i).data.getText()));
+            out.add(label == null || label.isEmpty() ? "(空行)" : label);
+        }
+        return out;
+    }
+
+    public String getGroupName(int gid) {
+        return groupDisplayName(gid);
+    }
+
+    public int getGroupIntervalMs(int gid) {
+        for (int i : getGroupLineIndices(gid)) return textLineWidgets.get(i).data.getGroupIntervalMs();
+        return TextLineData.DEFAULT_GROUP_INTERVAL_MS;
+    }
+
+    public void applyGroupSettings(int gid, String name, int intervalMs) {
+        boolean changed = false;
+        for (int i : getGroupLineIndices(gid)) {
+            TextLineData d = textLineWidgets.get(i).data;
+            d.setGroupName(name);
+            d.setGroupIntervalMs(intervalMs);
+            changed = true;
+        }
+        if (changed) onTextGroupEdited();
+    }
+
+    public void addLineToGroup(int gid) {
+        List<Integer> members = getGroupLineIndices(gid);
+        if (members.isEmpty()) return;
+        TextLineData leader = textLineWidgets.get(members.get(0)).data;
+        TextLineData data = createUserTextLine("Text");
+        data.applyGroupInfo(gid, leader.getGroupName(), leader.getGroupIntervalMs());
+        int insertAt = Math.min(textLineWidgets.size(), members.get(members.size() - 1) + 1);
+        textLineWidgets.add(insertAt, new TextLineWidget(data));
+        blockEntity.getTextLines().add(insertAt, data);
+        selectOnlyLine(insertAt);
+        topScrollOffset = Math.max(0, Math.min(insertAt, textLineWidgets.size() - MAX_VISIBLE_TABS));
+        onTextGroupEdited();
+    }
+
+    public void deleteTextGroup(int gid) {
+        List<Integer> members = getGroupLineIndices(gid);
+        if (members.isEmpty()) return;
+        releaseGizmo();
+        for (int i = members.size() - 1; i >= 0; i--) {
+            int idx = members.get(i);
+            if (idx >= 0 && idx < textLineWidgets.size()) {
+                textLineWidgets.remove(idx);
+                if (idx < blockEntity.getTextLines().size()) blockEntity.getTextLines().remove(idx);
+            }
+        }
+        selectedLineIndices.clear();
+        selectedPresetIndices.clear();
+        selectedIndex = textLineWidgets.isEmpty() ? -1 : Math.min(members.get(0), textLineWidgets.size() - 1);
+        if (selectedIndex >= 0) selectedLineIndices.add(selectedIndex);
+        preciseInputMode = false;
+        onTextGroupEdited();
+    }
+
+    public void onTextGroupEdited() {
+        refreshTopPanel(); refreshBottomPanel();
+        syncAndUpdateClient();
+        sendUpdateToServer();
+    }
+
+    private void remapLoadedGroupIds(List<TextLineData> loaded) {
+        java.util.Map<Integer, Integer> mapping = new java.util.HashMap<>();
+        int next = nextGroupId();
+        for (TextLineData data : loaded) {
+            int gid = data.getGroupId();
+            if (gid <= 0) continue;
+            Integer mapped = mapping.get(gid);
+            if (mapped == null) {
+                mapped = next++;
+                mapping.put(gid, mapped);
+            }
+            data.setGroupId(mapped);
+        }
+    }
+
+    public void openGroupSettings(int gid) {
+        if (gid <= 0) return;
+        pendingSelectionRestore = selectedIndex;
+        addLineMenuOpen = false;
+        ApiCompat.setScreen(Minecraft.getInstance(), new TextGroupSettingsScreen(this, gid));
+    }
+
+    private void drawGroupBadges(DrawContext context, int mouseX, int mouseY) {
+        for (GroupBadge badge : groupBadges) {
+            boolean hover = mouseX >= badge.x() && mouseX < badge.x() + badge.width()
+                    && mouseY >= badge.y() && mouseY < badge.y() + badge.height();
+            if (hover) {
+                context.fill(badge.x() - 1, badge.y(), badge.x() + badge.width() + 1,
+                        badge.y() + badge.height(), 0x66336688);
+            }
+            context.drawText(textRenderer, Text.literal(badge.label()), badge.x(),
+                    badge.y() + (badge.height() - textRenderer.lineHeight) / 2,
+                    hover ? 0xFFAAFFFF : 0xFF66FFCC, false);
+        }
+    }
+
+    private void drawGroupActiveMarkers(DrawContext context) {
+        if (textLineWidgets.isEmpty()) return;
+        List<TextLineData> lines = new ArrayList<>();
+        for (TextLineWidget w : textLineWidgets) lines.add(w.data);
+        long now = System.currentTimeMillis();
+        for (int i = 0; i < textButtons.size(); i++) {
+            int idx = topScrollOffset + i;
+            if (idx < 0 || idx >= textLineWidgets.size()) break;
+            if (textLineWidgets.get(idx).data.getGroupId() <= 0) continue;
+            if (SignTextGroupRuntime.activeIndex(lines, idx, now) != idx) continue;
+            ButtonWidget btn = textButtons.get(i);
+            context.fill(btn.getX() + 1, btn.getY() + 1, btn.getX() + 4, btn.getY() + 4, 0xFF66FFCC);
+        }
+    }
+
+    private int groupBadgeAt(double mouseX, double mouseY) {
+        for (GroupBadge badge : groupBadges) {
+            if (mouseX >= badge.x() - 1 && mouseX < badge.x() + badge.width() + 1
+                    && mouseY >= badge.y() && mouseY < badge.y() + badge.height()) {
+                return badge.groupId();
+            }
+        }
+        return -1;
+    }
+
     public CustomButton addControlRowButton(Component label, Runnable onClick) {
         return addControlRowButton(label == null ? "" : label.getString(), onClick);
     }
@@ -906,6 +1258,7 @@ public class TextDisplayScreen extends Screen {
         recomputeLayout();
         for (var btn : textButtons) this.remove(btn);
         textButtons.clear();
+        groupBadges.clear();
         if (topScrollLeft != null) { this.remove(topScrollLeft); topScrollLeft = null; }
         if (topScrollRight != null) { this.remove(topScrollRight); topScrollRight = null; }
 
@@ -921,8 +1274,6 @@ public class TextDisplayScreen extends Screen {
             int availableWidth = panelTopWidth;
             if (count > MAX_VISIBLE_TABS) availableWidth -= SCROLL_BTN_WIDTH * 2 + 8;
 
-            int btnWidth = Math.max(20, (availableWidth - (visibleCount + 1) * spacing) / visibleCount);
-            btnWidth = Math.min(btnWidth, MAX_LINE_TAB_WIDTH);
             int btnHeight = panelTopHeight - 4;
             int startX = panelTopX + spacing;
 
@@ -938,9 +1289,35 @@ public class TextDisplayScreen extends Screen {
                 this.addDrawableChild(topScrollRight);
             }
 
+            groupBadges.clear();
+            int[] gapBefore = new int[visibleCount];
+            int[] gapAfter = new int[visibleCount];
+            int decorWidth = 0;
             for (int i = 0; i < visibleCount; i++) {
                 int idx = topScrollOffset + i;
                 if (idx >= count) break;
+                int gid = textLineWidgets.get(idx).data.getGroupId();
+                if (gid <= 0) continue;
+                boolean first = idx == 0 || textLineWidgets.get(idx - 1).data.getGroupId() != gid;
+                boolean last = idx + 1 >= count || textLineWidgets.get(idx + 1).data.getGroupId() != gid;
+                if (first) { gapBefore[i] = textRenderer.width(Text.literal(groupOpenLabel(gid))) + 4; decorWidth += gapBefore[i]; }
+                if (last) { gapAfter[i] = textRenderer.width(Text.literal("]")) + 4; decorWidth += gapAfter[i]; }
+            }
+            int btnWidth = Math.max(20, (availableWidth - decorWidth - (visibleCount + 1) * spacing) / Math.max(1, visibleCount));
+            btnWidth = Math.min(btnWidth, MAX_LINE_TAB_WIDTH);
+
+            int tabX = startX;
+            for (int i = 0; i < visibleCount; i++) {
+                int idx = topScrollOffset + i;
+                if (idx >= count) break;
+                int gid = textLineWidgets.get(idx).data.getGroupId();
+                int badgeY = panelTopY + 2;
+                if (gapBefore[i] > 0) {
+                    String label = groupOpenLabel(gid);
+                    int labelW = textRenderer.width(Text.literal(label));
+                    groupBadges.add(new GroupBadge(gid, tabX, badgeY, labelW, btnHeight, label));
+                    tabX += gapBefore[i];
+                }
                 String displayText = lineButtonLabel(blockEntity.resolvePlaceholders(textLineWidgets.get(idx).data.getText()));
                 if (displayText.isEmpty()) displayText = "(empty)";
 
@@ -957,9 +1334,19 @@ public class TextDisplayScreen extends Screen {
                         preciseInputMode = false;
                         refreshBottomPanel(); refreshTopPanel();
                     }
-                }).dimensions(startX + i * (btnWidth + spacing), panelTopY + 2, btnWidth, btnHeight).build();
+                }).dimensions(tabX, panelTopY + 2, btnWidth, btnHeight).build();
                 btn.active = true;
                 textButtons.add(btn); this.addDrawableChild(btn);
+                tabX += btnWidth;
+                if (gapAfter[i] > 0) {
+                    String label = "]";
+                    int labelW = textRenderer.width(Text.literal(label));
+                    tabX += 2;
+                    groupBadges.add(new GroupBadge(gid, tabX, badgeY, labelW, btnHeight, label));
+                    tabX += labelW + 2;
+                } else {
+                    tabX += spacing;
+                }
             }
         }
         selectedLineIndices.removeIf(i -> i < 0 || i >= textLineWidgets.size());
@@ -991,6 +1378,10 @@ public class TextDisplayScreen extends Screen {
         int rowBtnY = panelBottomY - SAVE_BTN_ROW_HEIGHT + 1;
         savePresetButton.setPosition(width / 2 - 40, rowBtnY);
         addLineButton.setPosition(panelTopX + panelTopWidth, panelTopY);
+        if (addLineMenuButton != null) {
+            addLineMenuButton.setPosition(panelTopX + panelTopWidth + ADD_BUTTON_WIDTH, panelTopY);
+        }
+        if (addLineMenuOpen) layoutAddMenu();
         refreshOptionButtons();
     }
 
@@ -1431,6 +1822,7 @@ public class TextDisplayScreen extends Screen {
             ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(name), b -> {
                 List<TextLineData> loaded = new ArrayList<>();
                 for (var d : presets.get(name)) loaded.add(d.copy());
+                remapLoadedGroupIds(loaded);
                 blockEntity.getTextLines().addAll(loaded);
                 for (var d : loaded) textLineWidgets.add(new TextLineWidget(d));
                 selectOnlyLine(textLineWidgets.size() - loaded.size());
@@ -1471,11 +1863,28 @@ public class TextDisplayScreen extends Screen {
             return true;
         }
         if (isAnyTextFieldFocused()) {
+            if (textField != null && textField.isFocused()
+                    && keyPressedCompat(textField, keyCode, scanCode, modifiers)) {
+                refreshTopPanel();
+                return true;
+            }
+            if (preciseInputField != null && preciseInputField.isFocused()
+                    && keyPressedCompat(preciseInputField, keyCode, scanCode, modifiers)) {
+                return true;
+            }
+            if (presetNameField != null && presetNameField.isFocused()
+                    && keyPressedCompat(presetNameField, keyCode, scanCode, modifiers)) {
+                return true;
+            }
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
         if (preciseInputMode && (keyCode == Keys.ESCAPE || keyCode == Keys.ENTER)) {
             exitPreciseMode();
+            return true;
+        }
+        if (addLineMenuOpen) {
+            addLineMenuOpen = false;
             return true;
         }
         if (presetSaveMode || presetLoadMode) return super.keyPressed(keyCode, scanCode, modifiers);
@@ -1487,6 +1896,7 @@ public class TextDisplayScreen extends Screen {
             return true;
         }
         if (keyCode == Keys.P) {
+            addLineMenuOpen = false;
             presetLoadMode = true;
             presetScrollOffset = 0;
             refreshBottomPanel();
@@ -1565,11 +1975,28 @@ public class TextDisplayScreen extends Screen {
         }
         if (preciseInputMode) { if (backButton != null && backButton.isMouseOver(mouseX, mouseY)) { exitPreciseMode(); return true; } return super.mouseClicked(mouseX, mouseY, button); }
         if (presetSaveMode || presetLoadMode) return super.mouseClicked(mouseX, mouseY, button);
+        if (addLineMenuOpen && button == 0) {
+            int item = addMenuItemAt(mouseX, mouseY);
+            addLineMenuOpen = false;
+            if (item >= 0) { runAddMenuAction(item); return true; }
+            if (addLineMenuButton != null && addLineMenuButton.isMouseOver(mouseX, mouseY)) return true;
+            return true;
+        }
+        if (button == 0 && !addLineMenuOpen) {
+            int hotGroup = groupBadgeAt(mouseX, mouseY);
+            if (hotGroup > 0) { openGroupSettings(hotGroup); return true; }
+        }
         if (button == 1 && !presetSelectMode) {
             rotatingView = true;
             return true;
         }
+        if (button == 0 && dispatchWidgetClickCompat(mouseX, mouseY, button)) {
+            return true;
+        }
         boolean consumed = super.mouseClicked(mouseX, mouseY, button);
+        if (!consumed) {
+            consumed = dispatchWidgetClickCompat(mouseX, mouseY, button);
+        }
         if (!consumed && button == 0 && !isOverUiPanel(mouseX, mouseY)) {
             consumed = tryGrabGizmo(mouseX, mouseY);
             if (!consumed) consumed = trySelectLine(mouseX, mouseY, hasShiftDown());
@@ -1870,8 +2297,10 @@ public class TextDisplayScreen extends Screen {
 
         context.fill(panelTopX, panelTopY, panelTopX + panelTopWidth, panelTopY + panelTopHeight, 0xAA333333);
         context.drawBorder(panelTopX, panelTopY, panelTopWidth, panelTopHeight, 0xFF888888);
-        context.fill(panelTopX + panelTopWidth, panelTopY, panelTopX + panelTopWidth + ADD_BUTTON_WIDTH, panelTopY + panelTopHeight, 0xAA444444);
-        context.drawBorder(panelTopX + panelTopWidth, panelTopY, ADD_BUTTON_WIDTH, panelTopHeight, 0xFF888888);
+        int addAreaX = panelTopX + panelTopWidth;
+        int addAreaW = ADD_BUTTON_WIDTH + ADD_MENU_BUTTON_WIDTH;
+        context.fill(addAreaX, panelTopY, addAreaX + addAreaW, panelTopY + panelTopHeight, 0xAA444444);
+        context.drawBorder(addAreaX, panelTopY, addAreaW, panelTopHeight, 0xFF888888);
 
         context.fill(0, panelBottomY - SAVE_BTN_ROW_HEIGHT, width, panelBottomY, 0xAA222233);
         if (formatPainterMode) {
@@ -1920,6 +2349,9 @@ public class TextDisplayScreen extends Screen {
 
         super.render(context, mouseX, mouseY, delta);
 
+        drawGroupBadges(context, mouseX, mouseY);
+        drawGroupActiveMarkers(context);
+
         for (int i = 0; i < textButtons.size(); i++) {
             int actualIdx = topScrollOffset + i;
             if (selectedLineIndices.contains(actualIdx)) {
@@ -1930,9 +2362,6 @@ public class TextDisplayScreen extends Screen {
         }
 
         for (int index : selectedLineIndices) {
-            // 正在编辑的那一行已由世界渲染器画青色描边（AbstractTextDisplayEntityRenderer.renderEditingOutline，
-            // 0x00FFFF，贴合牌子平面），这里若再画一层屏幕空间边框就会出现「两个描边」→ 跳过它。
-            // 多选的其他行仍用屏幕空间框标出（它们没有世界描边）。
             if (index == selectedIndex) continue;
             float[] rect = TextGizmo.lineRect(index);
             if (rect == null) continue;
@@ -1968,6 +2397,8 @@ public class TextDisplayScreen extends Screen {
             }
         }
 
+        drawAddMenu(context, mouseX, mouseY);
+
         if (!presetSaveMode && !presetLoadMode && !preciseInputMode) {
             var d = (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) ? textLineWidgets.get(selectedIndex).data : null;
             List<TooltipEntry> tips = new ArrayList<>();
@@ -1985,7 +2416,26 @@ public class TextDisplayScreen extends Screen {
             if (outlineButton != null && outlineButton.visible && outlineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("描边", "点击开关文字描边（颜色见右侧 ■）"));
             if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 滚轮反向切换 | Ctrl+点击打开色盘"));
             if (colorButton != null && colorButton.visible && colorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("颜色", d != null ? String.format("当前值 #%06X", d.getColor()) : null, "点击切换 | Ctrl+点击打开色盘"));
-            if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加文本行", "按P加载预设"));
+            if (addLineButton != null && addLineButton.isMouseOver(mouseX, mouseY)) {
+                boolean inGroup = selectedIndex >= 0 && selectedIndex < textLineWidgets.size()
+                        && textLineWidgets.get(selectedIndex).data.getGroupId() > 0;
+                tips.add(TooltipEntry.of("添加文本行",
+                        inGroup ? "当前选中行属于文本列组，将追加到该组末尾" : "在末尾添加一条普通文本行"));
+            }
+            if (addLineMenuButton != null && addLineMenuButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加更多类型", "普通文本行 / 矩形 / 图片 / 文本列组", "文本列组可设置组名与切换时间"));
+            if (addLineMenuOpen) {
+                int hotItem = addMenuItemAt(mouseX, mouseY);
+                if (hotItem == 0) tips.add(TooltipEntry.of("普通文本行", "在末尾添加一条普通文本行"));
+                else if (hotItem == 1) tips.add(TooltipEntry.of("矩形", "添加一条矩形指令行（默认 16 × 16，可在文本框改宽高）"));
+                else if (hotItem == 2) tips.add(TooltipEntry.of("图片", "打开图片选择界面：先选命名空间，再逐级进入目录选图片", "确定后写入当前文本行的图片指令"));
+                else if (hotItem == 3) tips.add(TooltipEntry.of("文本列组", "新建一组可自动切换的文本行", "点击左侧「[组名:」可设置组名/切换时间"));
+            }
+            if (!groupBadges.isEmpty()) {
+                int hotGroup = groupBadgeAt(mouseX, mouseY);
+                if (hotGroup > 0) tips.add(new TooltipEntry("文本列组：" + groupDisplayName(hotGroup),
+                        "共 " + getGroupLineIndices(hotGroup).size() + " 行 · 每行停留 " + formatGroupInterval(getGroupIntervalMs(hotGroup)),
+                        "点击修改组名 / 切换时间 / 增删文本行"));
+            }
             if (patternButton != null && patternButton.visible && patternButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("图案", "打开图案与字体选择界面", "点击「插入」把图案/字体写入当前文本行"));
             if (settingsButton != null && settingsButton.visible && settingsButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("设置", "点击打开「云北路牌全局设置」页面", "Ctrl+S / Enter 保存，Esc 取消"));
             if (posCatButton != null && posCatButton.visible && posCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("位移 · W", "方向键调整 X/Y，PageUp/PageDown 调整 Z", "可在世界中拖拽坐标轴移动（Shift/Alt 调整步长）"));
@@ -2030,6 +2480,14 @@ public class TextDisplayScreen extends Screen {
         var buf = NetworkCompat.newBuffer();
         packet.write(buf);
         NetworkCompat.sendToServer(UPDATE_CUSTOM_SIGN, buf);
+    }
+
+    private static String linesSignature(List<TextLineData> lines) {
+        StringBuilder sb = new StringBuilder();
+        for (TextLineData line : lines) {
+            sb.append(line == null ? "<null>" : line.toNbt().toString()).append('\n');
+        }
+        return sb.toString();
     }
 
     private void syncWidgetsToBlockEntity() {
@@ -2091,7 +2549,10 @@ public class TextDisplayScreen extends Screen {
         PatternAndFontOverlay.closeOverlay();
         SignGlobalSettingsOverlay.close();
         TextGizmo.clear();
-        sendUpdateToServer();
+        if (initialLinesSignature == null
+                || !linesSignature(blockEntity.getTextLines()).equals(initialLinesSignature)) {
+            sendUpdateToServer();
+        }
         super.onClose();
     }
 
@@ -2119,4 +2580,5 @@ public class TextDisplayScreen extends Screen {
         static TooltipEntry of(String title, String... descriptions) { return new TooltipEntry(title, null, descriptions); }
     }
     private record TooltipLine(String text, int color) {}
+    private record GroupBadge(int groupId, int x, int y, int width, int height, String label) {}
 }

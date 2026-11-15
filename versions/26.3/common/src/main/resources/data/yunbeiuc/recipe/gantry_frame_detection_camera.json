@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:instrument_camera"
-    },
-    {
-      "item": "minecraft:stick"
-    }
+    "yunbeiuc:instrument_camera",
+    "minecraft:stick"
   ],
   "result": {
     "count": 1,

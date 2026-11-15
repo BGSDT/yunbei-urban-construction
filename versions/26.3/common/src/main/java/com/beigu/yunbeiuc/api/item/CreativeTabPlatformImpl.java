@@ -37,6 +37,10 @@ public final class CreativeTabPlatformImpl implements CreativeTabPlatform {
     }
 
     @Override
+    public Item.Properties blockDescription(Item.Properties properties) {
+        return properties.useBlockDescriptionPrefix();
+    }
+    @Override
     public Item.Properties apply(Item.Properties properties, CreativeTabHandle tab) {
         return properties;
     }

@@ -30,7 +30,7 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
         this.direction2 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction2"));
         this.direction3 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction3"));
         this.direction4 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction4"));
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

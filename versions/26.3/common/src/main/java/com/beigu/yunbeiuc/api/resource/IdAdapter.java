@@ -2,10 +2,7 @@ package com.beigu.yunbeiuc.api.resource;
 
 import net.minecraft.resources.Identifier;
 
-/**
- * Bridges the version-neutral {@link Id} to this Minecraft version's identifier type
- * ({@code Identifier} before 26.x, {@code Identifier} from 26.x on).
- */
+// Bridges the version-neutral Id to this Minecraft version's identifier type.
 public final class IdAdapter {
     private IdAdapter() {
     }

@@ -78,9 +78,6 @@ public abstract class AbstractOptionListWidget<O> extends ElementListWidget<Abst
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            int rowLeft = getRowLeft();
-            RENDER.enableScissor(context, rowLeft, y, rowLeft + getRowWidth(), y + entryHeight);
-
             if (isSelected.test(option)) {
                 RENDER.fill(context, x, y, x + entryWidth, y + entryHeight, 0x33FFFFFF);
             } else if (hovered) {
@@ -110,8 +107,6 @@ public abstract class AbstractOptionListWidget<O> extends ElementListWidget<Abst
                     0xFFFFFF,
                     true
             );
-
-            RENDER.disableScissor(context);
         }
 
         @Override

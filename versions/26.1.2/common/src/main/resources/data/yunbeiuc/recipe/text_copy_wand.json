@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "yunbeiuc:wand"
-    },
-    "X": {
-      "item": "minecraft:writable_book"
-    }
+    "#": "yunbeiuc:wand",
+    "X": "minecraft:writable_book"
   },
   "pattern": [
     "X",

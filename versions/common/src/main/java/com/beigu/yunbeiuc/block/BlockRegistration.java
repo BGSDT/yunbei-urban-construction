@@ -7,10 +7,7 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.function.Supplier;
 
-/**
- * Wraps block registration so the platform layer can stamp the block id onto its properties
- * before the block is constructed (26.x requires this).
- */
+// 26.x requires the block id stamped onto its properties before construction.
 public final class BlockRegistration {
     private BlockRegistration() {
     }
@@ -32,12 +29,6 @@ public final class BlockRegistration {
         });
     }
 
-    /**
-     * Registry name of a block created through this helper, or {@code null} if unknown.
-     *
-     * <p>Safe to call while the block is still being registered, which matters because 26.x
-     * computes collision shapes eagerly during registration.</p>
-     */
     public static String nameOf(Block block) {
         return NAMES.get(block);
     }

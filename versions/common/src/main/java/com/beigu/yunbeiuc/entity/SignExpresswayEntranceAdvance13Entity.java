@@ -42,7 +42,7 @@ public class SignExpresswayEntranceAdvance13Entity extends CustomSignBlockEntity
         this.text2 = NbtCompat.getString(nbt, "text2");
         this.text3 = NbtCompat.getString(nbt, "text3");
         this.text4 = NbtCompat.getString(nbt, "text4");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

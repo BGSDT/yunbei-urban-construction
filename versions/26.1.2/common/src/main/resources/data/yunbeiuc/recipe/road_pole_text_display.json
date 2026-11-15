@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "minecraft:gray_concrete"
-    },
-    {
-      "item": "yunbeiuc:road_pole_horizontal"
-    }
+    "minecraft:gray_concrete",
+    "yunbeiuc:road_pole_horizontal"
   ],
   "result": {
     "count": 1,

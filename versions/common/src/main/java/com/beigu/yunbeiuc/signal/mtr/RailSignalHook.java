@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 // MTR 列车钩子的实现体（纯反射）：MTR 3 挂 TrainServer#isRailBlocked，MTR 4 挂 Vehicle#checkAndBlockSignal。
-// MTR 4 不能只挂 PathData#isSignalBlocked —— 那条路只在轨道配了 MTR 原生信号色时才会被调用。
-// 红灯即拦：不管列车是否已进入这条轨道（2026-10-24 用户要求撤回「已进轨放行」，与 MTR 原生信号一致）。
 
 public final class RailSignalHook {
 

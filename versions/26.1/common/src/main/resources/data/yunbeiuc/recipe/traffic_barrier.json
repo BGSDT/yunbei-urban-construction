@@ -4,7 +4,5 @@
     "id": "yunbeiuc:traffic_barrier",
     "count": 1
   },
-  "ingredient": {
-    "item": "minecraft:white_concrete"
-  }
+  "ingredient": "minecraft:white_concrete"
 }

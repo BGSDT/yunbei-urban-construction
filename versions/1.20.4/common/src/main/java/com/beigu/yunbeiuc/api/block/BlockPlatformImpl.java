@@ -35,15 +35,12 @@ public final class BlockPlatformImpl implements BlockPlatform {
 
     @Override
     public boolean growOakTree(ServerLevel level, BlockPos pos) {
-        // 1.20.2 起 OakTreeGrower 类合并为 TreeGrower（静态实例 OAK 等）。
         return TreeGrower.OAK.growTree(level, level.getChunkSource().getGenerator(), pos,
                 Blocks.OAK_SAPLING.defaultBlockState(), level.getRandom());
     }
 
     @Override
     public BlockBehaviour.Properties copyProperties(Block source) {
-        // 1.20.2 起 Properties.copy 改名 ofFullCopy（共享树用它克隆原版方块属性，
-        // 如 copyProperties(VanillaBlocks.CYAN_TERRACOTTA)，必须保持复制语义）。
         return BlockBehaviour.Properties.ofFullCopy(source);
     }
 

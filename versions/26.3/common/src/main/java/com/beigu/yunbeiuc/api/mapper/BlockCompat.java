@@ -47,16 +47,19 @@ public abstract class BlockCompat extends Block implements BlockCompatHooks {
         return state;
     }
 
-    /** Version-neutral hook: 26.x added the tick/random parameters to {@code Block#updateShape}. */
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return state;
     }
 
     @Override
     protected BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess ticks, BlockPos pos,
                                   Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
-        return updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
+        try {
+            return updateShapeCompat(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
+        } catch (Throwable ignored) {
+            return state;
+        }
     }
 
     protected void onRemoveCompat(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
@@ -74,6 +77,6 @@ public abstract class BlockCompat extends Block implements BlockCompatHooks {
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block block,
                                    net.minecraft.world.level.redstone.Orientation orientation, boolean isMoving) {
-        neighborChangedCompat(state, level, pos, block, null, isMoving);
+        neighborChangedCompat(state, level, pos, block, pos, isMoving);
     }
 }

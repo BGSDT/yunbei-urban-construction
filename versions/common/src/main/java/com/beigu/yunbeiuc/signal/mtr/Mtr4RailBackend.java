@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 // MTR 4 的轨道几何后端：轨道表是 Data#positionsToRail，几何在 Rail#railMath，坐标是 org.mtr.core.data.Position。
-// 客户端数据类两种全名都试：4.0.x 在 org.mtr.mod.client，4.1 起在 org.mtr.client。全反射，编译期不依赖 org.mtr.core。
 
 final class Mtr4RailBackend implements MtrRailBackend {
 

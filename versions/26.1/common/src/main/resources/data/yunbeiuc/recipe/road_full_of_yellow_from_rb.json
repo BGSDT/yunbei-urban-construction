@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "minecraft:yellow_terracotta"
-    },
-    {
-      "item": "yunbeiuc:road_block"
-    }
+    "minecraft:yellow_terracotta",
+    "yunbeiuc:road_block"
   ],
   "result": {
     "count": 2,

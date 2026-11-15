@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:safety_island_yellow_4"
-    }
+    "yunbeiuc:safety_island_yellow_4"
   ],
   "result": {
     "count": 1,

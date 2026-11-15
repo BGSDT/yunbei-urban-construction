@@ -27,7 +27,7 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
 
-        if (getTextLines().isEmpty() && nbt.contains("text")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && nbt.contains("text")) {
             legacyText = NbtCompat.getString(nbt, "text");
             legacyColor = NbtCompat.getInt(nbt, "color");
             legacyFontSize = NbtCompat.getInt(nbt, "fontSize");
@@ -37,7 +37,9 @@ public class RoadPoleTextDisplayEntity extends CustomSignBlockEntity {
             line.setFontSize(legacyFontSize / 100.0f);
             line.setAlignment(TextAlignment.CENTER_CENTER);
             line.setBuiltin(true);
+            getTextLines().clear();
             getTextLines().add(line);
+            setChanged();
         }
     }
 

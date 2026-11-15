@@ -58,6 +58,9 @@ public class LinkWandRenderer {
             AABB box = shape.bounds().move(pos).inflate(0.002);
 
             VertexConsumer lineBuffer = render.beginLines(RenderPlatform.LinePrimitive.LINE_STRIP);
+            if (lineBuffer == null) {
+                continue;
+            }
 
             float r = 0.0f;
             float g = 1.0f;

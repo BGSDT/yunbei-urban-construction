@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "minecraft:white_banner"
-    },
-    {
-      "item": "yunbeiuc:road_pole_horizontal"
-    },
-    {
-      "item": "yunbeiuc:road_pole_horizontal"
-    }
+    "minecraft:white_banner",
+    "yunbeiuc:road_pole_horizontal",
+    "yunbeiuc:road_pole_horizontal"
   ],
   "result": {
     "count": 1,

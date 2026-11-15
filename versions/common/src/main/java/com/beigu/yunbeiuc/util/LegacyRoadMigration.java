@@ -8,9 +8,6 @@ import net.minecraft.nbt.ListTag;
 import java.util.Set;
 
 // 旧存档道路方块迁移：把 facing 属性改写成 axis / mirrored。
-// 不能放在 com.beigu.yunbeiuc.mixin 包下：那个包被 yunbeiuc.mixins.json 声明为 mixin 专属包，
-// 包内普通类被外部直接引用时 Mixin 会抛 IllegalClassLoadError。
-// 真正做注入的是各版本目录下的 LegacyRoadStateMixin。
 public final class LegacyRoadMigration {
 
     private static final Set<String> AXIS_ROADS = Set.of(
@@ -104,8 +101,6 @@ public final class LegacyRoadMigration {
 
     public static void migrate(CompoundTag tag) {
         try {
-            // 1.18+ 用小写 sections / block_states / palette；
-            // 1.16.5 ~ 1.17.1 用大写 Sections / BlockStates / Palette，两套都要读。
             for (String sectionKey : new String[] {"sections", "Sections"}) {
                 if (!NbtCompat.contains(tag, sectionKey, 9)) {
                     continue;

@@ -1,7 +1,6 @@
 package com.beigu.yunbeiuc.signal;
 
 // 轨道颜色 = 这条轨道此刻的红绿灯状态：绿放行 / 黄即将变红 / 红不放行 / 灰白无法判定。
-// 不是「每个相位一种颜色」；状态由 TrafficLightsBlockEntity#getRailLightState 算，与那盏灯同步变化。
 
 public final class PhaseColors {
 

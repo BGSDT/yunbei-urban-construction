@@ -1,8 +1,6 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "minecraft:orange_concrete"
-  },
+  "ingredient": "minecraft:orange_concrete",
   "result": {
     "id": "yunbeiuc:prohibited_right_turn_around_single_ground_mark",
     "count": 1

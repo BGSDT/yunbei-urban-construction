@@ -11,6 +11,16 @@ public final class NetworkCompat {
     private NetworkCompat() {
     }
 
+    @FunctionalInterface
+    public interface Receiver {
+        void receive(FriendlyByteBuf buf, NetworkManager.PacketContext context);
+    }
+
+    @SuppressWarnings("removal")
+    public static void registerC2S(Id id, Receiver receiver) {
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, IdAdapter.mc(id), receiver::receive);
+    }
+
     public static FriendlyByteBuf newBuffer() {
         return new FriendlyByteBuf(Unpooled.buffer());
     }

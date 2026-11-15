@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "yunbeiuc:wand"
-    },
-    "X": {
-      "item": "minecraft:glass_pane"
-    }
+    "#": "yunbeiuc:wand",
+    "X": "minecraft:glass_pane"
   },
   "pattern": [
     "X",

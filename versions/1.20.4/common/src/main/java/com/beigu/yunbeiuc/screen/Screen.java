@@ -9,6 +9,32 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 
 public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
+    public boolean keyPressedCompat(net.minecraft.client.gui.components.events.GuiEventListener widget,
+                                    int keyCode, int scanCode, int modifiers) {
+        return widget.keyPressed(keyCode, scanCode, modifiers);
+    }
+    public boolean dispatchWidgetClickCompat(double mouseX, double mouseY, int button) {
+        java.util.List<net.minecraft.client.gui.components.events.GuiEventListener> clickChildren =
+                new java.util.ArrayList<>(this.children());
+        for (int i = clickChildren.size() - 1; i >= 0; i--) {
+            net.minecraft.client.gui.components.events.GuiEventListener child = clickChildren.get(i);
+            if (child instanceof net.minecraft.client.gui.components.AbstractWidget widget
+                    && widget.visible && widget.active && widget.isMouseOver(mouseX, mouseY)) {
+                if (child.mouseClicked(mouseX, mouseY, button)) {
+                    this.setFocused((net.minecraft.client.gui.components.events.GuiEventListener) child);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isTextInputFocusedCompat() {
+        for (var child : this.children()) {
+            if (child instanceof net.minecraft.client.gui.components.EditBox box && box.isFocused()) return true;
+        }
+        return false;
+    }
     protected Minecraft client;
     protected Font textRenderer;
 
@@ -19,7 +45,15 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
         super.init();
         client = super.minecraft;
         textRenderer = super.font;
+        onScreenShownCompat();
     }
+
+    public void rebuildWidgetsCompat() {
+        this.clearChildren();
+        init();
+    }
+    protected boolean keepMenuBackground() { return true; }
+    public void onScreenShownCompat() { }
 
     @Override
     public final void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
@@ -34,11 +68,8 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         if (this.renderBackdrop) {
-            // 1.20.2 起 renderBackground 多带 mouseX/mouseY/partialTick 三个参数（1.20.4 里未被使用）。
             super.renderBackground(context.getGraphics(), mouseX, mouseY, delta);
         }
-        // 1.20.2 起原生 Screen.render 开头会调用 renderBackground 画灰色渐变/泥土背景（1.20.1 不会），
-        // 与 1.20.1 行为不符 → 不调 super.render，自行遍历 children 渲染 Renderable（与 1.21.1 shim 一致）。
         GuiGraphics graphics = context.getGraphics();
         for (GuiEventListener element : this.children()) {
             if (element instanceof Renderable renderable) {
@@ -71,8 +102,6 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 
     @Override
     public boolean isPauseScreen() { return shouldPauseCompat(); }
-    // 1.20.2 起 GuiEventListener.mouseScrolled 变为 4 参（scrollX/scrollY 拆分），
-    // 与 1.21.1 的 shim 一致；纵向滚动取 scrollY。
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         return mouseScrolledCompat(mouseX, mouseY, scrollY);

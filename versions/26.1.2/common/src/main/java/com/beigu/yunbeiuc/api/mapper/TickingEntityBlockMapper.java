@@ -41,7 +41,6 @@ public abstract class TickingEntityBlockMapper extends BaseEntityBlock implement
     @Nullable @Override public final BlockEntity newBlockEntity(BlockPos pos, BlockState state) { return newBlockEntityCompat(pos, state); }
     @Nullable protected abstract BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state);
 
-
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
@@ -60,7 +59,6 @@ public abstract class TickingEntityBlockMapper extends BaseEntityBlock implement
         return state;
     }
 
-
     private static final class Fallback extends BaseEntityBlock {
         @Override
         protected MapCodec<? extends net.minecraft.world.level.block.BaseEntityBlock> codec() {
@@ -71,7 +69,6 @@ public abstract class TickingEntityBlockMapper extends BaseEntityBlock implement
             super(properties);
         }
 
-
         @Nullable
         @Override
         public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -80,14 +77,14 @@ public abstract class TickingEntityBlockMapper extends BaseEntityBlock implement
     }
 
     protected BlockState updateShapeCompat(BlockState state, Direction direction, BlockState neighborState,
-                                           LevelReader world, BlockPos pos, BlockPos neighborPos) {
+                                           LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return state;
     }
 
     @Override
     protected BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess ticks, BlockPos pos,
                                      Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
-        return updateShapeCompat(state, direction, neighborState, world, pos, neighborPos);
+        return updateShapeCompat(state, direction, neighborState, (LevelAccessor) world, pos, neighborPos);
     }
 
     protected void onRemoveCompat(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
@@ -105,7 +102,7 @@ public abstract class TickingEntityBlockMapper extends BaseEntityBlock implement
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block block,
                                    net.minecraft.world.level.redstone.Orientation orientation, boolean isMoving) {
-        neighborChangedCompat(state, level, pos, block, null, isMoving);
+        neighborChangedCompat(state, level, pos, block, pos, isMoving);
     }
 
     private static final MapCodec<TickingEntityBlockMapper.Fallback> FALLBACK_CODEC = simpleCodec(TickingEntityBlockMapper.Fallback::new);

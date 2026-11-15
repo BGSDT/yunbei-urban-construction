@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "yunbeiuc:instrument_camera"
-    },
-    {
-      "item": "yunbeiuc:road_pole_horizontal"
-    }
+    "yunbeiuc:instrument_camera",
+    "yunbeiuc:road_pole_horizontal"
   ],
   "result": {
     "count": 1,

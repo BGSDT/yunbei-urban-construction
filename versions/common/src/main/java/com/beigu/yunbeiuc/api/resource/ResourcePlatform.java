@@ -15,4 +15,6 @@ public interface ResourcePlatform {
     InputStream openIfPresent(ResourceManager manager, Id id) throws IOException;
 
     List<Id> listResources(ResourceManager manager, String path, Predicate<Id> filter);
+
+    List<String> listNamespaces(ResourceManager manager);
 }

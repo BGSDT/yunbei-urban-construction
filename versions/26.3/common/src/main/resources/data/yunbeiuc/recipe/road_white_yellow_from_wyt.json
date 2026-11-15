@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "minecraft:white_terracotta"
-    },
-    {
-      "item": "minecraft:yellow_terracotta"
-    }
+    "minecraft:white_terracotta",
+    "minecraft:yellow_terracotta"
   ],
   "result": {
     "count": 2,

@@ -26,7 +26,7 @@ public class SignExpresswayNamingNumberEntity extends CustomSignBlockEntity {
         super.loadCompat(nbt);
         this.expresswayNumber = NbtCompat.getString(nbt, "expresswayNumber");
         this.expresswayName = NbtCompat.getString(nbt, "expresswayName");
-        if (!nbt.contains("TextLines")) {
+        if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
     }

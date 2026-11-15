@@ -1,8 +1,6 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "minecraft:white_concrete"
-  },
+  "ingredient": "minecraft:white_concrete",
   "result": {
     "id": "yunbeiuc:sign_indication_lane_direction_small_passenger_car_left_side_median_strip",
     "count": 9
