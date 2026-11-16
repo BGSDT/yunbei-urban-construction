@@ -193,7 +193,7 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     }
 
     public boolean mouseScrolledCompat(double mouseX, double mouseY, double amount) {
-        return super.mouseScrolled(mouseX, mouseY, amount, amount);
+        return super.mouseScrolled(mouseX, mouseY, 0.0, amount);
     }
 
     public static boolean hasShiftDown() {

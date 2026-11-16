@@ -357,6 +357,10 @@ public final class TextGizmo {
         ApiCompat.enableDepthTest();
         ApiCompat.enableCull();
         ApiCompat.disableBlend();
+
+        // 26.1/26.1.2 的渲染器传的是原版 BufferSource，顶点不会自动上传，
+        // 不在这里 endBatch 的话手柄帧完全看不到（26.3 的 DeferredGeometry 该调用为空实现）。
+        buffers.endBatch();
     }
 
     private static Vector4f[] viewRayPoints(double mx, double my) {

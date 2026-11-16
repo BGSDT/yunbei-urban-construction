@@ -73,7 +73,7 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning3 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3.get();
+        boolean isWarning3 = isBlockType(com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_3);
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning3) {
             lines.add(SignTextLinesHelper.centered("新吴路", 0f, 8f, 0.03f, 0xFFFFFF, "a"));

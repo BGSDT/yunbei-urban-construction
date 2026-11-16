@@ -50,7 +50,7 @@ public class SignExpresswayDirection5Entity extends CustomSignBlockEntity {
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean direction6 = blockStateForDefaults().getBlock() == SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6.get();
+        boolean direction6 = isBlockType(SignBlocks.SIGN_EXPRESSWAY_DIRECTION_6);
         float centerX = direction6 ? -4.5f : 4.5f;
         float directionLogoX = direction6 ? 8.5f : -8.5f;
         List<TextLineData> lines = new ArrayList<>();

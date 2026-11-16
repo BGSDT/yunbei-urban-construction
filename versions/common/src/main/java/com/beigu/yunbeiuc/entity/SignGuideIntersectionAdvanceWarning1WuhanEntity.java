@@ -58,7 +58,7 @@ public class SignGuideIntersectionAdvanceWarning1WuhanEntity extends CustomSignB
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isRight = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT.get();
+        boolean isRight = isBlockType(com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_1_WUHAN_RIGHT);
         List<TextLineData> lines = new ArrayList<>();
         if (isRight) {
             lines.add(SignTextLinesHelper.centered("沌阳大道", 16.5f, 12f, 0.023f, 0x275aa8, "a"));

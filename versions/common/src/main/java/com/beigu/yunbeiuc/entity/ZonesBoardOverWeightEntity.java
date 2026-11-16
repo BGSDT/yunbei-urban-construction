@@ -38,19 +38,18 @@ public class ZonesBoardOverWeightEntity extends CustomSignBlockEntity {
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        Block block = blockStateForDefaults().getBlock();
         List<TextLineData> lines = new ArrayList<>();
-        if (block == SignBlocks.ZONES_BOARD_OVER_WEIGHT.get() || block == SignBlocks.ZONES_BOARD_TIME_LIMIT.get()) {
+        if (isBlockType(SignBlocks.ZONES_BOARD_OVER_WEIGHT) || isBlockType(SignBlocks.ZONES_BOARD_TIME_LIMIT)) {
             lines.add(SignTextLinesHelper.left("{text1}", -5f, 5.5f, 0.03f, 0x000000, "b"));
-        } else if (block == SignBlocks.ZONES_BOARD_SUGGESTED_SPEED.get()) {
+        } else if (isBlockType(SignBlocks.ZONES_BOARD_SUGGESTED_SPEED)) {
             lines.add(SignTextLinesHelper.left("{text1}", -6f, 0f, 0.04f, 0x000000, "b"));
-        } else if (block == SignBlocks.ZONES_BOARD_LENGTH.get()) {
+        } else if (isBlockType(SignBlocks.ZONES_BOARD_LENGTH)) {
             lines.add(SignTextLinesHelper.centered("{text1}", 1f, 0f, 0.04f, 0x000000, "b"));
-        } else if (block == SignBlocks.ZONES_BOARD_DISTANCE_LENGTH.get()) {
+        } else if (isBlockType(SignBlocks.ZONES_BOARD_DISTANCE_LENGTH)) {
             lines.add(SignTextLinesHelper.centered("{text1}", 0f, 0f, 0.04f, 0x000000, "b"));
-        } else if (block == SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_LEFT.get()) {
+        } else if (isBlockType(SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_LEFT)) {
             lines.add(SignTextLinesHelper.centered("{text1}", 0f, 1f, 0.03f, 0x000000, "b"));
-        } else if (block == SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_RIGHT.get()) {
+        } else if (isBlockType(SignBlocks.ZONES_BOARD_DISTANCE_LENGTH_RIGHT)) {
             lines.add(SignTextLinesHelper.centered("{text1}", -2f, 1f, 0.03f, 0x000000, "b"));
         }
         setTextLines(lines);

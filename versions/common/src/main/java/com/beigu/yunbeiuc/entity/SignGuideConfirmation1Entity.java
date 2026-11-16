@@ -53,7 +53,7 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean main = blockStateForDefaults().getBlock() == SignBlocks.SIGN_GUIDE_CONFIRMATION_1.get();
+        boolean main = isBlockType(SignBlocks.SIGN_GUIDE_CONFIRMATION_1);
         float textX = main ? -17f : -15f;
         float lengthX = main ? 13f : 11f;
         float unitX = main ? 17f : 15f;

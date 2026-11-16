@@ -42,7 +42,7 @@ public class SignGuideIntersectionWarning4Entity extends CustomSignBlockEntity {
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning4 = blockStateForDefaults().getBlock() == SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4.get();
+        boolean isWarning4 = isBlockType(SignBlocks.SIGN_GUIDE_INTERSECTION_WARNING_4);
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning4) {
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_indication_{logo1}.png", -13f, 0f, 0.4f, 0f));

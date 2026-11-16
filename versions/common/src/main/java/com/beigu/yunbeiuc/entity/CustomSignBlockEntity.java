@@ -49,6 +49,26 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         return getBlockState();
     }
 
+    /**
+     * 用注册名判断方块类型。
+     *
+     * <p>旧版本（尤其 1.16.5）里直接比较方块实例 {@code getBlock() == SignBlocks.XXX.get()}
+     * 在部分加载/注册时机下不相等（注册表 supplier 与实际状态里的实例不是同一引用），
+     * 导致所有 {@code if (方块类型)} 都落到 else 分支。改用命名空间+注册名比较后跨版本稳定。</p>
+     */
+    protected boolean isBlockType(dev.architectury.registry.registries.RegistrySupplier<? extends net.minecraft.world.level.block.Block> supplier) {
+        if (supplier == null) return false;
+        net.minecraft.world.level.block.Block expectedBlock = supplier.get();
+        if (expectedBlock == null) return false;
+        // blockId(Block) 在所有版本都返回统一的 Id（命名空间 + 注册名），不依赖对象引用。
+        com.beigu.yunbeiuc.api.resource.Id expected = VersionServices.registries().blockId(expectedBlock);
+        com.beigu.yunbeiuc.api.resource.Id actual =
+                VersionServices.registries().blockId(blockStateForDefaults().getBlock());
+        return expected != null && actual != null
+                && expected.namespace().equals(actual.namespace())
+                && expected.path().equals(actual.path());
+    }
+
     public List<TextLineData> getTextLines() { return textLines; }
 
     public void setTextLines(List<TextLineData> textLines) {

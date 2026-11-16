@@ -26,7 +26,7 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
             if (child instanceof net.minecraft.client.gui.components.AbstractWidget widget
                     && widget.visible && widget.active && widget.isMouseOver(mouseX, mouseY)) {
                 if (child.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(mouseX, mouseY,
-                        new net.minecraft.client.input.MouseButtonInfo(legacyButton(button) + 1, 0)), false)) {
+                        new net.minecraft.client.input.MouseButtonInfo(legacyButton(button), 0)), false)) {
                     this.setFocused((net.minecraft.client.gui.components.events.GuiEventListener) child);
                     return true;
                 }
@@ -161,30 +161,30 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        boolean result = mouseClicked(event.x(), event.y(), legacyButton(event.button() - 1));
+        boolean result = mouseClicked(event.x(), event.y(), legacyButton(event.button()));
         return result;
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return super.mouseClicked(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button) + 1, 0)), false);
+        return super.mouseClicked(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button), 0)), false);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        return mouseReleased(event.x(), event.y(), legacyButton(event.button() - 1));
+        return mouseReleased(event.x(), event.y(), legacyButton(event.button()));
     }
 
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return super.mouseReleased(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button) + 1, 0)));
+        return super.mouseReleased(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button), 0)));
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
-        return mouseDragged(event.x(), event.y(), legacyButton(event.button() - 1), deltaX, deltaY);
+        return mouseDragged(event.x(), event.y(), legacyButton(event.button()), deltaX, deltaY);
     }
 
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        return super.mouseDragged(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button) + 1, 0)), deltaX, deltaY);
+        return super.mouseDragged(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(legacyButton(button), 0)), deltaX, deltaY);
     }
 
     @Override
@@ -193,7 +193,7 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
     }
 
     public boolean mouseScrolledCompat(double mouseX, double mouseY, double amount) {
-        return super.mouseScrolled(mouseX, mouseY, amount, amount);
+        return super.mouseScrolled(mouseX, mouseY, 0.0, amount);
     }
 
     public static boolean hasShiftDown() {

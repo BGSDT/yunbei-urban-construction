@@ -46,13 +46,14 @@ public final class YunbeiUrbanConstructionFabricClient implements ClientModIniti
         BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_4_ENTITY.get(), SignExpresswayDistanceFromLocation4EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_5_ENTITY.get(), SignExpresswayDistanceFromLocation5EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6_ENTITY.get(), SignExpresswayDistanceFromLocation6EntityRenderer::new);
-        BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_1_ENTITY.get(), SignExpresswayExit1EntityRenderer::new);
+            BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_1_ENTITY.get(), SignExpresswayExit1EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_8_ENTITY.get(), SignExpresswayExit8EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_1_ENTITY.get(), ZonesBoard1EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_IMAGE_ENTITY.get(), ZonesBoardImageEntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_TIME_RANGE_1_ENTITY.get(), ZonesBoardTimeRange1EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_TIME_RANGE_2_ENTITY.get(), ZonesBoardTimeRange2EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.ZONES_BOARD_OVER_WEIGHT_ENTITY.get(), ZonesBoardOverWeightEntityRenderer::new);
+        BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_4_ENTITY.get(), SignExpresswayExit4EntityRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.CUSTOM_SIGN_BLOCK_ENTITY.get(), CustomSignBlockEntityRenderer::new);
 
         PresetManager.load();

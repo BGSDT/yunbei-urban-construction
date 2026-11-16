@@ -354,7 +354,19 @@ public final class TextGizmo {
         try {
             Camera camera = mc.gameRenderer.getMainCamera();
             if (camera == null || !camera.isInitialized()) return null;
-            return mc.gameRenderer.getProjectionMatrix(camera, mc.getFrameTime(), false);
+            Matrix4f projection = mc.gameRenderer.getProjectionMatrix(camera, mc.getFrameTime(), false);
+            if (projection == null) return null;
+            // 1.16.5 的方块实体 PoseStack 只做了「世界 - 相机位置」的平移，不含相机旋转；
+            // 而 getProjectionMatrix 只返回 projection。两者相乘缺了 view 旋转那一项，
+            // 反投影出来的射线落在相机空间而不是世界空间，拖拽坐标就会整体偏移。
+            // 这里按 GameRenderer 的做法，用相机四元数的共轭构造 view 旋转（不含平移）。
+            com.mojang.math.Quaternion q = camera.rotation().copy();
+            q.conj();
+            Matrix4f view = new Matrix4f();
+            view.multiply(q);
+            Matrix4f result = new Matrix4f(projection);
+            result.multiply(view);
+            return result;
         } catch (RuntimeException e) {
             return null;
         }

@@ -46,7 +46,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning6 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get();
+        boolean isWarning6 = isBlockType(com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6);
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning6) {
             float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
@@ -90,7 +90,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
 
     @Override
     public String getPlaceholderValue(String key) {
-        boolean isWarning8 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8.get();
+        boolean isWarning8 = isBlockType(com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_8);
         return switch (key) {
             case "logo1" -> logoName(direction1, isWarning8);
             case "logo2" -> logoName(direction2, isWarning8);
@@ -130,7 +130,7 @@ public class SignGuideIntersectionAdvanceWarning6Entity extends CustomSignBlockE
     }
 
     private void mirrorWarning6Lines() {
-        if (blockStateForDefaults().getBlock() != com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6.get()) return;
+        if (!isBlockType(com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_6)) return;
         float logo1X = direction1 == SignTurnDirection.RIGHT ? 13f : -13f;
         float logo2X = direction2 == SignTurnDirection.RIGHT ? 13f : -13f;
         float text1X = direction1 == SignTurnDirection.RIGHT ? -6f : 6f;

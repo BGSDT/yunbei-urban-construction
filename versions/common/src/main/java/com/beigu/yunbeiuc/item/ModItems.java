@@ -695,6 +695,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> SIGN_INDICATION_LEFT_SIDE_MEDIAN_STRIP = sign(SignBlocks.SIGN_INDICATION_LEFT_SIDE_MEDIAN_STRIP);
     public static final RegistrySupplier<Item> SIGN_INDICATION_ROUNDABOUT = sign(SignBlocks.SIGN_INDICATION_ROUNDABOUT);
     public static final RegistrySupplier<Item> SIGN_INDICATION_ONE_WAY_STREET_LEFT_RIGHT = sign(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_LEFT_RIGHT);
+    public static final RegistrySupplier<Item> SIGN_INDICATION_ONE_WAY_STREET_LEFT = sign(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_LEFT);
     public static final RegistrySupplier<Item> SIGN_INDICATION_ONE_WAY_STREET_STRAIGHT = sign(SignBlocks.SIGN_INDICATION_ONE_WAY_STREET_STRAIGHT);
     public static final RegistrySupplier<Item> SIGN_INDICATION_HONK_HORN = sign(SignBlocks.SIGN_INDICATION_HONK_HORN);
     public static final RegistrySupplier<Item> SIGN_INDICATION_HEADLIGHTS = sign(SignBlocks.SIGN_INDICATION_HEADLIGHTS);
@@ -987,6 +988,9 @@ public class ModItems {
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_1 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_1);
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_2 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_2);
     public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_3 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_3);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_4 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_4);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_5 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_5);
+    public static final RegistrySupplier<Item> SIGN_EXPRESSWAY_EXIT_6 = sign(SignBlocks.SIGN_EXPRESSWAY_EXIT_6);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_1 = sign(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_1);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_2 = sign(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_2);
     public static final RegistrySupplier<Item> SIGN_CUSTOM_EXPRESSWAY_3 = sign(SignBlocks.SIGN_CUSTOM_EXPRESSWAY_3);

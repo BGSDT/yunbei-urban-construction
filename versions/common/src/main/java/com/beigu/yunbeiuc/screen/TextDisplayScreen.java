@@ -47,8 +47,9 @@ public class TextDisplayScreen extends Screen {
     private static final int SAVE_BTN_ROW_HEIGHT = 22;
     private static final int INFO_PANEL_WIDTH = 100;
     private static final float SCALE_DISPLAY_FACTOR = 16f;
-    private static final float POSITION_STEP = 0.1f;
-    private static final float POSITION_ALT_STEP = 0.05f;
+    /** 位移步长：默认 ±1（1/16 格），Shift ±4，Alt ±0.5。 */
+    private static final float POSITION_STEP = 1f;
+    private static final float POSITION_ALT_STEP = 0.5f;
     private static final int MAX_LINE_TAB_WIDTH = 300;
     private static final int[] COLOR_PALETTE = {0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFA500, 0x000000};
 

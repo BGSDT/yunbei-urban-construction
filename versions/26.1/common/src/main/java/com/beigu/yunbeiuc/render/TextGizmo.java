@@ -66,6 +66,7 @@ public final class TextGizmo {
     private static final List<H> HANDLES = new ArrayList<>();
 
     private static net.minecraft.client.renderer.MultiBufferSource.BufferSource gizmoBuffers;
+    private static boolean gizmoDiagLogged;
 
     private static final List<LineRect> LINE_RECTS = new ArrayList<>();
     private static boolean rectsActive = false;
@@ -331,7 +332,17 @@ public final class TextGizmo {
         ApiCompat.disableCull();
 
         net.minecraft.client.renderer.MultiBufferSource.BufferSource buffers = gizmoBuffers;
-        if (buffers == null) return;
+        if (buffers == null) {
+            if (!gizmoDiagLogged) {
+                gizmoDiagLogged = true;
+                System.out.println("[YUC-GIZMO] draw skipped: gizmoBuffers is null");
+            }
+            return;
+        }
+        if (!gizmoDiagLogged) {
+            gizmoDiagLogged = true;
+            System.out.println("[YUC-GIZMO] draw mode=" + mode + " projView=" + (projView != null));
+        }
         VertexConsumer buf = buffers.getBuffer(net.minecraft.client.renderer.rendertype.RenderTypes.debugQuads());
 
         Matrix4f m = new Matrix4f();
@@ -356,6 +367,11 @@ public final class TextGizmo {
                 disc(buf, m, p, hot ? 0.065f : 0.05f, 255, hot ? 255 : 214, hot ? 90 : 40, 255);
             }
         }
+
+        // 26.1/26.1.2 的渲染器传的是原版 BufferSource，顶点不会自动上传。
+        // 必须在恢复深度测试【之前】提交，否则 endBatch 出来的四边形会被深度测试挡掉，
+        // 表现就是「手柄完全看不见」。
+        buffers.endBatch(net.minecraft.client.renderer.rendertype.RenderTypes.debugQuads());
 
         ApiCompat.enableDepthTest();
         ApiCompat.enableCull();

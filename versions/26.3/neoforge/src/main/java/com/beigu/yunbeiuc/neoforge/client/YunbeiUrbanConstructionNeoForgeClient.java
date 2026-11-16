@@ -19,6 +19,7 @@ public class YunbeiUrbanConstructionNeoForgeClient {
 
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            BlockEntityRendererRegistry.register(ModBlockEntities.SIGN_EXPRESSWAY_EXIT_4_ENTITY.get(), SignExpresswayExit4EntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_POLE_TEXT_DISPLAY_ENTITY.get(), RoadPoleTextDisplayEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.FLAG_BLOCK_ENTITY.get(), FlagBlockEntityRenderer::new);
             BlockEntityRendererRegistry.register(ModBlockEntities.ROAD_NAME_SIGN_BLOCK_ENTITY.get(), RoadNameSignBlockEntityRenderer::new);

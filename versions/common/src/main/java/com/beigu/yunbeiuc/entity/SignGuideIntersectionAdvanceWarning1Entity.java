@@ -40,13 +40,13 @@ public class SignGuideIntersectionAdvanceWarning1Entity extends CustomSignBlockE
 
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
-        boolean isWarning2 = blockStateForDefaults().getBlock() == com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2.get();
+        boolean isWarning2 = isBlockType(com.beigu.yunbeiuc.block.SignBlocks.SIGN_GUIDE_INTERSECTION_ADVANCE_WARNING_2);
         List<TextLineData> lines = new ArrayList<>();
         if (isWarning2) {
-            lines.add(SignTextLinesHelper.left("昌平", -17f, 10f, 0.035f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.left("顺义", 3f, -1f, 0.035f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.left("昌平", -10f, 9f, 0.035f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.left("顺义", -3.0f, 1.5f, 0.035f, 0xFFFFFF, "a"));
         } else {
-            lines.add(SignTextLinesHelper.left("昌平", -12f, 12f, 0.035f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.left("昌平", -14f, 10f, 0.035f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.left("顺义", -5f, -7f, 0.035f, 0xFFFFFF, "a"));
         }
         setTextLines(lines);

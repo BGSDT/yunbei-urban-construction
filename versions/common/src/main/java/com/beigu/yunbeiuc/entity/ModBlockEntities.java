@@ -6,7 +6,6 @@ import com.beigu.yunbeiuc.block.SignBlocks;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class ModBlockEntities {
@@ -251,6 +250,12 @@ public class ModBlockEntities {
                             SignBlocks.SIGN_EXPRESSWAY_EXIT_1.get(),
                             SignBlocks.SIGN_EXPRESSWAY_EXIT_2.get(),
                             SignBlocks.SIGN_EXPRESSWAY_EXIT_3.get()));
+    public static final RegistrySupplier<BlockEntityType<SignExpresswayExit4Entity>> SIGN_EXPRESSWAY_EXIT_4_ENTITY =
+            BES.register("sign_expressway_exit_4_entity",
+                    () -> VersionServices.blockEntities().create(SignExpresswayExit4Entity::new,
+                            SignBlocks.SIGN_EXPRESSWAY_EXIT_4.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_EXIT_5.get(),
+                            SignBlocks.SIGN_EXPRESSWAY_EXIT_6.get()));
     public static final RegistrySupplier<BlockEntityType<ZonesBoard1Entity>> ZONES_BOARD_1_ENTITY =
             BES.register("zones_board_1_entity",
                     () -> VersionServices.blockEntities().create(ZonesBoard1Entity::new,

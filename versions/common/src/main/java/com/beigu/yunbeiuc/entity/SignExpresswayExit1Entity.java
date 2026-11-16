@@ -1,8 +1,10 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.nbt.NbtCompat;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -10,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
-    private String logo1 = "national_logo_1";
     private String logo = "red_number_logo";
 
     public SignExpresswayExit1Entity(BlockPos pos, BlockState state) {
@@ -21,7 +22,6 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.logo1 = NbtCompat.getString(nbt, "logo1");
         this.logo = NbtCompat.getString(nbt, "image");
         if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
@@ -30,7 +30,6 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
 
     @Override
     public void saveAdditionalCompat(CompoundTag nbt) {
-        nbt.putString("logo1", this.logo1);
         nbt.putString("image", this.logo);
         super.saveAdditionalCompat(nbt);
     }
@@ -38,29 +37,78 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        TextLineData baseplate = new TextLineData("-rect 36 32");
-        baseplate.setXOffset(0f);
-        baseplate.setYOffset(0f);
-        baseplate.setColor(0x00703C);
-        baseplate.setAlignment(TextAlignment.CENTER_CENTER);
-        baseplate.setBuiltin(true);
-        lines.add(baseplate);
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{logo}.png", 0f, 10f, 0.8f));
-        lines.add(SignTextLinesHelper.centered("G204", 0f, 9.25f, 0.035f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.centered("如皋", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.centered("海安", 8f, -1f, 0.041f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.right("2", -7f, -12f, 0.041f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.centered("km", -5f, -12.5f, 0.031f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", 8f, -11f, 0.3592f, 90f));
+        String signVariantId = BuiltInRegistries.BLOCK.getKey(getBlockState().getBlock()).getPath();
+        switch (signVariantId) {
+            case "sign_expressway_exit_3" -> {
+                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{logo}.png", 0f, 10f, 0.8f));
+                TextLineData line1 = new TextLineData("G204");
+                line1.setXOffset(0f);
+                line1.setYOffset(9.75f);
+                line1.setZOffset(0.032f);
+                line1.setRotX(0f);
+                line1.setRotY(0f);
+                line1.setRotZ(0f);
+                line1.setColor(0xFFFFFF);
+                line1.setAlignment(TextAlignment.CENTER_CENTER);
+                line1.setBold(false);
+                line1.setItalic(false);
+                line1.setUnderline(false);
+                line1.setShadow(false);
+                line1.setOutline(false);
+                line1.setGlowing(false);
+                line1.setFontSize(0.7f);
+                line1.setAbcFont("b");
+                line1.setScaleX(1f);
+                line1.setScaleY(1f);
+                line1.setScaleZ(1f);
+                line1.setBuiltin(true);
+                lines.add(line1);
+                lines.add(SignTextLinesHelper.centered("如皋", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
+                lines.add(SignTextLinesHelper.centered("海安", 8f, -1f, 0.041f, 0xFFFFFF, "a"));
+                lines.add(SignTextLinesHelper.right("2", -7f, -12f, 0.041f, 0xFFFFFF, "a"));
+                lines.add(SignTextLinesHelper.centered("km", -5f, -12.5f, 0.031f, 0xFFFFFF, "b"));
+                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", 8f, -11f, 0.3592f, 90f));
+                lines.add(SignTextLinesHelper.centered("145", -7.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
+            }
+            default -> {
+                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{logo}.png", 0f, 10f, 0.8f));
+                TextLineData line1 = new TextLineData("G204");
+                line1.setXOffset(0f);
+                line1.setYOffset(9.75f);
+                line1.setZOffset(0.032f);
+                line1.setRotX(0f);
+                line1.setRotY(0f);
+                line1.setRotZ(0f);
+                line1.setColor(0xFFFFFF);
+                line1.setAlignment(TextAlignment.CENTER_CENTER);
+                line1.setBold(false);
+                line1.setItalic(false);
+                line1.setUnderline(false);
+                line1.setShadow(false);
+                line1.setOutline(false);
+                line1.setGlowing(false);
+                line1.setFontSize(0.7f);
+                line1.setAbcFont("b");
+                line1.setScaleX(1f);
+                line1.setScaleY(1f);
+                line1.setScaleZ(1f);
+                line1.setBuiltin(true);
+                lines.add(line1);
+                lines.add(SignTextLinesHelper.centered("如皋", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
+                lines.add(SignTextLinesHelper.centered("海安", 8f, -1f, 0.041f, 0xFFFFFF, "a"));
+                lines.add(SignTextLinesHelper.right("2", -7f, -12f, 0.041f, 0xFFFFFF, "a"));
+                lines.add(SignTextLinesHelper.centered("km", -5f, -12.5f, 0.031f, 0xFFFFFF, "b"));
+                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", 8f, -11f, 0.3592f, 90f));
+                lines.add(SignTextLinesHelper.centered("145", 13.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
+            }
+        }
         setTextLines(lines);
     }
 
-    public String getLogo1() { return logo1; }
-    public void setLogo1(String logo1) {
-        this.logo1 = logo1;
-        markDirtyAndUpdate();
+    public String getLogo() {
+        return logo;
     }
-    public String getLogo() { return logo; }
+
     public void setLogo(String logo) {
         this.logo = logo;
         markDirtyAndUpdate();
@@ -69,7 +117,6 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
     @Override
     public String getPlaceholderValue(String key) {
         return switch (key) {
-            case "logo1" -> logo1;
             case "logo" -> logo;
             default -> null;
         };
@@ -98,7 +145,7 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
     private void markDirtyAndUpdate() {
         setChanged();
         if (level != null) {
-            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), 3);
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }
