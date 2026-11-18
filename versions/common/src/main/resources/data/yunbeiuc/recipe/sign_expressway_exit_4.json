@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": "minecraft:white_concrete",
-  "result": {
-    "id": "yunbeiuc:sign_expressway_exit_4",
-    "count": 9
-  }
-}
