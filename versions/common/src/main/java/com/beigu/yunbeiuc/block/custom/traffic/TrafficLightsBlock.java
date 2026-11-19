@@ -361,7 +361,7 @@ public class TrafficLightsBlock extends TickingEntityBlock {
             ApiCompat.message(pending.player, com.beigu.yunbeiuc.api.text.Text.literal(
                     "§7这盏红绿灯属于相位组，拆掉它会§c解散整组§7：其余 §6"
                             + Math.max(0, members - 1)
-                            + " §7盏灯已退回未分组状态，时间表与轨道绑定一并清空。"
+                            + " §7盏灯已退回未分组状态，时间表与线路绑定一并清空。"
                             + "要恢复请用链接魔杖重新链接相位组。"), false);
         }
     }

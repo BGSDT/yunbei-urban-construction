@@ -216,6 +216,23 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         public static final int MIN_GROUP_INTERVAL_MS = 200;
         public static final int MAX_GROUP_INTERVAL_MS = 600000;
 
+        /** 容器类型：轮播（按停留时间循环显示组内文本行）。 */
+        public static final int CONTAINER_CAROUSEL = 0;
+        /** 容器类型：滚动（组内文本行拼接成一条，在容器宽度内循环滚动）。 */
+        public static final int CONTAINER_SCROLL = 1;
+
+        public static final float DEFAULT_CONTAINER_WIDTH = 32f;
+        public static final float MIN_CONTAINER_WIDTH = 8f;
+        public static final float MAX_CONTAINER_WIDTH = 1024f;
+
+        public static final float DEFAULT_SCROLL_SPEED = 0.75f;
+        public static final float MAX_SCROLL_SPEED = 16f;
+
+        public static final int SCROLL_LEFT = 0;
+        public static final int SCROLL_RIGHT = 1;
+        public static final int SCROLL_UP = 2;
+        public static final int SCROLL_DOWN = 3;
+
         private String text;
         private float xOffset, yOffset, zOffset;
         private float rotX, rotY, rotZ;
@@ -235,6 +252,11 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         private int groupId = 0;
         private String groupName = "";
         private int groupIntervalMs = DEFAULT_GROUP_INTERVAL_MS;
+
+        private int containerMode = CONTAINER_CAROUSEL;
+        private float containerWidth = DEFAULT_CONTAINER_WIDTH;
+        private float scrollSpeed = DEFAULT_SCROLL_SPEED;
+        private int scrollDirection = SCROLL_LEFT;
 
         public TextLineData(String text) {
             this.text = text != null ? text : "";
@@ -261,6 +283,8 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             c.scaleX = scaleX; c.scaleY = scaleY; c.scaleZ = scaleZ;
             c.builtin = builtin;
             c.groupId = groupId; c.groupName = groupName; c.groupIntervalMs = groupIntervalMs;
+            c.containerMode = containerMode; c.containerWidth = containerWidth;
+            c.scrollSpeed = scrollSpeed; c.scrollDirection = scrollDirection;
             return c;
         }
 
@@ -303,6 +327,10 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             nbt.putInt("groupId", groupId);
             nbt.putString("groupName", groupName == null ? "" : groupName);
             nbt.putInt("groupIntervalMs", groupIntervalMs);
+            nbt.putInt("containerMode", containerMode);
+            nbt.putFloat("containerWidth", containerWidth);
+            nbt.putFloat("scrollSpeed", scrollSpeed);
+            nbt.putInt("scrollDirection", scrollDirection);
             return nbt;
         }
 
@@ -327,6 +355,13 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             data.groupName = nbt.contains("groupName") ? NbtCompat.getString(nbt, "groupName") : "";
             data.groupIntervalMs = nbt.contains("groupIntervalMs")
                     ? clampGroupInterval(NbtCompat.getInt(nbt, "groupIntervalMs")) : DEFAULT_GROUP_INTERVAL_MS;
+            data.containerMode = nbt.contains("containerMode") ? NbtCompat.getInt(nbt, "containerMode") : CONTAINER_CAROUSEL;
+            data.containerWidth = nbt.contains("containerWidth")
+                    ? clampContainerWidth(NbtCompat.getFloat(nbt, "containerWidth")) : DEFAULT_CONTAINER_WIDTH;
+            data.scrollSpeed = nbt.contains("scrollSpeed")
+                    ? clampScrollSpeed(NbtCompat.getFloat(nbt, "scrollSpeed")) : DEFAULT_SCROLL_SPEED;
+            data.scrollDirection = nbt.contains("scrollDirection")
+                    ? clampScrollDirection(NbtCompat.getInt(nbt, "scrollDirection")) : SCROLL_LEFT;
             return data;
         }
 
@@ -359,6 +394,20 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             return Math.max(MIN_GROUP_INTERVAL_MS, Math.min(MAX_GROUP_INTERVAL_MS, ms));
         }
 
+        public static float clampContainerWidth(float width) {
+            if (width <= 0) return DEFAULT_CONTAINER_WIDTH;
+            return Math.max(MIN_CONTAINER_WIDTH, Math.min(MAX_CONTAINER_WIDTH, width));
+        }
+
+        public static float clampScrollSpeed(float speed) {
+            if (speed < 0) return 0f;
+            return Math.min(MAX_SCROLL_SPEED, speed);
+        }
+
+        public static int clampScrollDirection(int dir) {
+            return dir < SCROLL_LEFT || dir > SCROLL_DOWN ? SCROLL_LEFT : dir;
+        }
+
         public int getGroupId() { return groupId; }
         public void setGroupId(int id) { this.groupId = Math.max(0, id); }
         public boolean isInGroup() { return groupId > 0; }
@@ -373,6 +422,32 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             this.groupId = Math.max(0, id);
             this.groupName = name == null ? "" : name;
             this.groupIntervalMs = clampGroupInterval(intervalMs);
+        }
+
+        public int getContainerMode() { return containerMode; }
+        public void setContainerMode(int mode) {
+            this.containerMode = mode == CONTAINER_SCROLL ? CONTAINER_SCROLL : CONTAINER_CAROUSEL;
+        }
+        public boolean isScrollContainer() { return containerMode == CONTAINER_SCROLL; }
+
+        public float getContainerWidth() {
+            return containerWidth <= 0 ? DEFAULT_CONTAINER_WIDTH : containerWidth;
+        }
+        public void setContainerWidth(float width) { this.containerWidth = clampContainerWidth(width); }
+
+        public float getScrollSpeed() { return clampScrollSpeed(scrollSpeed); }
+        public void setScrollSpeed(float speed) { this.scrollSpeed = clampScrollSpeed(speed); }
+
+        public int getScrollDirection() { return clampScrollDirection(scrollDirection); }
+        public void setScrollDirection(int dir) { this.scrollDirection = clampScrollDirection(dir); }
+
+        /** 新建/追加进容器时，从容器首行复制容器配置。 */
+        public void applyContainerInfoFrom(TextLineData leader) {
+            if (leader == null) return;
+            this.containerMode = leader.containerMode;
+            this.containerWidth = leader.getContainerWidth();
+            this.scrollSpeed = leader.getScrollSpeed();
+            this.scrollDirection = leader.getScrollDirection();
         }
     }
 

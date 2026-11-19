@@ -2,10 +2,10 @@ package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.block.custom.sign.SignExpresswayDistanceFromLocation2;
 import com.beigu.yunbeiuc.entity.SignExpresswayDistanceFromLocation2Entity;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.core.Direction;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
 
 public class SignExpresswayDistanceFromLocation2EntityRenderer extends AbstractTextDisplayEntityRenderer<SignExpresswayDistanceFromLocation2Entity> {
 

@@ -103,7 +103,7 @@ public class LinkWand extends ItemCompat {
 
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof TrafficLightsBlockEntity)) {
-            ApiCompat.message(player, Text.literal("§c这不是一个红绿灯，也不是 MTR 轨道节点！"), true);
+            ApiCompat.message(player, Text.literal("§c这不是一个红绿灯，也不是可链接的节点！"), true);
             return InteractionResult.FAIL;
         }
 
@@ -125,7 +125,7 @@ public class LinkWand extends ItemCompat {
             final Session session = SESSIONS.get(player.getUUID());
             if (session != null) session.clearPending();
             ApiCompat.message(player, Text.literal(
-                    "§7已清空本次链接进度（待成组红绿灯 / 待链接轨道 / 未完成的起点）"), true);
+                    "§7已清空本次链接进度（待成组红绿灯 / 待链接节点 / 未完成的起点）"), true);
             return ApiCompat.UseResult.SUCCESS;
         }
         return ApiCompat.UseResult.PASS;
@@ -143,7 +143,7 @@ public class LinkWand extends ItemCompat {
 
         if (light.isInGroup()) {
             ApiCompat.message(player, Text.literal(
-                    "§c该红绿灯已有相位序列！要往那一组加轨道，请重新组一次网。"), true);
+                    "§c该红绿灯已有相位序列！要往那一组加节点，请重新组一次网。"), true);
             return;
         }
 
@@ -199,9 +199,9 @@ public class LinkWand extends ItemCompat {
         }
 
         ApiCompat.message(player, Text.literal("§a已成功链接 §6§l" + finalPositions.size()
-                + " §a个红绿灯" + (linked > 0 ? "§a，并链接了 §6§l" + linked + " §a条轨道" : "")), true);
+                + " §a个红绿灯" + (linked > 0 ? "§a，并链接了 §6§l" + linked + " §a条线路" : "")), true);
         ApiCompat.message(player, Text.literal("§7请用 §e普通魔杖 §7右键任意已链接的红绿灯设置时间表，"
-                + "设好之前这些轨道会保持红灯"), true);
+                + "设好之前这些线路会保持红灯"), true);
 
         session.clearPending();
     }
@@ -211,7 +211,7 @@ public class LinkWand extends ItemCompat {
 
         if (session.pendingStart == null) {
             session.pendingStart = pos.immutable();
-            ApiCompat.message(player, Text.literal("§a已选择轨道起点 §6" + pos.toShortString()
+            ApiCompat.message(player, Text.literal("§a已选择起点 §6" + pos.toShortString()
                     + "§a，请右键另一个节点作为终点"), true);
             return;
         }
@@ -225,7 +225,7 @@ public class LinkWand extends ItemCompat {
         session.pendingStart = null;
 
         session.rails.add(new BlockPos[]{start, pos.immutable()});
-        ApiCompat.message(player, Text.literal("§a已记录轨道 §6" + start.toShortString()
+        ApiCompat.message(player, Text.literal("§a已记录线路 §6" + start.toShortString()
                 + " §a→ §6" + pos.toShortString() + "§a（共 §6" + session.rails.size() + " §6条）"
                 + (session.lights.isEmpty()
                         ? "§7，别忘了右键红绿灯组网"

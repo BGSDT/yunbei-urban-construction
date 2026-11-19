@@ -78,7 +78,7 @@ public class PhaseWand extends ItemCompat {
         }
 
         if (isMtrRailNode(world, pos)) {
-            message(player, "§7链接轨道请用 §e链接魔杖 §7：右键两个轨道节点即可把这条轨道加入本次正在链接的相位组");
+            message(player, "§7链接线路请用 §e链接魔杖 §7：右键两个节点即可把这条线路加入本次正在链接的相位组");
             return ApiCompat.sidedSuccess(false);
         }
 
@@ -115,7 +115,7 @@ public class PhaseWand extends ItemCompat {
             return true;
         }
 
-        message(player, "§c这条轨道还没有链接到任何相位组：请先用链接魔杖组网并把轨道链接进来！");
+        message(player, "§c这条线路还没有链接到任何相位组：请先用链接魔杖组网并把线路链接进来！");
         return true;
     }
 

@@ -1,18 +1,20 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.nbt.NbtCompat;
 
-import com.beigu.yunbeiuc.api.mapper.VersionServices;
-
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
+    private String arrow1 = "left_turn";
+    private String arrow2 = "straight";
+    private String arrow3 = "straight";
+    private String arrow4 = "right_turn";
     private ArrowDirection direction1 = ArrowDirection.STRAIGHT;
     private ArrowDirection direction2 = ArrowDirection.STRAIGHT;
     private ArrowDirection direction3 = ArrowDirection.STRAIGHT;
@@ -26,6 +28,10 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
+        this.arrow1 = NbtCompat.getString(nbt, "direction1");
+        this.arrow2 = NbtCompat.getString(nbt, "direction2");
+        this.arrow3 = NbtCompat.getString(nbt, "direction3");
+        this.arrow4 = NbtCompat.getString(nbt, "direction4");
         this.direction1 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction1"));
         this.direction2 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction2"));
         this.direction3 = ArrowDirection.fromName(NbtCompat.getString(nbt, "direction3"));
@@ -41,113 +47,11 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
         nbt.putString("direction2", this.direction2.getName());
         nbt.putString("direction3", this.direction3.getName());
         nbt.putString("direction4", this.direction4.getName());
+        nbt.putString("direction1", this.arrow1);
+        nbt.putString("direction2", this.arrow2);
+        nbt.putString("direction3", this.arrow3);
+        nbt.putString("direction4", this.arrow4);
         super.saveAdditionalCompat(nbt);
-    }
-
-    private void ensureDefaultTextLines() {
-        if (!getTextLines().isEmpty()) return;
-        List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow1}.png", -17.5f, 3f, 0.9f, 0f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow2}.png", -6f, 3f, 0.9f, 0f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow3}.png", 6f, 3f, 0.9f, 0f));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow4}.png", 17.5f, 3f, 0.9f, 0f));
-        setTextLines(lines);
-    }
-
-    public ArrowDirection getDirection1() { return direction1; }
-    public ArrowDirection getDirection2() { return direction2; }
-    public ArrowDirection getDirection3() { return direction3; }
-    public ArrowDirection getDirection4() { return direction4; }
-
-    public void setDirection1(ArrowDirection direction1) {
-        this.direction1 = direction1;
-        markDirtyAndUpdate();
-    }
-    public void setDirection2(ArrowDirection direction2) {
-        this.direction2 = direction2;
-        markDirtyAndUpdate();
-    }
-    public void setDirection3(ArrowDirection direction3) {
-        this.direction3 = direction3;
-        markDirtyAndUpdate();
-    }
-    public void setDirection4(ArrowDirection direction4) {
-        this.direction4 = direction4;
-        markDirtyAndUpdate();
-    }
-
-    @Override
-    public String getPlaceholderValue(String key) {
-        return switch (key) {
-            case "arrow1" -> arrowTexture(direction1);
-            case "arrow2" -> arrowTexture(direction2);
-            case "arrow3" -> arrowTexture(direction3);
-            case "arrow4" -> arrowTexture(direction4);
-            default -> null;
-        };
-    }
-
-    @Override
-    public List<FieldOptionGroup> getFieldOptions(String placeholderKey) {
-        return switch (placeholderKey) {
-            case "arrow1" -> List.of(new FieldOptionGroup("箭头", "direction1", List.of(
-                    opt("左转", "left_turn", direction1.getName()),
-                    opt("直行", "straight", direction1.getName()),
-                    opt("右转", "right_turn", direction1.getName()),
-                    opt("直行和左转", "straight_left_turn", direction1.getName()),
-                    opt("直行和右转", "straight_right_turn", direction1.getName()),
-                    opt("掉头", "left_turn_around", direction1.getName()))));
-            case "arrow2" -> List.of(new FieldOptionGroup("箭头", "direction2", List.of(
-                    opt("左转", "left_turn", direction2.getName()),
-                    opt("直行", "straight", direction2.getName()),
-                    opt("右转", "right_turn", direction2.getName()),
-                    opt("直行和左转", "straight_left_turn", direction2.getName()),
-                    opt("直行和右转", "straight_right_turn", direction2.getName()),
-                    opt("掉头", "left_turn_around", direction2.getName()))));
-            case "arrow3" -> List.of(new FieldOptionGroup("箭头", "direction3", List.of(
-                    opt("左转", "left_turn", direction3.getName()),
-                    opt("直行", "straight", direction3.getName()),
-                    opt("右转", "right_turn", direction3.getName()),
-                    opt("直行和左转", "straight_left_turn", direction3.getName()),
-                    opt("直行和右转", "straight_right_turn", direction3.getName()),
-                    opt("掉头", "left_turn_around", direction3.getName()))));
-            case "arrow4" -> List.of(new FieldOptionGroup("箭头", "direction4", List.of(
-                    opt("左转", "left_turn", direction4.getName()),
-                    opt("直行", "straight", direction4.getName()),
-                    opt("右转", "right_turn", direction4.getName()),
-                    opt("直行和左转", "straight_left_turn", direction4.getName()),
-                    opt("直行和右转", "straight_right_turn", direction4.getName()),
-                    opt("掉头", "left_turn_around", direction4.getName()))));
-            default -> null;
-        };
-    }
-
-    @Override
-    public void applyFieldOption(String field, String value) {
-        switch (field) {
-            case "direction1" -> setDirection1(ArrowDirection.fromName(value));
-            case "direction2" -> setDirection2(ArrowDirection.fromName(value));
-            case "direction3" -> setDirection3(ArrowDirection.fromName(value));
-            case "direction4" -> setDirection4(ArrowDirection.fromName(value));
-        }
-    }
-
-    private static String arrowTexture(ArrowDirection direction) {
-        return switch (direction) {
-            case LEFT_TURN -> "left_turn";
-            case STRAIGHT -> "straight";
-            case RIGHT_TURN -> "right_turn";
-            case STRAIGHT_LEFT_TURN -> "straight_left_turn";
-            case STRAIGHT_RIGHT_TURN -> "straight_right_turn";
-            case LEFT_TURN_AROUND -> "straight_left_turn_around";
-        };
-    }
-
-    private void markDirtyAndUpdate() {
-        setChanged();
-        if (level != null) {
-            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
-        }
     }
 
     public enum ArrowDirection {
@@ -175,6 +79,124 @@ public class SignGuideLaneIndicator1Entity extends CustomSignBlockEntity {
                 }
             }
             return STRAIGHT;
+        }
+    }
+
+    private void ensureDefaultTextLines() {
+        if (!getTextLines().isEmpty()) return;
+        List<TextLineData> lines = new ArrayList<>();
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow1}.png", -17.5f, 3f, 0.9f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow2}.png", -6f, 3f, 0.9f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow3}.png", 6f, 3f, 0.9f));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_guide_lane_arrow_{arrow4}.png", 17.5f, 3f, 0.9f));
+        setTextLines(lines);
+    }
+
+    public String getArrow1() {
+        return arrow1;
+    }
+
+    public void setArrow1(String arrow1) {
+        this.arrow1 = arrow1;
+        markDirtyAndUpdate();
+    }
+
+    public String getArrow2() {
+        return arrow2;
+    }
+
+    public void setArrow2(String arrow2) {
+        this.arrow2 = arrow2;
+        markDirtyAndUpdate();
+    }
+
+    public String getArrow3() {
+        return arrow3;
+    }
+
+    public void setArrow3(String arrow3) {
+        this.arrow3 = arrow3;
+        markDirtyAndUpdate();
+    }
+
+    public String getArrow4() {
+        return arrow4;
+    }
+
+    public void setArrow4(String arrow4) {
+        this.arrow4 = arrow4;
+        markDirtyAndUpdate();
+    }
+
+    @Override
+    public String getPlaceholderValue(String key) {
+        return switch (key) {
+            case "arrow1" -> arrow1;
+            case "arrow2" -> arrow2;
+            case "arrow3" -> arrow3;
+            case "arrow4" -> arrow4;
+            default -> null;
+        };
+    }
+
+    @Override
+    public List<FieldOptionGroup> getFieldOptions(String placeholderKey) {
+        return switch (placeholderKey) {
+            case "arrow1" -> List.of(new FieldOptionGroup("箭头", "arrow1", List.of(
+                    opt("左转", "left_turn", arrow1),
+                    opt("直行", "straight", arrow1),
+                    opt("右转", "right_turn", arrow1),
+                    opt("左转和右转", "left_right_turn", arrow1),
+                    opt("左转和掉头", "left_turn_around", arrow1),
+                    opt("直行和左转", "straight_left_turn", arrow1),
+                    opt("直行和右转", "straight_right_turn", arrow1),
+                    opt("掉头", "single_left_turn_around", arrow1))));
+            case "arrow2" -> List.of(new FieldOptionGroup("箭头", "arrow2", List.of(
+                    opt("左转", "left_turn", arrow2),
+                    opt("直行", "straight", arrow2),
+                    opt("右转", "right_turn", arrow2),
+                    opt("左转和右转", "left_right_turn", arrow2),
+                    opt("左转和掉头", "left_turn_around", arrow2),
+                    opt("直行和左转", "straight_left_turn", arrow2),
+                    opt("直行和右转", "straight_right_turn", arrow2),
+                    opt("掉头", "single_left_turn_around", arrow2))));
+            case "arrow3" -> List.of(new FieldOptionGroup("箭头", "arrow3", List.of(
+                    opt("左转", "left_turn", arrow3),
+                    opt("直行", "straight", arrow3),
+                    opt("右转", "right_turn", arrow3),
+                    opt("左转和右转", "left_right_turn", arrow3),
+                    opt("左转和掉头", "left_turn_around", arrow3),
+                    opt("直行和左转", "straight_left_turn", arrow3),
+                    opt("直行和右转", "straight_right_turn", arrow3),
+                    opt("掉头", "single_left_turn_around", arrow3))));
+            case "arrow4" -> List.of(new FieldOptionGroup("箭头", "arrow4", List.of(
+                    opt("左转", "left_turn", arrow4),
+                    opt("直行", "straight", arrow4),
+                    opt("右转", "right_turn", arrow4),
+                    opt("左转和右转", "left_right_turn", arrow4),
+                    opt("左转和掉头", "left_turn_around", arrow4),
+                    opt("直行和左转", "straight_left_turn", arrow4),
+                    opt("直行和右转", "straight_right_turn", arrow4),
+                    opt("掉头", "single_left_turn_around", arrow4))));
+            default -> null;
+        };
+    }
+
+    @Override
+    public void applyFieldOption(String field, String value) {
+        switch (field) {
+            case "arrow1" -> setArrow1(value);
+            case "arrow2" -> setArrow2(value);
+            case "arrow3" -> setArrow3(value);
+            case "arrow4" -> setArrow4(value);
+            default -> { }
+        }
+    }
+
+    private void markDirtyAndUpdate() {
+        setChanged();
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

@@ -61,12 +61,12 @@ public class SignGuideConfirmation1Entity extends CustomSignBlockEntity {
         lines.add(SignTextLinesHelper.left("如皋", textX, 9f, 0.04f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.left("海安", textX, 0f, 0.04f, 0xFFFFFF, "a"));
         lines.add(SignTextLinesHelper.left("盐城", textX, -9f, 0.04f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.right("5", lengthX, 9f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("40", lengthX, 0f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("105", lengthX, -9f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", unitX, 8.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", unitX, -0.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", unitX, -9.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("5", lengthX, 10f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("40", lengthX, 1f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("105", lengthX, -8f, 0.04f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.left("km", unitX - 4.5f, 9.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.left("km", unitX - 4.5f, 0.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.left("km", unitX - 4.5f, -8.5f, 0.025f, 0xFFFFFF, "b"));
         setTextLines(lines);
     }
 

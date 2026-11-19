@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "yunbeiuc:item/traffic_lights_countdown_timer"
+    "model": "yunbeiuc:item/traffic_lights/traffic_lights_countdown_timer"
   }
 }

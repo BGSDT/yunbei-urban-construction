@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import java.util.function.Consumer;
 
 public class ButtonWidget extends Button implements ClickableWidget {
+    public static final boolean CLIPS_LABEL = true;
     private final Consumer<ButtonWidget> action;
 
     private ButtonWidget(int x, int y, int width, int height, Component label, Consumer<ButtonWidget> action) {

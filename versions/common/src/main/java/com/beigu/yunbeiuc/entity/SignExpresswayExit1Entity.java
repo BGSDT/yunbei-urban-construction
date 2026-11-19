@@ -2,9 +2,9 @@ package com.beigu.yunbeiuc.entity;
 
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.nbt.NbtCompat;
+import com.beigu.yunbeiuc.block.SignBlocks;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -37,70 +37,24 @@ public class SignExpresswayExit1Entity extends CustomSignBlockEntity {
     private void ensureDefaultTextLines() {
         if (!getTextLines().isEmpty()) return;
         List<TextLineData> lines = new ArrayList<>();
-        String signVariantId = BuiltInRegistries.BLOCK.getKey(getBlockState().getBlock()).getPath();
-        switch (signVariantId) {
-            case "sign_expressway_exit_3" -> {
-                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{logo}.png", 0f, 10f, 0.8f));
-                TextLineData line1 = new TextLineData("G204");
-                line1.setXOffset(0f);
-                line1.setYOffset(9.75f);
-                line1.setZOffset(0.032f);
-                line1.setRotX(0f);
-                line1.setRotY(0f);
-                line1.setRotZ(0f);
-                line1.setColor(0xFFFFFF);
-                line1.setAlignment(TextAlignment.CENTER_CENTER);
-                line1.setBold(false);
-                line1.setItalic(false);
-                line1.setUnderline(false);
-                line1.setShadow(false);
-                line1.setOutline(false);
-                line1.setGlowing(false);
-                line1.setFontSize(0.7f);
-                line1.setAbcFont("b");
-                line1.setScaleX(1f);
-                line1.setScaleY(1f);
-                line1.setScaleZ(1f);
-                line1.setBuiltin(true);
-                lines.add(line1);
-                lines.add(SignTextLinesHelper.centered("如皋", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
-                lines.add(SignTextLinesHelper.centered("海安", 8f, -1f, 0.041f, 0xFFFFFF, "a"));
-                lines.add(SignTextLinesHelper.right("2", -7f, -12f, 0.041f, 0xFFFFFF, "a"));
-                lines.add(SignTextLinesHelper.centered("km", -5f, -12.5f, 0.031f, 0xFFFFFF, "b"));
-                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", 8f, -11f, 0.3592f, 90f));
-                lines.add(SignTextLinesHelper.centered("145", -7.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
-            }
-            default -> {
-                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{logo}.png", 0f, 10f, 0.8f));
-                TextLineData line1 = new TextLineData("G204");
-                line1.setXOffset(0f);
-                line1.setYOffset(9.75f);
-                line1.setZOffset(0.032f);
-                line1.setRotX(0f);
-                line1.setRotY(0f);
-                line1.setRotZ(0f);
-                line1.setColor(0xFFFFFF);
-                line1.setAlignment(TextAlignment.CENTER_CENTER);
-                line1.setBold(false);
-                line1.setItalic(false);
-                line1.setUnderline(false);
-                line1.setShadow(false);
-                line1.setOutline(false);
-                line1.setGlowing(false);
-                line1.setFontSize(0.7f);
-                line1.setAbcFont("b");
-                line1.setScaleX(1f);
-                line1.setScaleY(1f);
-                line1.setScaleZ(1f);
-                line1.setBuiltin(true);
-                lines.add(line1);
-                lines.add(SignTextLinesHelper.centered("如皋", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
-                lines.add(SignTextLinesHelper.centered("海安", 8f, -1f, 0.041f, 0xFFFFFF, "a"));
-                lines.add(SignTextLinesHelper.right("2", -7f, -12f, 0.041f, 0xFFFFFF, "a"));
-                lines.add(SignTextLinesHelper.centered("km", -5f, -12.5f, 0.031f, 0xFFFFFF, "b"));
-                lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", 8f, -11f, 0.3592f, 90f));
-                lines.add(SignTextLinesHelper.centered("145", 13.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
-            }
+        if (isBlockType(SignBlocks.SIGN_EXPRESSWAY_EXIT_3)) {
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{logo}.png", 0f, 10f, 0.8f));
+            lines.add(SignTextLinesHelper.centeredWithZ("G204", 0f, 10f, 0.035f, 0xFFFFFF, 0.002f, "b"));
+            lines.add(SignTextLinesHelper.centered("如皋", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("海安", 8f, -1f, 0.041f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("145", -7.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", -8f, -11f, 0.3592f, 180f));
+            lines.add(SignTextLinesHelper.right("2", 5f, -11f, 0.041f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.left("km", 4.5f, -11.5f, 0.031f, 0xFFFFFF, "a"));
+        } else {
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_{logo}.png", 0f, 10f, 0.8f));
+            lines.add(SignTextLinesHelper.centeredWithZ("G204", 0f, 10f, 0.035f, 0xFFFFFF, 0.002f, "b"));
+            lines.add(SignTextLinesHelper.centered("如皋", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("海安", 8f, -1f, 0.041f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.centered("145", 13.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
+            lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", 7f, -11f, 0.3592f, 90f));
+            lines.add(SignTextLinesHelper.right("2", -7f, -11f, 0.041f, 0xFFFFFF, "a"));
+            lines.add(SignTextLinesHelper.left("km", -7.5f, -11.5f, 0.031f, 0xFFFFFF, "a"));
         }
         setTextLines(lines);
     }

@@ -63,7 +63,7 @@ public class TextDisplayScreen extends Screen {
     private final List<ButtonWidget> textButtons = new ArrayList<>();
     private ButtonWidget addLineButton;
 
-    private static final String[] ADD_MENU_LABELS = {"普通文本行", "矩形", "图片", "文本列组"};
+    private static final String[] ADD_MENU_LABELS = {"普通文本行", "矩形", "图片", "轮播容器", "滚动容器"};
     private static final int ADD_MENU_ITEM_HEIGHT = 18;
     private ButtonWidget addLineMenuButton;
     private boolean addLineMenuOpen = false;
@@ -236,6 +236,19 @@ public class TextDisplayScreen extends Screen {
             return "图片";
         }
         return text;
+    }
+
+    private String fitLabel(String text, int maxWidth) {
+        if (textRenderer.width(text) <= maxWidth) return text;
+        String suffix = "…";
+        int limit = Math.max(0, maxWidth - textRenderer.width(suffix));
+        int end = 0;
+        while (end < text.length()) {
+            int next = text.offsetByCodePoints(end, 1);
+            if (textRenderer.width(text.substring(0, next)) > limit) break;
+            end = next;
+        }
+        return text.substring(0, end) + suffix;
     }
 
     @Override
@@ -793,7 +806,8 @@ public class TextDisplayScreen extends Screen {
             case 0 -> addTextLineWidget("Text");
             case 1 -> addTextLineWidget("-rect 16 16");
             case 2 -> openTexturePicker();
-            case 3 -> addNewTextGroup();
+            case 3 -> addNewTextGroup(TextLineData.CONTAINER_CAROUSEL);
+            case 4 -> addNewTextGroup(TextLineData.CONTAINER_SCROLL);
             default -> { }
         }
     }
@@ -832,7 +846,11 @@ public class TextDisplayScreen extends Screen {
     }
 
     private String defaultGroupName(int gid) {
-        return "组" + gid;
+        return defaultGroupName(gid, getGroupContainerMode(gid));
+    }
+
+    private static String defaultGroupName(int gid, int containerMode) {
+        return (containerMode == TextLineData.CONTAINER_SCROLL ? "滚动" : "轮播") + gid;
     }
 
     private String groupDisplayName(int gid) {
@@ -854,13 +872,23 @@ public class TextDisplayScreen extends Screen {
         return String.format(java.util.Locale.ROOT, "%.1f 秒", ms / 1000.0);
     }
 
-    private void addNewTextGroup() {
+    public static String scrollDirectionLabel(int direction) {
+        return switch (direction) {
+            case TextLineData.SCROLL_RIGHT -> "向右";
+            case TextLineData.SCROLL_UP -> "向上";
+            case TextLineData.SCROLL_DOWN -> "向下";
+            default -> "向左";
+        };
+    }
+
+    private void addNewTextGroup(int containerMode) {
         int gid = nextGroupId();
-        String name = defaultGroupName(gid);
+        String name = defaultGroupName(gid, containerMode);
         int interval = TextLineData.DEFAULT_GROUP_INTERVAL_MS;
         for (int i = 0; i < 2; i++) {
             TextLineData data = createUserTextLine("Text");
             data.applyGroupInfo(gid, name, interval);
+            data.setContainerMode(containerMode);
             textLineWidgets.add(new TextLineWidget(data));
             blockEntity.getTextLines().add(data);
         }
@@ -899,15 +927,48 @@ public class TextDisplayScreen extends Screen {
         return TextLineData.DEFAULT_GROUP_INTERVAL_MS;
     }
 
+    public int getGroupContainerMode(int gid) {
+        for (int i : getGroupLineIndices(gid)) return textLineWidgets.get(i).data.getContainerMode();
+        return TextLineData.CONTAINER_CAROUSEL;
+    }
+
+    public float getGroupContainerWidth(int gid) {
+        for (int i : getGroupLineIndices(gid)) return textLineWidgets.get(i).data.getContainerWidth();
+        return TextLineData.DEFAULT_CONTAINER_WIDTH;
+    }
+
+    public float getGroupScrollSpeed(int gid) {
+        for (int i : getGroupLineIndices(gid)) return textLineWidgets.get(i).data.getScrollSpeed();
+        return TextLineData.DEFAULT_SCROLL_SPEED;
+    }
+
+    public int getGroupScrollDirection(int gid) {
+        for (int i : getGroupLineIndices(gid)) return textLineWidgets.get(i).data.getScrollDirection();
+        return TextLineData.SCROLL_LEFT;
+    }
+
+    /**
+     * 容器名称 / 切换时间只写容器首行（容器数据由首行持有），
+     * 不再同时改写组内其他文本行的数据，避免一行修改被同步到其他文本。
+     */
     public void applyGroupSettings(int gid, String name, int intervalMs) {
-        boolean changed = false;
-        for (int i : getGroupLineIndices(gid)) {
-            TextLineData d = textLineWidgets.get(i).data;
-            d.setGroupName(name);
-            d.setGroupIntervalMs(intervalMs);
-            changed = true;
-        }
-        if (changed) onTextGroupEdited();
+        List<Integer> members = getGroupLineIndices(gid);
+        if (members.isEmpty()) return;
+        TextLineData leader = textLineWidgets.get(members.get(0)).data;
+        leader.setGroupName(name);
+        leader.setGroupIntervalMs(intervalMs);
+        onTextGroupEdited();
+    }
+
+    /** 应用滚动容器的宽度、速度、方向设置（只写容器首行）。 */
+    public void applyScrollContainerSettings(int gid, float width, float speed, int direction) {
+        List<Integer> members = getGroupLineIndices(gid);
+        if (members.isEmpty()) return;
+        TextLineData leader = textLineWidgets.get(members.get(0)).data;
+        leader.setContainerWidth(width);
+        leader.setScrollSpeed(speed);
+        leader.setScrollDirection(direction);
+        onTextGroupEdited();
     }
 
     public void addLineToGroup(int gid) {
@@ -916,6 +977,7 @@ public class TextDisplayScreen extends Screen {
         TextLineData leader = textLineWidgets.get(members.get(0)).data;
         TextLineData data = createUserTextLine("Text");
         data.applyGroupInfo(gid, leader.getGroupName(), leader.getGroupIntervalMs());
+        data.applyContainerInfoFrom(leader);
         int insertAt = Math.min(textLineWidgets.size(), members.get(members.size() - 1) + 1);
         textLineWidgets.add(insertAt, new TextLineWidget(data));
         blockEntity.getTextLines().add(insertAt, data);
@@ -994,6 +1056,7 @@ public class TextDisplayScreen extends Screen {
             int idx = topScrollOffset + i;
             if (idx < 0 || idx >= textLineWidgets.size()) break;
             if (textLineWidgets.get(idx).data.getGroupId() <= 0) continue;
+            if (textLineWidgets.get(idx).data.isScrollContainer()) continue;
             if (SignTextGroupRuntime.activeIndex(lines, idx, now) != idx) continue;
             ButtonWidget btn = textButtons.get(i);
             context.fill(btn.getX() + 1, btn.getY() + 1, btn.getX() + 4, btn.getY() + 4, 0xFF66FFCC);
@@ -1166,12 +1229,20 @@ public class TextDisplayScreen extends Screen {
         alignCatButton.active = activeCategory != Category.ALIGN;
     }
 
+    /** 显示数值：保留最多 3 位小数并去掉尾随 0，不做四舍五入到 1 位。 */
+    private static String fmt(float value) {
+        String s = String.format(java.util.Locale.ROOT, "%.3f", value);
+        while (s.endsWith("0") && s.indexOf('.') >= 0) s = s.substring(0, s.length() - 1);
+        if (s.endsWith(".")) s = s.substring(0, s.length() - 1);
+        if (s.equals("-0")) s = "0";
+        return s;
+    }
     private String[] getCategoryStatusLines(TextLineData d) {
         if (d == null) return new String[0];
         return switch (activeCategory) {
-            case POSITION -> new String[]{String.format("X:%.1f", d.getXOffset()), String.format("Y:%.1f", d.getYOffset()), String.format("Z:%.1f", d.getZOffset())};
-            case ROTATION -> new String[]{String.format("RX:%.1f", d.getRotX()), String.format("RY:%.1f", d.getRotY()), String.format("RZ:%.1f", d.getRotZ())};
-            case SCALE -> new String[]{String.format("SX:%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR), String.format("SY:%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR), String.format("SZ:%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR), String.format("S:%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR)};
+            case POSITION -> new String[]{"X:" + fmt(d.getXOffset()), "Y:" + fmt(d.getYOffset()), "Z:" + fmt(d.getZOffset())};
+            case ROTATION -> new String[]{"RX:" + fmt(d.getRotX()), "RY:" + fmt(d.getRotY()), "RZ:" + fmt(d.getRotZ())};
+            case SCALE -> new String[]{"SX:" + fmt(d.getScaleX() * SCALE_DISPLAY_FACTOR), "SY:" + fmt(d.getScaleY() * SCALE_DISPLAY_FACTOR), "SZ:" + fmt(d.getScaleZ() * SCALE_DISPLAY_FACTOR), "S:" + fmt(d.getFontSize() * SCALE_DISPLAY_FACTOR)};
             case FONT -> new String[]{String.format("颜色:#%06X", d.getColor()),
                     String.format("阴影:%s", d.isShadow() ? "开" : "关"),
                     String.format("描边:#%06X %s", d.getOutlineColor(), d.isOutline() ? "开" : "关")};
@@ -1188,13 +1259,13 @@ public class TextDisplayScreen extends Screen {
         if (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) {
             var d = textLineWidgets.get(selectedIndex).data;
             preciseInputField.setText(switch (preciseInputType) {
-                case 0 -> String.format("%.1f", d.getXOffset()); case 1 -> String.format("%.1f", d.getYOffset());
-                case 2 -> String.format("%.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR); case 3 -> String.format("#%06X", d.getColor());
-                case 4 -> String.format("%.1f", d.getZOffset());
-                case 5 -> String.format("%.1f", d.getRotX()); case 6 -> String.format("%.1f", d.getRotY());
-                case 7 -> String.format("%.1f", d.getRotZ());
-                case 8 -> String.format("%.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR); case 9 -> String.format("%.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR);
-                case 10 -> String.format("%.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR);
+                case 0 -> fmt(d.getXOffset()); case 1 -> fmt(d.getYOffset());
+                case 2 -> fmt(d.getFontSize() * SCALE_DISPLAY_FACTOR); case 3 -> String.format("#%06X", d.getColor());
+                case 4 -> fmt(d.getZOffset());
+                case 5 -> fmt(d.getRotX()); case 6 -> fmt(d.getRotY());
+                case 7 -> fmt(d.getRotZ());
+                case 8 -> fmt(d.getScaleX() * SCALE_DISPLAY_FACTOR); case 9 -> fmt(d.getScaleY() * SCALE_DISPLAY_FACTOR);
+                case 10 -> fmt(d.getScaleZ() * SCALE_DISPLAY_FACTOR);
                 case 12 -> String.format("#%06X", d.getOutlineColor());
                 default -> "0";
             });
@@ -1321,6 +1392,7 @@ public class TextDisplayScreen extends Screen {
                 }
                 String displayText = lineButtonLabel(blockEntity.resolvePlaceholders(textLineWidgets.get(idx).data.getText()));
                 if (displayText.isEmpty()) displayText = "(empty)";
+                if (!ButtonWidget.CLIPS_LABEL) displayText = fitLabel(displayText, btnWidth - 6);
 
                 ButtonWidget btn = ButtonWidget.builderCompat(Text.literal(displayText), button -> {
                     if (formatPainterMode) {
@@ -1987,6 +2059,9 @@ public class TextDisplayScreen extends Screen {
             int hotGroup = groupBadgeAt(mouseX, mouseY);
             if (hotGroup > 0) { openGroupSettings(hotGroup); return true; }
         }
+        if (button == 1 && applyNegativeNudgeAt(mouseX, mouseY)) {
+            return true;
+        }
         if (button == 1 && !presetSelectMode) {
             rotatingView = true;
             return true;
@@ -2156,6 +2231,55 @@ public class TextDisplayScreen extends Screen {
         return true;
     }
 
+    /** 数值按钮的类型编号，与位移/旋转/缩放按钮一致。返回 -1 表示没命中。 */
+    private int valueButtonAt(double mouseX, double mouseY) {
+        if (xButton != null && xButton.visible && xButton.isMouseOver(mouseX, mouseY)) return 0;
+        if (yButton != null && yButton.visible && yButton.isMouseOver(mouseX, mouseY)) return 1;
+        if (zButton != null && zButton.visible && zButton.isMouseOver(mouseX, mouseY)) return 4;
+        if (rxButton != null && rxButton.visible && rxButton.isMouseOver(mouseX, mouseY)) return 5;
+        if (ryButton != null && ryButton.visible && ryButton.isMouseOver(mouseX, mouseY)) return 6;
+        if (rzButton != null && rzButton.visible && rzButton.isMouseOver(mouseX, mouseY)) return 7;
+        if (sxButton != null && sxButton.visible && sxButton.isMouseOver(mouseX, mouseY)) return 8;
+        if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) return 9;
+        if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) return 10;
+        if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) return 2;
+        return -1;
+    }
+
+    /**
+     * 右键点数值按钮 = 负向微调（左键为正）。
+     * 26.x 的 ButtonWidget 只把左键当有效点击，右键不会触发 onPress，
+     * 所以必须在 mouseClicked 里单独处理，否则「右键 −」就没了。
+     */
+    private boolean applyNegativeNudgeAt(double mouseX, double mouseY) {
+        int type = valueButtonAt(mouseX, mouseY);
+        if (type < 0) return false;
+        if (selectedIndex < 0 || selectedIndex >= textLineWidgets.size()
+                || presetSaveMode || presetLoadMode) return true;
+        float posStep = stepFor(POSITION_STEP, POSITION_ALT_STEP);
+        float rotStep = stepFor(15.0f, 5.0f);
+        float scaleStep = stepFor(1f / 16f, 1f / 32f);
+        for (int index : selectedTargets()) {
+            TextLineData d = textLineWidgets.get(index).data;
+            switch (type) {
+                case 0 -> d.setXOffset(d.getXOffset() - posStep);
+                case 1 -> d.setYOffset(d.getYOffset() - posStep);
+                case 4 -> d.setZOffset(d.getZOffset() - posStep);
+                case 5 -> d.setRotX(d.getRotX() - rotStep);
+                case 6 -> d.setRotY(d.getRotY() - rotStep);
+                case 7 -> d.setRotZ(d.getRotZ() - rotStep);
+                case 8 -> d.setScaleX(Math.max(0.1f, d.getScaleX() - scaleStep));
+                case 9 -> d.setScaleY(Math.max(0.1f, d.getScaleY() - scaleStep));
+                case 2 -> d.setFontSize(Math.max(0.1f, d.getFontSize() - scaleStep));
+                default -> { }
+            }
+        }
+        syncAndUpdateClient();
+        refreshBottomPanel();
+        sendUpdateToServer();
+        return true;
+    }
+
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         if (grabbedGizmo < 0) {
@@ -2191,8 +2315,31 @@ public class TextDisplayScreen extends Screen {
                 Text.literal("取消")));
     }
 
+    /**
+     * 删除容器首行时，把容器设置（名称/切换时间/宽度/速度/方向）交给下一行，
+     * 避免容器数据只存在于首行时被一起删掉。
+     */
+    private void preserveGroupConfigOnDelete(int idx) {
+        if (idx < 0 || idx >= textLineWidgets.size()) return;
+        TextLineData removed = textLineWidgets.get(idx).data;
+        int gid = removed.getGroupId();
+        if (gid <= 0) return;
+        for (int i = 0; i < idx; i++) {
+            if (textLineWidgets.get(i).data.getGroupId() == gid) return;
+        }
+        for (int i = idx + 1; i < textLineWidgets.size(); i++) {
+            TextLineData next = textLineWidgets.get(i).data;
+            if (next.getGroupId() != gid) continue;
+            next.setGroupName(removed.getGroupName());
+            next.setGroupIntervalMs(removed.getGroupIntervalMs());
+            next.applyContainerInfoFrom(removed);
+            return;
+        }
+    }
+
     private void deleteTextLine(int actualIdx) {
         releaseGizmo();
+        preserveGroupConfigOnDelete(actualIdx);
         blockEntity.getTextLines().remove(actualIdx); textLineWidgets.remove(actualIdx);
         selectedPresetIndices.remove(actualIdx);
         Set<Integer> newSet = new HashSet<>();
@@ -2403,16 +2550,6 @@ public class TextDisplayScreen extends Screen {
         if (!presetSaveMode && !presetLoadMode && !preciseInputMode) {
             var d = (selectedIndex >= 0 && selectedIndex < textLineWidgets.size()) ? textLineWidgets.get(selectedIndex).data : null;
             List<TooltipEntry> tips = new ArrayList<>();
-            if (xButton != null && xButton.visible && xButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 坐标", d != null ? String.format("当前值 %.1f", d.getXOffset()) : null, "左键 +0.1 | 滚轮上/下 ±0.1", "Alt ±0.05 | Shift ±0.4 | Ctrl+点击精准输入"));
-            if (yButton != null && yButton.visible && yButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 坐标", d != null ? String.format("当前值 %.1f", d.getYOffset()) : null, "左键 +0.1 | 滚轮上/下 ±0.1", "Alt ±0.05 | Shift ±0.4 | Ctrl+点击精准输入"));
-            if (zButton != null && zButton.visible && zButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 坐标", d != null ? String.format("当前值 %.1f", d.getZOffset()) : null, "左键 +0.1 | 滚轮上/下 ±0.1", "Alt ±0.05 | Shift ±0.4 | Ctrl+点击精准输入"));
-            if (rxButton != null && rxButton.visible && rxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotX()) : null, "左键 +15° | 滚轮上/下 ±15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (ryButton != null && ryButton.visible && ryButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotY()) : null, "左键 +15° | 滚轮上/下 ±15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (rzButton != null && rzButton.visible && rzButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴旋转", d != null ? String.format("当前值 %.1f°", d.getRotZ()) : null, "左键 +15° | 滚轮上/下 ±15°", "Alt ±5° | Shift ±60° | Ctrl+点击精准输入"));
-            if (sxButton != null && sxButton.visible && sxButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("X 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleX() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (syButton != null && syButton.visible && syButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Y 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleY() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (szButton != null && szButton.visible && szButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("Z 轴缩放", d != null ? String.format("当前值 %.2f", d.getScaleZ() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
-            if (fontSizeButton != null && fontSizeButton.visible && fontSizeButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("字号", d != null ? String.format("当前值 %.2f", d.getFontSize() * SCALE_DISPLAY_FACTOR) : null, "左键 +1 | 滚轮上/下 ±1", "Alt ±0.5 | Shift ±4 | Ctrl+点击精准输入"));
             if (shadowButton != null && shadowButton.visible && shadowButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("阴影", "原版阴影，点击开关"));
             if (outlineButton != null && outlineButton.visible && outlineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("描边", "点击开关文字描边（颜色见右侧 ■）"));
             if (outlineColorButton != null && outlineColorButton.visible && outlineColorButton.isMouseOver(mouseX, mouseY)) tips.add(new TooltipEntry("描边颜色", d != null ? String.format("#%06X", d.getOutlineColor()) : null, "左键切换 | 滚轮反向切换 | Ctrl+点击打开色盘"));
@@ -2421,21 +2558,28 @@ public class TextDisplayScreen extends Screen {
                 boolean inGroup = selectedIndex >= 0 && selectedIndex < textLineWidgets.size()
                         && textLineWidgets.get(selectedIndex).data.getGroupId() > 0;
                 tips.add(TooltipEntry.of("添加文本行",
-                        inGroup ? "当前选中行属于文本列组，将追加到该组末尾" : "在末尾添加一条普通文本行"));
+                        inGroup ? "当前选中行属于容器，将追加到该容器末尾" : "在末尾添加一条普通文本行"));
             }
-            if (addLineMenuButton != null && addLineMenuButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加更多类型", "普通文本行 / 矩形 / 图片 / 文本列组", "文本列组可设置组名与切换时间"));
+            if (addLineMenuButton != null && addLineMenuButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("添加更多类型", "普通文本行 / 矩形 / 图片 / 轮播容器 / 滚动容器", "轮播容器按时间切换，滚动容器按宽度/速度/方向循环滚动"));
             if (addLineMenuOpen) {
                 int hotItem = addMenuItemAt(mouseX, mouseY);
                 if (hotItem == 0) tips.add(TooltipEntry.of("普通文本行", "在末尾添加一条普通文本行"));
                 else if (hotItem == 1) tips.add(TooltipEntry.of("矩形", "添加一条矩形指令行（默认 16 × 16，可在文本框改宽高）"));
                 else if (hotItem == 2) tips.add(TooltipEntry.of("图片", "打开图片选择界面：先选命名空间，再逐级进入目录选图片", "确定后写入当前文本行的图片指令"));
-                else if (hotItem == 3) tips.add(TooltipEntry.of("文本列组", "新建一组可自动切换的文本行", "点击左侧「[组名:」可设置组名/切换时间"));
+                else if (hotItem == 3) tips.add(TooltipEntry.of("轮播容器", "新建一组按时间自动切换的文本行", "点击左侧「[容器名:」可设置名称/切换时间"));
+                else if (hotItem == 4) tips.add(TooltipEntry.of("滚动容器", "新建一组拼接后循环滚动的文本行", "可设置容器宽度、滚动速度与方向"));
             }
             if (!groupBadges.isEmpty()) {
                 int hotGroup = groupBadgeAt(mouseX, mouseY);
-                if (hotGroup > 0) tips.add(new TooltipEntry("文本列组：" + groupDisplayName(hotGroup),
-                        "共 " + getGroupLineIndices(hotGroup).size() + " 行 · 每行停留 " + formatGroupInterval(getGroupIntervalMs(hotGroup)),
-                        "点击修改组名 / 切换时间 / 增删文本行"));
+                if (hotGroup > 0) {
+                    boolean scroll = getGroupContainerMode(hotGroup) == TextLineData.CONTAINER_SCROLL;
+                    tips.add(new TooltipEntry((scroll ? "滚动容器：" : "轮播容器：") + groupDisplayName(hotGroup),
+                            "共 " + getGroupLineIndices(hotGroup).size() + " 行 · "
+                                    + (scroll
+                                    ? "宽度 " + fmt(getGroupContainerWidth(hotGroup)) + " · 速度 " + fmt(getGroupScrollSpeed(hotGroup)) + " · " + scrollDirectionLabel(getGroupScrollDirection(hotGroup))
+                                    : "每行停留 " + formatGroupInterval(getGroupIntervalMs(hotGroup))),
+                            "点击修改容器设置 / 增删文本行"));
+                }
             }
             if (patternButton != null && patternButton.visible && patternButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("图案", "打开图案与字体选择界面", "点击「插入」把图案/字体写入当前文本行"));
             if (settingsButton != null && settingsButton.visible && settingsButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("设置", "点击打开「云北路牌全局设置」页面", "Ctrl+S / Enter 保存，Esc 取消"));
@@ -2444,6 +2588,43 @@ public class TextDisplayScreen extends Screen {
             if (scaleCatButton != null && scaleCatButton.visible && scaleCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("缩放 · R", "点击显示 SX/SY/SZ 缩放按钮", "可拖拽绿框角点等比缩放、边点单轴缩放（Shift/Alt 调整步长）"));
             if (fontCatButton != null && fontCatButton.visible && fontCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("字体 · F", "点击显示字号/颜色/加粗/斜体/下划线/阴影/清空格式按钮"));
             if (alignCatButton != null && alignCatButton.visible && alignCatButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("对齐 · A", "点击显示水平/垂直对齐按钮"));
+            int valueHot = valueButtonAt(mouseX, mouseY);
+            if (valueHot >= 0) {
+                String name = switch (valueHot) {
+                    case 0 -> "X 位移（1/16 格）";
+                    case 1 -> "Y 位移（1/16 格）";
+                    case 4 -> "Z 位移（1/16 格）";
+                    case 5 -> "RX 旋转（度）";
+                    case 6 -> "RY 旋转（度）";
+                    case 7 -> "RZ 旋转（度）";
+                    case 8 -> "SX 缩放";
+                    case 9 -> "SY 缩放";
+                    case 10 -> "SZ 缩放";
+                    case 2 -> "字号";
+                    default -> "数值";
+                };
+                String currentValue = d == null ? null : "当前值 " + switch (valueHot) {
+                    case 0 -> fmt(d.getXOffset());
+                    case 1 -> fmt(d.getYOffset());
+                    case 4 -> fmt(d.getZOffset());
+                    case 5 -> fmt(d.getRotX()) + "°";
+                    case 6 -> fmt(d.getRotY()) + "°";
+                    case 7 -> fmt(d.getRotZ()) + "°";
+                    case 8 -> fmt(d.getScaleX() * SCALE_DISPLAY_FACTOR);
+                    case 9 -> fmt(d.getScaleY() * SCALE_DISPLAY_FACTOR);
+                    case 10 -> fmt(d.getScaleZ() * SCALE_DISPLAY_FACTOR);
+                    case 2 -> fmt(d.getFontSize() * SCALE_DISPLAY_FACTOR);
+                    default -> "";
+                };
+                String stepText = switch (valueHot) {
+                    case 0, 1, 4 -> "左键 +1 · 右键 −1（1/16 格）";
+                    case 5, 6, 7 -> "左键 +15° · 右键 −15°";
+                    case 8, 9, 10, 2 -> "左键 +1/16 · 右键 −1/16";
+                    default -> "左键 + · 右键 −";
+                };
+                tips.add(new TooltipEntry(name, currentValue, stepText,
+                        "Shift ×4 · Alt 精细步长", "Ctrl+点击进入精确输入"));
+            }
             if (copyLineButton != null && copyLineButton.visible && copyLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("复制", "Ctrl+C：复制该文本行的全部属性"));
             if (pasteLineButton != null && pasteLineButton.visible && pasteLineButton.isMouseOver(mouseX, mouseY)) tips.add(clipboardData != null ? TooltipEntry.of("粘贴", "Ctrl+V：将复制的属性覆盖到该文本行") : TooltipEntry.of("粘贴（已锁定）", "请先点击复制按钮或按 Ctrl+C"));
             if (deleteLineButton != null && deleteLineButton.visible && deleteLineButton.isMouseOver(mouseX, mouseY)) tips.add(TooltipEntry.of("删除", "Delete：删除该文本行", "Ctrl+D：复制一份当前文本行"));

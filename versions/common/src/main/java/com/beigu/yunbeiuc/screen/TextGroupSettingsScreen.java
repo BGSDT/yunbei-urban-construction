@@ -10,7 +10,9 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 
 import java.util.List;
 
-// 「文本列组」设置页面：设置组名、每行停留时间（切换时间），并可以增删组内文本行。
+// 「轮播容器 / 滚动容器」设置页面。
+// 轮播容器：设置名称、每行停留时间（切换时间），并可增删容器内文本行。
+// 滚动容器：设置名称、容器宽度、滚动速度、滚动方向，容器内文本行按顺序拼接后循环滚动。
 public class TextGroupSettingsScreen extends Screen {
 
     private static final int PANEL_MAX_WIDTH = 360;
@@ -24,40 +26,56 @@ public class TextGroupSettingsScreen extends Screen {
 
     private final TextDisplayScreen parent;
     private final int groupId;
+    private final boolean scrollMode;
 
     private TextFieldWidget nameField;
     private TextFieldWidget intervalField;
+    private TextFieldWidget widthField;
+    private TextFieldWidget speedField;
+    private ButtonWidget directionButton;
+    private int direction;
 
     private int panelX, panelY, panelWidth, panelHeight;
     private int contentX, contentW;
-    private int nameRowY, intervalRowY, previewY, actionRowY, confirmRowY;
+    private int nameRowY, intervalRowY, widthRowY, speedRowY, directionRowY, hintY, previewY, actionRowY, confirmRowY;
 
     public TextGroupSettingsScreen(TextDisplayScreen parent, int groupId) {
-        super(Text.literal("文本列组设置"));
+        super(Text.literal(parent.getGroupContainerMode(groupId) == TextLineData.CONTAINER_SCROLL
+                ? "滚动容器设置" : "轮播容器设置"));
         this.parent = parent;
         this.groupId = groupId;
+        this.scrollMode = parent.getGroupContainerMode(groupId) == TextLineData.CONTAINER_SCROLL;
+        this.direction = parent.getGroupScrollDirection(groupId);
     }
 
     @Override
     protected void init() {
         super.init();
 
-        panelWidth = Math.max(PANEL_MIN_WIDTH, Math.min(PANEL_MAX_WIDTH, this.width - 40));
-        contentW = panelWidth - PADDING * 2;
+        int fieldRows = scrollMode ? 4 : 2;
         int previewRows = Math.min(MAX_PREVIEW_ROWS, Math.max(1, lineTexts().size()));
         panelHeight = PADDING + TITLE_H + 10
-                + ROW_H + ROW_GAP
-                + ROW_H + ROW_GAP
+                + fieldRows * (ROW_H + ROW_GAP)
+                + (scrollMode ? 12 : 0)
                 + 12 + previewRows * 12 + 8
                 + ROW_H + ROW_GAP
                 + ROW_H + PADDING;
+        panelWidth = Math.max(PANEL_MIN_WIDTH, Math.min(PANEL_MAX_WIDTH, this.width - 40));
+        contentW = panelWidth - PADDING * 2;
         panelX = Math.max(6, (this.width - panelWidth) / 2);
         panelY = Math.max(6, (this.height - panelHeight) / 2);
         contentX = panelX + PADDING;
 
         int y = panelY + PADDING + TITLE_H + 10;
         nameRowY = y; y += ROW_H + ROW_GAP;
-        intervalRowY = y; y += ROW_H + ROW_GAP;
+        if (scrollMode) {
+            widthRowY = y; y += ROW_H + ROW_GAP;
+            speedRowY = y; y += ROW_H + ROW_GAP;
+            directionRowY = y; y += ROW_H + ROW_GAP;
+            hintY = y; y += 12;
+        } else {
+            intervalRowY = y; y += ROW_H + ROW_GAP;
+        }
         previewY = y + 12; y = previewY + previewRows * 12 + 8;
         actionRowY = y; y += ROW_H + ROW_GAP;
         confirmRowY = y;
@@ -65,15 +83,33 @@ public class TextGroupSettingsScreen extends Screen {
         int fieldX = contentX + LABEL_W;
         int fieldW = contentW - LABEL_W;
 
-        nameField = new TextFieldWidget(this.textRenderer, fieldX, nameRowY, fieldW, 18, Text.literal("组名"));
+        nameField = new TextFieldWidget(this.textRenderer, fieldX, nameRowY, fieldW, 18, Text.literal("容器名称"));
         nameField.setMaxLength(64);
         nameField.setText(parent.getGroupName(groupId));
         this.addDrawableChild(nameField);
 
-        intervalField = new TextFieldWidget(this.textRenderer, fieldX, intervalRowY, Math.min(80, fieldW), 18, Text.literal("切换时间"));
-        intervalField.setMaxLength(12);
-        intervalField.setText(formatSeconds(parent.getGroupIntervalMs(groupId)));
-        this.addDrawableChild(intervalField);
+        if (scrollMode) {
+            widthField = new TextFieldWidget(this.textRenderer, fieldX, widthRowY, Math.min(80, fieldW), 18, Text.literal("容器宽度"));
+            widthField.setMaxLength(12);
+            widthField.setText(formatNumber(parent.getGroupContainerWidth(groupId)));
+            this.addDrawableChild(widthField);
+
+            speedField = new TextFieldWidget(this.textRenderer, fieldX, speedRowY, Math.min(80, fieldW), 18, Text.literal("滚动速度"));
+            speedField.setMaxLength(12);
+            speedField.setText(formatNumber(parent.getGroupScrollSpeed(groupId)));
+            this.addDrawableChild(speedField);
+
+            directionButton = ButtonWidget.builderCompat(Text.literal(directionLabel()), b -> {
+                direction = (direction + 1) % 4;
+                b.setMessage(Text.literal(directionLabel()));
+            }).dimensions(fieldX, directionRowY, Math.min(110, fieldW), ROW_H).build();
+            this.addDrawableChild(directionButton);
+        } else {
+            intervalField = new TextFieldWidget(this.textRenderer, fieldX, intervalRowY, Math.min(80, fieldW), 18, Text.literal("切换时间"));
+            intervalField.setMaxLength(12);
+            intervalField.setText(formatSeconds(parent.getGroupIntervalMs(groupId)));
+            this.addDrawableChild(intervalField);
+        }
 
         int halfW = (contentW - ROW_GAP) / 2;
 
@@ -84,7 +120,7 @@ public class TextGroupSettingsScreen extends Screen {
         }).dimensions(contentX, actionRowY, halfW, ROW_H).build();
         this.addDrawableChild(addLine);
 
-        ButtonWidget deleteGroup = ButtonWidget.builderCompat(Text.literal("删除整组"), b -> confirmDelete())
+        ButtonWidget deleteGroup = ButtonWidget.builderCompat(Text.literal("删除整个容器"), b -> confirmDelete())
                 .dimensions(contentX + halfW + ROW_GAP, actionRowY, halfW, ROW_H).build();
         this.addDrawableChild(deleteGroup);
 
@@ -118,8 +154,8 @@ public class TextGroupSettingsScreen extends Screen {
                 ApiCompat.setScreen(mc, this);
             }
         },
-                Text.literal("删除文本列组"),
-                Text.literal("将删除该组内的所有文本行，删除后不可恢复。"),
+                Text.literal(scrollMode ? "删除滚动容器" : "删除轮播容器"),
+                Text.literal("将删除该容器内的所有文本行，删除后不可恢复。"),
                 Text.literal("确定删除"),
                 Text.literal("取消")));
     }
@@ -127,6 +163,15 @@ public class TextGroupSettingsScreen extends Screen {
     private static String formatSeconds(int ms) {
         if (ms % 1000 == 0) return Integer.toString(ms / 1000);
         return String.format(java.util.Locale.ROOT, "%.1f", ms / 1000.0);
+    }
+
+    private static String formatNumber(float value) {
+        if (Math.abs(value - Math.round(value)) < 1e-4f) return Integer.toString(Math.round(value));
+        return String.format(java.util.Locale.ROOT, "%.1f", value);
+    }
+
+    private String directionLabel() {
+        return "方向：" + TextDisplayScreen.scrollDirectionLabel(direction);
     }
 
     private int parseIntervalMs() {
@@ -138,10 +183,31 @@ public class TextGroupSettingsScreen extends Screen {
         }
     }
 
+    private float parseWidth() {
+        try {
+            return TextLineData.clampContainerWidth(Float.parseFloat(widthField.getText().trim()));
+        } catch (NumberFormatException e) {
+            return parent.getGroupContainerWidth(groupId);
+        }
+    }
+
+    private float parseSpeed() {
+        try {
+            return TextLineData.clampScrollSpeed(Float.parseFloat(speedField.getText().trim()));
+        } catch (NumberFormatException e) {
+            return parent.getGroupScrollSpeed(groupId);
+        }
+    }
+
     private void applyFields() {
         String name = nameField.getText().trim();
         if (name.isEmpty()) name = parent.getGroupName(groupId);
-        parent.applyGroupSettings(groupId, name, parseIntervalMs());
+        if (scrollMode) {
+            parent.applyGroupSettings(groupId, name, parent.getGroupIntervalMs(groupId));
+            parent.applyScrollContainerSettings(groupId, parseWidth(), parseSpeed(), direction);
+        } else {
+            parent.applyGroupSettings(groupId, name, parseIntervalMs());
+        }
     }
 
     @Override
@@ -155,14 +221,31 @@ public class TextGroupSettingsScreen extends Screen {
                 panelY + PADDING, 0xFF66FFCC);
 
         int labelY = nameRowY + 5;
-        context.drawText(this.textRenderer, Text.literal("组名"), contentX, labelY, 0xFFCCCCCC, false);
-        labelY = intervalRowY + 5;
-        context.drawText(this.textRenderer, Text.literal("切换时间"), contentX, labelY, 0xFFCCCCCC, false);
-        context.drawText(this.textRenderer, Text.literal("秒（每行停留时间）"),
-                contentX + LABEL_W + Math.min(80, contentW - LABEL_W) + 6, labelY + 1, 0xFF999999, false);
+        context.drawText(this.textRenderer, Text.literal("容器名称"), contentX, labelY, 0xFFCCCCCC, false);
+        if (scrollMode) {
+            labelY = widthRowY + 5;
+            context.drawText(this.textRenderer, Text.literal("容器宽度"), contentX, labelY, 0xFFCCCCCC, false);
+            context.drawText(this.textRenderer, Text.literal("沿滚动方向长度（1/16 格）"),
+                    contentX + LABEL_W + Math.min(80, contentW - LABEL_W) + 6, labelY + 1, 0xFF999999, false);
+            labelY = speedRowY + 5;
+            context.drawText(this.textRenderer, Text.literal("滚动速度"), contentX, labelY, 0xFFCCCCCC, false);
+            context.drawText(this.textRenderer, Text.literal("格/秒"),
+                    contentX + LABEL_W + Math.min(80, contentW - LABEL_W) + 6, labelY + 1, 0xFF999999, false);
+            labelY = directionRowY + 5;
+            context.drawText(this.textRenderer, Text.literal("滚动方向"), contentX, labelY, 0xFFCCCCCC, false);
+            context.drawText(this.textRenderer, Text.literal("沿滚动方向从第一行开始排布；其余方向的坐标每一行独立"),
+                    contentX, hintY, 0xFF999999, false);
+        } else {
+            labelY = intervalRowY + 5;
+            context.drawText(this.textRenderer, Text.literal("切换时间"), contentX, labelY, 0xFFCCCCCC, false);
+            context.drawText(this.textRenderer, Text.literal("秒（每行停留时间）"),
+                    contentX + LABEL_W + Math.min(80, contentW - LABEL_W) + 6, labelY + 1, 0xFF999999, false);
+        }
 
         int total = lineTexts().size();
-        context.drawText(this.textRenderer, Text.literal("组内文本行（" + total + " 行，按顺序循环切换）"),
+        context.drawText(this.textRenderer, Text.literal(scrollMode
+                        ? "容器内容（" + total + " 行，按顺序拼接滚动）"
+                        : "容器内文本行（" + total + " 行，按顺序循环切换）"),
                 contentX, previewY - 11, 0xFF66FFCC, false);
         List<String> texts = lineTexts();
         int shown = Math.min(MAX_PREVIEW_ROWS, texts.size());

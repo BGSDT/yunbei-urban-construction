@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "yunbeiuc:item/traffic_lights_pavement_integration_gray"
+    "model": "yunbeiuc:item/traffic_lights/traffic_lights_pavement_integration_gray"
   }
 }

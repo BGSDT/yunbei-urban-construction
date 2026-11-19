@@ -428,7 +428,7 @@
 		{
 			"from": [19, 4.75, 15.3],
 			"to": [26, 11.75, 15.4],
-			"rotation": {"angle": 0, "axis": "y", "origin": [32.00697, 24, 15.35]},
+			"rotation": {"angle": 0, "axis": "y", "origin": [32, 24, 15.35]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#3"}
 			}

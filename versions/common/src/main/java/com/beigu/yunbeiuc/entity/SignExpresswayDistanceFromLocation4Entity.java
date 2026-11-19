@@ -76,12 +76,12 @@ public class SignExpresswayDistanceFromLocation4Entity extends CustomSignBlockEn
         lines.addAll(buildRow(roadType1, "人民路", "logo1", 12f, "a"));
         lines.addAll(buildRow(roadType2, "东环路", "logo2", 0f, "a"));
         lines.addAll(buildRow(roadType3, "苏州新区", "logo3", -12f, "a"));
-        lines.add(SignTextLinesHelper.right("7", 13f, 12f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("17", 13f, 0f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("30", 13f, -12f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", 17f, 11.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", 17f, -0.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", 17f, -12.5f, 0.025f, 0xFFFFFF, "b"));
+        lines.add(SignTextLinesHelper.right("7", 13f, 12f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("17", 13f, 0f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("30", 13f, -12f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("km", 12.5f, 11.5f, 0.025f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("km", 12.5f, -0.5f, 0.025f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("km", 12.5f, -12.5f, 0.025f, 0xFFFFFF, "a"));
         setTextLines(lines);
     }
 

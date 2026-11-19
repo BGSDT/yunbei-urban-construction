@@ -1,6 +1,6 @@
 package com.beigu.yunbeiuc.signal.mtr;
 
-// 探测运行环境是 MTR 3/YMTR 还是 MTR 4：只查类路径资源，绝不 Class.forName（会提前定义目标类，mixin 永不生效）。
+// 探测运行环境是 MTR 3/YMTR 还是 MTR 4。
 
 public enum MtrVersion {
 

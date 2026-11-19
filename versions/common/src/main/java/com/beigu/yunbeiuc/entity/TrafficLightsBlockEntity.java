@@ -288,10 +288,10 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         publishRailSignals();
         markGroupStateDirty();
         if (isNew) {
-            message(player, "§a已链接轨道 §6" + start.toShortString() + " → " + end.toShortString()
-                    + " §7(共 " + railBindings.size() + " 条)。瞄准轨道右键可编辑放行相位");
+            message(player, "§a已链接线路 §6" + start.toShortString() + " → " + end.toShortString()
+                    + " §7(共 " + railBindings.size() + " 条)。瞄准线路右键可编辑放行相位");
         } else {
-            message(player, "§7这条轨道已在本组中 §7(共 " + railBindings.size() + " 条)");
+            message(player, "§7这条线路已在本组中 §7(共 " + railBindings.size() + " 条)");
         }
         return true;
     }
@@ -300,7 +300,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         if (level == null || level .isClientSide()) return false;
         final RailPhaseBinding binding = findRailBinding(start, end);
         if (binding == null) {
-            message(player, "§c这条轨道尚未链接到本组！");
+            message(player, "§c这条线路尚未链接到本组！");
             return false;
         }
 
@@ -313,7 +313,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         propagateRailBindings();
         publishRailSignals();
         markGroupStateDirty();
-        message(player, "§a已更新轨道 §6" + start.toShortString() + " → " + end.toShortString()
+        message(player, "§a已更新线路 §6" + start.toShortString() + " → " + end.toShortString()
                 + " §a放行相位 §6" + describeMask(clamped, phaseCount)
                 + " §7(共 " + railBindings.size() + " 条)");
         return true;
@@ -337,14 +337,14 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         boolean removed = railBindings.removeIf(binding -> binding.matches(start, end));
         if (!removed) {
-            message(player, "§c这条轨道尚未链接到本组！");
+            message(player, "§c这条线路尚未链接到本组！");
             return false;
         }
 
         propagateRailBindings();
         publishRailSignals();
         markGroupStateDirty();
-        message(player, "§a已解除轨道 §6" + start.toShortString() + " → " + end.toShortString()
+        message(player, "§a已解除线路 §6" + start.toShortString() + " → " + end.toShortString()
                 + " §7(剩余 " + railBindings.size() + " 条)");
         return true;
     }
@@ -356,7 +356,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         propagateRailBindings();
         RailSignalRegistry.removeGroup(groupAnchor());
         markGroupStateDirty();
-        message(player, "§a已清空本组轨道绑定 §7(共 " + count + " 条)");
+        message(player, "§a已清空本组线路绑定 §7(共 " + count + " 条)");
     }
 
     private void propagateRailBindings() {

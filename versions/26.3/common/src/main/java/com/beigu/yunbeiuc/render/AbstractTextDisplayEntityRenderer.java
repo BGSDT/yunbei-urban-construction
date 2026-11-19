@@ -88,10 +88,52 @@ public abstract class AbstractTextDisplayEntityRenderer<T extends CustomSignBloc
         int gizmoMode = editingIndex >= 0 ? editingMode : -1;
         if (editingIndex >= 0 || editingMode == -2) TextGizmo.beginFrameRects();
         boolean groupEditing = editingIndex >= 0 || editingMode == -2;
+        long nowMs = System.currentTimeMillis();
         for (int i = 0; i < lines.size(); i++) {
-            if (!groupEditing && !SignTextGroupRuntime.isRenderableAt(lines, i)) continue;
+            CustomSignBlockEntity.TextLineData line = lines.get(i);
+            if (!groupEditing) {
+                if (!SignTextGroupRuntime.isRenderableAt(lines, i, nowMs)) continue;
+                List<SignTextGroupRuntime.Placement> placements = SignTextGroupRuntime.scrollPlacements(lines, i, nowMs,
+                        text -> entity.resolvePlaceholders(text),
+                        text -> this.textRenderer.width(Text.literal(text)));
+                if (placements != null) {
+                    for (SignTextGroupRuntime.Placement placement : placements) {
+                        if (!placement.visible()) continue;
+                        CustomSignBlockEntity.TextLineData placed = line.copy();
+                        placed.setXOffset(placement.x());
+                        placed.setYOffset(placement.y());
+                        placed.setZOffset(placement.z());
+                        gizmoLineIndex = i;
+                        renderTextLine(entity, matrices, vertexConsumers, effectiveLight, overlay, zOffset,
+                                placed, i == editingIndex, gizmoMode, baseFrame);
+                    }
+                    continue;
+                }
+
+            } else {
+                // 编辑预览：容器按静态布局显示（不随时间滚动），
+                // 沿滚动方向从容器首行开始排开，其余方向的坐标每行独立。
+                int groupStart = SignTextGroupRuntime.groupStart(lines, i);
+                if (groupStart >= 0) {
+                    CustomSignBlockEntity.TextLineData leader = lines.get(groupStart);
+                    if (leader.isScrollContainer()) {
+                        SignTextGroupRuntime.Placement preview = SignTextGroupRuntime.editPlacement(lines, i,
+                                text -> entity.resolvePlaceholders(text),
+                                text -> this.textRenderer.width(Text.literal(text)));
+                        if (preview != null) {
+                            line = line.copy();
+                            line.setXOffset(preview.x());
+                            line.setYOffset(preview.y());
+                            line.setZOffset(preview.z());
+                        }
+                    } else {
+                        // 轮播容器同一时刻只显示一行，编辑时只画当前选中的那一行。
+                        if (editingIndex >= 0 && i != editingIndex) continue;
+                    }
+                }
+            }
             gizmoLineIndex = i;
-            renderTextLine(entity, matrices, vertexConsumers, effectiveLight, overlay, zOffset, lines.get(i), i == editingIndex, gizmoMode, baseFrame);
+            renderTextLine(entity, matrices, vertexConsumers, effectiveLight, overlay, zOffset, line, i == editingIndex, gizmoMode, baseFrame);
         }
 
         matrices.popPose();

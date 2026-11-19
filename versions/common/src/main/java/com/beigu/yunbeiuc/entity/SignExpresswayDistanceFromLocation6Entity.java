@@ -1,30 +1,22 @@
 package com.beigu.yunbeiuc.entity;
 
+import com.beigu.yunbeiuc.api.mapper.VersionServices;
 import com.beigu.yunbeiuc.api.nbt.NbtCompat;
 
-import com.beigu.yunbeiuc.api.mapper.VersionServices;
-
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEntity {
-    private String text1 = "";
-    private String text2 = "";
-    private String text3 = "";
-    private String length1 = "";
-    private String length2 = "";
-    private String length3 = "";
+    private String logo1 = "national_logo_1";
+    private String logo2 = "national_logo_1";
     private Expressway expressway1 = Expressway.NATIONAL;
     private Expressway expressway2 = Expressway.NATIONAL;
     private String expresswayNumber1 = "";
     private String expresswayNumber2 = "";
-    private String logoType1 = "national_logo_1";
-    private String logoType2 = "national_logo_1";
 
     public SignExpresswayDistanceFromLocation6Entity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SIGN_EXPRESSWAY_DISTANCE_FROM_LOCATION_6_ENTITY.get(), pos, state);
@@ -34,18 +26,12 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
-        this.text1 = NbtCompat.getString(nbt, "text1");
-        this.text2 = NbtCompat.getString(nbt, "text2");
-        this.text3 = NbtCompat.getString(nbt, "text3");
-        this.length1 = NbtCompat.getString(nbt, "length1");
-        this.length2 = NbtCompat.getString(nbt, "length2");
-        this.length3 = NbtCompat.getString(nbt, "length3");
+        this.logo1 = NbtCompat.getString(nbt, "logoType1");
+        this.logo2 = NbtCompat.getString(nbt, "logoType2");
         this.expressway1 = Expressway.fromName(NbtCompat.getString(nbt, "expressway1"));
         this.expressway2 = Expressway.fromName(NbtCompat.getString(nbt, "expressway2"));
-        this.expresswayNumber1 = NbtCompat.getString(nbt, "expresswayNumber1");
-        this.expresswayNumber2 = NbtCompat.getString(nbt, "expresswayNumber2");
-        this.logoType1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
-        this.logoType2 = nbt.contains("logoType2") ? NbtCompat.getString(nbt, "logoType2").replace("provicial", "provincial") : legacyLogoType2();
+        this.logo1 = nbt.contains("logoType1") ? NbtCompat.getString(nbt, "logoType1").replace("provicial", "provincial") : legacyLogoType1();
+        this.logo2 = nbt.contains("logoType2") ? NbtCompat.getString(nbt, "logoType2").replace("provicial", "provincial") : legacyLogoType2();
         if (!CustomSignBlockEntity.hasTextLinesData(nbt) && !hasCustomizedTextLines()) {
             ensureDefaultTextLines();
         }
@@ -53,170 +39,32 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
 
     @Override
     public void saveAdditionalCompat(CompoundTag nbt) {
-        nbt.putString("text1", this.text1);
-        nbt.putString("text2", this.text2);
-        nbt.putString("text3", this.text3);
-        nbt.putString("length1", this.length1);
-        nbt.putString("length2", this.length2);
-        nbt.putString("length3", this.length3);
         nbt.putString("expressway1", this.expressway1.getName());
         nbt.putString("expressway2", this.expressway2.getName());
-        nbt.putString("expresswayNumber1", this.expresswayNumber1);
-        nbt.putString("expresswayNumber2", this.expresswayNumber2);
-        nbt.putString("logoType1", this.logoType1);
-        nbt.putString("logoType2", this.logoType2);
+        nbt.putString("logoType1", this.logo1);
+        nbt.putString("logoType2", this.logo2);
         super.saveAdditionalCompat(nbt);
     }
 
-    private void ensureDefaultTextLines() {
-        if (!getTextLines().isEmpty()) return;
-        List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.left("南通", -7f, 8f, 0.04f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.left("扬州", -7f, -3f, 0.04f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.left("南京", -7f, -10f, 0.04f, 0xFFFFFF, "a"));
-        lines.add(SignTextLinesHelper.right("25", 13.5f, 8f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("92", 13.5f, -3f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("115", 13.5f, -10f, 0.04f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", 17.5f, 7.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", 17.5f, -3.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.right("km", 17.5f, -10.5f, 0.025f, 0xFFFFFF, "b"));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -14f, 8f, 0.65f, 0f));
-        lines.add(SignTextLinesHelper.centeredWithZ("G15", -14f, 7.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
-        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", -14f, -5.5f, 0.65f, 0f));
-        lines.add(SignTextLinesHelper.centeredWithZ("G25", -14f, -6f, 0.045f, 0xFFFFFF, 0.002f, "b"));
-        setTextLines(lines);
-    }
-
-    public String getText1() { return text1; }
-    public void setText1(String text1) {
-        this.text1 = text1;
-        markDirtyAndUpdate();
-    }
-    public String getText2() { return text2; }
-    public void setText2(String text2) {
-        this.text2 = text2;
-        markDirtyAndUpdate();
-    }
-    public String getText3() { return text3; }
-    public void setText3(String text3) {
-        this.text3 = text3;
-        markDirtyAndUpdate();
-    }
-    public String getLength1() { return length1; }
-    public void setLength1(String length1) {
-        this.length1 = length1;
-        markDirtyAndUpdate();
-    }
-    public String getLength2() { return length2; }
-    public void setLength2(String length2) {
-        this.length2 = length2;
-        markDirtyAndUpdate();
-    }
-    public String getLength3() { return length3; }
-    public void setLength3(String length3) {
-        this.length3 = length3;
-        markDirtyAndUpdate();
-    }
-    public Expressway getExpressway1() { return expressway1; }
-    public void setExpressway1(Expressway expressway1) {
-        this.expressway1 = expressway1;
-        markDirtyAndUpdate();
-    }
-    public Expressway getExpressway2() { return expressway2; }
-    public void setExpressway2(Expressway expressway2) {
-        this.expressway2 = expressway2;
-        markDirtyAndUpdate();
-    }
-    public String getExpresswayNumber1() { return expresswayNumber1; }
-    public void setExpresswayNumber1(String expresswayNumber1) {
-        this.expresswayNumber1 = expresswayNumber1;
-        markDirtyAndUpdate();
-    }
-    public String getExpresswayNumber2() { return expresswayNumber2; }
-    public void setExpresswayNumber2(String expresswayNumber2) {
-        this.expresswayNumber2 = expresswayNumber2;
-        markDirtyAndUpdate();
-    }
-    public String getLogoType1() { return logoType1; }
-    public void setLogoType1(String logoType1) {
-        this.logoType1 = logoType1;
-        markDirtyAndUpdate();
-    }
-    public String getLogoType2() { return logoType2; }
-    public void setLogoType2(String logoType2) {
-        this.logoType2 = logoType2;
-        markDirtyAndUpdate();
-    }
-
-    @Override
-    public String getPlaceholderValue(String key) {
-        return switch (key) {
-            case "text1" -> text1;
-            case "text2" -> text2;
-            case "text3" -> text3;
-            case "length1" -> length1;
-            case "length2" -> length2;
-            case "length3" -> length3;
-            case "expresswayNumber1" -> expresswayNumber1;
-            case "expresswayNumber2" -> expresswayNumber2;
-            case "logo1" -> logoType1;
-            case "logo2" -> logoType2;
-            case "logo1x", "logo2x" -> "0";
-            default -> null;
-        };
-    }
-
     private String legacyLogoType1() {
-        return expresswayLogoTexture(expressway1, expresswayNumber1);
-    }
+            return expresswayLogoTexture(expressway1, expresswayNumber1);
+        }
 
     private String legacyLogoType2() {
-        return expresswayLogoTexture(expressway2, expresswayNumber2);
-    }
-
-    @Override
-    public List<FieldOptionGroup> getFieldOptions(String placeholderKey) {
-        return switch (placeholderKey) {
-            case "logo1" -> List.of(new FieldOptionGroup("高速Logo", "logoType1", List.of(
-                    opt("国家高速公路（2位数）", "national_logo_1", logoType1),
-                    opt("国家高速公路（1位数）", "national_logo_2", logoType1),
-                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType1),
-                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType1))));
-            case "logo2" -> List.of(new FieldOptionGroup("高速Logo", "logoType2", List.of(
-                    opt("国家高速公路（2位数）", "national_logo_1", logoType2),
-                    opt("国家高速公路（1位数）", "national_logo_2", logoType2),
-                    opt("省级高速公路（2位数）", "provincial_logo_1", logoType2),
-                    opt("省级高速公路（1位数）", "provincial_logo_2", logoType2))));
-            default -> null;
-        };
-    }
-
-    @Override
-    public void applyFieldOption(String field, String value) {
-        switch (field) {
-            case "logoType1" -> setLogoType1(value);
-            case "logoType2" -> setLogoType2(value);
+            return expresswayLogoTexture(expressway2, expresswayNumber2);
         }
-    }
 
     private static String expresswayLogoTexture(Expressway expressway, String expresswayNumber) {
-        String kind = expressway == Expressway.PROVINCIAL ? "provincial" : "national";
-        return kind + "_logo_" + (isNarrowLogo(expresswayNumber) ? "2" : "1");
-    }
+            String kind = expressway == Expressway.PROVINCIAL ? "provincial" : "national";
+            return kind + "_logo_" + (isNarrowLogo(expresswayNumber) ? "2" : "1");
+        }
 
     private static boolean isNarrowLogo(String expresswayNumber) {
-        if (expresswayNumber == null || expresswayNumber.trim().isEmpty() || !expresswayNumber.matches(".*\\d.*")) {
-            return false;
+            if (expresswayNumber == null || expresswayNumber.trim().isEmpty() || !expresswayNumber.matches(".*\\d.*")) {
+                return false;
+            }
+            return expresswayNumber.replaceAll("[^0-9]", "").length() == 1;
         }
-        return expresswayNumber.replaceAll("[^0-9]", "").length() == 1;
-    }
-
-    private void markDirtyAndUpdate() {
-        setChanged();
-        if (level != null) {
-            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
-        }
-    }
 
     public enum Expressway {
         NATIONAL("national"),
@@ -230,6 +78,85 @@ public class SignExpresswayDistanceFromLocation6Entity extends CustomSignBlockEn
                 if (dir.name.equals(name)) return dir;
             }
             return NATIONAL;
+        }
+    }
+
+    private void ensureDefaultTextLines() {
+        if (!getTextLines().isEmpty()) return;
+        List<TextLineData> lines = new ArrayList<>();
+        lines.add(SignTextLinesHelper.left("南通", -7f, 8f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("扬州", -7f, -3f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("南京", -7f, -10f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("25", 13.5f, 8f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("92", 13.5f, -3f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.right("115", 13.5f, -10f, 0.04f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("km", 13f, 7.5f, 0.025f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("km", 13f, -3.5f, 0.025f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.left("km", 13f, -10.5f, 0.025f, 0xFFFFFF, "a"));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo1}.png", -14f, 8f, 0.65f));
+        lines.add(SignTextLinesHelper.centeredWithZ("G15", -14f, 7.5f, 0.045f, 0xFFFFFF, 0.002f, "b"));
+        lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_{logo2}.png", -14f, -5.5f, 0.65f));
+        lines.add(SignTextLinesHelper.centeredWithZ("G25", -14f, -6f, 0.045f, 0xFFFFFF, 0.002f, "b"));
+        setTextLines(lines);
+    }
+
+    public String getLogo1() {
+        return logo1;
+    }
+
+    public void setLogo1(String logo1) {
+        this.logo1 = logo1;
+        markDirtyAndUpdate();
+    }
+
+    public String getLogo2() {
+        return logo2;
+    }
+
+    public void setLogo2(String logo2) {
+        this.logo2 = logo2;
+        markDirtyAndUpdate();
+    }
+
+    @Override
+    public String getPlaceholderValue(String key) {
+        return switch (key) {
+            case "logo1" -> logo1;
+            case "logo2" -> logo2;
+            default -> null;
+        };
+    }
+
+    @Override
+    public List<FieldOptionGroup> getFieldOptions(String placeholderKey) {
+        return switch (placeholderKey) {
+            case "logo1" -> List.of(new FieldOptionGroup("高速Logo", "logo1", List.of(
+                    opt("国家高速公路（2位数）", "national_logo_1", logo1),
+                    opt("国家高速公路（1位数）", "national_logo_2", logo1),
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logo1),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logo1))));
+            case "logo2" -> List.of(new FieldOptionGroup("高速Logo", "logo2", List.of(
+                    opt("国家高速公路（2位数）", "national_logo_1", logo2),
+                    opt("国家高速公路（1位数）", "national_logo_2", logo2),
+                    opt("省级高速公路（2位数）", "provincial_logo_1", logo2),
+                    opt("省级高速公路（1位数）", "provincial_logo_2", logo2))));
+            default -> null;
+        };
+    }
+
+    @Override
+    public void applyFieldOption(String field, String value) {
+        switch (field) {
+            case "logo1" -> setLogo1(value);
+            case "logo2" -> setLogo2(value);
+            default -> { }
+        }
+    }
+
+    private void markDirtyAndUpdate() {
+        setChanged();
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, blockStateForDefaults(), blockStateForDefaults(), VersionServices.blocks().updateAll());
         }
     }
 }

@@ -39,7 +39,7 @@ public class ZonesBoard1Entity extends CustomSignBlockEntity {
         if (!getTextLines().isEmpty()) return;
         int color = isBlockType(SignBlocks.ZONES_BOARD_RED) ? 0xFFFFFF : 0x000000;
         List<TextLineData> lines = new ArrayList<>();
-        lines.add(SignTextLinesHelper.centered("{text1}", 0f, 0f, 0.04f, color, "a"));
+        lines.add(SignTextLinesHelper.centered("{text1}", 0f, 0f, 0.04f, color, "b"));
         setTextLines(lines);
     }
 

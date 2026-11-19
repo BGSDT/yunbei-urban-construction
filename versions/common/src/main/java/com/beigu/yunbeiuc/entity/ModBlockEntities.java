@@ -256,6 +256,12 @@ public class ModBlockEntities {
                             SignBlocks.SIGN_EXPRESSWAY_EXIT_4.get(),
                             SignBlocks.SIGN_EXPRESSWAY_EXIT_5.get(),
                             SignBlocks.SIGN_EXPRESSWAY_EXIT_6.get()));
+    public static final RegistrySupplier<BlockEntityType<ZonesBoard1Entity>> ZONES_BOARD_RED_ENTITY =
+            BES.register("zones_board_red_entity",
+                    () -> VersionServices.blockEntities().create(ZonesBoard1Entity::new,
+                            SignBlocks.ZONES_BOARD_RED.get(),
+                            SignBlocks.ZONES_BOARD_YELLOW.get(),
+                            SignBlocks.ZONES_BOARD_WHITE.get()));
     public static final RegistrySupplier<BlockEntityType<ZonesBoard1Entity>> ZONES_BOARD_1_ENTITY =
             BES.register("zones_board_1_entity",
                     () -> VersionServices.blockEntities().create(ZonesBoard1Entity::new,
