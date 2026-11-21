@@ -11,6 +11,11 @@ public abstract class EntityBlockCompat extends EntityBlockMapper {
         super(properties);
     }
 
+    /** 创建本方块对应的方块实体（供跨版本区块/世界迁移使用）。 */
+    public final BlockEntity createBlockEntityCompat(BlockPos pos, BlockState state) {
+        return newBlockEntityCompat(pos, state);
+    }
+
     @Nullable
     @Override
     protected abstract BlockEntity newBlockEntityCompat(BlockPos pos, BlockState state);

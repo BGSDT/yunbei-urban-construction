@@ -881,6 +881,10 @@ public class TextDisplayScreen extends Screen {
         };
     }
 
+    public static boolean isVerticalScroll(int direction) {
+        return direction == TextLineData.SCROLL_UP || direction == TextLineData.SCROLL_DOWN;
+    }
+
     private void addNewTextGroup(int containerMode) {
         int gid = nextGroupId();
         String name = defaultGroupName(gid, containerMode);
@@ -937,6 +941,11 @@ public class TextDisplayScreen extends Screen {
         return TextLineData.DEFAULT_CONTAINER_WIDTH;
     }
 
+    public float getGroupContainerHeight(int gid) {
+        for (int i : getGroupLineIndices(gid)) return textLineWidgets.get(i).data.getContainerHeight();
+        return TextLineData.DEFAULT_CONTAINER_HEIGHT;
+    }
+
     public float getGroupScrollSpeed(int gid) {
         for (int i : getGroupLineIndices(gid)) return textLineWidgets.get(i).data.getScrollSpeed();
         return TextLineData.DEFAULT_SCROLL_SPEED;
@@ -961,11 +970,12 @@ public class TextDisplayScreen extends Screen {
     }
 
     /** 应用滚动容器的宽度、速度、方向设置（只写容器首行）。 */
-    public void applyScrollContainerSettings(int gid, float width, float speed, int direction) {
+    public void applyScrollContainerSettings(int gid, float width, float height, float speed, int direction) {
         List<Integer> members = getGroupLineIndices(gid);
         if (members.isEmpty()) return;
         TextLineData leader = textLineWidgets.get(members.get(0)).data;
         leader.setContainerWidth(width);
+        leader.setContainerHeight(height);
         leader.setScrollSpeed(speed);
         leader.setScrollDirection(direction);
         onTextGroupEdited();
@@ -2297,10 +2307,12 @@ public class TextDisplayScreen extends Screen {
     private void requestDeleteLine(int idx) {
         var data = textLineWidgets.get(idx).data;
         String text = data.getText();
+        // 从图案库手动插入的图片行可随时重新插入，删除时不再二次确认
+        boolean userImage = !data.isBuiltin() && text.trim().startsWith("-texture ");
         boolean generated = data.isBuiltin()
                 || !CustomSignBlockEntity.extractPlaceholderKeys(text).isEmpty()
                 || text.trim().startsWith("-");
-        if (!generated) {
+        if (!generated || userImage) {
             deleteTextLine(idx);
             return;
         }
@@ -2576,7 +2588,10 @@ public class TextDisplayScreen extends Screen {
                     tips.add(new TooltipEntry((scroll ? "滚动容器：" : "轮播容器：") + groupDisplayName(hotGroup),
                             "共 " + getGroupLineIndices(hotGroup).size() + " 行 · "
                                     + (scroll
-                                    ? "宽度 " + fmt(getGroupContainerWidth(hotGroup)) + " · 速度 " + fmt(getGroupScrollSpeed(hotGroup)) + " · " + scrollDirectionLabel(getGroupScrollDirection(hotGroup))
+                                    ? (isVerticalScroll(getGroupScrollDirection(hotGroup))
+                                    ? "高度 " + fmt(getGroupContainerHeight(hotGroup))
+                                    : "宽度 " + fmt(getGroupContainerWidth(hotGroup)))
+                                    + " · 速度 " + fmt(getGroupScrollSpeed(hotGroup)) + " · " + scrollDirectionLabel(getGroupScrollDirection(hotGroup))
                                     : "每行停留 " + formatGroupInterval(getGroupIntervalMs(hotGroup))),
                             "点击修改容器设置 / 增删文本行"));
                 }

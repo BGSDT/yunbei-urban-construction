@@ -3,7 +3,12 @@ package com.beigu.yunbeiuc.api.block;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.ProtoChunk;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -33,5 +38,25 @@ public final class BlockPlatformImpl implements BlockPlatform {
     public void sendBlockEntityUpdate(ServerPlayer player, ServerLevel level, BlockPos pos,
                                      ClientboundBlockEntityDataPacket packet) {
         player.connection.send(packet);
+    }
+
+    @Override
+    public void setLevelBlockEntity(Level level, BlockPos pos, BlockEntity blockEntity) {
+        level.setBlockEntity(blockEntity);
+    }
+
+    @Override
+    public void setProtoChunkBlockEntity(ProtoChunk chunk, BlockEntity blockEntity) {
+        chunk.setBlockEntity(blockEntity);
+    }
+
+    @Override
+    public int chunkMinY(ChunkAccess chunk) {
+        return chunk.getMinBuildHeight();
+    }
+
+    @Override
+    public boolean isSectionEmpty(LevelChunkSection section) {
+        return section.hasOnlyAir();
     }
 }

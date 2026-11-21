@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_yield"
+      "model": "yunbeiuc:block/sign/normal/sign_custom_yield_simple"
     },
     "facing=east,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_yield",
+      "model": "yunbeiuc:block/sign/normal/sign_custom_yield_simple",
       "y": 90
     },
     "facing=south,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_yield",
+      "model": "yunbeiuc:block/sign/normal/sign_custom_yield_simple",
       "y": 180
     },
     "facing=west,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_yield",
+      "model": "yunbeiuc:block/sign/normal/sign_custom_yield_simple",
       "y": 270
     },
     "facing=north,type=pole_l": {

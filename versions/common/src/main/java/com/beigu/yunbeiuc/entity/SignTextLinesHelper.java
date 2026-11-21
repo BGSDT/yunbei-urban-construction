@@ -55,6 +55,27 @@ public final class SignTextLinesHelper {
         return line;
     }
 
+    public static TextLineData rect(float width, float height, float andX, float andY, float rotZ, int color) {
+        TextLineData line = new TextLineData("-rect " + number(width) + " " + number(height));
+        line.setXOffset(andX);
+        line.setYOffset(andY);
+        line.setZOffset(0);
+        line.setRotZ(rotZ);
+        line.setColor(color);
+        line.setAlignment(TextAlignment.CENTER_CENTER);
+        line.setBold(false);
+        line.setFontSize(1f);
+        line.setBuiltin(true);
+        return line;
+    }
+
+    private static String number(float value) {
+        if (value == Math.round(value)) {
+            return Integer.toString(Math.round(value));
+        }
+        return Float.toString(value);
+    }
+
     private static TextLineData base(String text, float andX, float andY, float scale, int color, String abcFont) {
         TextLineData line = new TextLineData(text);
         line.setXOffset(andX);
@@ -84,16 +105,21 @@ public final class SignTextLinesHelper {
             return null;
         }
         String effFont = resolveFont(signAbcFont);
+        String current = line.getText() == null ? "" : line.getText();
         if (effFont.isEmpty()) {
+            String plain = plainText(current);
+            if (!plain.equals(current)) {
+                line.setText(plain);
+            }
+            line.setBold(true);
             line.setAbcFont("");
             return line;
         }
-        String current = line.getText() == null ? "" : line.getText();
         if (current.trim().startsWith("-")) {
             return line;
         }
         line.setText("-json " + wrapJson(current, fontId(effFont)));
-        line.setBold(false);
+        line.setBold(!GlobalFontSettings.isAbcMode());
         line.setAbcFont(effFont);
         return line;
     }

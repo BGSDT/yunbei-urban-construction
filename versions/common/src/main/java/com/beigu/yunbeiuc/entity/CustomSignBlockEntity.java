@@ -224,6 +224,9 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         public static final float DEFAULT_CONTAINER_WIDTH = 32f;
         public static final float MIN_CONTAINER_WIDTH = 8f;
         public static final float MAX_CONTAINER_WIDTH = 1024f;
+        public static final float DEFAULT_CONTAINER_HEIGHT = 32f;
+        public static final float MIN_CONTAINER_HEIGHT = 8f;
+        public static final float MAX_CONTAINER_HEIGHT = 1024f;
 
         public static final float DEFAULT_SCROLL_SPEED = 0.75f;
         public static final float MAX_SCROLL_SPEED = 16f;
@@ -255,6 +258,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
 
         private int containerMode = CONTAINER_CAROUSEL;
         private float containerWidth = DEFAULT_CONTAINER_WIDTH;
+        private float containerHeight = DEFAULT_CONTAINER_HEIGHT;
         private float scrollSpeed = DEFAULT_SCROLL_SPEED;
         private int scrollDirection = SCROLL_LEFT;
 
@@ -284,6 +288,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             c.builtin = builtin;
             c.groupId = groupId; c.groupName = groupName; c.groupIntervalMs = groupIntervalMs;
             c.containerMode = containerMode; c.containerWidth = containerWidth;
+            c.containerHeight = containerHeight;
             c.scrollSpeed = scrollSpeed; c.scrollDirection = scrollDirection;
             return c;
         }
@@ -329,6 +334,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             nbt.putInt("groupIntervalMs", groupIntervalMs);
             nbt.putInt("containerMode", containerMode);
             nbt.putFloat("containerWidth", containerWidth);
+            nbt.putFloat("containerHeight", containerHeight);
             nbt.putFloat("scrollSpeed", scrollSpeed);
             nbt.putInt("scrollDirection", scrollDirection);
             return nbt;
@@ -358,6 +364,8 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             data.containerMode = nbt.contains("containerMode") ? NbtCompat.getInt(nbt, "containerMode") : CONTAINER_CAROUSEL;
             data.containerWidth = nbt.contains("containerWidth")
                     ? clampContainerWidth(NbtCompat.getFloat(nbt, "containerWidth")) : DEFAULT_CONTAINER_WIDTH;
+            data.containerHeight = nbt.contains("containerHeight")
+                    ? clampContainerHeight(NbtCompat.getFloat(nbt, "containerHeight")) : DEFAULT_CONTAINER_HEIGHT;
             data.scrollSpeed = nbt.contains("scrollSpeed")
                     ? clampScrollSpeed(NbtCompat.getFloat(nbt, "scrollSpeed")) : DEFAULT_SCROLL_SPEED;
             data.scrollDirection = nbt.contains("scrollDirection")
@@ -399,6 +407,11 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             return Math.max(MIN_CONTAINER_WIDTH, Math.min(MAX_CONTAINER_WIDTH, width));
         }
 
+        public static float clampContainerHeight(float height) {
+            if (height <= 0) return DEFAULT_CONTAINER_HEIGHT;
+            return Math.max(MIN_CONTAINER_HEIGHT, Math.min(MAX_CONTAINER_HEIGHT, height));
+        }
+
         public static float clampScrollSpeed(float speed) {
             if (speed < 0) return 0f;
             return Math.min(MAX_SCROLL_SPEED, speed);
@@ -435,6 +448,11 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
         }
         public void setContainerWidth(float width) { this.containerWidth = clampContainerWidth(width); }
 
+        public float getContainerHeight() {
+            return containerHeight <= 0 ? DEFAULT_CONTAINER_HEIGHT : containerHeight;
+        }
+        public void setContainerHeight(float height) { this.containerHeight = clampContainerHeight(height); }
+
         public float getScrollSpeed() { return clampScrollSpeed(scrollSpeed); }
         public void setScrollSpeed(float speed) { this.scrollSpeed = clampScrollSpeed(speed); }
 
@@ -446,6 +464,7 @@ public class CustomSignBlockEntity extends BlockEntityMapper {
             if (leader == null) return;
             this.containerMode = leader.containerMode;
             this.containerWidth = leader.getContainerWidth();
+            this.containerHeight = leader.getContainerHeight();
             this.scrollSpeed = leader.getScrollSpeed();
             this.scrollDirection = leader.getScrollDirection();
         }

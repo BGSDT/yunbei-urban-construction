@@ -68,7 +68,7 @@ public final class GlobalFontSettings {
     }
 
     private static void loadFromFile() {
-        mode = FontMode.VANILLA;
+        mode = FontMode.ABC_A;
         try {
             Path path = configPath();
             if (path == null) return;
@@ -81,7 +81,7 @@ public final class GlobalFontSettings {
                 }
             }
         } catch (Exception | LinkageError ignored) {
-            mode = FontMode.VANILLA;
+            mode = FontMode.ABC_A;
         }
     }
 

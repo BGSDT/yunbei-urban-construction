@@ -1,5 +1,6 @@
 package com.beigu.yunbeiuc.mixin;
 
+import com.beigu.yunbeiuc.block.custom.sign.SignImageMigration;
 import com.beigu.yunbeiuc.util.LegacyRoadMigration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -27,5 +28,10 @@ public class LegacyRoadStateMixin {
                                          @Coerce Object poiManager, ChunkPos pos, CompoundTag tag,
                                          CallbackInfoReturnable<ProtoChunk> callbackInfo) {
         LegacyRoadMigration.migrate(tag);
+    }
+
+    @Inject(method = READ, at = @At("RETURN"), require = 0)
+    private static void yunbeiuc$migrateSigns(CallbackInfoReturnable<ProtoChunk> callbackInfo) {
+        SignImageMigration.migrate(callbackInfo.getReturnValue());
     }
 }

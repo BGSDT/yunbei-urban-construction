@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_warning_crossing_7"
+      "model": "yunbeiuc:block/sign/normal/sign_custom_warning_simple_1"
     },
     "facing=east,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_warning_crossing_7",
+      "model": "yunbeiuc:block/sign/normal/sign_custom_warning_simple_1",
       "y": 90
     },
     "facing=south,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_warning_crossing_7",
+      "model": "yunbeiuc:block/sign/normal/sign_custom_warning_simple_1",
       "y": 180
     },
     "facing=west,type=normal": {
-      "model": "yunbeiuc:block/sign/normal/sign_warning_crossing_7",
+      "model": "yunbeiuc:block/sign/normal/sign_custom_warning_simple_1",
       "y": 270
     },
     "facing=north,type=pole_l": {
@@ -31,18 +31,18 @@
       "y": 270
     },
     "facing=north,type=pole_h": {
-      "model": "yunbeiuc:block/sign/pole_h/sign_warning_crossing_7"
+      "model": "yunbeiuc:block/sign/pole_h/sign_custom_warning_simple_1"
     },
     "facing=east,type=pole_h": {
-      "model": "yunbeiuc:block/sign/pole_h/sign_warning_crossing_7",
+      "model": "yunbeiuc:block/sign/pole_h/sign_custom_warning_simple_1",
       "y": 90
     },
     "facing=south,type=pole_h": {
-      "model": "yunbeiuc:block/sign/pole_h/sign_warning_crossing_7",
+      "model": "yunbeiuc:block/sign/pole_h/sign_custom_warning_simple_1",
       "y": 180
     },
     "facing=west,type=pole_h": {
-      "model": "yunbeiuc:block/sign/pole_h/sign_warning_crossing_7",
+      "model": "yunbeiuc:block/sign/pole_h/sign_custom_warning_simple_1",
       "y": 270
     }
   }

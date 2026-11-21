@@ -31,13 +31,14 @@ public class TextGroupSettingsScreen extends Screen {
     private TextFieldWidget nameField;
     private TextFieldWidget intervalField;
     private TextFieldWidget widthField;
+    private TextFieldWidget heightField;
     private TextFieldWidget speedField;
     private ButtonWidget directionButton;
     private int direction;
 
     private int panelX, panelY, panelWidth, panelHeight;
     private int contentX, contentW;
-    private int nameRowY, intervalRowY, widthRowY, speedRowY, directionRowY, hintY, previewY, actionRowY, confirmRowY;
+    private int nameRowY, intervalRowY, widthRowY, heightRowY, speedRowY, directionRowY, hintY, previewY, actionRowY, confirmRowY;
 
     public TextGroupSettingsScreen(TextDisplayScreen parent, int groupId) {
         super(Text.literal(parent.getGroupContainerMode(groupId) == TextLineData.CONTAINER_SCROLL
@@ -52,7 +53,7 @@ public class TextGroupSettingsScreen extends Screen {
     protected void init() {
         super.init();
 
-        int fieldRows = scrollMode ? 4 : 2;
+        int fieldRows = scrollMode ? 5 : 2;
         int previewRows = Math.min(MAX_PREVIEW_ROWS, Math.max(1, lineTexts().size()));
         panelHeight = PADDING + TITLE_H + 10
                 + fieldRows * (ROW_H + ROW_GAP)
@@ -70,6 +71,7 @@ public class TextGroupSettingsScreen extends Screen {
         nameRowY = y; y += ROW_H + ROW_GAP;
         if (scrollMode) {
             widthRowY = y; y += ROW_H + ROW_GAP;
+            heightRowY = y; y += ROW_H + ROW_GAP;
             speedRowY = y; y += ROW_H + ROW_GAP;
             directionRowY = y; y += ROW_H + ROW_GAP;
             hintY = y; y += 12;
@@ -93,6 +95,11 @@ public class TextGroupSettingsScreen extends Screen {
             widthField.setMaxLength(12);
             widthField.setText(formatNumber(parent.getGroupContainerWidth(groupId)));
             this.addDrawableChild(widthField);
+
+            heightField = new TextFieldWidget(this.textRenderer, fieldX, heightRowY, Math.min(80, fieldW), 18, Text.literal("容器高度"));
+            heightField.setMaxLength(12);
+            heightField.setText(formatNumber(parent.getGroupContainerHeight(groupId)));
+            this.addDrawableChild(heightField);
 
             speedField = new TextFieldWidget(this.textRenderer, fieldX, speedRowY, Math.min(80, fieldW), 18, Text.literal("滚动速度"));
             speedField.setMaxLength(12);
@@ -191,6 +198,14 @@ public class TextGroupSettingsScreen extends Screen {
         }
     }
 
+    private float parseHeight() {
+        try {
+            return TextLineData.clampContainerHeight(Float.parseFloat(heightField.getText().trim()));
+        } catch (NumberFormatException e) {
+            return parent.getGroupContainerHeight(groupId);
+        }
+    }
+
     private float parseSpeed() {
         try {
             return TextLineData.clampScrollSpeed(Float.parseFloat(speedField.getText().trim()));
@@ -204,7 +219,7 @@ public class TextGroupSettingsScreen extends Screen {
         if (name.isEmpty()) name = parent.getGroupName(groupId);
         if (scrollMode) {
             parent.applyGroupSettings(groupId, name, parent.getGroupIntervalMs(groupId));
-            parent.applyScrollContainerSettings(groupId, parseWidth(), parseSpeed(), direction);
+            parent.applyScrollContainerSettings(groupId, parseWidth(), parseHeight(), parseSpeed(), direction);
         } else {
             parent.applyGroupSettings(groupId, name, parseIntervalMs());
         }
@@ -226,6 +241,10 @@ public class TextGroupSettingsScreen extends Screen {
             labelY = widthRowY + 5;
             context.drawText(this.textRenderer, Text.literal("容器宽度"), contentX, labelY, 0xFFCCCCCC, false);
             context.drawText(this.textRenderer, Text.literal("沿滚动方向长度（1/16 格）"),
+                    contentX + LABEL_W + Math.min(80, contentW - LABEL_W) + 6, labelY + 1, 0xFF999999, false);
+            labelY = heightRowY + 5;
+            context.drawText(this.textRenderer, Text.literal("容器高度"), contentX, labelY, 0xFFCCCCCC, false);
+            context.drawText(this.textRenderer, Text.literal("上下滚动时沿滚动方向长度（1/16 格）"),
                     contentX + LABEL_W + Math.min(80, contentW - LABEL_W) + 6, labelY + 1, 0xFF999999, false);
             labelY = speedRowY + 5;
             context.drawText(this.textRenderer, Text.literal("滚动速度"), contentX, labelY, 0xFFCCCCCC, false);

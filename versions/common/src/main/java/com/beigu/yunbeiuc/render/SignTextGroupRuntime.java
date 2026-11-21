@@ -112,11 +112,10 @@ public final class SignTextGroupRuntime {
         TextLineData line = lines.get(index);
         boolean isLeader = index == start;
 
-        float window = leader.getContainerWidth();
-        // 速度以「格/秒」存储，换算成偏移单位（1 格 = 16 单位）。
-        float speed = leader.getScrollSpeed() * 16f;
         int dir = leader.getScrollDirection();
         boolean horizontal = dir == TextLineData.SCROLL_LEFT || dir == TextLineData.SCROLL_RIGHT;
+        float window = horizontal ? leader.getContainerWidth() : leader.getContainerHeight();
+        float speed = leader.getScrollSpeed() * 16f;
         // 向右/向上为正方向：内容整体沿正方向平移，反之沿负方向平移。
         boolean increasing = dir == TextLineData.SCROLL_RIGHT || dir == TextLineData.SCROLL_UP;
 

@@ -1285,5 +1285,18 @@
   "yunbeiuc.gui.ack.decl.yunbeiuc.license": "License: LGPL V3 (GNU Lesser General Public License v3.0)\nFull license text: see the LICENSE file in the repository",
   "yunbeiuc.gui.ack.decl.yunbeiuc.mcmod": "Yunbei UC on MCMod Wiki\nmcmod.cn/class/26158",
   "yunbeiuc.gui.ack.decl.yunbeiuc.github": "Yunbei UC Repository\nGitHub: BGSDT/yunbei-urban-construction",
-  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "This mod extends and adapts functionality based on the Ocelot Sign mod. Use of code and assets complies with the original author's license."
+  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "This mod extends and adapts functionality based on the Ocelot Sign mod. Use of code and assets complies with the original author's license.",
+  "block.yunbeiuc.sign_custom_no_entry_simple": "No Entry Base",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_1": "Lane Direction Base 1",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_2": "Lane Direction Base 2",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_3": "Lane Direction Base 3",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_4": "Lane Direction Base 4",
+  "block.yunbeiuc.sign_custom_zones_board_simple": "Zone Board Base 1",
+  "block.yunbeiuc.sign_custom_zones_board_simple_2": "Zone Board Base 2",
+  "block.yunbeiuc.sign_custom_zones_board_ramp": "Ramp Board Base",
+  "block.yunbeiuc.sign_custom_zones_board_fluorescence": "Fluorescent Board Base 1",
+  "block.yunbeiuc.sign_custom_zones_board_fluorescence_2": "Fluorescent Board Base 2",
+  "block.yunbeiuc.sign_custom_zones_board_warning": "Warning Board Base",
+  "block.yunbeiuc.sign_custom_zones_board_truck_right": "Truck Keep Right Base",
+  "block.yunbeiuc.sign_custom_zones_board_large_truck_right": "Large Truck Keep Right Base"
 }

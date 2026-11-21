@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:stonecutting",
-    "ingredient": {
-        "item": "minecraft:white_concrete"
-    },
-    "result": "yunbeiuc:sign_waring_less_4_to_3",
-    "count": 9
-}

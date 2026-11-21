@@ -3,10 +3,16 @@ package com.beigu.yunbeiuc.entity;
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.SignBlocks;
+import com.beigu.yunbeiuc.block.custom.sign.SignImageBlock;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import com.beigu.yunbeiuc.api.mapper.VersionServices;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ModBlockEntities {
 
@@ -297,7 +303,7 @@ public class ModBlockEntities {
 
     public static final RegistrySupplier<BlockEntityType<CustomSignBlockEntity>> CUSTOM_SIGN_BLOCK_ENTITY =
             BES.register("custom_sign_block_entity",
-                    () -> VersionServices.blockEntities().create(CustomSignBlockEntity::new,
+                    () -> VersionServices.blockEntities().create(CustomSignBlockEntity::new, withImageSigns(
                             SignBlocks.SIGN_CUSTOM_EXPRESSWAY_1.get(),
                             SignBlocks.SIGN_CUSTOM_EXPRESSWAY_2.get(),
                             SignBlocks.SIGN_CUSTOM_EXPRESSWAY_3.get(),
@@ -411,12 +417,36 @@ public class ModBlockEntities {
                             SignBlocks.SIGN_CUSTOM_INDICATION_SIMPLE_3.get(),
                             SignBlocks.SIGN_CUSTOM_INDICATION_SIMPLE_FLUORESCENCE.get(),
                             SignBlocks.SIGN_CUSTOM_MIN_SPEED_LIMIT_SIMPLE.get(),
+                            SignBlocks.SIGN_CUSTOM_NO_ENTRY_SIMPLE.get(),
+                            SignBlocks.SIGN_CUSTOM_LANE_DIRECTION_SIMPLE_1.get(),
+                            SignBlocks.SIGN_CUSTOM_LANE_DIRECTION_SIMPLE_2.get(),
+                            SignBlocks.SIGN_CUSTOM_LANE_DIRECTION_SIMPLE_3.get(),
+                            SignBlocks.SIGN_CUSTOM_LANE_DIRECTION_SIMPLE_4.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_SIMPLE.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_SIMPLE_2.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_RAMP.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_FLUORESCENCE.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_FLUORESCENCE_2.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_WARNING.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_TRUCK_RIGHT.get(),
+                            SignBlocks.SIGN_CUSTOM_ZONES_BOARD_LARGE_TRUCK_RIGHT.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_1.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_2.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_3.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_4.get(),
                             SignBlocks.SIGN_CUSTOM_WARNING_SIMPLE_FLUORESCENCE.get(),
-                            SignBlocks.WALL_TEXT_DISPLAY.get()));
+                            SignBlocks.WALL_TEXT_DISPLAY.get())));
+
+    private static Block[] withImageSigns(Block... base) {
+        List<Block> blocks = new ArrayList<>(Arrays.asList(base));
+        for (RegistrySupplier<Block> entry : SignBlocks.entries()) {
+            Block block = entry.get();
+            if (block instanceof SignImageBlock) {
+                blocks.add(block);
+            }
+        }
+        return blocks.toArray(new Block[0]);
+    }
 
     public static void init() {
         BES.register();

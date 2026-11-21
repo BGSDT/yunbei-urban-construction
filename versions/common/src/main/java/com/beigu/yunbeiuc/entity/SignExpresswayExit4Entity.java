@@ -38,7 +38,7 @@ public class SignExpresswayExit4Entity extends CustomSignBlockEntity {
             lines.add(SignTextLinesHelper.right("2", 5f, -11f, 0.041f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.left("km", 4.5f, -11.5f, 0.031f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", -8f, -11f, 0.3592f, 180f));
-            lines.add(SignTextLinesHelper.centered("32", -7.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
+            lines.add(SignTextLinesHelper.centered("32", -7.5f, 19.5f, 0.03f, 0x2D9B47, "b"));
         } else {
             lines.add(SignTextLinesHelper.centered("前进路", 0f, 9.75f, 0.045f, 0x2D9B47, "a"));
             lines.add(SignTextLinesHelper.centered("广州", -8f, -1f, 0.041f, 0xFFFFFF, "a"));
@@ -46,7 +46,7 @@ public class SignExpresswayExit4Entity extends CustomSignBlockEntity {
             lines.add(SignTextLinesHelper.right("2", -7f, -11f, 0.041f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.left("km", -7.5f, -11.5f, 0.031f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.logo("yunbeiuc:textures/block/sign/sign_expressway_right_side_median_strip.png", 8f, -11f, 0.3592f, 90f));
-            lines.add(SignTextLinesHelper.centered("32", 13.5f, 18.75f, 0.03f, 0x2D9B47, "b"));
+            lines.add(SignTextLinesHelper.centered("32", 13.5f, 19.5f, 0.03f, 0x2D9B47, "b"));
         }
         setTextLines(lines);
     }

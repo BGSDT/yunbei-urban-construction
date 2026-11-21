@@ -1285,5 +1285,18 @@
   "yunbeiuc.gui.ack.decl.yunbeiuc.license": "开源许可证：LGPL V3（GNU 宽通用公共许可证 v3.0）\n完整协议文本详见仓库 LICENSE 文件",
   "yunbeiuc.gui.ack.decl.yunbeiuc.mcmod": "云北城建 MC 百科介绍页\nmcmod.cn/class/26158",
   "yunbeiuc.gui.ack.decl.yunbeiuc.github": "云北城建开源仓库\nGitHub: BGSDT/yunbei-urban-construction",
-  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "本模组在豹猫指示牌模组基础上进行了功能扩展与适配，代码与资源使用已遵循原作者许可。"
+  "yunbeiuc.gui.ack.decl.yunbeiuc.note": "本模组在豹猫指示牌模组基础上进行了功能扩展与适配，代码与资源使用已遵循原作者许可。",
+  "block.yunbeiuc.sign_custom_no_entry_simple": "禁止驶入底板",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_1": "车道行驶方向底板1",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_2": "车道行驶方向底板2",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_3": "车道行驶方向底板3",
+  "block.yunbeiuc.sign_custom_lane_direction_simple_4": "车道行驶方向底板4",
+  "block.yunbeiuc.sign_custom_zones_board_simple": "区域标志底板1",
+  "block.yunbeiuc.sign_custom_zones_board_simple_2": "区域标志底板2",
+  "block.yunbeiuc.sign_custom_zones_board_ramp": "匝道底板",
+  "block.yunbeiuc.sign_custom_zones_board_fluorescence": "荧光区域底板1",
+  "block.yunbeiuc.sign_custom_zones_board_fluorescence_2": "荧光区域底板2",
+  "block.yunbeiuc.sign_custom_zones_board_warning": "警告区域底板",
+  "block.yunbeiuc.sign_custom_zones_board_truck_right": "货车靠右底板",
+  "block.yunbeiuc.sign_custom_zones_board_large_truck_right": "大型货车靠右底板"
 }
