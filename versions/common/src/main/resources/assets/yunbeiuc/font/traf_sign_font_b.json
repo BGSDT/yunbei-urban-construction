@@ -11,7 +11,7 @@
         {
             "type": "ttf",
             "file": "yunbeiuc:misans_semibold.ttf",
-            "size": 10,
+            "size": 9,
             "oversample": 16.0,
             "shift": [0, 1.15]
         }

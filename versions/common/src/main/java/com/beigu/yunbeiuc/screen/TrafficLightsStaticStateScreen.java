@@ -236,7 +236,7 @@ public class TrafficLightsStaticStateScreen extends Screen {
                 Text.literal("§e设置链接组时间序列后数据将被清除"),
                 panelX + RIGHT_PANEL_WIDTH / 2,
                 panelY + RIGHT_PANEL_HEIGHT - 12,
-                0xFFFF00
+                0xFEB300
         );
 
         super.render(context, mouseX, mouseY, delta);
@@ -245,8 +245,8 @@ public class TrafficLightsStaticStateScreen extends Screen {
     private int colorToRgb(TrafficLightsBlock.LightState state) {
         return switch (state) {
             case RED -> 0xFF0000;
-            case YELLOW -> 0xFFFF00;
-            case GREEN -> 0x00FF00;
+            case YELLOW -> 0xFEB300;
+            case GREEN -> 0x2FD899;
             case GRAY -> 0x888888;
         };
     }

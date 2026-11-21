@@ -208,7 +208,7 @@ public class TrafficLightsSimpleStaticStateScreen extends Screen {
                 Text.literal("§e设置链接组时间序列后数据将被清除"),
                 panelX + PANEL_WIDTH / 2,
                 panelY + PANEL_HEIGHT - 12,
-                0xFFFF00
+                0xFEB300
         );
 
         super.render(context, mouseX, mouseY, delta);

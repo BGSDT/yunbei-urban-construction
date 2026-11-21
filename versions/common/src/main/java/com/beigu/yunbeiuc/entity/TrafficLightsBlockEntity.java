@@ -197,12 +197,18 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         if (phaseIndices.contains(currentActivePhase)) {
             if (isPavementLight) {
-                if (currentTick < yellowStartTick) {
+                int walkFlashStartTick = Math.max(0, totalTicks - FLASH_DURATION - 2 * YELLOW_DURATION);
+                int walkYellowStartTick = Math.max(walkFlashStartTick, totalTicks - 2 * YELLOW_DURATION);
+                if (currentTick < walkFlashStartTick) {
                     lightState = TrafficLightsBlock.LightState.GREEN;
-                } else {
-                    int flashTick = currentTick - yellowStartTick;
+                } else if (currentTick < walkYellowStartTick) {
+                    int flashTick = currentTick - walkFlashStartTick;
                     int flashPhase = flashTick / FLASH_INTERVAL;
                     lightState = (flashPhase % 2 == 0) ? TrafficLightsBlock.LightState.GRAY : TrafficLightsBlock.LightState.GREEN;
+                } else if (currentTick < yellowStartTick) {
+                    lightState = TrafficLightsBlock.LightState.YELLOW;
+                } else {
+                    lightState = TrafficLightsBlock.LightState.RED;
                 }
             } else {
                 if (currentTick < flashStartTick) {

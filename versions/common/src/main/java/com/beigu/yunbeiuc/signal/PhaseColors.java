@@ -4,8 +4,8 @@ package com.beigu.yunbeiuc.signal;
 
 public final class PhaseColors {
 
-    public static final int RELEASED = 0xFF3CDE3C;
-    public static final int WARNING = 0xFFFFCC22;
+    public static final int RELEASED = 0xFF2FD899;
+    public static final int WARNING = 0xFFFEB300;
     public static final int HELD = 0xFFF03535;
     public static final int UNKNOWN = 0xFFE0E0E0;
 
