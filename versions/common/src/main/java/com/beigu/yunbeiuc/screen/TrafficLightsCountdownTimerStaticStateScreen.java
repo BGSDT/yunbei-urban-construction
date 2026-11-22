@@ -187,14 +187,9 @@ public class TrafficLightsCountdownTimerStaticStateScreen extends Screen {
 
     private void saveAndClose() {
         if (this.client != null && this.client.level != null) {
-            int seconds = 10;
-            try {
-                seconds = Integer.parseInt(secondsField.getText());
-                if (seconds < 1) seconds = 1;
-                if (seconds > 999) seconds = 999;
-            } catch (NumberFormatException e) {
-                seconds = 10;
-            }
+            int seconds = TrafficLightsBlockEntity.parseCountdownInput(secondsField.getText(), 10);
+            if (seconds < 1) seconds = 1;
+            if (seconds > 999) seconds = 999;
 
             TrafficLightsBlockEntity blockEntity = (TrafficLightsBlockEntity) this.client.level.getBlockEntity(pos);
             TrafficLightsBlockEntity.DirectionType currentDirection = blockEntity != null

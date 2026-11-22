@@ -10,6 +10,7 @@ import com.beigu.yunbeiuc.block.MunicipalBlocks;
 import com.beigu.yunbeiuc.block.custom.traffic.TrafficLightsBlock;
 import com.beigu.yunbeiuc.entity.TrafficLightsBlockEntity;
 import com.beigu.yunbeiuc.network.ModMessages;
+import com.beigu.yunbeiuc.network.TrafficLightsCountdownUpdatePacket;
 import com.beigu.yunbeiuc.network.TrafficLightsUpdatePacket;
 import com.beigu.yunbeiuc.network.TrafficLightsMountTypeUpdatePacket;
 import dev.architectury.networking.NetworkManager;
@@ -53,6 +54,15 @@ public class TrafficLightsScreen extends Screen {
     private int displayMode;
     private int threshold;
 
+    private ButtonWidget countdownDisplayButton;
+    private ButtonWidget countdownNumberModeButton;
+    private TextFieldWidget countdownRedField;
+    private TextFieldWidget countdownGreenField;
+    private boolean countdownFullDisplay;
+    private int countdownNumberMode;
+    private int countdownRedFrom = 15;
+    private int countdownGreenFrom = 15;
+
     private ButtonWidget showSecondsButton;
     private boolean showSeconds;
 
@@ -65,6 +75,7 @@ public class TrafficLightsScreen extends Screen {
 
     private static final int RIGHT_PANEL_WIDTH = 200;
     private static final int RIGHT_PANEL_HEIGHT = 340;
+    private static final int DYNAMIC_PANEL_HEIGHT = 370;
     private static final int MAX_PHASE_SLIDERS = 4;
     private static final int PHASE_SLIDER_START_Y = 68;
     private static final int PHASE_SLIDER_ROW_HEIGHT = 28;
@@ -99,6 +110,10 @@ public class TrafficLightsScreen extends Screen {
 
         this.displayMode = blockEntity.getCountdownDisplayMode();
         this.threshold = blockEntity.getCountdownThreshold();
+        this.countdownFullDisplay = blockEntity.isCountdownFullDisplay();
+        this.countdownNumberMode = blockEntity.getCountdownNumberMode();
+        this.countdownRedFrom = blockEntity.getHalfDisplayRedFrom();
+        this.countdownGreenFrom = blockEntity.getHalfDisplayGreenFrom();
 
         this.showSeconds = blockEntity.isShowSeconds();
 
@@ -153,7 +168,7 @@ public class TrafficLightsScreen extends Screen {
             int rightAreaX = this.width / 3;
             int rightAreaWidth = this.width * 2 / 3;
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
+            panelY = (this.height - (isCountdownTimer ? RIGHT_PANEL_HEIGHT : DYNAMIC_PANEL_HEIGHT)) / 2;
         } else {
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
             panelY = (this.height - (isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT)) / 2;
@@ -167,25 +182,46 @@ public class TrafficLightsScreen extends Screen {
         }
 
         if (isCountdownTimer) {
-            displayModeButton = this.addDrawableChild(
+            int rowY = panelY + PREVIEW_Y_OFFSET;
+
+            countdownDisplayButton = this.addDrawableChild(
                     ButtonWidget.builderCompat(
-                            Text.literal(displayMode == 0 ? "全显" : "半显"),
+                            Text.literal(countdownFullDisplay ? "全显" : "半显"),
                             button -> {
-                                displayMode = (displayMode == 0) ? 1 : 0;
-                                button.setMessage(Text.literal(displayMode == 0 ? "全显" : "半显"));
-                                if (thresholdField != null) {
-                                    thresholdField.setEditable(displayMode != 0);
-                                }
+                                countdownFullDisplay = !countdownFullDisplay;
+                                button.setMessage(Text.literal(countdownFullDisplay ? "全显" : "半显"));
+                                applyCountdownLayoutVisibility();
+                                sendCountdownCondition();
                             })
-                            .dimensions(panelX + 20, panelY + PREVIEW_Y_OFFSET, 80, 20)
+                            .dimensions(panelX + 110, rowY, 80, 20)
                             .build()
             );
 
-            thresholdField = new TextFieldWidget(this.textRenderer, panelX + 110, panelY + PREVIEW_Y_OFFSET, 70, 20, Text.literal(""));
-            thresholdField.setMaxLength(3);
-            thresholdField.setText(String.valueOf(threshold));
-            thresholdField.setEditable(displayMode != 0);
-            this.addDrawableChild(thresholdField);
+            countdownNumberModeButton = this.addDrawableChild(
+                    ButtonWidget.builderCompat(
+                            Text.literal(countdownNumberModeName(countdownNumberMode)),
+                            button -> {
+                                countdownNumberMode = (countdownNumberMode + 1) % 3;
+                                button.setMessage(Text.literal(countdownNumberModeName(countdownNumberMode)));
+                                sendCountdownCondition();
+                            })
+                            .dimensions(panelX + 110, rowY + 28, 80, 20)
+                            .build()
+            );
+
+            countdownRedField = new TextFieldWidget(this.textRenderer, panelX + 44, rowY + 28, 55, 20, Text.literal("红灯起始"));
+            countdownRedField.setMaxLength(3);
+            countdownRedField.setText(String.valueOf(countdownRedFrom));
+            countdownRedField.setChangedListener(text -> sendCountdownCondition());
+            this.addDrawableChild(countdownRedField);
+
+            countdownGreenField = new TextFieldWidget(this.textRenderer, panelX + 128, rowY + 28, 55, 20, Text.literal("绿灯起始"));
+            countdownGreenField.setMaxLength(3);
+            countdownGreenField.setText(String.valueOf(countdownGreenFrom));
+            countdownGreenField.setChangedListener(text -> sendCountdownCondition());
+            this.addDrawableChild(countdownGreenField);
+
+            applyCountdownLayoutVisibility();
         }
 
         if (isPavement) {
@@ -248,6 +284,14 @@ public class TrafficLightsScreen extends Screen {
                             Text.literal(currentMountType.getDisplayName()),
                             button -> toggleMountType())
                             .dimensions(colLeft, panelY + buttonsYOffset + 50, buttonW * 2 + buttonGap, 20)
+                            .build()
+            );
+        }
+
+        if (!isPavement && !isCountdownTimer) {
+            this.addDrawableChild(
+                    ButtonWidget.builderCompat(Text.literal("附加条件"), button -> openConditionScreen())
+                            .dimensions(colLeft, panelY + buttonsYOffset + 75, buttonW * 2 + buttonGap, 20)
                             .build()
             );
         }
@@ -338,6 +382,58 @@ public class TrafficLightsScreen extends Screen {
         }
     }
 
+    private static String countdownNumberModeName(int mode) {
+        return switch (mode) {
+            case 2 -> "十六进制";
+            case 1 -> "百起步十";
+            default -> "99";
+        };
+    }
+
+    private void applyCountdownLayoutVisibility() {
+        if (countdownNumberModeButton != null) {
+            countdownNumberModeButton.visible = countdownFullDisplay;
+            countdownNumberModeButton.active = countdownFullDisplay;
+        }
+        if (countdownRedField != null) {
+            countdownRedField.visible = !countdownFullDisplay;
+            countdownRedField.active = !countdownFullDisplay;
+        }
+        if (countdownGreenField != null) {
+            countdownGreenField.visible = !countdownFullDisplay;
+            countdownGreenField.active = !countdownFullDisplay;
+        }
+    }
+
+    private int parseCountdownSeconds(TextFieldWidget field, int fallback) {
+        if (field == null) {
+            return fallback;
+        }
+        String text = field.getText().trim();
+        if (text.isEmpty()) {
+            return fallback;
+        }
+        try {
+            return Math.max(0, Math.min(300, Integer.parseInt(text)));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    private void sendCountdownCondition() {
+        if (!isCountdownTimer) {
+            return;
+        }
+        countdownRedFrom = parseCountdownSeconds(countdownRedField, countdownRedFrom);
+        countdownGreenFrom = parseCountdownSeconds(countdownGreenField, countdownGreenFrom);
+        TrafficLightsCountdownUpdatePacket packet = new TrafficLightsCountdownUpdatePacket(
+                pos, countdownFullDisplay, countdownRedFrom, countdownGreenFrom,
+                countdownNumberMode, blockEntity != null && blockEntity.isHidePatternOnGreen());
+        FriendlyByteBuf buf = NetworkCompat.newBuffer();
+        packet.write(buf);
+        NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_COUNTDOWN, buf);
+    }
+
     private void toggleMountType() {
         if (blockEntity == null || !blockEntity.getBlockState().hasProperty(TrafficLightsBlock.TYPE)) return;
 
@@ -382,6 +478,10 @@ public class TrafficLightsScreen extends Screen {
         ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternCategorySelectScreen(pos));
     }
 
+    private void openConditionScreen() {
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsConditionScreen(pos));
+    }
+
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
@@ -393,7 +493,7 @@ public class TrafficLightsScreen extends Screen {
             int rightAreaX = this.width / 3;
             int rightAreaWidth = this.width * 2 / 3;
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - RIGHT_PANEL_HEIGHT) / 2;
+            panelY = (this.height - DYNAMIC_PANEL_HEIGHT) / 2;
 
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
@@ -426,7 +526,8 @@ public class TrafficLightsScreen extends Screen {
             );
         }
 
-        int panelHeight = isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT;
+        int panelHeight = isPavement ? getPanelHeight()
+                : (isCountdownTimer ? RIGHT_PANEL_HEIGHT : DYNAMIC_PANEL_HEIGHT);
         context.fill(panelX, panelY, panelX + RIGHT_PANEL_WIDTH, panelY + panelHeight, 0xAA333333);
         context.drawBorder(panelX, panelY, RIGHT_PANEL_WIDTH, panelHeight, 0xFFCCCCCC);
 
@@ -454,18 +555,34 @@ public class TrafficLightsScreen extends Screen {
         );
 
         if (isCountdownTimer) {
+            int rowY = panelY + PREVIEW_Y_OFFSET;
             context.drawTextWithShadow(
                     this.textRenderer,
-                    Text.literal("显示模式:"),
-                    panelX + 20, panelY + PREVIEW_Y_OFFSET - 15,
+                    Text.literal("读秒显示:"),
+                    panelX + 20, rowY + 6,
                     0xFFAAAAAA
             );
-            context.drawTextWithShadow(
-                    this.textRenderer,
-                    Text.literal("阈值(秒):"),
-                    panelX + 110, panelY + PREVIEW_Y_OFFSET - 15,
-                    0xFFAAAAAA
-            );
+            if (countdownFullDisplay) {
+                context.drawTextWithShadow(
+                        this.textRenderer,
+                        Text.literal("数字模式:"),
+                        panelX + 20, rowY + 34,
+                        0xFFAAAAAA
+                );
+            } else {
+                context.drawTextWithShadow(
+                        this.textRenderer,
+                        Text.literal("红灯"),
+                        panelX + 22, rowY + 34,
+                        0xFFAAAAAA
+                );
+                context.drawTextWithShadow(
+                        this.textRenderer,
+                        Text.literal("绿灯"),
+                        panelX + 106, rowY + 34,
+                        0xFFAAAAAA
+                );
+            }
         }
 
         if (!isPavement && !isCountdownTimer && selectedOption != null) {
@@ -526,14 +643,8 @@ public class TrafficLightsScreen extends Screen {
             int finalDisplayMode = displayMode;
             int finalThreshold = threshold;
 
-            if (isCountdownTimer && thresholdField != null) {
-                try {
-                    finalThreshold = Integer.parseInt(thresholdField.getText());
-                    if (finalThreshold < 1) finalThreshold = 1;
-                    if (finalThreshold > 300) finalThreshold = 300;
-                } catch (NumberFormatException e) {
-                    finalThreshold = 15;
-                }
+            if (isCountdownTimer) {
+                sendCountdownCondition();
             }
 
             TrafficLightsUpdatePacket packet =

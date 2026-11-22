@@ -133,7 +133,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
             color = 0xFF0000;
         } else if (lightState == TrafficLightsBlock.LightState.GREEN) {
             text = "行人可以通行";
-            color = 0x39FF00;
+            color = 0x2FD899;
         } else {
             return;
         }
@@ -190,7 +190,7 @@ public class TrafficLightsPavementIntegrationBlockEntityRenderer extends BlockEn
             remaining = entity.getFixedSeconds();
         }
 
-        int color = (lightState == TrafficLightsBlock.LightState.RED) ? 0xFF0000 : 0x39FF00;
+        int color = (lightState == TrafficLightsBlock.LightState.RED) ? 0xFF0000 : 0x2FD899;
 
         float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
                 ? 27f / 16f : 35f / 16f;

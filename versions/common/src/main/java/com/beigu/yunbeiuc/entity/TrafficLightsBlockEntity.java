@@ -37,6 +37,10 @@ import java.util.*;
 public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private static final int MAX_PHASE_INDICES = 4;
 
+    // 已加载红绿灯的弱引用索引，用于「应用到全部」。
+    private static final Set<TrafficLightsBlockEntity> LOADED_LIGHTS =
+            Collections.newSetFromMap(new WeakHashMap<>());
+
     private List<Integer> phaseIndices = new ArrayList<>();
     private String groupId = null;
     private List<BlockPos> groupPositions = new ArrayList<>();
@@ -44,6 +48,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private List<RailPhaseBinding> railBindings = new ArrayList<>();
 
     private int[] phaseTimes = null;
+    private int[] phaseDelays = null;
     private int phaseCount = 0;
 
     private int currentTick = 0;
@@ -60,8 +65,18 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private int countdownDisplayMode = 0;
     private int countdownThreshold = 15;
 
+    private boolean countdownFullDisplay = false;
+    private int halfDisplayRedFrom = 15;
+    private int halfDisplayGreenFrom = 15;
+    private int countdownNumberMode = 0;
+    private boolean hidePatternOnGreen = false;
+
     private boolean showSeconds = false;
     private int fixedSeconds = 10;
+
+    private boolean pulseCountdown = false;
+    private long pulseStartGameTime = Long.MIN_VALUE;
+    private int lastCountdownDisplay = -1;
 
     public TrafficLightsBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.TRAFFIC_LIGHTS_BLOCK_ENTITY.get(), pos, state);
@@ -80,6 +95,8 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         if (level == null || level .isClientSide()) {
             return;
         }
+
+        LOADED_LIGHTS.add(this);
 
         publishRailSignals();
 
@@ -140,11 +157,22 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             phaseCount = phaseTimes.length;
         } else {
             phaseTimes = null;
+            phaseDelays = null;
             phaseCount = 0;
             phaseIndices.clear();
             currentActivePhase = 0;
             cycleActive = false;
             return;
+        }
+        if (phaseDelays == null || phaseDelays.length != phaseCount) {
+            int[] normalizedDelays = new int[phaseCount];
+            if (phaseDelays != null) {
+                System.arraycopy(phaseDelays, 0, normalizedDelays, 0, Math.min(phaseDelays.length, phaseCount));
+            }
+            phaseDelays = normalizedDelays;
+        }
+        for (int i = 0; i < phaseCount; i++) {
+            phaseDelays[i] = Math.max(0, Math.min(phaseDelays[i], phaseTimes[i]));
         }
         if (currentActivePhase < 0 || currentActivePhase >= phaseCount) {
             currentActivePhase = 0;
@@ -192,26 +220,31 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         TrafficLightsBlock.LightState lightState;
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
-        int yellowStartTick = totalTicks - YELLOW_DURATION;
+        int delayTicks = currentPhaseDelayTicks();
+        int phaseEndTick = totalTicks - delayTicks;
+        int yellowStartTick = phaseEndTick - YELLOW_DURATION;
         int flashStartTick = yellowStartTick - FLASH_DURATION;
 
         if (phaseIndices.contains(currentActivePhase)) {
             if (isPavementLight) {
-                int walkFlashStartTick = Math.max(0, totalTicks - FLASH_DURATION - 2 * YELLOW_DURATION);
-                int walkYellowStartTick = Math.max(walkFlashStartTick, totalTicks - 2 * YELLOW_DURATION);
+                int walkFlashStartTick = Math.max(0, phaseEndTick - FLASH_DURATION - 2 * YELLOW_DURATION);
+                int walkYellowStartTick = Math.max(walkFlashStartTick, phaseEndTick - 2 * YELLOW_DURATION);
+                int walkRedStartTick = Math.max(walkYellowStartTick, yellowStartTick);
                 if (currentTick < walkFlashStartTick) {
                     lightState = TrafficLightsBlock.LightState.GREEN;
                 } else if (currentTick < walkYellowStartTick) {
                     int flashTick = currentTick - walkFlashStartTick;
                     int flashPhase = flashTick / FLASH_INTERVAL;
                     lightState = (flashPhase % 2 == 0) ? TrafficLightsBlock.LightState.GRAY : TrafficLightsBlock.LightState.GREEN;
-                } else if (currentTick < yellowStartTick) {
+                } else if (currentTick < walkRedStartTick) {
                     lightState = TrafficLightsBlock.LightState.YELLOW;
                 } else {
                     lightState = TrafficLightsBlock.LightState.RED;
                 }
             } else {
-                if (currentTick < flashStartTick) {
+                if (currentTick >= phaseEndTick) {
+                    lightState = TrafficLightsBlock.LightState.RED;
+                } else if (currentTick < flashStartTick) {
                     lightState = TrafficLightsBlock.LightState.GREEN;
                 } else if (currentTick < yellowStartTick) {
                     int flashTick = currentTick - flashStartTick;
@@ -230,6 +263,14 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         }
     }
 
+    private int currentPhaseDelayTicks() {
+        if (phaseDelays == null || currentActivePhase < 0 || currentActivePhase >= phaseDelays.length) {
+            return 0;
+        }
+        int delay = Math.max(0, Math.min(phaseDelays[currentActivePhase], phaseTimes[currentActivePhase]));
+        return delay * 20;
+    }
+
     private void syncGroupClock() {
         if (groupId == null || groupPositions.isEmpty() || level == null || level .isClientSide()) return;
 
@@ -239,6 +280,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TrafficLightsBlockEntity tl) {
                 tl.phaseTimes = this.phaseTimes;
+                tl.phaseDelays = this.phaseDelays;
                 tl.phaseCount = this.phaseCount;
                 tl.cycleActive = this.cycleActive;
                 tl.cycleStartGameTime = this.cycleStartGameTime;
@@ -426,20 +468,21 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
 
         int totalTicks = phaseTimes[currentActivePhase] * 20;
-        int yellowStartTick = totalTicks - YELLOW_DURATION;
+        int phaseEndTick = totalTicks - currentPhaseDelayTicks();
 
-        if (currentTick >= yellowStartTick && !isPavementLight) {
+        if (isPavementLight) {
+            int walkGreenEndTick = Math.max(0, phaseEndTick - 2 * YELLOW_DURATION);
+            if (currentTick >= walkGreenEndTick) {
+                return -1;
+            }
+            return (walkGreenEndTick - currentTick + 19) / 20;
+        }
+
+        int yellowStartTick = phaseEndTick - YELLOW_DURATION;
+        if (currentTick >= yellowStartTick) {
             return -1;
         }
-
-        long remainingTicks = totalTicks - currentTick;
-
-        if (!isPavementLight) {
-            remainingTicks -= YELLOW_DURATION;
-        }
-        if (remainingTicks < 0) remainingTicks = 0;
-
-        return (int) ((remainingTicks + 19) / 20);
+        return (yellowStartTick - currentTick + 19) / 20;
     }
 
     public int getYellowRemainingSeconds() {
@@ -450,12 +493,29 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         if (!phaseIndices.contains(currentActivePhase)) return -1;
 
-        int totalTicks = phaseTimes[currentActivePhase] * 20;
-        int yellowStartTick = totalTicks - YELLOW_DURATION;
+        Block currentBlock = getBlockState().getBlock();
+        boolean isPavementLight = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
 
-        if (currentTick >= yellowStartTick) {
-            int remainingTicks = totalTicks - currentTick;
-            return (remainingTicks + 19) / 20;
+        int totalTicks = phaseTimes[currentActivePhase] * 20;
+        int phaseEndTick = totalTicks - currentPhaseDelayTicks();
+
+        if (isPavementLight) {
+            int walkYellowStartTick = Math.max(0, phaseEndTick - 2 * YELLOW_DURATION);
+            int walkRedStartTick = Math.max(walkYellowStartTick, phaseEndTick - YELLOW_DURATION);
+            if (currentTick >= walkYellowStartTick && currentTick < walkRedStartTick) {
+                return (walkRedStartTick - currentTick + 19) / 20;
+            }
+            return -1;
+        }
+
+        int yellowStartTick = phaseEndTick - YELLOW_DURATION;
+
+        if (currentTick >= yellowStartTick && currentTick < phaseEndTick) {
+            return (phaseEndTick - currentTick + 19) / 20;
         }
         return -1;
     }
@@ -466,12 +526,25 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         normalizePhaseData();
         refreshPhaseProgress();
 
-        if (phaseIndices.contains(currentActivePhase)) return -1;
-
         if (phaseIndices.isEmpty()) {
             long fallbackTicks = (long) phaseTimes[currentActivePhase] * 20L - currentTick;
             if (fallbackTicks < 0L) fallbackTicks = 0L;
             return (int) ((fallbackTicks + 19L) / 20L);
+        }
+
+        int totalTicks = phaseTimes[currentActivePhase] * 20;
+        int phaseEndTick = totalTicks - currentPhaseDelayTicks();
+        Block currentBlock = getBlockState().getBlock();
+        boolean isPavementLight = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
+        int redStartTick = isPavementLight
+                ? Math.max(0, phaseEndTick - 2 * YELLOW_DURATION)
+                : phaseEndTick;
+        if (phaseIndices.contains(currentActivePhase) && currentTick < redStartTick) {
+            return -1;
         }
 
         int targetPhase = -1;
@@ -484,7 +557,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         }
         if (targetPhase < 0) return -1;
 
-        long remainingTicks = (long) phaseTimes[currentActivePhase] * 20L - currentTick;
+        long remainingTicks = (long) totalTicks - currentTick;
         for (int step = 1; step < phaseCount; step++) {
             int idx = (currentActivePhase + step) % phaseCount;
             if (idx == targetPhase) break;
@@ -520,9 +593,15 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 activeRemaining = redSec;
             }
             case YELLOW -> {
-                yellowSec = getYellowRemainingSeconds();
-                activeColor = "黄灯";
-                activeRemaining = yellowSec;
+                if (isPavementSignal()) {
+                    redSec = getRedRemainingSeconds();
+                    activeColor = "红灯";
+                    activeRemaining = redSec;
+                } else {
+                    yellowSec = getYellowRemainingSeconds();
+                    activeColor = "黄灯";
+                    activeRemaining = yellowSec;
+                }
             }
             default -> {
                 greenSec = getGreenRemainingSeconds();
@@ -658,11 +737,20 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     public void setTimings(int phaseCount, int[] timings) {
+        setTimings(phaseCount, timings, null);
+    }
+
+    public void setTimings(int phaseCount, int[] timings, int[] delays) {
         this.phaseTimes = timings;
+        this.phaseDelays = delays;
         this.phaseCount = timings != null ? timings.length : 0;
         this.phaseIndices.clear();
         startCycle();
         markGroupStateDirty();
+    }
+
+    public int[] getPhaseDelays() {
+        return phaseDelays;
     }
 
     public void setGroup(String groupId, List<BlockPos> positions) {
@@ -670,6 +758,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.groupPositions = new ArrayList<>(positions);
         this.directionType = DirectionType.STRAIGHT_CIRCLE;
         this.phaseTimes = null;
+        this.phaseDelays = null;
         this.phaseCount = 0;
         this.phaseIndices.clear();
         this.railBindings.clear();
@@ -822,6 +911,196 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         markGroupStateDirty();
     }
 
+    public boolean isPulseCountdown() {
+        return pulseCountdown;
+    }
+
+    public void setPulseCountdown(boolean pulseCountdown) {
+        this.pulseCountdown = pulseCountdown;
+        this.pulseStartGameTime = Long.MIN_VALUE;
+        this.lastCountdownDisplay = -1;
+        markGroupStateDirty();
+    }
+
+    public boolean isPavementSignal() {
+        Block block = getBlockState().getBlock();
+        return block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get()
+                || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get()
+                || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()
+                || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
+                || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
+    }
+
+    public void setCountdownCondition(boolean fullDisplay, int redFrom, int greenFrom, int numberMode, boolean hidePatternOnGreen) {
+        this.countdownFullDisplay = fullDisplay;
+        this.halfDisplayRedFrom = Math.max(0, Math.min(300, redFrom));
+        this.halfDisplayGreenFrom = Math.max(0, Math.min(300, greenFrom));
+        this.countdownNumberMode = Math.max(0, Math.min(2, numberMode));
+        this.hidePatternOnGreen = hidePatternOnGreen;
+        this.lastCountdownDisplay = -1;
+        markGroupStateDirty();
+    }
+
+    public boolean isCountdownFullDisplay() {
+        return countdownFullDisplay;
+    }
+
+    public int getHalfDisplayRedFrom() {
+        return halfDisplayRedFrom;
+    }
+
+    public int getHalfDisplayGreenFrom() {
+        return halfDisplayGreenFrom;
+    }
+
+    public int getCountdownNumberMode() {
+        return countdownNumberMode;
+    }
+
+    public boolean isHidePatternOnGreen() {
+        return hidePatternOnGreen;
+    }
+
+    // 把附加条件应用到当前维度所有已加载的红绿灯；对方没有对应参数时跳过。
+    public static void applyConditionsToAll(ServerLevel serverLevel, boolean pulseEnabled, boolean fullDisplay,
+                                            int redFrom, int greenFrom, int numberMode, boolean hidePatternOnGreen) {
+        List<TrafficLightsBlockEntity> snapshot = new ArrayList<>(LOADED_LIGHTS);
+        for (TrafficLightsBlockEntity light : snapshot) {
+            if (light == null || light.isRemoved() || light.level != serverLevel) {
+                continue;
+            }
+            light.applySharedConditions(pulseEnabled, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen);
+        }
+    }
+
+    private void applySharedConditions(boolean pulseEnabled, boolean fullDisplay, int redFrom, int greenFrom,
+                                       int numberMode, boolean hidePatternOnGreen) {
+        Block block = getBlockState().getBlock();
+        boolean pavement = isPavementSignal();
+        boolean countdownTimer = block == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
+        boolean shanghai = block == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
+                || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get();
+        boolean taipei = block == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
+        boolean hasCountdown = pavement || countdownTimer || shanghai || taipei;
+
+        // 绿灯隐藏图案：所有红绿灯都支持。
+        this.hidePatternOnGreen = hidePatternOnGreen;
+
+        // 数字显示模式：所有会显示读秒的灯都支持。
+        if (hasCountdown) {
+            this.countdownNumberMode = Math.max(0, Math.min(2, numberMode));
+        }
+        // 全显 / 半显与红绿起始秒：人行道灯没有这些参数，跳过。
+        if (hasCountdown && !pavement) {
+            this.countdownFullDisplay = fullDisplay;
+            this.halfDisplayRedFrom = Math.max(0, Math.min(300, redFrom));
+            this.halfDisplayGreenFrom = Math.max(0, Math.min(300, greenFrom));
+        }
+        // 脉冲只有上海红绿灯支持，其余类型跳过。
+        if (shanghai) {
+            this.pulseCountdown = pulseEnabled;
+            this.pulseStartGameTime = Long.MIN_VALUE;
+        }
+
+        this.lastCountdownDisplay = -1;
+        markGroupStateDirty();
+    }
+
+    // 把剩余秒数格式化成读秒文本（显示屏固定两位）：
+    // mode 0 = 十位封顶 99；mode 1 = 百起步十（A0=100, A5=105, B0=110 …）；
+    // mode 2 = 十六进制两位、不补前导 0（如 120 -> 78，5 -> 5）。
+    public String formatCountdown(int seconds) {
+        int value = Math.max(0, seconds);
+        if (countdownNumberMode == 2) {
+            return Integer.toHexString(Math.min(value, 255)).toUpperCase();
+        }
+        if (countdownNumberMode == 1) {
+            if (value < 100) {
+                return String.valueOf(Math.min(value, 99));
+            }
+            int letterIndex = Math.min((value - 100) / 10, 25);
+            char letter = (char) ('A' + letterIndex);
+            return "" + letter + (value % 10);
+        }
+        return String.valueOf(Math.min(value, 99));
+    }
+
+    // 解析静态读秒输入：支持纯数字或「字母 + 个位」（A0=100, A5=105, B0=110 …）。
+    public static int parseCountdownInput(String text, int fallback) {
+        if (text == null) {
+            return fallback;
+        }
+        String value = text.trim().toUpperCase();
+        if (value.isEmpty()) {
+            return fallback;
+        }
+        if (value.length() == 2
+                && value.charAt(0) >= 'A' && value.charAt(0) <= 'Z'
+                && Character.isDigit(value.charAt(1))) {
+            int parsed = 100 + (value.charAt(0) - 'A') * 10 + (value.charAt(1) - '0');
+            return Math.max(0, Math.min(999, parsed));
+        }
+        try {
+            return Math.max(0, Math.min(999, Integer.parseInt(value)));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    public boolean shouldHideCountdown(int remaining, boolean isRed) {
+        if (isPavementSignal()) {
+            return !showSeconds;
+        }
+        if (countdownFullDisplay) {
+            return false;
+        }
+        int showFrom = isRed ? halfDisplayRedFrom : halfDisplayGreenFrom;
+        return remaining > showFrom;
+    }
+
+    public boolean isCountdownPulseHidden() {
+        if (!pulseCountdown || level == null || !level.isClientSide()) {
+            return false;
+        }
+        Block block = getBlockState().getBlock();
+        if (block != MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
+                && block != MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()) {
+            return false;
+        }
+        if (!getBlockState().hasProperty(TrafficLightsBlock.LIGHT_STATE)) {
+            return false;
+        }
+        long now = level.getGameTime();
+        TrafficLightsBlock.LightState lightState = getBlockState().getValue(TrafficLightsBlock.LIGHT_STATE);
+        int displayed;
+        if (lightState == TrafficLightsBlock.LightState.GREEN) {
+            displayed = getGreenRemainingSeconds();
+        } else if (lightState == TrafficLightsBlock.LightState.RED) {
+            displayed = getRedRemainingSeconds();
+        } else {
+            lastCountdownDisplay = -1;
+            return false;
+        }
+        if (displayed != lastCountdownDisplay) {
+            if (countdownFullDisplay) {
+                // 全显：读秒首次出现时触发一次脉冲。
+                if (lastCountdownDisplay < 0 && displayed >= 0) {
+                    pulseStartGameTime = now;
+                }
+            } else {
+                // 半显：脉冲跟随半显起始秒数。
+                int trigger = lightState == TrafficLightsBlock.LightState.GREEN
+                        ? halfDisplayGreenFrom : halfDisplayRedFrom;
+                if (displayed == trigger) {
+                    pulseStartGameTime = now;
+                }
+            }
+            lastCountdownDisplay = displayed;
+        }
+        long elapsed = now - pulseStartGameTime;
+        return pulseStartGameTime != Long.MIN_VALUE && elapsed >= 0L && elapsed < 5L;
+    }
+
     @Override
     public void loadCompat(CompoundTag nbt) {
         super.loadCompat(nbt);
@@ -843,11 +1122,26 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         this.countdownThreshold = nbt.contains("countdownThreshold") ? NbtCompat.getInt(nbt, "countdownThreshold") : 15;
         this.showSeconds = NbtCompat.getBoolean(nbt, "showSeconds");
         this.fixedSeconds = nbt.contains("fixedSeconds") ? NbtCompat.getInt(nbt, "fixedSeconds") : 10;
+        this.pulseCountdown = NbtCompat.getBoolean(nbt, "pulseCountdown");
+        this.countdownFullDisplay = NbtCompat.getBoolean(nbt, "countdownFullDisplay");
+        this.halfDisplayRedFrom = nbt.contains("halfDisplayRedFrom") ? NbtCompat.getInt(nbt, "halfDisplayRedFrom") : 15;
+        this.halfDisplayGreenFrom = nbt.contains("halfDisplayGreenFrom") ? NbtCompat.getInt(nbt, "halfDisplayGreenFrom") : 15;
+        this.countdownNumberMode = nbt.contains("countdownNumberMode")
+                ? NbtCompat.getInt(nbt, "countdownNumberMode")
+                : (NbtCompat.getBoolean(nbt, "hexCountdown") ? 2 : 0);
+        this.hidePatternOnGreen = NbtCompat.getBoolean(nbt, "hidePatternOnGreen");
 
         if (nbt.contains("phaseTimes")) {
             this.phaseTimes = NbtCompat.getIntArray(nbt, "phaseTimes");
             if (this.phaseTimes.length == 0) {
                 this.phaseTimes = null;
+            }
+        }
+
+        if (nbt.contains("phaseDelays")) {
+            this.phaseDelays = NbtCompat.getIntArray(nbt, "phaseDelays");
+            if (this.phaseDelays.length == 0) {
+                this.phaseDelays = null;
             }
         }
 
@@ -895,6 +1189,12 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         nbt.putInt("countdownThreshold", this.countdownThreshold);
         nbt.putBoolean("showSeconds", this.showSeconds);
         nbt.putInt("fixedSeconds", this.fixedSeconds);
+        nbt.putBoolean("pulseCountdown", this.pulseCountdown);
+        nbt.putBoolean("countdownFullDisplay", this.countdownFullDisplay);
+        nbt.putInt("halfDisplayRedFrom", this.halfDisplayRedFrom);
+        nbt.putInt("halfDisplayGreenFrom", this.halfDisplayGreenFrom);
+        nbt.putInt("countdownNumberMode", this.countdownNumberMode);
+        nbt.putBoolean("hidePatternOnGreen", this.hidePatternOnGreen);
 
         if (groupId != null) {
             nbt.putString("groupId", groupId);
@@ -904,6 +1204,10 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         if (phaseTimes != null) {
             nbt.putIntArray("phaseTimes", phaseTimes);
+        }
+
+        if (phaseDelays != null) {
+            nbt.putIntArray("phaseDelays", phaseDelays);
         }
 
         nbt.putInt("currentActivePhase", currentActivePhase);

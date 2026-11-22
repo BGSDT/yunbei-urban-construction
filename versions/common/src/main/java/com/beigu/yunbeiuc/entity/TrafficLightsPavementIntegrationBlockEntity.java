@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 public class TrafficLightsPavementIntegrationBlockEntity extends TrafficLightsBlockEntity {
 
     public TrafficLightsPavementIntegrationBlockEntity(BlockPos pos, BlockState state) {
-        super(pos, state);
+        super(ModBlockEntities.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLOCK_ENTITY.get(), pos, state);
         this.setDirectionType(DirectionType.NON_MOTOR_VEHICLES);
     }
 

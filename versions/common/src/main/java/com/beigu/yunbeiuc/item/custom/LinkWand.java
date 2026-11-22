@@ -23,20 +23,21 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 // 链接魔杖：组网 + 轨道链接一次做完 —— 右键红绿灯组网、右键两个轨道节点记轨道、Shift+右键成组。
 
 public class LinkWand extends ItemCompat {
 
-    private static final Map<UUID, Session> SESSIONS = new HashMap<>();
+    private static final Map<UUID, Session> SESSIONS = new ConcurrentHashMap<>();
 
     private static final class Session {
-        final List<BlockPos> lights = new ArrayList<>();
-        final List<BlockPos[]> rails = new ArrayList<>();
+        final List<BlockPos> lights = new CopyOnWriteArrayList<>();
+        final List<BlockPos[]> rails = new CopyOnWriteArrayList<>();
         BlockPos pendingStart;
 
         void clearPending() {

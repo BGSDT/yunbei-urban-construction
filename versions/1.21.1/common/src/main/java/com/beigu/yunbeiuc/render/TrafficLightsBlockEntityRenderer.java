@@ -55,7 +55,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         if (mountType == TrafficLightsBlock.MountType.SIMPLE) {
             if (isPavementBlock(currentBlock)) return -0.33f;
             else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()) return -0.40f;
-            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.38f;
+            else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()) return -0.35f;
             else return -0.33f;
         }
         return -0.53f;
@@ -132,22 +132,27 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         TrafficLightsBlock.MountType mountType = TrafficLightsBlock.resolveMountType(entity.getLevel(), entity.getBlockPos(), entity.getBlockState());
         Block currentBlock = entity.getBlockState().getBlock();
         renderPhaseText(entity, matrices, vertexConsumers, light, currentBlock);
+        boolean pulseHidden = entity.isCountdownPulseHidden();
+        boolean hideOnGreen = entity.isHidePatternOnGreen()
+                && type == TrafficLightsBlock.LightState.GREEN;
         if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get()){
-            renderText(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock);
+            renderText(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock, pulseHidden, hideOnGreen);
             return;
         } else if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get() ||
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
-            renderTimeText(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock);
+            renderTimeText(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock, pulseHidden, hideOnGreen);
         }
-        renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock, mountType);
+        if (!hideOnGreen) {
+            renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock, mountType);
+        }
 
         if (isPavementBlock(currentBlock) && entity.isShowSeconds()) {
-            renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock);
+            renderPavementSeconds(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock, pulseHidden || hideOnGreen);
         }
     }
 
-    private void renderPavementSeconds(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
+    private void renderPavementSeconds(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock, boolean hideNumber) {
         int remaining;
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
@@ -160,7 +165,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
             remaining = entity.getFixedSeconds();
         }
 
-        int color = (lightState == TrafficLightsBlock.LightState.RED) ? 0xFF0000 : 0x39FF00;
+        int color = (lightState == TrafficLightsBlock.LightState.RED) ? 0xFF0000 : 0x2FD899;
 
         float logoY = (lightState == TrafficLightsBlock.LightState.RED || lightState == TrafficLightsBlock.LightState.YELLOW)
                 ? 3.85f / 16f : -3.85f / 16f;
@@ -180,8 +185,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         float scaleValue = 0.07f;
         matrices.scale(scaleValue, -scaleValue, scaleValue);
 
-        String text = String.valueOf(remaining);
-        if (remaining >= 99) text = "99";
+        String text = entity.formatCountdown(remaining);
 
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, "88", 0X2e3134,
@@ -193,6 +197,11 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 1,
                 1.4f
         );
+
+        if (hideNumber) {
+            matrices.popPose();
+            return;
+        }
 
         if (lightState == TrafficLightsBlock.LightState.GRAY){
             matrices.popPose();
@@ -499,9 +508,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.popPose();
     }
 
-    private void renderText(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
+    private void renderText(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock, boolean pulseHidden, boolean hideOnGreen) {
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
+        boolean isPavement = entity.isPavementSignal();
 
         if (entity.isInGroup()) {
             TrafficLightsBlockEntity.LightTimingInfo info = entity.getLightTimingInfo();
@@ -522,9 +532,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
         int color = switch (lightState) {
             case RED -> 0xFF0000;
-            case YELLOW -> 0xFFF000;
-            case GREEN -> 0x39FF00;
-            default -> 0xFFFFFF;
+            case YELLOW -> isPavement ? 0xFF0000 : 0xFEB300;
+            case GREEN -> 0x2FD899;
+            default -> isPavement ? 0x2FD899 : 0xFFFFFF;
         };
 
         matrices.pushPose();
@@ -547,25 +557,20 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 1.4f
         );
 
-        if (lightState == TrafficLightsBlock.LightState.GRAY){
+        if (lightState == TrafficLightsBlock.LightState.GRAY && !isPavement){
             matrices.popPose();
             return;
         }
 
-        if (entity.isInGroup()) {
-            int displayMode = entity.getCountdownDisplayMode();
-            int threshold = entity.getCountdownThreshold();
-            boolean shouldShowDigits = (displayMode == 0) || (displayMode == 1 && remaining <= threshold);
-            if (!shouldShowDigits) {
-                matrices.popPose();
-                return;
-            }
+        if (!isPavement && (pulseHidden || hideOnGreen
+                || entity.shouldHideCountdown(remaining, lightState == TrafficLightsBlock.LightState.RED))) {
+            matrices.popPose();
+            return;
         }
 
         matrices.translate(0f, 0.0f, 0.01f);
 
-        String text = String.valueOf(remaining);
-        if (remaining >= 99) text = "99";
+        String text = entity.formatCountdown(remaining);
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, text, color,
                 0, -6f, 0,
@@ -580,12 +585,13 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         matrices.popPose();
     }
 
-    private void renderTimeText(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock) {
+    private void renderTimeText(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType, Block currentBlock, boolean pulseHidden, boolean hideOnGreen) {
         int remaining;
         boolean showSeconds = entity.isShowSeconds();
         boolean isTaipei = currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get();
+        boolean isPavement = entity.isPavementSignal();
 
-        if (lightState == TrafficLightsBlock.LightState.YELLOW && !isTaipei) {
+        if (lightState == TrafficLightsBlock.LightState.YELLOW && !isTaipei && !isPavement) {
             return;
         }
 
@@ -605,9 +611,9 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
 
         int color = switch (lightState) {
             case RED -> 0xFF0000;
-            case YELLOW -> 0xFFF000;
-            case GREEN -> 0x39FF00;
-            default -> 0xFFFFFF;
+            case YELLOW -> isPavement ? 0xFF0000 : 0xFEB300;
+            case GREEN -> 0x2FD899;
+            default -> isPavement ? 0x2FD899 : 0xFFFFFF;
         };
 
         matrices.pushPose();
@@ -631,15 +637,16 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 1.4f
         );
 
-        if (lightState == TrafficLightsBlock.LightState.GRAY || (entity.isInGroup() && remaining >= 15)){
+        if (!isPavement && (pulseHidden || hideOnGreen
+                || lightState == TrafficLightsBlock.LightState.GRAY
+                || entity.shouldHideCountdown(remaining, lightState == TrafficLightsBlock.LightState.RED))) {
             matrices.popPose();
             return;
         }
 
         matrices.translate(0f, 0.0f, 0.01f);
 
-        String text = String.valueOf(remaining);
-        if (remaining > 99) text = "99";
+        String text = entity.formatCountdown(remaining);
         CustomFontRenderer.renderText(
                 matrices, vertexConsumers, text, color,
                 0, -2.5f, 0,

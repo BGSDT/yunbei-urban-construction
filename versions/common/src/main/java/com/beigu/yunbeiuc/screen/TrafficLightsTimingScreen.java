@@ -35,6 +35,8 @@ public class TrafficLightsTimingScreen extends Screen {
     private int phaseCount = 4;
     private final List<TextFieldWidget> timingFields = new ArrayList<>();
     private final List<String> savedValues = new ArrayList<>();
+    private TextFieldWidget delayField;
+    private String savedDelay = "0";
 
     private ButtonWidget saveButton;
     private ButtonWidget mountTypeButton;
@@ -58,6 +60,21 @@ public class TrafficLightsTimingScreen extends Screen {
         for (int i = 0; i < MAX_PHASE_COUNT; i++) {
             savedValues.add("40");
         }
+        if (!positions.isEmpty()
+                && Minecraft.getInstance().level != null
+                && Minecraft.getInstance().level.getBlockEntity(positions.get(0)) instanceof TrafficLightsBlockEntity be) {
+            int[] times = be.getPhaseTimes();
+            if (times != null && times.length >= MIN_PHASE_COUNT) {
+                phaseCount = Math.min(times.length, MAX_PHASE_COUNT);
+                for (int i = 0; i < phaseCount; i++) {
+                    savedValues.set(i, String.valueOf(times[i]));
+                }
+                int[] delays = be.getPhaseDelays();
+                if (delays != null && delays.length > 0) {
+                    savedDelay = String.valueOf(delays[0]);
+                }
+            }
+        }
     }
 
     @Override
@@ -79,7 +96,15 @@ public class TrafficLightsTimingScreen extends Screen {
     }
 
     private int panelHeight() {
-        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 82;
+        return delayFieldY() + FIELD_HEIGHT + 100;
+    }
+
+    private int delaySectionY() {
+        return FIELDS_START_Y + rows() * FIELD_GAP_Y + 4;
+    }
+
+    private int delayFieldY() {
+        return delaySectionY() + 14;
     }
 
     private void rebuildLayout() {
@@ -87,6 +112,10 @@ public class TrafficLightsTimingScreen extends Screen {
             this.remove(field);
         }
         timingFields.clear();
+        if (delayField != null) {
+            this.remove(delayField);
+            delayField = null;
+        }
         this.clearChildren();
 
         int panelX = panelX();
@@ -119,6 +148,18 @@ public class TrafficLightsTimingScreen extends Screen {
             timingFields.add(field);
         }
 
+        delayField = GUI.createTextField(
+                this.textRenderer,
+                panelX + (PANEL_WIDTH - FIELD_WIDTH) / 2,
+                panelY + delayFieldY(),
+                FIELD_WIDTH, FIELD_HEIGHT,
+                Text.literal("相位延迟")
+        );
+        GUI.setMaxLength(delayField, 3);
+        GUI.setText(delayField, savedDelay);
+        GUI.setChangedListener(delayField, text -> savedDelay = text);
+        this.addDrawableChild(delayField);
+
         int buttonY = panelY + panelHeight() - 35;
         this.saveButton = this.addDrawableChild(
                 GUI.createButton(Text.translatable("text.yunbeiuc.traffic_lights_timing.save"),
@@ -150,6 +191,9 @@ public class TrafficLightsTimingScreen extends Screen {
         for (int i = 0; i < timingFields.size(); i++) {
             savedValues.set(i, GUI.getText(timingFields.get(i)));
         }
+        if (delayField != null) {
+            savedDelay = GUI.getText(delayField);
+        }
         int newCount = phaseCount + delta;
         if (newCount < MIN_PHASE_COUNT || newCount > MAX_PHASE_COUNT) return;
         phaseCount = newCount;
@@ -177,7 +221,33 @@ public class TrafficLightsTimingScreen extends Screen {
             }
         }
 
-        TrafficLightsTimingUpdatePacket packet = new TrafficLightsTimingUpdatePacket(groupId, positions, timings);
+        String delayText = GUI.getText(delayField);
+        int delay;
+        try {
+            delay = Integer.parseInt(delayText.trim());
+        } catch (NumberFormatException e) {
+            errorMessage = Text.literal("§c延迟格式无效！请输入数字。");
+            return;
+        }
+        if (delay < 0) {
+            errorMessage = Text.literal("§c延迟不能为负数！");
+            return;
+        }
+        int maxDelay = Integer.MAX_VALUE;
+        for (int i = 0; i < phaseCount; i++) {
+            maxDelay = Math.min(maxDelay, timings[i] - 6);
+        }
+        if (delay > maxDelay) {
+            errorMessage = Text.literal("§c延迟最多 " + maxDelay + " 秒！");
+            return;
+        }
+
+        int[] delays = new int[phaseCount];
+        for (int i = 0; i < phaseCount; i++) {
+            delays[i] = delay;
+        }
+
+        TrafficLightsTimingUpdatePacket packet = new TrafficLightsTimingUpdatePacket(groupId, positions, timings, delays);
         FriendlyByteBuf buf = NetworkCompat.newBuffer();
         packet.write(buf);
         NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_TIMING, buf);
@@ -239,13 +309,22 @@ public class TrafficLightsTimingScreen extends Screen {
                     x, y, 0xFFAAAAAA, true);
         }
 
+        RENDER.drawCenteredText(
+                context,
+                this.textRenderer,
+                Text.literal("相位延迟（秒）"),
+                panelX + PANEL_WIDTH / 2,
+                panelY + delaySectionY(),
+                0xFFCCCCCC
+        );
+
         if (errorMessage != null) {
             RENDER.drawCenteredText(
                     context,
                     this.textRenderer,
                     errorMessage,
                     panelX + PANEL_WIDTH / 2,
-                    panelY + panelHeight - 50,
+                    panelY + panelHeight - 78,
                     0xFFFF5555
             );
         }

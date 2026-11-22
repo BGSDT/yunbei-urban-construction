@@ -17,6 +17,9 @@ public class  ModMessages {
     public static final Id UPDATE_TRAFFIC_LIGHTS_TIMING = id("update_traffic_lights_timing");
     public static final Id UPDATE_TRAFFIC_LIGHTS_STATIC_STATE = id("update_traffic_lights_static_state");
     public static final Id UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE = id("update_traffic_lights_mount_type");
+    public static final Id UPDATE_TRAFFIC_LIGHTS_PULSE = id("update_traffic_lights_pulse");
+    public static final Id UPDATE_TRAFFIC_LIGHTS_COUNTDOWN = id("update_traffic_lights_countdown");
+    public static final Id APPLY_ALL_TRAFFIC_LIGHTS_CONDITIONS = id("apply_all_traffic_lights_conditions");
     public static final Id APPLY_TRAFFIC_LIGHTS_PATTERN = id("apply_traffic_lights_pattern");
     public static final Id UPDATE_CUSTOM_SIGN = id("update_custom_sign");
     public static final Id UPDATE_CUSTOM_SIGN_FIELD = id("update_custom_sign_field");
@@ -54,6 +57,21 @@ public class  ModMessages {
 
         NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE, (buf, context) -> {
             TrafficLightsMountTypeUpdatePacket packet = new TrafficLightsMountTypeUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
+        });
+
+        NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_PULSE, (buf, context) -> {
+            TrafficLightsPulseUpdatePacket packet = new TrafficLightsPulseUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
+        });
+
+        NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_COUNTDOWN, (buf, context) -> {
+            TrafficLightsCountdownUpdatePacket packet = new TrafficLightsCountdownUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
+        });
+
+        NetworkCompat.registerC2S(APPLY_ALL_TRAFFIC_LIGHTS_CONDITIONS, (buf, context) -> {
+            TrafficLightsApplyAllConditionsPacket packet = new TrafficLightsApplyAllConditionsPacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 

@@ -89,17 +89,17 @@ public class SignGuideIntersectionAdvanceWarning3Entity extends CustomSignBlockE
         } else {
             lines.add(SignTextLinesHelper.centered("期中路", 0f, -9f, 0.03f, 0xFFFFFF, "a"));
             lines.add(SignTextLinesHelper.centered("语文路", 0f, 6f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("97/120", 0f, 3f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("91/120", 0f, 3f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("数学路", 0f, 13f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("93/120", 0f, 10f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("100/120", 0f, 10f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("英语路", -14f, 8f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("121/130", -14f, 4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("111/120", -14f, 4f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("道法路", -14f, 0f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("50/50", -14f, -4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("49/50", -14f, -4f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("历史路", 14f, 8f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("45/50", 14f, 4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("43/50", 14f, 4f, 0.023f, 0xFFFFFF, "b"));
             lines.add(SignTextLinesHelper.centered("物理路", 14f, 0f, 0.03f, 0xFFFFFF, "a"));
-            lines.add(SignTextLinesHelper.centered("I don't know", 14f, -4f, 0.023f, 0xFFFFFF, "b"));
+            lines.add(SignTextLinesHelper.centered("88/100", 14f, -4f, 0.023f, 0xFFFFFF, "b"));
         }
         setTextLines(lines);
     }
