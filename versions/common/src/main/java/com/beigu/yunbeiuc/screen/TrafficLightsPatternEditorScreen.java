@@ -293,7 +293,11 @@ public class TrafficLightsPatternEditorScreen extends Screen {
         preset.setCategory(category);
         TrafficLightsPatternPresetManager.addPreset(preset);
         if (returnPos != null && previousScreen != null) {
-            ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPatternSelectScreen(returnPos, category, previousScreen));
+            // 保存后回到预设列表；预设列表的返回目标继续指向进入它之前的页面，避免重复叠一层列表。
+            Screen backTarget = previousScreen instanceof TrafficLightsPatternSelectScreen list
+                    ? list.getPreviousScreen() : previousScreen;
+            ApiCompat.setScreen(Minecraft.getInstance(),
+                    new TrafficLightsPatternSelectScreen(returnPos, category, backTarget));
             return;
         }
         this.close();

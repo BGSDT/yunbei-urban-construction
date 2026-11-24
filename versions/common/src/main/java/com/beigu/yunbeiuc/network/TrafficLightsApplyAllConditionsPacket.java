@@ -16,16 +16,18 @@ public class TrafficLightsApplyAllConditionsPacket {
     private final int greenFrom;
     private final int numberMode;
     private final boolean hidePatternOnGreen;
+    private final boolean yellowFlashAlways;
 
     public TrafficLightsApplyAllConditionsPacket(boolean pulseEnabled, boolean fullDisplay,
                                                  int redFrom, int greenFrom, int numberMode,
-                                                 boolean hidePatternOnGreen) {
+                                                 boolean hidePatternOnGreen, boolean yellowFlashAlways) {
         this.pulseEnabled = pulseEnabled;
         this.fullDisplay = fullDisplay;
         this.redFrom = redFrom;
         this.greenFrom = greenFrom;
         this.numberMode = numberMode;
         this.hidePatternOnGreen = hidePatternOnGreen;
+        this.yellowFlashAlways = yellowFlashAlways;
     }
 
     public TrafficLightsApplyAllConditionsPacket(FriendlyByteBuf buf) {
@@ -35,6 +37,7 @@ public class TrafficLightsApplyAllConditionsPacket {
         this.greenFrom = buf.readVarInt();
         this.numberMode = buf.readVarInt();
         this.hidePatternOnGreen = buf.readBoolean();
+        this.yellowFlashAlways = buf.readBoolean();
     }
 
     public void write(FriendlyByteBuf buf) {
@@ -44,13 +47,14 @@ public class TrafficLightsApplyAllConditionsPacket {
         buf.writeVarInt(greenFrom);
         buf.writeVarInt(numberMode);
         buf.writeBoolean(hidePatternOnGreen);
+        buf.writeBoolean(yellowFlashAlways);
     }
 
     public void apply(ServerPlayer player) {
         ServerLevel level = ApiCompat.serverLevel(player);
         if (level == null) return;
         TrafficLightsBlockEntity.applyConditionsToAll(
-                level, pulseEnabled, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen);
+                level, pulseEnabled, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen, yellowFlashAlways);
         ApiCompat.message(player, Text.literal("§a已把附加条件应用到全部红绿灯"), true);
     }
 }

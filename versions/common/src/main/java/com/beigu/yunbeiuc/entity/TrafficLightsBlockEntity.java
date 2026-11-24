@@ -70,6 +70,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     private int halfDisplayGreenFrom = 15;
     private int countdownNumberMode = 0;
     private boolean hidePatternOnGreen = false;
+    private boolean yellowFlashAlways = false;
 
     private boolean showSeconds = false;
     private int fixedSeconds = 10;
@@ -99,6 +100,12 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         LOADED_LIGHTS.add(this);
 
         publishRailSignals();
+
+        // 黄闪常亮：不跟随相位，固定黄灯并闪烁；人行道跳过，继续正常执行。
+        if (yellowFlashAlways && !isPavementSignal()) {
+            forceYellowFlashState();
+            return;
+        }
 
         if (groupId != null && level.getGameTime() % 40L == 0L) {
             verifyGroupIntegrity();
@@ -216,6 +223,12 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_GRAY.get()
                 || currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
+
+        // 黄闪常亮：即使被同组同步调用，也只保持黄灯。
+        if (yellowFlashAlways && !isPavementLight) {
+            forceYellowFlashState();
+            return;
+        }
 
         TrafficLightsBlock.LightState lightState;
 
@@ -931,12 +944,28 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 || block == MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK.get();
     }
 
-    public void setCountdownCondition(boolean fullDisplay, int redFrom, int greenFrom, int numberMode, boolean hidePatternOnGreen) {
+    private void forceYellowFlashState() {
+        BlockState state = getBlockState();
+        if (state.hasProperty(TrafficLightsBlock.LIGHT_STATE)
+                && state.getValue(TrafficLightsBlock.LIGHT_STATE) != TrafficLightsBlock.LightState.YELLOW) {
+            level.setBlock(worldPosition,
+                    state.setValue(TrafficLightsBlock.LIGHT_STATE, TrafficLightsBlock.LightState.YELLOW),
+                    VersionServices.blocks().updateAll());
+        }
+    }
+
+    public boolean isYellowFlashAlways() {
+        return yellowFlashAlways;
+    }
+
+    public void setCountdownCondition(boolean fullDisplay, int redFrom, int greenFrom, int numberMode,
+                                      boolean hidePatternOnGreen, boolean yellowFlashAlways) {
         this.countdownFullDisplay = fullDisplay;
         this.halfDisplayRedFrom = Math.max(0, Math.min(300, redFrom));
         this.halfDisplayGreenFrom = Math.max(0, Math.min(300, greenFrom));
         this.countdownNumberMode = Math.max(0, Math.min(2, numberMode));
         this.hidePatternOnGreen = hidePatternOnGreen;
+        this.yellowFlashAlways = yellowFlashAlways;
         this.lastCountdownDisplay = -1;
         markGroupStateDirty();
     }
@@ -963,18 +992,20 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     // 把附加条件应用到当前维度所有已加载的红绿灯；对方没有对应参数时跳过。
     public static void applyConditionsToAll(ServerLevel serverLevel, boolean pulseEnabled, boolean fullDisplay,
-                                            int redFrom, int greenFrom, int numberMode, boolean hidePatternOnGreen) {
+                                            int redFrom, int greenFrom, int numberMode, boolean hidePatternOnGreen,
+                                            boolean yellowFlashAlways) {
         List<TrafficLightsBlockEntity> snapshot = new ArrayList<>(LOADED_LIGHTS);
         for (TrafficLightsBlockEntity light : snapshot) {
             if (light == null || light.isRemoved() || light.level != serverLevel) {
                 continue;
             }
-            light.applySharedConditions(pulseEnabled, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen);
+            light.applySharedConditions(pulseEnabled, fullDisplay, redFrom, greenFrom, numberMode,
+                    hidePatternOnGreen, yellowFlashAlways);
         }
     }
 
     private void applySharedConditions(boolean pulseEnabled, boolean fullDisplay, int redFrom, int greenFrom,
-                                       int numberMode, boolean hidePatternOnGreen) {
+                                       int numberMode, boolean hidePatternOnGreen, boolean yellowFlashAlways) {
         Block block = getBlockState().getBlock();
         boolean pavement = isPavementSignal();
         boolean countdownTimer = block == MunicipalBlocks.TRAFFIC_LIGHTS_COUNTDOWN_TIMER.get();
@@ -985,6 +1016,11 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
         // 绿灯隐藏图案：所有红绿灯都支持。
         this.hidePatternOnGreen = hidePatternOnGreen;
+
+        // 黄闪常亮：人行道与读秒器没有这个参数，跳过。
+        if (!pavement && !countdownTimer) {
+            this.yellowFlashAlways = yellowFlashAlways;
+        }
 
         // 数字显示模式：所有会显示读秒的灯都支持。
         if (hasCountdown) {
@@ -1050,6 +1086,10 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     public boolean shouldHideCountdown(int remaining, boolean isRed) {
         if (isPavementSignal()) {
             return !showSeconds;
+        }
+        // 黄闪常亮时没有有效读秒，只保留灰色 88。
+        if (yellowFlashAlways) {
+            return true;
         }
         if (countdownFullDisplay) {
             return false;
@@ -1130,6 +1170,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
                 ? NbtCompat.getInt(nbt, "countdownNumberMode")
                 : (NbtCompat.getBoolean(nbt, "hexCountdown") ? 2 : 0);
         this.hidePatternOnGreen = NbtCompat.getBoolean(nbt, "hidePatternOnGreen");
+        this.yellowFlashAlways = NbtCompat.getBoolean(nbt, "yellowFlashAlways");
 
         if (nbt.contains("phaseTimes")) {
             this.phaseTimes = NbtCompat.getIntArray(nbt, "phaseTimes");
@@ -1195,6 +1236,7 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         nbt.putInt("halfDisplayGreenFrom", this.halfDisplayGreenFrom);
         nbt.putInt("countdownNumberMode", this.countdownNumberMode);
         nbt.putBoolean("hidePatternOnGreen", this.hidePatternOnGreen);
+        nbt.putBoolean("yellowFlashAlways", this.yellowFlashAlways);
 
         if (groupId != null) {
             nbt.putString("groupId", groupId);

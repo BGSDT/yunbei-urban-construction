@@ -12,8 +12,14 @@ import com.beigu.yunbeiuc.network.TrafficLightsApplyAllConditionsPacket;
 import com.beigu.yunbeiuc.network.TrafficLightsCountdownUpdatePacket;
 import com.beigu.yunbeiuc.network.TrafficLightsPulseUpdatePacket;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 // 红绿灯附加条件设置界面：一行一个附加条件，左侧文字、右侧开关或输入框。
 
@@ -29,6 +35,7 @@ public class TrafficLightsConditionScreen extends Screen {
     private int greenFrom = 15;
     private int numberMode = 0;
     private boolean hidePatternOnGreen = false;
+    private boolean yellowFlashAlways = false;
 
     private ButtonWidget pulseButton;
     private ButtonWidget displayButton;
@@ -36,14 +43,19 @@ public class TrafficLightsConditionScreen extends Screen {
     private TextFieldWidget redField;
     private TextFieldWidget greenField;
     private ButtonWidget hidePatternButton;
+    private ButtonWidget yellowFlashButton;
 
     private static final int PANEL_WIDTH = 300;
     private static final int PANEL_HEIGHT = 300;
+    private static final int SCROLL_MARGIN = 10;
     private static final int RIGHT_MARGIN = 15;
     private static final int FIELD_WIDTH = 50;
     private static final int FIELD_HEIGHT = 20;
     private static final int BUTTON_WIDTH = 80;
     private static final int BUTTON_GAP = 8;
+
+    private final List<TrackedWidget> tracked = new ArrayList<>();
+    private int scrollOffset = 0;
 
     public TrafficLightsConditionScreen(BlockPos pos) {
         super(Text.literal("附加条件"));
@@ -56,6 +68,7 @@ public class TrafficLightsConditionScreen extends Screen {
             this.greenFrom = be.getHalfDisplayGreenFrom();
             this.numberMode = be.getCountdownNumberMode();
             this.hidePatternOnGreen = be.isHidePatternOnGreen();
+            this.yellowFlashAlways = be.isYellowFlashAlways();
         }
     }
 
@@ -70,45 +83,37 @@ public class TrafficLightsConditionScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+        tracked.clear();
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
-        int panelY = (this.height - PANEL_HEIGHT) / 2;
         int buttonX = panelX + PANEL_WIDTH - RIGHT_MARGIN - BUTTON_WIDTH;
         int fieldX = panelX + PANEL_WIDTH - RIGHT_MARGIN - FIELD_WIDTH;
 
-        pulseButton = this.addDrawableChild(
-                GUI.createButton(
-                        Text.literal(pulseEnabled ? "是" : "不是"),
-                        buttonX, panelY + 60,
-                        BUTTON_WIDTH, 20,
-                        button -> togglePulse())
-        );
+        pulseButton = addTrackedButton(
+                Text.literal(pulseEnabled ? "是" : "不是"),
+                buttonX, 60,
+                button -> togglePulse());
 
-        displayButton = this.addDrawableChild(
-                GUI.createButton(
-                        Text.literal(fullDisplay ? "全显" : "半显"),
-                        buttonX, panelY + 90,
-                        BUTTON_WIDTH, 20,
-                        button -> toggleFullDisplay())
-        );
+        displayButton = addTrackedButton(
+                Text.literal(fullDisplay ? "全显" : "半显"),
+                buttonX, 90,
+                button -> toggleFullDisplay());
 
-        numberModeButton = this.addDrawableChild(
-                GUI.createButton(
-                        Text.literal(numberModeName(numberMode)),
-                        buttonX, panelY + 120,
-                        BUTTON_WIDTH, 20,
-                        button -> cycleNumberMode())
-        );
+        numberModeButton = addTrackedButton(
+                Text.literal(numberModeName(numberMode)),
+                buttonX, 120,
+                button -> cycleNumberMode());
         numberModeButton.visible = fullDisplay;
         numberModeButton.active = fullDisplay;
 
         redField = this.addDrawableChild(
                 GUI.createTextField(
-                        this.textRenderer, fieldX, panelY + 114,
+                        this.textRenderer, fieldX, getPanelY() + 114,
                         FIELD_WIDTH, FIELD_HEIGHT,
                         Text.literal("红灯起始秒数")
                 )
         );
+        tracked.add(TrackedWidget.of(redField, fieldX, 114));
         GUI.setMaxLength(redField, 3);
         GUI.setText(redField, String.valueOf(redFrom));
         redField.visible = !fullDisplay;
@@ -116,51 +121,82 @@ public class TrafficLightsConditionScreen extends Screen {
 
         greenField = this.addDrawableChild(
                 GUI.createTextField(
-                        this.textRenderer, fieldX, panelY + 140,
+                        this.textRenderer, fieldX, getPanelY() + 140,
                         FIELD_WIDTH, FIELD_HEIGHT,
                         Text.literal("绿灯起始秒数")
                 )
         );
+        tracked.add(TrackedWidget.of(greenField, fieldX, 140));
         GUI.setMaxLength(greenField, 3);
         GUI.setText(greenField, String.valueOf(greenFrom));
         greenField.visible = !fullDisplay;
         greenField.active = !fullDisplay;
 
-        hidePatternButton = this.addDrawableChild(
-                GUI.createButton(
-                        Text.literal(hidePatternOnGreen ? "是" : "不是"),
-                        buttonX, panelY + 200,
-                        BUTTON_WIDTH, 20,
-                        button -> toggleHidePatternOnGreen())
-        );
+        hidePatternButton = addTrackedButton(
+                Text.literal(hidePatternOnGreen ? "是" : "不是"),
+                buttonX, 200,
+                button -> toggleHidePatternOnGreen());
 
-        int bottomY = panelY + PANEL_HEIGHT - 32;
+        yellowFlashButton = addTrackedButton(
+                Text.literal(yellowFlashAlways ? "是" : "不是"),
+                buttonX, 226,
+                button -> toggleYellowFlashAlways());
+
+        int bottomY = PANEL_HEIGHT - 32;
         int totalWidth = BUTTON_WIDTH * 3 + BUTTON_GAP * 2;
         int bottomX = panelX + (PANEL_WIDTH - totalWidth) / 2;
 
-        this.addDrawableChild(
-                GUI.createButton(
-                        Text.translatable("text.yunbeiuc.traffic_lights_timing.cancel"),
-                        bottomX, bottomY,
-                        BUTTON_WIDTH, 20,
-                        button -> back())
-        );
+        addTrackedButton(
+                Text.translatable("text.yunbeiuc.traffic_lights_timing.cancel"),
+                bottomX, bottomY,
+                button -> back());
 
-        this.addDrawableChild(
-                GUI.createButton(
-                        Text.literal("保存"),
-                        bottomX + BUTTON_WIDTH + BUTTON_GAP, bottomY,
-                        BUTTON_WIDTH, 20,
-                        button -> saveConditions())
-        );
+        addTrackedButton(
+                Text.literal("保存"),
+                bottomX + BUTTON_WIDTH + BUTTON_GAP, bottomY,
+                button -> saveConditions());
 
-        this.addDrawableChild(
-                GUI.createButton(
-                        Text.literal("应用到全部"),
-                        bottomX + (BUTTON_WIDTH + BUTTON_GAP) * 2, bottomY,
-                        BUTTON_WIDTH, 20,
-                        button -> applyToAll())
-        );
+        addTrackedButton(
+                Text.literal("应用到全部"),
+                bottomX + (BUTTON_WIDTH + BUTTON_GAP) * 2, bottomY,
+                button -> applyToAll());
+    }
+
+    private ButtonWidget addTrackedButton(Component label, int x, int offsetY, Consumer<ButtonWidget> action) {
+        ButtonWidget button = this.addDrawableChild(
+                GUI.createButton(label, x, getPanelY() + offsetY, BUTTON_WIDTH, 20, action));
+        tracked.add(TrackedWidget.of(button, x, offsetY));
+        return button;
+    }
+
+    // 内容高于窗口时整页可滚动；窗口足够高时保持居中并禁用滚动。
+    private int getPanelY() {
+        if (getMaxScroll() <= 0) {
+            return (this.height - PANEL_HEIGHT) / 2;
+        }
+        return SCROLL_MARGIN - scrollOffset;
+    }
+
+    private int getMaxScroll() {
+        return Math.max(0, PANEL_HEIGHT + SCROLL_MARGIN * 2 - this.height);
+    }
+
+    @Override
+    public boolean mouseScrolledCompat(double mouseX, double mouseY, double amount) {
+        int max = getMaxScroll();
+        if (max <= 0) {
+            return super.mouseScrolledCompat(mouseX, mouseY, amount);
+        }
+        int next = (int) Math.round(scrollOffset - amount * 20);
+        next = Math.max(0, Math.min(max, next));
+        if (next != scrollOffset) {
+            scrollOffset = next;
+            int panelY = getPanelY();
+            for (TrackedWidget trackedWidget : tracked) {
+                trackedWidget.apply(panelY);
+            }
+        }
+        return true;
     }
 
     private void togglePulse() {
@@ -203,6 +239,13 @@ public class TrafficLightsConditionScreen extends Screen {
         }
     }
 
+    private void toggleYellowFlashAlways() {
+        yellowFlashAlways = !yellowFlashAlways;
+        if (yellowFlashButton != null) {
+            GUI.setButtonMessage(yellowFlashButton, Text.literal(yellowFlashAlways ? "是" : "不是"));
+        }
+    }
+
     private int parseSeconds(TextFieldWidget field, int fallback) {
         if (field == null) {
             return fallback;
@@ -222,7 +265,7 @@ public class TrafficLightsConditionScreen extends Screen {
         redFrom = parseSeconds(redField, redFrom);
         greenFrom = parseSeconds(greenField, greenFrom);
         TrafficLightsCountdownUpdatePacket packet = new TrafficLightsCountdownUpdatePacket(
-                pos, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen);
+                pos, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen, yellowFlashAlways);
         FriendlyByteBuf buf = NetworkCompat.newBuffer();
         packet.write(buf);
         NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_COUNTDOWN, buf);
@@ -243,8 +286,22 @@ public class TrafficLightsConditionScreen extends Screen {
     private void applyToAll() {
         redFrom = parseSeconds(redField, redFrom);
         greenFrom = parseSeconds(greenField, greenFrom);
+        ApiCompat.setScreen(Minecraft.getInstance(), new ConfirmScreen(
+                confirmed -> {
+                    if (confirmed) {
+                        sendApplyAll();
+                    }
+                    ApiCompat.setScreen(Minecraft.getInstance(), this);
+                },
+                Text.literal("应用到全部红绿灯"),
+                Text.literal("将把当前附加条件应用到当前维度所有已加载的红绿灯，不支持该参数的类型会自动跳过。"),
+                Text.literal("确定应用"),
+                Text.literal("取消")));
+    }
+
+    private void sendApplyAll() {
         TrafficLightsApplyAllConditionsPacket packet = new TrafficLightsApplyAllConditionsPacket(
-                pulseEnabled, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen);
+                pulseEnabled, fullDisplay, redFrom, greenFrom, numberMode, hidePatternOnGreen, yellowFlashAlways);
         FriendlyByteBuf buf = NetworkCompat.newBuffer();
         packet.write(buf);
         NetworkCompat.sendToServer(ModMessages.APPLY_ALL_TRAFFIC_LIGHTS_CONDITIONS, buf);
@@ -259,7 +316,7 @@ public class TrafficLightsConditionScreen extends Screen {
         this.renderBackground(context);
 
         int panelX = (this.width - PANEL_WIDTH) / 2;
-        int panelY = (this.height - PANEL_HEIGHT) / 2;
+        int panelY = getPanelY();
 
         RENDER.fill(context, panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xAA333333);
         RENDER.drawBorder(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0xFFCCCCCC);
@@ -355,11 +412,53 @@ public class TrafficLightsConditionScreen extends Screen {
                 true
         );
 
+        RENDER.drawText(
+                context,
+                this.textRenderer,
+                Text.literal("黄闪常亮"),
+                panelX + RIGHT_MARGIN,
+                panelY + 232,
+                0xFFAAAAAA,
+                true
+        );
+
         super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
     public boolean shouldPauseCompat() {
         return false;
+    }
+
+    // 记录控件的横向位置与相对面板顶部的偏移，滚动时统一重排。
+    private static final class TrackedWidget {
+        private final ButtonWidget button;
+        private final TextFieldWidget field;
+        private final int x;
+        private final int offsetY;
+
+        private TrackedWidget(ButtonWidget button, TextFieldWidget field, int x, int offsetY) {
+            this.button = button;
+            this.field = field;
+            this.x = x;
+            this.offsetY = offsetY;
+        }
+
+        static TrackedWidget of(ButtonWidget button, int x, int offsetY) {
+            return new TrackedWidget(button, null, x, offsetY);
+        }
+
+        static TrackedWidget of(TextFieldWidget field, int x, int offsetY) {
+            return new TrackedWidget(null, field, x, offsetY);
+        }
+
+        void apply(int panelY) {
+            if (button != null) {
+                button.setPosition(x, panelY + offsetY);
+            }
+            if (field != null) {
+                field.setPosition(x, panelY + offsetY);
+            }
+        }
     }
 }

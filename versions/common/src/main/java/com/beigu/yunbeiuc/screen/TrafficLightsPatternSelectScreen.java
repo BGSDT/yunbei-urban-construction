@@ -252,6 +252,10 @@ public class TrafficLightsPatternSelectScreen extends Screen {
         ApiCompat.setScreen(Minecraft.getInstance(), previousScreen);
     }
 
+    public Screen getPreviousScreen() {
+        return previousScreen;
+    }
+
     private void setButtonsActive(boolean active) {
         for (var child : this.children()) {
             if (child instanceof ButtonWidget button) {

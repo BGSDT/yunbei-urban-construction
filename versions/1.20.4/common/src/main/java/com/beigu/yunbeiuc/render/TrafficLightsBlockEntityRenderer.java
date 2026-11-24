@@ -143,7 +143,7 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
                 currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()) {
             renderTimeText(entity, matrices, vertexConsumers, light, facing, type, mountType, currentBlock, pulseHidden, hideOnGreen);
         }
-        if (!hideOnGreen) {
+        if (!hideOnGreen && !(entity.isYellowFlashAlways() && ((System.currentTimeMillis() / 500) % 2 == 0))) {
             renderLogo(matrices, vertexConsumers, light, overlay, facing, directiontype, type, currentBlock, mountType);
         }
 

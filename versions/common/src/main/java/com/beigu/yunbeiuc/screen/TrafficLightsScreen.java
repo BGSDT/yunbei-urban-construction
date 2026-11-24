@@ -45,6 +45,7 @@ public class TrafficLightsScreen extends Screen {
     private int phaseCount;
     private final List<PhaseSliderWidget> phaseSliders = new ArrayList<>();
     private final List<ButtonWidget> phaseRemoveButtons = new ArrayList<>();
+    private boolean phaseIndicesInitialized = false;
     private ButtonWidget addPhaseButton;
     private int panelX;
     private int panelY;
@@ -74,15 +75,11 @@ public class TrafficLightsScreen extends Screen {
     private TrafficLightsBlock.MountType pendingMountType;
 
     private static final int RIGHT_PANEL_WIDTH = 200;
-    private static final int RIGHT_PANEL_HEIGHT = 340;
-    private static final int DYNAMIC_PANEL_HEIGHT = 370;
     private static final int MAX_PHASE_SLIDERS = 4;
     private static final int PHASE_SLIDER_START_Y = 68;
     private static final int PHASE_SLIDER_ROW_HEIGHT = 28;
-    private static final int PHASE_SLIDER_AREA_HEIGHT = MAX_PHASE_SLIDERS * PHASE_SLIDER_ROW_HEIGHT;
-    private static final int PREVIEW_Y_OFFSET = PHASE_SLIDER_START_Y + PHASE_SLIDER_AREA_HEIGHT + 10;
     private static final int PREVIEW_SIZE = 50;
-    private static final int BUTTONS_Y_OFFSET = PREVIEW_Y_OFFSET + PREVIEW_SIZE + 15;
+    private static final int PANEL_BOTTOM_MARGIN = 20;
 
     private static final int PAVEMENT_ROW_GAP = 8;
     private static final int PAVEMENT_BOTTOM_MARGIN = 30;
@@ -138,7 +135,7 @@ public class TrafficLightsScreen extends Screen {
     protected void init() {
         super.init();
 
-        if (this.client != null && this.client.level != null) {
+        if (!phaseIndicesInitialized && this.client != null && this.client.level != null) {
             if (this.client.level.getBlockEntity(this.pos) instanceof TrafficLightsBlockEntity entity) {
                 List<Integer> existingPhaseIndices = entity.getPhaseIndices();
                 if (!existingPhaseIndices.isEmpty()) {
@@ -148,6 +145,7 @@ public class TrafficLightsScreen extends Screen {
                 if (this.phaseCount <= 0) this.phaseCount = 4;
             }
         }
+        this.phaseIndicesInitialized = true;
 
         int panelX, panelY;
 
@@ -168,10 +166,10 @@ public class TrafficLightsScreen extends Screen {
             int rightAreaX = this.width / 3;
             int rightAreaWidth = this.width * 2 / 3;
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - (isCountdownTimer ? RIGHT_PANEL_HEIGHT : DYNAMIC_PANEL_HEIGHT)) / 2;
+            panelY = (this.height - getTrafficPanelHeight()) / 2;
         } else {
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - (isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT)) / 2;
+            panelY = (this.height - (isPavement ? getPanelHeight() : getTrafficPanelHeight())) / 2;
         }
 
         this.panelX = panelX;
@@ -182,7 +180,7 @@ public class TrafficLightsScreen extends Screen {
         }
 
         if (isCountdownTimer) {
-            int rowY = panelY + PREVIEW_Y_OFFSET;
+            int rowY = panelY + getPreviewYOffset();
 
             countdownDisplayButton = this.addDrawableChild(
                     ButtonWidget.builderCompat(
@@ -237,7 +235,7 @@ public class TrafficLightsScreen extends Screen {
             );
         }
 
-        int buttonsYOffset = isPavement ? getPavementButtonsYOffset() : BUTTONS_Y_OFFSET;
+        int buttonsYOffset = isPavement ? getPavementButtonsYOffset() : getButtonsYOffset();
 
         int buttonW = 81;
         int buttonGap = 8;
@@ -428,7 +426,8 @@ public class TrafficLightsScreen extends Screen {
         countdownGreenFrom = parseCountdownSeconds(countdownGreenField, countdownGreenFrom);
         TrafficLightsCountdownUpdatePacket packet = new TrafficLightsCountdownUpdatePacket(
                 pos, countdownFullDisplay, countdownRedFrom, countdownGreenFrom,
-                countdownNumberMode, blockEntity != null && blockEntity.isHidePatternOnGreen());
+                countdownNumberMode, blockEntity != null && blockEntity.isHidePatternOnGreen(),
+                blockEntity != null && blockEntity.isYellowFlashAlways());
         FriendlyByteBuf buf = NetworkCompat.newBuffer();
         packet.write(buf);
         NetworkCompat.sendToServer(ModMessages.UPDATE_TRAFFIC_LIGHTS_COUNTDOWN, buf);
@@ -460,12 +459,27 @@ public class TrafficLightsScreen extends Screen {
     }
 
     private int getPanelHeight() {
-        if (isPavement) {
-            int buttonsYOffset = getPavementButtonsYOffset();
-            int patternButtonY = buttonsYOffset + 25;
-            return patternButtonY + 20 + PAVEMENT_BOTTOM_MARGIN;
-        }
-        return RIGHT_PANEL_HEIGHT;
+        int buttonsYOffset = getPavementButtonsYOffset();
+        int patternButtonY = buttonsYOffset + 25;
+        return patternButtonY + 20 + PAVEMENT_BOTTOM_MARGIN;
+    }
+
+    // 相位条按实际数量占位，默认 1 条，面板高度随之收缩。
+    private int getSliderRows() {
+        return Math.max(1, Math.min(phaseIndices.size(), MAX_PHASE_SLIDERS));
+    }
+
+    private int getPreviewYOffset() {
+        return PHASE_SLIDER_START_Y + getSliderRows() * PHASE_SLIDER_ROW_HEIGHT + 10;
+    }
+
+    private int getButtonsYOffset() {
+        return getPreviewYOffset() + PREVIEW_SIZE + 15;
+    }
+
+    private int getTrafficPanelHeight() {
+        int extra = isCountdownTimer ? 70 : 95;
+        return getButtonsYOffset() + extra + PANEL_BOTTOM_MARGIN;
     }
 
     private void openTimingScreen() {
@@ -493,7 +507,7 @@ public class TrafficLightsScreen extends Screen {
             int rightAreaX = this.width / 3;
             int rightAreaWidth = this.width * 2 / 3;
             panelX = rightAreaX + (rightAreaWidth - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - DYNAMIC_PANEL_HEIGHT) / 2;
+            panelY = (this.height - getTrafficPanelHeight()) / 2;
 
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
@@ -515,7 +529,7 @@ public class TrafficLightsScreen extends Screen {
             }
         } else {
             panelX = (this.width - RIGHT_PANEL_WIDTH) / 2;
-            panelY = (this.height - (isPavement ? getPanelHeight() : RIGHT_PANEL_HEIGHT)) / 2;
+            panelY = (this.height - (isPavement ? getPanelHeight() : getTrafficPanelHeight())) / 2;
 
             context.drawCenteredTextWithShadow(
                     this.textRenderer,
@@ -526,8 +540,7 @@ public class TrafficLightsScreen extends Screen {
             );
         }
 
-        int panelHeight = isPavement ? getPanelHeight()
-                : (isCountdownTimer ? RIGHT_PANEL_HEIGHT : DYNAMIC_PANEL_HEIGHT);
+        int panelHeight = isPavement ? getPanelHeight() : getTrafficPanelHeight();
         context.fill(panelX, panelY, panelX + RIGHT_PANEL_WIDTH, panelY + panelHeight, 0xAA333333);
         context.drawBorder(panelX, panelY, RIGHT_PANEL_WIDTH, panelHeight, 0xFFCCCCCC);
 
@@ -555,7 +568,7 @@ public class TrafficLightsScreen extends Screen {
         );
 
         if (isCountdownTimer) {
-            int rowY = panelY + PREVIEW_Y_OFFSET;
+            int rowY = panelY + getPreviewYOffset();
             context.drawTextWithShadow(
                     this.textRenderer,
                     Text.literal("读秒显示:"),
@@ -588,7 +601,7 @@ public class TrafficLightsScreen extends Screen {
         if (!isPavement && !isCountdownTimer && selectedOption != null) {
             int previewSize = PREVIEW_SIZE;
             int previewX = panelX + 10;
-            int previewY = panelY + PREVIEW_Y_OFFSET;
+            int previewY = panelY + getPreviewYOffset();
 
             context.fill(previewX - 2, previewY - 2, previewX + previewSize + 2, previewY + previewSize + 2, 0xFF000000);
             context.drawBorder(previewX - 2, previewY - 2, previewSize + 4, previewSize + 4, 0xFFFFFFFF);
@@ -719,41 +732,21 @@ public class TrafficLightsScreen extends Screen {
         if (phaseSliders.size() < maxSliders) {
             int firstRowY = panelY + PHASE_SLIDER_START_Y;
             addPhaseButton = this.addDrawableChild(
-                    ButtonWidget.builderCompat(Text.literal("+"), button -> addPhaseSlider())
+                    ButtonWidget.builderCompat(Text.literal("+"), button -> openPhaseSelectScreen())
                             .dimensions(panelX + 165, firstRowY, 15, 20)
                             .build()
             );
         }
     }
 
-    private void addPhaseSlider() {
-        int maxSliders = Math.min(MAX_PHASE_SLIDERS, phaseCount);
-        if (phaseIndices.size() >= maxSliders) return;
-
-        int candidate = -1;
-        int startFrom = phaseIndices.isEmpty() ? 0 : Collections.max(phaseIndices) + 1;
-        for (int v = startFrom; v < phaseCount; v++) {
-            if (!phaseIndices.contains(v)) {
-                candidate = v;
-                break;
-            }
-        }
-        if (candidate < 0) {
-            for (int v = 0; v < phaseCount; v++) {
-                if (!phaseIndices.contains(v)) {
-                    candidate = v;
-                    break;
-                }
-            }
-        }
-        if (candidate < 0) return;
-
-        phaseIndices.add(candidate);
-        if (isPavement) {
-            relayoutPavementControls();
-        } else {
-            rebuildPhaseSliders();
-        }
+    // 与相位预设里的相位选择一致的页面，确认或取消后回到当前界面。
+    private void openPhaseSelectScreen() {
+        ApiCompat.setScreen(Minecraft.getInstance(), new TrafficLightsPhaseMultiSelectScreen(
+                this,
+                Math.max(1, phaseCount),
+                new ArrayList<>(phaseIndices),
+                phases -> this.phaseIndices = new ArrayList<>(phases)
+        ));
     }
 
     private void removePhaseSlider(int slotIndex) {
@@ -762,7 +755,7 @@ public class TrafficLightsScreen extends Screen {
         if (isPavement) {
             relayoutPavementControls();
         } else {
-            rebuildPhaseSliders();
+            rebuildWidgetsCompat();
         }
     }
 
