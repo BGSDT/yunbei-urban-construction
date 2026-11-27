@@ -64,6 +64,7 @@
   "block.yunbeiuc.traffic_lights_pavement_gray": "灰色人行道交通信号灯",
   "block.yunbeiuc.traffic_lights_pavement_black": "黑色人行道交通信号灯",
   "block.yunbeiuc.traffic_lights_pavement_green_taipei": "台北式人行道交通信号灯",
+  "block.yunbeiuc.traffic_lights_waiting_area_turn_left": "左转待行区信号灯",
   "block.yunbeiuc.traffic_lights_pavement_integration_gray": "灰色人行道红绿灯一体化",
   "block.yunbeiuc.traffic_lights_pavement_integration_black": "黑色人行道红绿灯一体化",
   "text.yunbeiuc.traffic_lights.title": "红绿灯设置",

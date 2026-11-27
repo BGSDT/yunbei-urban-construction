@@ -19,6 +19,7 @@ public class  ModMessages {
     public static final Id UPDATE_TRAFFIC_LIGHTS_MOUNT_TYPE = id("update_traffic_lights_mount_type");
     public static final Id UPDATE_TRAFFIC_LIGHTS_PULSE = id("update_traffic_lights_pulse");
     public static final Id UPDATE_TRAFFIC_LIGHTS_COUNTDOWN = id("update_traffic_lights_countdown");
+    public static final Id UPDATE_TRAFFIC_LIGHTS_WAITING_AREA = id("update_traffic_lights_waiting_area");
     public static final Id APPLY_ALL_TRAFFIC_LIGHTS_CONDITIONS = id("apply_all_traffic_lights_conditions");
     public static final Id APPLY_TRAFFIC_LIGHTS_PATTERN = id("apply_traffic_lights_pattern");
     public static final Id UPDATE_CUSTOM_SIGN = id("update_custom_sign");
@@ -67,6 +68,11 @@ public class  ModMessages {
 
         NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_COUNTDOWN, (buf, context) -> {
             TrafficLightsCountdownUpdatePacket packet = new TrafficLightsCountdownUpdatePacket(buf);
+            context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
+        });
+
+        NetworkCompat.registerC2S(UPDATE_TRAFFIC_LIGHTS_WAITING_AREA, (buf, context) -> {
+            TrafficLightsWaitingAreaUpdatePacket packet = new TrafficLightsWaitingAreaUpdatePacket(buf);
             context.queue(() -> packet.apply((ServerPlayer) context.getPlayer()));
         });
 

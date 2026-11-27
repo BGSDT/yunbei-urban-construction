@@ -42,6 +42,8 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             Collections.newSetFromMap(new WeakHashMap<>());
 
     private List<Integer> phaseIndices = new ArrayList<>();
+    // 左转待行区专用：按相位序号配置的图案（0 全红 / 1 可进入不可左转 / 2 全绿 / -1 自动）。
+    private int[] waitingAreaPatterns = new int[0];
     private String groupId = null;
     private List<BlockPos> groupPositions = new ArrayList<>();
 
@@ -627,9 +629,9 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
     }
 
     public boolean setPhaseIndices(List<Integer> indices, Player player) {
-        if (phaseTimes == null || phaseCount <= 0) {
+        if (phaseCount <= 0) {
             if (player != null && !level .isClientSide()) {
-                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c请先使用命令设置时间！"), true);
+                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c请先设置相位时间表！"), true);
             }
             return false;
         }
@@ -639,33 +641,27 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             }
             return false;
         }
+        // 多相位保存：越界/重复的索引直接剔除，超出上限时截断，避免整批被拒绝导致「保存不了」。
         int maxAllowed = Math.min(MAX_PHASE_INDICES, phaseCount);
-        if (indices.size() > maxAllowed) {
-            if (player != null && !level .isClientSide()) {
-                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c最多只能设置 " + maxAllowed + " 个相位！"), true);
+        List<Integer> cleaned = new ArrayList<>();
+        for (Integer index : indices) {
+            if (index == null || index < 0 || index >= phaseCount || cleaned.contains(index)) {
+                continue;
             }
-            return false;
-        }
-        if (new HashSet<>(indices).size() != indices.size()) {
-            if (player != null && !level .isClientSide()) {
-                ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c相位不可以重复！"), true);
-            }
-            return false;
-        }
-        for (int index : indices) {
-            if (index < 0 || index >= phaseCount) {
-                if (player != null && !level .isClientSide()) {
-                    ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§c无效的相位索引！范围：1-" + phaseCount), true);
-                }
-                return false;
+            cleaned.add(index);
+            if (cleaned.size() >= maxAllowed) {
+                break;
             }
         }
-        this.phaseIndices = new ArrayList<>(indices);
+        if (cleaned.isEmpty()) {
+            cleaned.add(0);
+        }
+        this.phaseIndices = cleaned;
         if (player != null && !level .isClientSide()) {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < indices.size(); i++) {
+            for (int i = 0; i < cleaned.size(); i++) {
                 if (i > 0) sb.append(", ");
-                sb.append(indices.get(i) + 1);
+                sb.append(cleaned.get(i) + 1);
             }
             ApiCompat.message(player, com.beigu.yunbeiuc.api.text.Text.literal("§a相位已设置为 §6" + sb + " §7(共" + phaseCount + "个相位)"), true);
         }
@@ -830,6 +826,22 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         return currentActivePhase;
     }
 
+    /** 当前相位已经过的 tick，供待行区动画时间轴使用。 */
+    public int getCurrentPhaseTick() {
+        if (phaseTimes == null || phaseCount <= 0) return 0;
+        refreshPhaseProgress();
+        return Math.max(0, currentTick);
+    }
+
+    /** 当前相位可供动画播放的时长（相位时长减去相位延迟），不足时由动画截断。 */
+    public int getCurrentPhaseActiveTicks() {
+        if (phaseTimes == null || phaseCount <= 0
+                || currentActivePhase < 0 || currentActivePhase >= phaseCount) {
+            return 0;
+        }
+        return Math.max(0, phaseTimes[currentActivePhase] * 20 - currentPhaseDelayTicks());
+    }
+
     public boolean isCycleActive() {
         return cycleActive;
     }
@@ -865,6 +877,23 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
 
     public List<Integer> getPhaseIndices() {
         return Collections.unmodifiableList(phaseIndices);
+    }
+
+    public int[] getWaitingAreaPatterns() {
+        return waitingAreaPatterns.clone();
+    }
+
+    public int getWaitingAreaPattern(int phaseIndex) {
+        if (phaseIndex < 0 || phaseIndex >= waitingAreaPatterns.length) {
+            return -1;
+        }
+        int value = waitingAreaPatterns[phaseIndex];
+        return value >= 0 && value <= 2 ? value : -1;
+    }
+
+    public void setWaitingAreaPatterns(int[] patterns) {
+        this.waitingAreaPatterns = patterns == null ? new int[0] : patterns.clone();
+        markDirtyAndUpdate();
     }
 
     public int[] getPhaseTimes() {
@@ -1156,6 +1185,9 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
             this.phaseIndices = new ArrayList<>();
         }
         this.groupId = nbt.contains("groupId") ? NbtCompat.getString(nbt, "groupId") : null;
+        this.waitingAreaPatterns = nbt.contains("waitingAreaPatterns")
+                ? NbtCompat.getIntArray(nbt, "waitingAreaPatterns")
+                : new int[0];
         this.phaseCount = NbtCompat.getInt(nbt, "phaseCount");
         this.directionType = DirectionType.fromName(NbtCompat.getString(nbt, "directionType"));
         this.countdownDisplayMode = NbtCompat.getInt(nbt, "countdownDisplayMode");
@@ -1225,6 +1257,9 @@ public class TrafficLightsBlockEntity extends BlockEntityMapper {
         int[] indicesArray = new int[phaseIndices.size()];
         for (int i = 0; i < phaseIndices.size(); i++) indicesArray[i] = phaseIndices.get(i);
         nbt.putIntArray("phaseIndices", indicesArray);
+        if (waitingAreaPatterns.length > 0) {
+            nbt.putIntArray("waitingAreaPatterns", waitingAreaPatterns);
+        }
         nbt.putString("directionType", this.directionType.getName());
         nbt.putInt("countdownDisplayMode", this.countdownDisplayMode);
         nbt.putInt("countdownThreshold", this.countdownThreshold);

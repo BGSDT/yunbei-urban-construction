@@ -64,6 +64,7 @@
   "block.yunbeiuc.traffic_lights_pavement_gray": "Gray Pedestrian Traffic Light",
   "block.yunbeiuc.traffic_lights_pavement_black": "Black Pedestrian Traffic Light",
   "block.yunbeiuc.traffic_lights_pavement_green_taipei": "Taipei-Style Pedestrian Traffic Light",
+  "block.yunbeiuc.traffic_lights_waiting_area_turn_left": "Left-Turn Waiting Area Signal",
   "block.yunbeiuc.traffic_lights_pavement_integration_gray": "Gray Integrated Pedestrian Traffic Light",
   "block.yunbeiuc.traffic_lights_pavement_integration_black": "Black Integrated Pedestrian Traffic Light",
   "text.yunbeiuc.traffic_lights.title": "Traffic Light Settings",

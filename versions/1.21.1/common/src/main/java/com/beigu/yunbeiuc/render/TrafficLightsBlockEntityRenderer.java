@@ -1,6 +1,9 @@
 package com.beigu.yunbeiuc.render;
 
 import com.beigu.yunbeiuc.api.ApiCompat;
+import com.beigu.yunbeiuc.api.resource.Id;
+import com.beigu.yunbeiuc.api.resource.IdAdapter;
+import com.beigu.yunbeiuc.util.WaitingAreaTurnLeftAnimation;
 
 import com.beigu.yunbeiuc.YunbeiUrbanConstruction;
 import com.beigu.yunbeiuc.block.MunicipalBlocks;
@@ -132,6 +135,10 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         TrafficLightsBlock.MountType mountType = TrafficLightsBlock.resolveMountType(entity.getLevel(), entity.getBlockPos(), entity.getBlockState());
         Block currentBlock = entity.getBlockState().getBlock();
         renderPhaseText(entity, matrices, vertexConsumers, light, currentBlock);
+        if (currentBlock == MunicipalBlocks.TRAFFIC_LIGHTS_WAITING_AREA_TURN_LEFT.get()) {
+            renderWaitingArea(entity, matrices, vertexConsumers, light, overlay, facing, type, mountType);
+            return;
+        }
         boolean pulseHidden = entity.isCountdownPulseHidden();
         boolean hideOnGreen = entity.isHidePatternOnGreen()
                 && type == TrafficLightsBlock.LightState.GREEN;
@@ -426,6 +433,40 @@ public class TrafficLightsBlockEntityRenderer implements BlockEntityRenderer<Tra
         consumer.addVertex(positionMatrix, halfSize, -halfSize, 0).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
         consumer.addVertex(positionMatrix, halfSize, halfSize, 0).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
         consumer.addVertex(positionMatrix, -halfSize, halfSize, 0).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+
+        matrices.popPose();
+    }
+
+    // 左转待行区：整块面板贴逐帧动画，帧由 WaitingAreaTurnLeftAnimation 按 LIGHT_STATE 选择（含相位切换过渡）。
+    private void renderWaitingArea(TrafficLightsBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay,
+                                   Direction facing, TrafficLightsBlock.LightState lightState, TrafficLightsBlock.MountType mountType) {
+        int waitingPhase = entity.getActivePhase();
+        int waitingPattern = entity.getWaitingAreaPattern(waitingPhase);
+        boolean waitingCycle = waitingPhase >= 0 && entity.isCycleActive();
+        int waitingTick = entity.getCurrentPhaseTick();
+        int waitingActiveTicks = entity.getCurrentPhaseActiveTicks();
+        Id frameId = WaitingAreaTurnLeftAnimation.frame(waitingPattern, lightState, waitingTick, waitingCycle, waitingActiveTicks);
+        if (frameId == null) {
+            return;
+        }
+
+        // 面板 z 位置随模型：墙装 15.2/16，立柱装 20.95/16；渲染本地 -Z 为正面。
+        float z = mountType == TrafficLightsBlock.MountType.POLE ? 0.5f - 20.95f / 16f : 0.5f - 15.2f / 16f;
+        float halfWidth = 7f / 16f;
+        float halfHeight = 12f / 16f;
+
+        matrices.pushPose();
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
+        matrices.translate(0, 0, z);
+
+        VertexConsumer consumer = vertexConsumers.getBuffer(ApiCompat.entityCutout(IdAdapter.mc(frameId)));
+        Matrix4f positionMatrix = matrices.last().pose();
+
+        consumer.addVertex(positionMatrix, -halfWidth, -halfHeight, 0).setColor(255, 255, 255, 255).setUv(0.0f, 1.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, halfWidth, -halfHeight, 0).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, halfWidth, halfHeight, 0).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
+        consumer.addVertex(positionMatrix, -halfWidth, halfHeight, 0).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setOverlay(overlay).setLight(light).setNormal(matrices.last(), 0, 0, 1);
 
         matrices.popPose();
     }

@@ -216,6 +216,7 @@ public class TrafficLightsPatternPreset {
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GRAY_SHANGHAI.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_BLACK_SHANGHAI.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get()
+                    || block == MunicipalBlocks.TRAFFIC_LIGHTS_WAITING_AREA_TURN_LEFT.get()
                     || block == MunicipalBlocks.TRAFFIC_LIGHTS_FOGGY.get()
                     || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED.get()
                     || block == MunicipalBlocks.INSTRUMENT_WARNING_CROSSING_FLUORESCENT_RED_TEXT.get()

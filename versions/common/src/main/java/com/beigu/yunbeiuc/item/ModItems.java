@@ -132,6 +132,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK = municipal(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_INTEGRATION_BLACK);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_GREEN_TAIPEI = municipal(MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI);
     public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI = municipal(MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI);
+    public static final RegistrySupplier<Item> TRAFFIC_LIGHTS_WAITING_AREA_TURN_LEFT = municipal(MunicipalBlocks.TRAFFIC_LIGHTS_WAITING_AREA_TURN_LEFT);
     public static final RegistrySupplier<Item> TRAFFIC_CONE = municipal(MunicipalBlocks.TRAFFIC_CONE);
     public static final RegistrySupplier<Item> ROAD_COLLISION_BARREL = municipal(MunicipalBlocks.ROAD_COLLISION_BARREL);
     public static final RegistrySupplier<Item> WATER_SAFETY_BARRIER_RED = municipal(MunicipalBlocks.WATER_SAFETY_BARRIER_RED);

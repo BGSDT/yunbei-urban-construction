@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:iron_block",
+  "result": {
+    "id": "yunbeiuc:traffic_lights_waiting_area_turn_left",
+    "count": 2
+  }
+}

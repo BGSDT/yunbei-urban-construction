@@ -53,6 +53,12 @@ public class TrafficLightsBlock extends TickingEntityBlock {
     private static final VoxelShape SHAPE_S = Block.box(0, 4, 8, 16, 12, 16);
     private static final VoxelShape SHAPE_W = Block.box(0, 4, 0, 8, 12, 16);
 
+    // 左转待行区：整块竖牌位于方块一侧，高度超出方块上下边界。
+    private static final VoxelShape WAITING_AREA_N = Block.box(1, -4, 15, 15, 20, 16);
+    private static final VoxelShape WAITING_AREA_S = Block.box(1, -4, 0, 15, 20, 1);
+    private static final VoxelShape WAITING_AREA_E = Block.box(0, -4, 1, 1, 20, 15);
+    private static final VoxelShape WAITING_AREA_W = Block.box(15, -4, 1, 16, 20, 15);
+
     private static final VoxelShape VERTICAL_N = Block.box(2.75, -4.75, 0, 13.25, 20.75, 7.5);
     private static final VoxelShape VERTICAL_S = Block.box(2.75, -4.75, 8.5, 13.25, 20.75, 16);
     private static final VoxelShape VERTICAL_E = Block.box(8.5, -4.75, 2.75, 16, 20.75, 13.25);
@@ -142,6 +148,11 @@ public class TrafficLightsBlock extends TickingEntityBlock {
             south = COUNTDOWN_S;
             east = COUNTDOWN_E;
             west = COUNTDOWN_W;
+        } else if (isNamed(block, "traffic_lights_waiting_area_turn_left")) {
+            north = WAITING_AREA_N;
+            south = WAITING_AREA_S;
+            east = WAITING_AREA_E;
+            west = WAITING_AREA_W;
         }
 
         return switch (state.getValue(FACING)) {
@@ -254,6 +265,10 @@ public class TrafficLightsBlock extends TickingEntityBlock {
 
         if (heldItem.getItem() == ModItems.WAND.get()) {
             if (world .isClientSide()) {
+                if (isNamed(state.getBlock(), "traffic_lights_waiting_area_turn_left")) {
+                    openWaitingAreaScreen(pos);
+                    return ApiCompat.sidedSuccess(true);
+                }
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof TrafficLightsBlockEntity trafficLightsBE) {
                     if (!trafficLightsBE.isInGroup()) {
@@ -271,6 +286,11 @@ public class TrafficLightsBlock extends TickingEntityBlock {
         }
 
         return super.useCompat(state, world, pos, player, hand, hit);
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openWaitingAreaScreen(BlockPos pos) {
+        ApiCompat.setScreen(Minecraft.getInstance(), new com.beigu.yunbeiuc.screen.TrafficLightsWaitingAreaScreen(pos));
     }
 
     @Environment(EnvType.CLIENT)

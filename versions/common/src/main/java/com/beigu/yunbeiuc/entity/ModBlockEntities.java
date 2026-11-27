@@ -38,7 +38,8 @@ public class ModBlockEntities {
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GRAY.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_BLACK.get(),
                             MunicipalBlocks.TRAFFIC_LIGHTS_GREEN_TAIPEI.get(),
-                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get()));
+                            MunicipalBlocks.TRAFFIC_LIGHTS_PAVEMENT_GREEN_TAIPEI.get(),
+                            MunicipalBlocks.TRAFFIC_LIGHTS_WAITING_AREA_TURN_LEFT.get()));
 
     public static final RegistrySupplier<BlockEntityType<TrafficLightsBlockEntity>> INSTRUMENT_WARNING_CROSSING_FLUORESCENT_ENTITY =
             BES.register("instrument_warning_crossing_fluorescent_entity",
